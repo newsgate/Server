@@ -1,0 +1,107 @@
+#ir_tool_td
+{
+  width: 100%;
+/*  padding: 0 1em;*/
+}
+
+#ir_placeholder
+{
+/*  width:100%;*/
+  margin: 0 1em;
+  padding: 0;
+  background-color: rgb(255, 255, 255);
+}
+
+#ir_preview
+{
+  font-size: 100%;
+  width: 100%;
+  table-layout: fixed;
+  border: 1px solid rgb(80, 80, 80);
+  padding: 0.25em;
+}
+
+#ir_preview_inner
+{
+  padding: 0.25em;
+  font-size: 90%;
+  text-align: left;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+#ir_preview_intro
+{
+  font-size: 85%;
+  text-align: justify;
+}
+
+#ir_panel
+{
+  width: 1em;
+  font-size: 80%;
+  margin: 0 0.5em 0 0;
+  border-collapse: collapse;
+}
+
+.ir_control_group_title
+{
+  font-size:110%;
+  text-align: left;
+  border-bottom: 1px solid black;
+  padding: 0 0 0.1em 0;
+  margin: 0 0 0.3em 0;
+}
+
+.ir_select
+{
+  width: 10em;
+}
+
+.ir_edit
+{
+  width: 10em;
+  box-sizing: border-box;
+  -webkit-box-sizing:border-box;
+  -moz-box-sizing: border-box;
+}
+
+.ir_label
+{
+  font-size: 95%;
+  padding: 0 0 0 0.5em;
+  white-space: nowrap;
+}
+
+.ir_settings_block
+{
+  font-size:100%;
+}
+
+#ir_script, #ir_style
+{
+  width: 100%;
+  font-family: Verdana, Tahoma, Geneva, Helvetica, Arial, Sans-serif;
+  font-size: 90%;
+}
+
+.ir_intro
+{
+  width: 100%;
+  font-size: 90%;
+  line-height: 140%;
+  padding: 0.2em 0;
+}
+
+#ir_desc
+{
+  width: 100%;
+  font-size: 90%;
+  line-height: 140%;
+  padding: 0.4em 0 0.2em;
+}
+
+.ir_emphasize
+{
+  font-style: italic;
+}

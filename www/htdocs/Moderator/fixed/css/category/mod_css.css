@@ -1,0 +1,123 @@
+#word_manager_dialog
+{
+  width: 30em;
+}
+
+#mod_left_bar
+{
+}
+
+#mod_left_block_holder
+{
+  width: 20em;
+  padding: 0em;
+  margin: 0em;
+}
+
+#mod_left_block
+{
+  border-collapse: collapse;
+  position:absolute;
+  padding: 0em;
+  margin: 0em;
+  z-index: 19;
+}
+
+#mod_word_menu
+{
+  width: 100%;
+  font-size: 80%;
+  background: rgb(235, 235, 235);
+}
+
+#mod_word_hint
+{
+  width: 100%;
+  font-size: 80%;
+  background: rgb(235, 235, 235);
+}
+
+.mod_definition
+{
+  font-style: italic;
+}
+
+#mod_word_block_group
+{
+  border-collapse: collapse;
+  padding: 0em;
+  margin: 0em;
+  width: 100%;
+}
+
+.mod_word_block
+{
+  width: 100%;
+  font-size: 80%;
+  background: rgb(230, 230, 235);
+  border: 1px solid rgb(80, 80, 80);
+}
+
+.mod_word_area
+{
+/*  width: 100%;*/
+  width: 100%; margin: 0; padding: 0;
+  font-family: Verdana, Tahoma, Geneva, Helvetica, Arial, Sans-serif;
+  font-size: 95%;
+}
+
+.cat_nav_pane
+{
+  width: 60em;
+  font-size: 100%;
+/*  padding: 0.3em 0.5em; */
+  margin: 0;
+}
+
+.recent_cats
+{
+  width:100%;
+  font-size: 100%;
+  margin: 0;
+}
+
+.recent_cats_label
+{
+  width:100%;
+  font-size: 100%;
+  margin: 0;
+}
+
+.breadcrumps
+{
+  width:100%;
+  font-size: 100%;
+  margin: 0;
+}
+
+.child_categories
+{
+  width:100%;
+  font-size: 100%;
+  margin: 0;
+  border-collapse: separate;
+}
+
+.word_lists
+{
+  width:100%;
+  font-size: 100%;
+  margin: 0;
+  border-collapse: separate;
+}
+
+.radio_cell
+{
+  width:1em;
+}
+
+.select_category_dialog
+{
+  width: 60em;
+}
+

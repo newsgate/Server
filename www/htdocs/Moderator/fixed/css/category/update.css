@@ -1,0 +1,103 @@
+#edit_form
+{
+  width: 35em;
+  font-size: 100%;
+  padding: 2em 0 0 0;
+  margin: 0;
+  text-align:left;
+}
+
+.option_group
+{
+  width: 100%;
+  font-size: 100%;
+  padding: 0.3em 0.1em; 
+  margin: 0;
+  border-collapse: separate;
+}
+
+#s, #r
+{
+  width: 8em;
+}
+
+.option_label
+{
+  vertical-align: top;
+  width: 1em;
+}
+
+#n, #d
+{
+  width: 100%;
+}
+
+#gla
+{
+  padding: 0.3em 0.5em;
+  margin: 0.2em 0;
+}
+
+.dict_lemma_dialog
+{
+  width: 20em;
+}
+
+.update_locale_dialog
+{
+}
+
+.update_locale_dialog_table
+{
+  font-size: 100%;  
+}
+
+.locale_lang, .locale_country
+{
+  width: 25em;
+}
+
+.update_locale_dialog_name
+{
+  font-family: Verdana,Tahoma,Geneva,Helvetica,Arial,sans-serif;
+  font-size: 95%;
+  width: 25em;
+}
+
+.update_locale_dialog_meta
+{
+  width: 25em;
+}
+
+.update_expression_dialog
+{
+  width: 32em;
+}
+
+.update_expression_dialog_edit
+{
+  width: 100%;
+  margin: 0.5em 0;
+}
+
+.update_word_list_dialog
+{
+  width: 32em;
+}
+
+.update_word_list_dialog_edit
+{
+  width: 100%;
+  margin: 0.5em 0;
+}
+
+.hidden
+{
+  display: none;
+}
+
+textarea
+{
+  font-family: Verdana, Tahoma, Geneva, Helvetica, Arial, Sans-serif;
+  font-size: 95%;
+}

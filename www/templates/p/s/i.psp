@@ -1,0 +1,709 @@
+import search_util
+import informer_util
+import search_page_util
+
+class InformerPageRender(search_page_util.SearchPageRender):
+
+  informer_page_render_base = search_page_util.SearchPageRender
+
+  def __init__(this, context, search_engine):
+    
+    this.informer_page_render_base.__init__(this, 
+                                            context, 
+                                            search_engine, 
+                                            "h",
+                                            True)
+
+    try:
+      tmp = this.static.email
+    except:
+      conf = context.config.get
+      this.static.email = conf("server_instance_email")
+
+    this.informer_create_mode = True
+    this.search_hint = ""
+
+    this.suppression = newsgate.search.SearchContext.ST_COLLAPSE_EVENTS
+    this.suppression_param = None
+
+    if this.interceptor: this.block = this.interceptor.bastion("informer")
+
+  def prn_css(this):
+
+    if this.static.development:
+      
+      this.informer_page_render_base.prn_css(this)
+    
+      this.prn(\
+        '\n<link rel="stylesheet" type="text/css" href="',
+        this.resource_url('/fixed/css/informer.css'),
+        '" media="all"/>')
+
+      if this.site_version == search_util.SearchPageContext.SV_MOB:
+        this.prn(\
+          '\n<link rel="stylesheet" type="text/css" href="',
+          this.resource_url('/fixed/css/informer-mob.css'),
+          '" media="all"/>')
+
+    else:
+
+      if this.site_version == search_util.SearchPageContext.SV_MOB:
+        this.prn(\
+          '\n<link rel="stylesheet" type="text/css" href="',
+          this.compound_resource_url('css/informer-mob.css'),
+          '" media="all"/>')
+        
+      else:
+        this.prn(\
+          '\n<link rel="stylesheet" type="text/css" href="',
+          this.compound_resource_url('css/informer.css'),
+          '" media="all"/>')
+
+  def prn_script(this, search_path = "", search_query_extra_params = ""):
+
+    this.informer_page_render_base.prn_script(this, 
+                                              search_path, 
+                                              search_query_extra_params,
+                                              view_options = False)
+
+    nh_param = this.query and this.modifier.empty() and 'nh=1' or ''
+
+    this.prn(R'''
+<script type="text/javascript">
+page.informer =
+{
+  options: new Array(),
+  visual_url: "''',
+             el.string.manip.js_escape(this.site + "/p/s/j?lang=" + \
+                                       this.language_l3_code + "&iv=4&"),
+             R'''",
+  object_url: "''',
+             el.string.manip.js_escape(this.site + "/p/s/o?lang=" + \
+                                       this.language_l3_code + "&iv=1&"),
+             R'''",
+  search:
+  {
+    path: "''', el.string.manip.js_escape(this.site + '/p/s/h'), 
+             R'''",
+    query: "''',
+             el.string.manip.js_escape(\
+               this.search_query(extra_params = nh_param, export = True)), 
+             R'''"
+  }
+};
+</script>
+<script src="''', this.resource_url('/tsp/js/' + this.language_l3_code + 
+                                  '/informer.js'),
+             '" type="text/javascript"></script>')
+
+    informer_options = \
+    [ \
+        ("r", "ir_msg_count", None, False),
+        ("a", "ir_sort", None, False),
+        ("it", "ir_type", this.def_informer_type, False),
+        ("vn", "ir_var_name", this.def_var_name, False),
+        ("xe", "ir_xml_encoding", this.def_xml_encoding, False),
+        ("iw", "ir_width", this.def_width, True),
+        ("is", "ir_img_size", None, False),
+        ("ip", "ir_img_pos", this.def_image_pos, True),
+        ("tl", "ir_title_len", this.def_title_length, False),
+        ("dl", "ir_annot_len", this.def_desc_length, False),
+        ("md", "ir_msg_date", this.def_message_date, False),
+        ("sc", "ir_src_country", this.def_source_country, False),
+        ("mc", "ir_msg_categories", this.def_message_categories, False),
+        ("mm", "ir_msg_more", this.def_msg_more, True),
+        ("sm", "ir_msg_similar", this.def_similar_messages, False),
+        ("gc", "ir_background_color", this.def_background_color, True),
+        ("dc", "ir_divider_color", this.def_divider_color, False),
+        ("rc", "ir_border_color", this.def_border_color, True),
+        ("uc", "ir_title_underline_color",
+         this.def_title_underline_color, True),
+        ("tc", "ir_title_color", this.def_title_color, True),
+        ("ac", "ir_annotation_color", this.def_annotation_color, True),
+        ("mr", "ir_metainfo_color", this.def_metainfo_color, True),
+        ("sl", "ir_source_length", this.def_source_length, False),
+        ("ml", "ir_metainfo_columns", this.def_metainfo_columns, False),
+        ("lc", "ir_link_color", this.def_link_color, True),
+        ("wp", "ir_catchword_pos", this.def_catchword_pos, False),
+        ("oc", "ir_catchword_background_color",
+         this.def_catchword_background_color, True),
+        ("cl", "ir_catchword_link_color", this.def_catchword_link_color, True),
+        ("cc", "ir_catchword_color", this.def_catchword_color, True),
+        ("ts", "ir_title_size", this.def_title_size, True),
+        ("as", "ir_annotation_size", this.def_annotation_size, True),
+        ("ms", "ir_metainfo_size", this.def_metainfo_size, True),
+        ("cs", "ir_catchword_size", this.def_catchword_size, True),
+        ("tf", "ir_title_font", this.def_title_font, True),
+        ("af", "ir_annotation_font", this.def_annotation_font, True),
+        ("aa", "ir_annotation_alignment", this.def_annotation_alignment, True),
+        ("mf", "ir_metainfo_font", this.def_metainfo_font, True),
+        ("ct", "ir_catchword_link_text", this.def_catchword_link_text, False),
+        ("cf", "ir_catchword_font", this.def_catchword_font, True),
+        ("sp", "ir_style_placement", this.def_style_placement, False), 
+        ("cp", "ir_class_prefix", this.def_class_prefix, False)
+#       ("at", "ir_ad_tag", this.def_ad_tag, True)
+    ]
+
+    this.prn('\n<script type="text/javascript">')
+
+    for io in informer_options:
+      this.prn('\nadd_informer_option("', 
+               io[0], '", "', io[1], '", ', 
+               io[2] == None and 'null' or \
+               ('"' + el.string.manip.js_escape(str(io[2])) + '"'), 
+               ', ', io[3] and 'true' or 'false', ');')
+
+    this.prn('\n</script>')
+
+def print_informer_select_numeric(label, 
+                                  values, 
+                                  selected, 
+                                  id, 
+                                  class_name=None):
+  
+  prn(R'''
+      <tr valign="top"''', class_name and (' class="' + class_name + '"') or 
+      '', R'''>
+        <td class="ir_label">''', lm, label, R''':</td>
+        <td><select id="''', id, 
+        '" onchange="informer_changed()" class="ir_select">')
+
+  for v in values:
+    prn('\n<option', v == selected and ' selected="true"' or '', ' value="', 
+        v, '">', v == -1 and render.loc("IR_FULL") or v, '</option>')
+
+  prn('</select></td>\n      </tr>')
+  
+def print_informer_select_tuple(label, values, selected, id, class_name=None):
+  
+  prn(R'''
+      <tr valign="top"''', class_name and (' class="' + class_name + '"') or 
+      '', R'''>
+        <td class="ir_label">''', lm, label, R''':</td>
+        <td><select id="''', id, 
+      '" onchange="informer_changed()" class="ir_select">')
+
+  for v in values:
+    prn('\n<option', v[0] == selected and ' selected="true"' or '', ' value="',
+        v[0], '">', v[1], '</option>')
+
+  prn('</select></td>\n      </tr>')
+  
+def print_informer_edit(label, value, id, row_id = None, class_name=None):
+
+  prn('\n      <tr valign="top"', class_name and \
+      (' class="' + class_name + '"') or '')
+
+  if row_id != None: prn(' id="', row_id, '"')
+
+  prn(R'''>
+        <td class="ir_label">''', lm, label, R''':</td>
+        <td><input id="''', id, 
+      R'''" onchange="informer_changed()" class="ir_edit"
+                   type="text" value="''', 
+      el.string.manip.xml_encode(value), 
+      '"/></td>\n      </tr>')
+
+def print_informer_control_group_title(label, class_name=None):
+  prn('\n      <tr valign="top"',
+      class_name and (' class="' + class_name + '"') or "", 
+      '><td colspan="2"><div class="ir_control_group_title">',
+      lm, label, '</div></td></tr>')
+
+#
+# Initialization
+#
+
+meta_keywords_count = 10
+crawler_lang = "auto"
+
+request = context.request
+header = request.input.headers().find
+cache, prn = context.cache, request.output.stream.prn
+conf = context.config.get
+
+if request.input.parameters().find("t") == "x":
+  el.exit(el.psp.Forward("/p/s/x.psp")) 
+
+lm = el.psp.LocalizationMarker
+
+render = InformerPageRender(context, search_engine)
+
+render.save_prefs()
+
+#if render.posted == False and render.prefs_updated:
+
+cropped = " " + render.loc("IR_CROPPED")
+render.img_sizes = [ ('0x0', render.loc("IR_HIDE")) ]
+
+for size in conf("search.informer.thumbnails").split():
+    
+  if size[-1] == 'C': text = size[0:-1] + cropped
+  else: text = size
+
+  render.img_sizes.append((size, text))
+
+if render.crawler and crawler_lang:
+  render.set_language(crawler_lang)
+
+search_context = render.search_context()
+
+search_context.optimize_query = True
+
+search_context.sr_flags |= newsgate.search.SearchContext.RF_CATEGORY_STAT
+
+search_context.gm_flags |= newsgate.search.SearchContext.GM_SOURCE |\
+                           newsgate.search.SearchContext.GM_ID
+
+search_context.category_locale = render.modifier.category
+
+try:
+  search_result = render.search(search_context)
+  error_code = -1
+  error_pos = 0
+except SyntaxError, e:
+  search_result = None
+  error_code = e.args[0].code
+  error_pos = e.args[0].position
+
+render.set_catchword_link_text()
+
+#render.save_prefs()
+
+render.prn_html_open()
+
+render.prn_head_open()
+
+render.prn('\n<meta name="description" content="',
+       lm, "IR_INFORMER_DESCRIPTION", '">')
+
+render.prn('\n<title', render.translator and \
+             ' class="notranslate"' or '', '>', lm, "IR_NEWS_INFORMER_TITLE", 
+           ' - ', 
+           el.string.manip.xml_encode(render.static.server_instance_name),
+           '</title>')
+
+render.prn('\n<meta name="keywords" content="', render.loc("IR_KEYWORDS"), 
+           '">')
+
+render.prn_css()
+render.prn_script()
+
+if render.need_translation: render.prn(render.translator.headers())
+
+render.prn_head_close()
+
+render.prn_body_open('informer_init(' + str(error_pos) + ', ' + \
+                     (render.prefs_updated and 'true' or 'false') + ')')
+
+if render.need_translation: render.prn(render.translator.body())
+
+render.prn_top_bar(error_code)
+
+prn(R'''
+<table id="mid_area" cellspacing="0">
+  <tr valign="top">''')
+
+#  print_left_bar()
+
+prn('\n  <td id="ir_tool_td"')
+render.prn_notranslate_class()
+prn('>')
+
+if render.search_result != None:
+  prn('<div id="ir_placeholder">',lm, "IR_LOADING", '</div>')
+
+templ = render.get_template("IR_SCRIPT_INTRO")
+vars = { "LANG" : render.language_l3_code }
+
+prn(R'''
+  </td>
+  <td>
+  <table id="ir_panel"''')
+
+render.prn_notranslate_class()
+
+prn(R''' cellspacing="0">
+    <tr valign="top">
+    <td colspan="2"><div class="ir_intro">''', templ, vars, R'''</div>
+    <div id="ir_desc"></div>
+    </td>
+    </tr>
+    <tr valign="top">
+    <td colspan="2"><textarea id="ir_script" rows="''',
+    (render.browser == 'firefox' or render.browser == 'mozilla') and 3 or 4, 
+    R'''" onchange="script_changed()"></textarea>
+    </td>
+    </tr>
+    <tr valign="top">
+    <td colspan="2"><div class="ir_intro">''', lm, "IR_FORM_INTRO", R'''</div>
+    </td>
+    </tr>
+    <tr valign="top">
+    <td>
+    <table class="ir_settings_block">''')
+
+print_informer_control_group_title("IR_INFORMER")
+
+print_informer_select_tuple(\
+  "IR_TYPE",
+  [ ("j", render.loc("IR_TYPE_VISUAL")),
+    ("o", render.loc("IR_TYPE_OBJECT"))
+  ],
+  render.informer_type,
+  "ir_type")
+
+ir_lens = range(1, 21)
+ir_lens.extend([30, 40, 50, 60, 70, 80, 90, 100])
+
+print_informer_select_numeric(\
+  "IR_ITEMS", 
+  ir_lens, 
+  render.results_per_page > 0 and render.results_per_page <= 100 and \
+    render.results_per_page or 10,
+  "ir_msg_count")
+
+print_informer_select_tuple("IR_SORT", 
+                            [ (0, render.loc("IR_SORT_RELEVANCE")),
+                              (1, render.loc("IR_SORT_DATE"))
+                            ], 
+                            render.sorting - 1, 
+                            "ir_sort")
+
+print_informer_edit("IR_WIDTH",
+                    render.width, 
+                    "ir_width",
+                    None,
+                    "ir_visual_control")
+
+print_informer_edit("IR_LINK_COLOR",
+                    render.link_color,
+                    "ir_link_color",
+                    None,
+                    "ir_visual_control")
+
+print_informer_edit("IR_BORDER_COLOR",
+                    render.border_color, 
+                    "ir_border_color",
+                    None,
+                    "ir_visual_control")
+
+print_informer_edit("IR_BACKGROUND_COLOR",
+                    render.background_color, 
+                    "ir_background_color",
+                    None,
+                    "ir_visual_control")
+
+print_informer_edit("IR_DIVIDER_COLOR",
+                    render.divider_color, 
+                    "ir_divider_color",
+                    None,
+                    "ir_visual_control")
+
+print_informer_edit("IR_VAR_NAME",
+                    render.var_name, 
+                    "ir_var_name",
+                    None,
+                    "ir_object_control")
+
+print_informer_select_tuple("IR_XML_ENCODING", 
+                            [ (0, render.loc("IR_OFF")), 
+                              (1, render.loc("IR_ON")) 
+                            ], 
+                            render.xml_encoding, 
+                            "ir_xml_encoding",
+                            "ir_object_control")
+
+print_informer_control_group_title("IR_TITLE")
+
+print_informer_select_tuple("IR_LENGTH", 
+                            [ (0, render.loc("IR_HIDE")),
+                              (25, 25),
+                              (50, 50),
+                              (75, 75),
+                              (100, 100),
+                              (200, 200),
+                              (300, 300),
+                              (-1, render.loc("IR_FULL"))],
+                            render.title_length, 
+                            "ir_title_len")
+
+print_informer_edit("IR_FONT",
+                    render.title_font,
+                    "ir_title_font",
+                    None,
+                    "ir_visual_control")
+
+print_informer_edit("IR_SIZE",
+                    render.title_size,
+                    "ir_title_size",
+                    None,
+                    "ir_visual_control")
+
+print_informer_edit("IR_COLOR",
+                    render.title_color,
+                    "ir_title_color",
+                    None,
+                    "ir_visual_control")
+
+print_informer_edit("IR_UNDERLINE_COLOR",
+                    render.title_underline_color, 
+                    "ir_title_underline_color",
+                    "ir_title_underline_color_row",
+                    "ir_visual_control")
+
+print_informer_control_group_title("IR_ANNOTATION")
+
+print_informer_select_tuple(\
+  "IR_LENGTH", 
+  [ (0, render.loc("IR_HIDE")),
+    (100, 100),
+    (200, 200),
+    (300, 300),
+    (400, 400),
+    (500, 500),
+    (600, 600),
+    (700, 700),
+    (800, 800),
+    (900, 900),
+    (-1, render.loc("IR_FULL"))],
+    render.desc_length > 900 and -1 or render.desc_length, 
+    "ir_annot_len")
+
+print_informer_edit("IR_FONT",
+                    render.annotation_font,
+                    "ir_annotation_font",
+                    None,
+                    "ir_visual_control")
+
+print_informer_edit("IR_SIZE",
+                    render.annotation_size,
+                    "ir_annotation_size",
+                    None,
+                    "ir_visual_control")
+
+print_informer_edit("IR_COLOR",
+                    render.annotation_color,
+                    "ir_annotation_color",
+                    None,
+                    "ir_visual_control")
+
+print_informer_select_tuple("IR_ALIGNMENT", 
+                            [ (0, render.loc("IR_ALIGN_BOTH_SIDES")), 
+                              (1, render.loc("IR_ALIGN_LEFT")), 
+                              (2, render.loc("IR_ALIGN_RIGHT")) ], 
+                            render.annotation_alignment, 
+                            "ir_annotation_alignment",
+                            "ir_visual_control")
+
+print_informer_control_group_title("IR_STYLE", "ir_visual_control")
+
+print_informer_select_tuple(\
+  "IR_STYLE_PLACEMENT",
+  [ (0, render.loc("IR_STYLE_INTERNAL")), (1, render.loc("IR_STYLE_EXTERNAL")) ],
+  render.style_placement,
+  "ir_style_placement",
+  "ir_visual_control")
+
+print_informer_edit("IR_CLASS_PREFIX",
+                    render.class_prefix,
+                    "ir_class_prefix",
+                    "ir_class_prefix_row",
+                    "ir_ext_css_control ir_visual_control")
+
+prn(R'''
+    </table>
+    </td>
+    <td>
+    <table class="ir_settings_block">''')
+
+print_informer_control_group_title("IR_IMAGE")
+
+print_informer_select_tuple("IR_SIZE",
+                            render.img_sizes,
+                            render.img_size, 
+                            "ir_img_size")
+
+print_informer_select_tuple("IR_POSITION", 
+                            [ (0, render.loc("IR_LEFT_ANNOT")),
+                              (2, render.loc("IR_LEFT_TITLE")),
+                              (1, render.loc("IR_RIGHT_ANNOT")),
+                              (3, render.loc("IR_RIGHT_TITLE"))
+                            ], 
+                            render.image_pos, 
+                            "ir_img_pos",
+                            "ir_image_control ir_visual_control")
+
+print_informer_control_group_title("IR_METAINFO")
+
+print_informer_select_tuple(\
+  "IR_METAINFO_COLUMNS",
+  [ (0, render.loc("IR_HIDE")), 
+    (1, render.loc("IR_METAINFO_COLUMN_LEFT")), 
+    (3, render.loc("IR_METAINFO_COLUMN_RIGHT")),
+    (2, render.loc("IR_METAINFO_COLUMN_2")) 
+  ],
+  render.metainfo_columns, 
+  "ir_metainfo_columns")
+
+show_hide = [ (1, render.loc("IR_SHOW")), (0, render.loc("IR_HIDE")) ]
+
+print_informer_select_tuple("IR_MORE",
+                            show_hide,
+                            render.msg_more, 
+                            "ir_msg_more",
+                            "ir_meta_control ir_visual_control")
+
+print_informer_select_tuple("IR_SIMILAR_MESSAGES",
+                            show_hide,
+                            render.similar_messages, 
+                            "ir_msg_similar",
+                            "ir_meta_control")
+
+print_informer_select_tuple("IR_SOURCE_LENGTH", 
+                            [ (0, render.loc("IR_HIDE")), 
+                              (25, 25),
+                              (50, 50),
+                              (75, 75),
+                              (100, 100),
+                              (-1, render.loc("IR_FULL"))],
+                            render.source_length, 
+                            "ir_source_length",
+                            "ir_meta_control")
+
+print_informer_select_tuple(\
+  "IR_DATE",
+  [ (1, render.loc("IR_PUBLICATION")), 
+    (2, render.loc("IR_FETCH")), 
+    (0, render.loc("IR_HIDE")) 
+  ],
+  render.message_date, 
+  "ir_msg_date",
+  "ir_meta_control")
+
+print_informer_select_tuple("IR_COUNTRY",
+                            show_hide,
+                            render.source_country, 
+                            "ir_src_country",
+                            "ir_meta_control")
+
+print_informer_select_tuple("IR_CATEGORIES",
+                            show_hide,
+                            render.message_categories,
+                            "ir_msg_categories",
+                            "ir_meta_control")
+
+print_informer_edit("IR_FONT",
+                    render.metainfo_font,
+                    "ir_metainfo_font",
+                    None,
+                    "ir_meta_control ir_visual_control")
+
+print_informer_edit("IR_SIZE",
+                    render.metainfo_size,
+                    "ir_metainfo_size",
+                    None,
+                    "ir_meta_control ir_visual_control")
+
+print_informer_edit("IR_COLOR",
+                    render.metainfo_color,
+                    "ir_metainfo_color",
+                    None,
+                    "ir_meta_control ir_visual_control")
+
+print_informer_control_group_title("IR_CATCHWORD")
+
+print_informer_select_tuple(\
+  "IR_POSITION",
+  [ (0, render.loc("IR_HIDE")), 
+    (1, render.loc("IR_TOP")), 
+    (2, render.loc("IR_BOTTOM"))
+  ],
+  render.catchword_pos,
+  "ir_catchword_pos")
+
+print_informer_edit("IR_CATCHWORD_LINK_TEXT",
+                    render.catchword_link_text,
+                    "ir_catchword_link_text",
+                    None,
+                    "ir_catchword_control")
+
+print_informer_edit("IR_FONT",
+                    render.catchword_font,
+                    "ir_catchword_font",
+                    None,
+                    "ir_catchword_control ir_visual_control")
+
+print_informer_edit("IR_SIZE",
+                    render.catchword_size,
+                    "ir_catchword_size",
+                    None,
+                    "ir_catchword_control ir_visual_control")
+
+print_informer_edit("IR_COLOR",
+                    render.catchword_color,
+                    "ir_catchword_color",
+                    None,
+                    "ir_catchword_control ir_visual_control")
+
+print_informer_edit("IR_LINK_COLOR",
+                    render.catchword_link_color,
+                    "ir_catchword_link_color",
+                    None,
+                    "ir_catchword_control ir_visual_control")
+
+print_informer_edit("IR_BACKGROUND_COLOR",
+                    render.catchword_background_color,
+                    "ir_catchword_background_color",
+                    None,
+                    "ir_catchword_control ir_visual_control")
+
+prn(R'''
+    </table>
+    </td>
+    </tr>
+    <tr valign="top" id="ir_style_intro" class="ir_ext_css_control ir_visual_control">
+    <td colspan="2"><div class="ir_intro">''', lm, "IR_STYLE_INTRO", R'''</div>
+    </td>
+    </tr>
+    <tr class="ir_ext_css_control ir_visual_control">
+    <td colspan="2"><textarea id="ir_style" rows="''',
+    (render.browser == 'firefox' or render.browser == 'mozilla') and 7 or 8,
+    R'''" readonly="readonly"></textarea>
+    </td>
+    </tr>
+    <tr valign="top" class="ir_visual_control">
+    <td colspan="2"><div class="ir_intro">''', lm, "IR_STYLE_EXTENSION", 
+    R'''</div>
+    </td>
+    </tr>''')
+
+if render.static.email != "":
+  templ = el.string.template.Parser(render.loc("IR_FEEDBACK_NOTICE"), "{{", "}}")
+  vars = { "EMAIL": render.static.email }
+
+  prn('<tr valign="top"><td colspan="2"><div class="ir_intro">', 
+      templ, vars, '</div></td></tr>')
+
+prn(R'''
+  </table>''')
+
+prn(R'''
+  </td>''')
+
+if render.site_version != search_util.SearchPageContext.SV_MOB:
+  render.prn_right_bar(search_util.SearchPageContext.RBR_HIDE, False)
+
+prn(R'''
+</tr>
+</table>''')
+
+render.prn_bottom_bar()
+render.prn_copyright()
+render.prn_final_script()
+render.prn_counters()
+render.prn_body_close()
+render.prn_html_close()
+
+# Break circular references ...
+render.exit()

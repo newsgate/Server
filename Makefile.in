@@ -1,0 +1,30 @@
+# @file   Makefile.in
+# @author Karen Aroutiounov
+# $Id: $
+
+include Common.pre.rules
+include $(osbe_builddir)/config/Install.pre.rules
+
+target_directory_list := xsd Commons tests Services Frontends NewsGate Tools
+
+Frontends Services tests: xsd
+Services tests xsd Frontends : Commons NewsGate
+Frontends Tools tests : Services
+
+define install_commands
+
+  echo "Installing NewsGate ..."
+  $(INSTALL_DIR) $(top_srcdir)/NewsGate $(destdir)$(includedir)/NewsGate "*.hpp *.ipp *.tpp" && \
+  $(INSTALL_DIR) $(top_srcdir)/xsd $(destdir)$(prefix)/xsd/NewsGate "*.xsd" && \
+  $(INSTALL_DIR) $(top_srcdir)/www $(destdir)$(prefix)/www/NewsGate && \
+  $(INSTALL_DIR) $(top_builddir)/lib $(destdir)$(libdir) && \
+  $(INSTALL_DIR) $(top_builddir)/bin $(destdir)$(bindir) && \
+  $(INSTALL_DIR) $(top_srcdir)/scripts $(destdir)$(bindir) "" \
+-not \( -name GenClasses.sh -o -name dir.ac -o -name copyright.sh.in \) && \
+  $(INSTALL_DIR) $(top_srcdir) $(destdir)$(sysconfdir)/NewsGate \
+  "VERSION COPYRIGHT"
+
+endef
+
+include $(osbe_builddir)/config/Direntry.post.rules
+include $(osbe_builddir)/config/Install.post.rules

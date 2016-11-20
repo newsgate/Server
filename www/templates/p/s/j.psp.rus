@@ -1,0 +1,9 @@
+#include ../../py/search_util.rus
+#include ../../py/informer_util.rus
+
+IR_BIG_IMAGE Увеличить изображение
+IR_SOURCE    Источник
+IR_ON_SITE   на
+
+PUBLISHED_NOSRC  Опубликовано {{MSG_TIME_AGO}} назад{{MSG_COUNTRY}}
+FETCHED_NOSRC    Обнаружено {{MSG_TIME_AGO}} назад{{MSG_COUNTRY}}

@@ -1,0 +1,65 @@
+from moderation_func import *
+
+request = context.request
+message = context.forward_params
+prn = request.output.stream.prn
+conf = context.config.get
+
+moderator = connect_moderator(request, moderator_connector, True)
+
+xml_encode_flags = el.string.manip.XE_TEXT_ENCODING | \
+                   el.string.manip.XE_ATTRIBUTE_ENCODING | \
+                   el.string.manip.XE_PRESERVE_UTF8
+
+prn(
+R'''
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>Management: Home</title>
+<link rel="stylesheet" type="text/css" href="/fixed/css/common.css" media="all" />
+</head>
+
+<body>
+<table id="skeleton" cellspacing="0">
+''')
+
+menus = []
+create_topbar_main_menus(context, moderator, "Home", menus)
+
+prn(create_topbar([], menus[0], menus[1]))
+
+prn(
+R'''
+  <tr><td id="main_area" valign="top">''')
+
+if message != None:
+  prn('<div id="op_error">', el.string.manip.xml_encode(message), '</div>')
+else:
+  prn(R'''
+Hello, ''', el.string.manip.xml_encode(moderator.name, xml_encode_flags), 
+R'''.<br>
+Your priveleges are:
+''')
+
+  customer_moderating = conf("moderation.customer_moderating") == "1"
+  client_moderating = conf("moderation.client_moderating") == "1"
+
+  for priv in moderator.privileges:
+
+    if customer_moderating == False and (priv.name == "CustomerManager" or \
+       priv.name == "Customer") or client_moderating == False and \
+       priv.name == "ClientManager":
+      continue
+
+    prn("<br/>", priv.name, " granted by ",
+        el.string.manip.xml_encode(priv.granted_by, xml_encode_flags))
+
+prn(
+R'''
+  </td></tr>
+''', create_copyright(context), R'''
+</table>
+</body>
+</html>
+''')

@@ -1,0 +1,32 @@
+#!/bin/sh
+
+# product   : NewsGate - news search WEB server
+# copyright : Copyright (c) 2005-2016 Karen Arutyunov
+# licenses  : CC BY-NC-SA 3.0; see accompanying LICENSE file
+#             Commercial; contact karen.arutyunov@gmail.com
+
+source "$1/lib.sh"
+
+echo_date "Cleaning EventBank service cache ..."
+
+rm $3/Event/*.chn 2>/dev/null
+
+# Resets possibly non-zero $?
+echo "" > /dev/null
+
+echo_date "Creating ModerationChangeLog ..."
+
+echo "create table ModerationChangeLog ( \
+      id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+      type SMALLINT UNSIGNED NOT NULL, \
+      subtype SMALLINT UNSIGNED NOT NULL, \
+      time TIMESTAMP NOT NULL, \
+      ip VARCHAR(16) NOT NULL, \
+      moderator BIGINT UNSIGNED NOT NULL, \
+      moderator_name VARCHAR(100) NOT NULL, \
+      url VARCHAR(1024) character set ascii NOT NULL, \
+      summary TEXT NOT NULL, \
+      details LONGTEXT NOT NULL \
+) engine=InnoDB;" | ng-mysql --user=root NewsGate
+
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi

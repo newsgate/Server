@@ -1,0 +1,1275 @@
+from moderation_func import *
+
+def name_cmp(a,b):
+  if a.name() < b.name(): return -1
+  elif a.name() > b.name(): return 1
+  return 0
+
+def make_ref(url, new_window, pass_mod_params, add_vf_param):
+  return make_reference(url, new_window, pass_mod_params, add_vf_param, post,
+                        anchor_refs)
+
+request, conf = context.request, context.config.get
+prn, param = request.output.stream.prn, request.input.parameters().find
+header = request.input.headers().find
+
+anchor_refs = []
+
+moderator = connect_moderator(request, moderator_connector)
+
+if moderator.has_privilege(newsgate.moderation.moderator.PV_FEED_MANAGER) ==\
+  False:
+  el.exit(403) # Forbidden
+
+vo_prefs = el.NameValueMap(request.input.cookies().most_specific("vo"), 
+                           ':',
+                           '~')
+
+vf_prefs = el.NameValueMap(request.input.cookies().most_specific("vf"), 
+                           ':', 
+                           '~')
+
+if moderator.has_privilege(newsgate.moderation.moderator.PV_CATEGORY_MANAGER):
+  show_word_boxes = get_pref("wbx", vo_prefs, "h", param) == "s"
+else:
+  show_word_boxes = False
+
+post = show_word_boxes
+mod_params = param("mod_params", "")
+
+vf = param("vf")
+vf_param_name = ""
+vf_params = ""
+
+if vf == "":
+  vf = param("vfa")
+
+  if vf == "":
+    filter_rules = filter_rules_from_prefs(vf_prefs)
+  else:
+    filter_rules = filter_rules_from_prefs(el.NameValueMap(vf, ':', '~'))
+    vf_param_name = "vfa"
+
+else:
+  filter_rules = filter_rules_from_prefs(el.NameValueMap(vf, ':', '~'))
+  vf_param_name = "vf"
+
+if vf != "":
+  vf_params = vf_param_name + "=" + el.string.manip.mime_url_encode(vf)
+  post = True
+
+prefs = el.NameValueMap(request.input.cookies().most_specific("mp"), ':', '-')
+
+view_url = "/psp/feed/view?"
+
+sort = get_pref("sort", vo_prefs, newsgate.moderation.feed.FS_ID, param)
+sort_desc = get_pref("sdesc", vo_prefs, 0, param)
+
+try: sort = int(sort)
+except: sort = newsgate.moderation.feed.FS_ID
+
+try: sort_desc = int(sort_desc)
+except: sort_desc = 0
+
+stat_from = get_date("frm", vo_prefs)
+stat_to = get_date("to", vo_prefs)
+
+header_info = ["", False]
+
+id = get_pref_add_header("id", 
+                         vo_prefs, 
+                         "s", 
+                         "Id", 
+                         header_info,
+                         False,
+                         sort,
+                         sort_desc,
+                         newsgate.moderation.feed.FS_ID,
+                         view_url,
+                         vf_params != "",
+                         post,
+                         anchor_refs)
+
+type = get_pref_add_header("typ", 
+                           vo_prefs, 
+                           "s", 
+                           "Type", 
+                           header_info,
+                           False)
+
+encoding = get_pref_add_header("enc", 
+                               vo_prefs, 
+                               "h", 
+                               "Encoding", 
+                               header_info,
+                               False)
+
+space = get_pref_add_header("spa", vo_prefs, "s", "Space", header_info, False)
+
+status = \
+  get_pref_add_header("sta", vo_prefs, "s", "Status", header_info, False)
+
+feed_lang = get_pref_add_header("fln", vo_prefs, "h", "Lang", header_info, False)
+
+feed_country = \
+  get_pref_add_header("fcn", vo_prefs, "h", "Country", header_info, False)
+
+url = get_pref_add_header("url", 
+                          vo_prefs, 
+                          "t", 
+                          "Url", 
+                          header_info,
+                          False,
+                          sort,
+                          sort_desc,
+                          newsgate.moderation.feed.FS_URL,
+                          view_url,
+                          vf_params != "",
+                          post,
+                          anchor_refs)
+
+keywords = get_pref_add_header("kwd",
+                               vo_prefs, 
+                               "h", 
+                               "Keywords", 
+                               header_info,
+                               False,
+                               sort,
+                               sort_desc,
+                               newsgate.moderation.feed.FS_KEYWORDS,
+                               view_url,
+                               vf_params != "",
+                               post,
+                               anchor_refs)
+
+adjustment_script = get_pref_add_header("adj",
+                                        vo_prefs, 
+                                        "h", 
+                                        "Adjustment Script", 
+                                        header_info,
+                                        False,
+                                        sort,
+                                        sort_desc,
+                                        newsgate.moderation.feed.FS_ADJUSTMENT_SCRIPT,
+                                        view_url,
+                                        vf_params != "",
+                                        post,
+                                        anchor_refs)
+
+title = get_pref_add_header("tit", 
+                            vo_prefs, 
+                            "t", 
+                            "Title",
+                            header_info,
+                            False)
+
+description = \
+  get_pref_add_header("des", vo_prefs, "t", "Description", header_info, False)
+
+html_link = \
+  get_pref_add_header("hln", vo_prefs, "t", "Html Link", header_info, False)
+
+lang = get_pref_add_header("lan", \
+                           vo_prefs, \
+                           "h", \
+                           "Calculated Lang", \
+                           header_info, \
+                           False)
+
+country = \
+  get_pref_add_header("cou", vo_prefs, "h", "Calculated Country", header_info, False)
+
+creator = \
+  get_pref_add_header("cre", vo_prefs, "h", "Creator", header_info, False)
+
+creator_type = \
+  get_pref_add_header("crt", vo_prefs, "h", "Creator Type", header_info, False)
+
+created = get_pref_add_header("crd", 
+                              vo_prefs, 
+                              "h", 
+                              "Created", 
+                              header_info,
+                              False,
+                              sort,
+                              sort_desc,
+                              newsgate.moderation.feed.FS_CREATED,
+                              view_url,
+                              vf_params != "",
+                              post,
+                              anchor_refs)
+
+updated = get_pref_add_header("upd", 
+                              vo_prefs, 
+                              "h", 
+                              "Updated", 
+                              header_info,
+                              False,
+                              sort,
+                              sort_desc,
+                              newsgate.moderation.feed.FS_UPDATED,
+                              view_url,
+                              vf_params != "",
+                              post,
+                              anchor_refs)
+
+comment = \
+  get_pref_add_header("com", vo_prefs, "h", "Comment", header_info, False)
+
+ttl = get_pref_add_header("ttl", 
+                          vo_prefs, 
+                          "h", 
+                          "TTL", 
+                          header_info,
+                          False,
+                          sort,
+                          sort_desc,
+                          newsgate.moderation.feed.FS_CHANNEL_TTL,
+                          view_url,
+                          vf_params != "",
+                          post,
+                          anchor_refs)
+
+last_build_date = \
+  get_pref_add_header("lbd", 
+                      vo_prefs, 
+                      "h", 
+                      "Last Build Date", 
+                      header_info,
+                      False,
+                      sort,
+                      sort_desc,
+                      newsgate.moderation.feed.FS_CHANNEL_LAST_BUILD_DATE,
+                      view_url,
+                      vf_params != "",
+                      post,
+                      anchor_refs)
+
+last_request_date = \
+  get_pref_add_header("lrd", 
+                      vo_prefs, 
+                      "h", 
+                      "Last Request Date", 
+                      header_info,
+                      False,
+                      sort,
+                      sort_desc,
+                      newsgate.moderation.feed.FS_LAST_REQUEST_DATE,
+                      view_url,
+                      vf_params != "",
+                      post,
+                      anchor_refs)
+
+last_modified_hdr = \
+  get_pref_add_header("lmh", 
+                      vo_prefs, 
+                      "h", 
+                      "Last Modified Hrd", 
+                      header_info,
+                      False,
+                      sort,
+                      sort_desc,
+                      newsgate.moderation.feed.FS_LAST_MODIFIED_HDR,
+                      view_url,
+                      vf_params != "",
+                      post,
+                      anchor_refs)
+
+etag_hdr = get_pref_add_header("eth", 
+                               vo_prefs, 
+                               "h", 
+                               "ETag Hdr", 
+                               header_info,
+                               False,
+                               sort,
+                               sort_desc,
+                               newsgate.moderation.feed.FS_ETAG_HDR,
+                               view_url,
+                               vf_params != "",
+                               post,
+                               anchor_refs)
+
+content_length_hdr = \
+  get_pref_add_header("clh", 
+                      vo_prefs, 
+                      "h", 
+                      "Content-Length Hdr", 
+                      header_info,
+                      False,
+                      sort,
+                      sort_desc,
+                      newsgate.moderation.feed.FS_CONTENT_LENGTH_HDR,
+                      view_url,
+                      vf_params != "",
+                      post,
+                      anchor_refs)
+
+entropy = get_pref_add_header("ent", 
+                              vo_prefs, 
+                              "h", 
+                              "Entropy", 
+                              header_info,
+                              False,
+                              sort,
+                              sort_desc,
+                              newsgate.moderation.feed.FS_ENTROPY,
+                              view_url,
+                              vf_params != "",
+                              post,
+                              anchor_refs)
+
+entropy_updated_date = \
+  get_pref_add_header("eud", 
+                      vo_prefs, 
+                      "h", 
+                      "Entropy Updated Date", 
+                      header_info,
+                      False,
+                      sort,
+                      sort_desc,
+                      newsgate.moderation.feed.FS_ENTROPY_UPDATED_DATE,
+                      view_url,
+                      vf_params != "",
+                      post,
+                      anchor_refs)
+
+size = get_pref_add_header("siz", 
+                           vo_prefs, 
+                           "h", 
+                           "Size", 
+                           header_info,
+                           False,
+                           sort,
+                           sort_desc,
+                           newsgate.moderation.feed.FS_SIZE,
+                           view_url,
+                           vf_params != "",
+                           post,
+                           anchor_refs)
+
+single_chunked = get_pref_add_header("sch", 
+                                     vo_prefs, 
+                                     "h", 
+                                     "Single Chunked", 
+                                     header_info,
+                                     False,
+                                     sort,
+                                     sort_desc,
+                                     newsgate.moderation.feed.FS_SINGLE_CHUNKED,
+                                     view_url,
+                                     vf_params != "",
+                                     post,
+                                     anchor_refs)
+
+first_chunk_size = get_pref_add_header("fcs", 
+                                       vo_prefs, 
+                                       "h", 
+                                       "First Chunk Size", 
+                                       header_info,
+                                       False,
+                                       sort,
+                                       sort_desc,
+                                       newsgate.moderation.feed.FS_FIRST_CHUNK_SIZE,
+                                       view_url,
+                                       vf_params != "",
+                                       post,
+                                       anchor_refs)
+
+heuristics_counter = \
+  get_pref_add_header("hec", 
+                      vo_prefs, 
+                      "h", 
+                      "Heuristics Counter", 
+                      header_info,
+                      False,
+                      sort,
+                      sort_desc,
+                      newsgate.moderation.feed.FS_HEURISTICS_COUNTER,
+                      view_url,
+                      vf_params != "",
+                      post,
+                      anchor_refs)
+
+requests = get_pref_add_header("req",
+                               vo_prefs, 
+                               "h", 
+                               "Requests", 
+                               header_info,
+                               True,
+                               sort,
+                               sort_desc,
+                               newsgate.moderation.feed.FS_REQUESTS,
+                               view_url,
+                               vf_params != "",
+                               post,
+                               anchor_refs)
+
+failed = get_pref_add_header("fai",
+                             vo_prefs, 
+                             "h", 
+                             "Failed",
+                             header_info,
+                             True,
+                             sort,
+                             sort_desc,
+                             newsgate.moderation.feed.FS_FAILED,
+                             view_url,
+                             vf_params != "",
+                             post,
+                             anchor_refs)
+
+unchanged = get_pref_add_header("unc",
+                                vo_prefs, 
+                                "h", 
+                                "Unchanged", 
+                                header_info,
+                                True,
+                                sort,
+                                sort_desc,
+                                newsgate.moderation.feed.FS_UNCHANGED,
+                                view_url,
+                                vf_params != "",
+                                post,
+                                anchor_refs)
+
+not_modified = get_pref_add_header("ntm",
+                                   vo_prefs, 
+                                   "h", 
+                                   "Not Modified", 
+                                   header_info,
+                                   True,
+                                   sort,
+                                   sort_desc,
+                                   newsgate.moderation.feed.FS_NOT_MODIFIED,
+                                   view_url,
+                                   vf_params != "",
+                                   post,
+                                   anchor_refs)
+
+presumably_unchanged = \
+  get_pref_add_header("pre",
+                      vo_prefs, 
+                      "h", 
+                      "Presumably Unchanged", 
+                      header_info,
+                      True,
+                      sort,
+                      sort_desc,
+                      newsgate.moderation.feed.FS_PRESUMABLY_UNCHANGED,
+                      view_url,
+                      vf_params != "",
+                      post,
+                      anchor_refs)
+
+has_changes = get_pref_add_header("hsc",
+                                  vo_prefs, 
+                                  "h", 
+                                  "Has Changes", 
+                                  header_info,
+                                  True,
+                                  sort,
+                                  sort_desc,
+                                  newsgate.moderation.feed.FS_HAS_CHANGES,
+                                  view_url,
+                                  vf_params != "",
+                                  post,
+                                  anchor_refs)
+
+wasted = get_pref_add_header("was",
+                             vo_prefs, 
+                             "h", 
+                             "Wasted", 
+                             header_info,
+                             True,
+                             sort,
+                             sort_desc,
+                             newsgate.moderation.feed.FS_WASTED,
+                             view_url,
+                             vf_params != "",
+                             post,
+                             anchor_refs)
+
+outbound = get_pref_add_header("out",
+                               vo_prefs, 
+                               "h", 
+                               "Outbound", 
+                               header_info,
+                               True,
+                               sort,
+                               sort_desc,
+                               newsgate.moderation.feed.FS_OUTBOUND,
+                               view_url,
+                               vf_params != "",
+                               post,
+                               anchor_refs)
+
+inbound = get_pref_add_header("inb",
+                               vo_prefs, 
+                               "h", 
+                               "Inbound", 
+                               header_info,
+                               True,
+                               sort,
+                               sort_desc,
+                               newsgate.moderation.feed.FS_INBOUND,
+                               view_url,
+                               vf_params != "",
+                               post,
+                               anchor_refs)
+
+requests_duration = \
+  get_pref_add_header("red",
+                      vo_prefs, 
+                      "h", 
+                      "Requests Duration", 
+                      header_info,
+                      True,
+                      sort,
+                      sort_desc,
+                      newsgate.moderation.feed.FS_REQUESTS_DURATION,
+                      view_url,
+                      vf_params != "",
+                      post,
+                      anchor_refs)
+
+messages = get_pref_add_header("mes",
+                               vo_prefs, 
+                               "h", 
+                               "Messages", 
+                               header_info,
+                               True,
+                               sort,
+                               sort_desc,
+                               newsgate.moderation.feed.FS_MESSAGES,
+                               view_url,
+                               vf_params != "",
+                               post,
+                               anchor_refs)
+
+messages_size = get_pref_add_header("mss",
+                                    vo_prefs,
+                                    "h",
+                                    "Messages Size", 
+                                    header_info,
+                                    True,
+                                    sort,
+                                    sort_desc,
+                                    newsgate.moderation.feed.FS_MESSAGES_SIZE,
+                                    view_url,
+                                    vf_params != "",
+                                    post,
+                                    anchor_refs)
+
+messages_delay = get_pref_add_header("msd",
+                                     vo_prefs, 
+                                     "h", 
+                                     "Messages Delay", 
+                                     header_info,
+                                     True,
+                                     sort,
+                                     sort_desc,
+                                     newsgate.moderation.feed.FS_MESSAGES_DELAY,
+                                     view_url,
+                                     vf_params != "",
+                                     post,
+                                     anchor_refs)
+
+max_message_delay = \
+  get_pref_add_header("mmd",
+                      vo_prefs, 
+                      "h", 
+                      "Max Message Delay", 
+                      header_info,
+                      True,
+                      sort,
+                      sort_desc,
+                      newsgate.moderation.feed.FS_MAX_MESSAGE_DELAY,
+                      view_url,
+                      vf_params != "",
+                      post,
+                      anchor_refs)
+
+msg_impressions = \
+  get_pref_add_header("mim",
+                      vo_prefs, 
+                      "h", 
+                      "Impressions", 
+                      header_info,
+                      True,
+                      sort,
+                      sort_desc,
+                      newsgate.moderation.feed.FS_MSG_IMPRESSIONS,
+                      view_url,
+                      vf_params != "",
+                      post,
+                      anchor_refs)
+
+msg_clicks = \
+  get_pref_add_header("mcl",
+                      vo_prefs, 
+                      "h", 
+                      "Clicks", 
+                      header_info,
+                      True,
+                      sort,
+                      sort_desc,
+                      newsgate.moderation.feed.FS_MSG_CLICKS,
+                      view_url,
+                      vf_params != "",
+                      post,
+                      anchor_refs)
+
+msg_ctr = \
+  get_pref_add_header("mct",
+                      vo_prefs, 
+                      "h", 
+                      "CTR%", 
+                      header_info,
+                      True,
+                      sort,
+                      sort_desc,
+                      newsgate.moderation.feed.FS_MSG_CTR,
+                      view_url,
+                      vf_params != "",
+                      post,
+                      anchor_refs)
+
+expiration = el.Moment(el.TimeValue(request.time().sec() + 2 * 365 * 86400))
+
+request.output.send_cookie(
+  el.net.http.CookieSetter("vo",
+                           vo_prefs.string(), 
+                           expiration, 
+                           "/", 
+                           "", 
+                           request.secure()))
+
+request.output.send_cookie(
+  el.net.http.CookieSetter("vf", 
+                           vf_prefs.string(), 
+                           expiration, 
+                           "/", 
+                           "", 
+                           request.secure()))
+
+request.output.send_cookie(
+  el.net.http.CookieSetter("mp",
+                           prefs.string(), 
+                           expiration, 
+                           "/", 
+                           "", 
+                           request.secure()))
+
+try: start_from = max(int(param("s")), 1)
+except: start_from = 1
+
+try: feed_per_page = max(min(int(get_pref("r", vo_prefs, 100, param)), 1000),1)
+except: feed_per_page = 100
+
+show_del_feeds = get_pref("dfd", vo_prefs, "h", param)
+
+filter_info = newsgate.moderation.feed.FilterInfo()
+filter_info.consider_deleted = show_del_feeds == "s"
+
+for k in filter_rules.keys(): filter_info.rules.append(filter_rules[k])
+
+try:
+  feed_infos = \
+    moderator.feed_manager.feed_info_range(start_from - 1, 
+                                           feed_per_page,
+                                           header_info[1],
+                                           stat_from,
+                                           stat_to,
+                                           newsgate.moderation.feed.SortInfo(
+                                             sort,
+                                             sort_desc and True or False),
+                                           filter_info)
+except newsgate.moderation.feed.FilterRuleError, e:
+  el.exit(el.psp.Forward("/psp/feed/view_filter.psp", e.args[0]))
+
+if creator == "n" or creator == "m":
+
+  moderator_ids = set()
+
+  for fi in feed_infos:
+    moderator_ids.add(fi.creator)
+
+  moderator_ids = list(moderator_ids)
+
+  try:
+    moderators = moderator.moderator_manager.get_moderators(moderator_ids)
+
+  except newsgate.moderation.InvalidSession:
+    el.exit(el.psp.Forward("/psp/login.psp", 
+                           "Your session expired.<br>Please, relogin."))
+
+  except newsgate.moderation.NotReady:
+    el.exit(el.psp.Forward(\
+            "/psp/feeds.psp", 
+            "The system is not ready to serve your request.<br>Please, try again in several minutes."))
+
+  moderator_id_to_name_map = {}
+
+  for m in moderators:
+    moderator_id_to_name_map[m.id] = m.name
+
+prn(
+R'''<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>Management: View Feeds</title>
+<link rel="stylesheet" type="text/css" href="/fixed/css/common.css" media="all" />
+<link rel="stylesheet" type="text/css" href="/fixed/css/feed/view.css" media="all" />
+<script src="/fixed/js/elements.js" type="text/javascript"></script>
+<script src="/fixed/js/feed/view.js" type="text/javascript"></script>''')
+
+if show_word_boxes:
+  prn(R'''
+<link rel="stylesheet" type="text/css" href="/fixed/css/mod_css.css" media="all"/>
+<link rel="stylesheet" type="text/css" href="/fixed/css/category/mod_css.css" media="all"/>
+<script src="/fixed/js/mod_script.js" type="text/javascript"></script>
+<script src="/fixed/js/category/mod_script.js" type="text/javascript"></script>''')
+
+prn(R'''
+<script type="text/javascript">
+
+var browser = "''', el.psp.browser(header("user-agent")), R'''";
+
+var space_options = new Array( { name:"''', 
+                                   newsgate.moderation.feed.SP_UNDEFINED, 
+                                   R'''", label:"undefined" },
+                                 { name:"''', 
+                                   newsgate.moderation.feed.SP_NEWS, 
+                                   R'''", label:"news" },
+                                 { name:"''', 
+                                   newsgate.moderation.feed.SP_TALK, 
+                                   R'''", label:"talk" },
+                                 { name:"''', 
+                                   newsgate.moderation.feed.SP_AD, 
+                                   R'''", label:"ad" },
+                                 { name:"''', 
+                                   newsgate.moderation.feed.SP_BLOG, 
+                                   R'''", label:"blog" },
+                                 { name:"''', 
+                                   newsgate.moderation.feed.SP_ARTICLE, 
+                                   R'''", label:"article" },
+                                 { name:"''', 
+                                   newsgate.moderation.feed.SP_PHOTO, 
+                                   R'''", label:"photo" },
+                                 { name:"''', 
+                                   newsgate.moderation.feed.SP_VIDEO, 
+                                   R'''", label:"video" },
+                                 { name:"''', 
+                                   newsgate.moderation.feed.SP_AUDIO, 
+                                   R'''", label:"audio" },
+                                 { name:"''', 
+                                   newsgate.moderation.feed.SP_PRINTED,
+                                   R'''", label:"printed" }
+                               );
+
+var space_texts = new Array( { name:"''', 
+                                 newsgate.moderation.feed.SP_UNDEFINED, 
+                                 R'''", label:"" },
+                               { name:"''', 
+                                 newsgate.moderation.feed.SP_NEWS, 
+                                 R'''", label:"news" },
+                               { name:"''', 
+                                 newsgate.moderation.feed.SP_TALK, 
+                                 R'''", label:"talk" },
+                               { name:"''', 
+                                 newsgate.moderation.feed.SP_AD, 
+                                 R'''", label:"ad" },
+                               { name:"''', 
+                                 newsgate.moderation.feed.SP_BLOG, 
+                                 R'''", label:"blog" },
+                               { name:"''', 
+                                 newsgate.moderation.feed.SP_ARTICLE, 
+                                 R'''", label:"article" },
+                               { name:"''', 
+                                 newsgate.moderation.feed.SP_PHOTO,
+                                 R'''", label:"photo" },
+                               { name:"''', 
+                                 newsgate.moderation.feed.SP_VIDEO, 
+                                 R'''", label:"video" },
+                               { name:"''', 
+                                 newsgate.moderation.feed.SP_AUDIO, 
+                                 R'''", label:"audio" },
+                               { name:"''', 
+                                 newsgate.moderation.feed.SP_PRINTED, 
+                                 R'''", label:"printed" }
+                             );
+
+var status_options = new Array( { name:"''', 
+                                    newsgate.moderation.feed.ST_ENABLED, 
+                                    R'''", label:"enabled" },
+                                  { name:"''', 
+                                    newsgate.moderation.feed.ST_DISABLED, 
+                                    R'''", label:"disabled" },
+                                  { name:"''', 
+                                    newsgate.moderation.feed.ST_PENDING, 
+                                    R'''", label:"pending" },
+                                  { name:"''', 
+                                    newsgate.moderation.feed.ST_DELETED, 
+                                    R'''", label:"deleted" }
+                                );
+
+var vf_params = "''', el.string.manip.js_escape(vf_params), R'''";
+</script>
+</head>
+
+<body onload="set_inplace_mode();">
+<form id="post" style="display:none;" method="post"></form>
+<table id="skeleton" cellspacing="0">
+''')
+
+left_menu = [ ]
+
+feed_moderator = \
+  moderator.has_privilege(newsgate.moderation.moderator.PV_FEED_MANAGER)
+
+if feed_moderator:
+
+  if vf_param_name == "vfa":
+    left_menu.append( ("View", "/psp/feed/view") )
+    left_menu.append( ("View Added Feeds", "") )
+  else:
+    left_menu.append( ("View", "") )
+
+  left_menu.append( ("View Options", 
+                     make_ref("/psp/feed/view_options?" + \
+                     "s=" + str(start_from) + "&r=" + str(feed_per_page), 
+                     False, True, vf_params != ""))) 
+
+  left_menu.append( ("View Filter", 
+                     make_ref("/psp/feed/view_filter?" + \
+                       "r=" + str(feed_per_page), 
+                     False, True, 
+                     (vf_param_name == "vf" and vf_params != "")) ) )
+
+feed_creator = \
+  moderator.has_privilege(newsgate.moderation.moderator.PV_FEED_CREATOR)
+
+if feed_creator:
+  left_menu.append( ("New", "/psp/feed/register") )
+  left_menu.append( ("Crawling Tasks", "/psp/feed/validations") )
+
+left_menu.append( ("XPath", "/psp/feed/xpath") )
+
+left_menu.append( ("Search", 
+                   feed_search_link(feed_creator, feed_moderator, None)) )
+
+page_panel = create_page_panel(start_from, 
+                               len(feed_infos), 
+                               feed_infos.feed_count, 
+                               feed_per_page, 
+                               10, 
+                               view_url,
+                               post,
+                               anchor_refs)
+
+menus = []
+create_topbar_main_menus(context, moderator, "Feeds", menus)
+
+prn(create_topbar(left_menu, menus[0], menus[1], page_panel))
+
+prn(
+R'''
+  <tr><td id="page_main_area" align="center" valign="top">
+    <table id="mid_area" cellspacing="0"><tr><td class="feed_table full_width">
+    <form id="bulk_edit" action="/psp/feed/bulk_edit" method="post">''')
+
+if vf !=  "":
+  prn(R'''
+    <input type="hidden" name="''', vf_param_name, '" value="', vf, R'"/>')
+
+prn(
+R'''
+    <table id="menu" cellspacing="0">
+      <tr><td><input type="button" value="Edit marked feeds" name="edit" onclick="bulk_edit();"/>
+      <input type="button" value="Select all" onclick="select_all(true);"/>
+      <input type="button" value="Deselect all" onclick="select_all(false);"/>
+      <input type="checkbox" id="inplace_mode" onclick="swap_inplace_mode();"''', 
+str(prefs.value("inplace", "0") == "1" and ' checked="checked"' or ""),
+R'''>In-place editing</input>
+      </td></tr>
+    </table>
+    <table id="feeds">
+    <tr align="center" id="header"><td></td><td></td>''')
+
+prn(header_info[0])
+
+flags = el.string.manip.XE_TEXT_ENCODING | \
+        el.string.manip.XE_PRESERVE_UTF8 | \
+        el.string.manip.XE_LAX_ENCODING
+
+attr_flags = flags | el.string.manip.XE_ATTRIBUTE_ENCODING
+
+for fi in feed_infos:
+
+  prn('''
+    <tr class="option_row" feed_id="''', fi.id,
+      R'''"><td><input type="checkbox" name="chk_''', fi.id,
+      '"/></td><td><a href="', make_ref('/psp/feed/edit?' + \
+      'id=' + str(fi.id) + '&s=' + str(start_from) + '&r=' + \
+      str(feed_per_page), False, True, vf_params != ""), '">edit</a></td>')
+
+  prn(get_cell_value(id, [ ("s", fi.id, True) ]))
+
+  if fi.type == newsgate.moderation.feed.TP_RSS: tp = "rss"
+  elif fi.type == newsgate.moderation.feed.TP_ATOM: tp = "atom"
+  elif fi.type == newsgate.moderation.feed.TP_RDF: tp = "rdf"
+  elif fi.type == newsgate.moderation.feed.TP_HTML: tp = "html"
+
+  prn(get_cell_value(type, [ ("s", tp) ]))
+  prn(get_cell_value(encoding, [ ("s", fi.encoding) ]))
+
+  if fi.space == newsgate.moderation.feed.SP_UNDEFINED: sp = ""
+  elif fi.space == newsgate.moderation.feed.SP_NEWS: sp = "news"
+  elif fi.space == newsgate.moderation.feed.SP_TALK: sp = "talk"
+  elif fi.space == newsgate.moderation.feed.SP_AD: sp = "ad"
+  elif fi.space == newsgate.moderation.feed.SP_BLOG: sp = "blog"
+  elif fi.space == newsgate.moderation.feed.SP_ARTICLE: sp = "article"
+  elif fi.space == newsgate.moderation.feed.SP_PHOTO: sp = "photo"
+  elif fi.space == newsgate.moderation.feed.SP_VIDEO: sp = "video"
+  elif fi.space == newsgate.moderation.feed.SP_AUDIO: sp = "audio"
+  elif fi.space == newsgate.moderation.feed.SP_PRINTED: sp = "printed"
+
+  prn(get_cell_value(space, 
+                     [ ("s", sp) ], 
+                     ' class="space" value="' + str(fi.space) + '"'))
+
+  if fi.status == newsgate.moderation.feed.ST_ENABLED: st = "enabled"
+  elif fi.status == newsgate.moderation.feed.ST_DISABLED: st = "disabled"
+  elif fi.status == newsgate.moderation.feed.ST_PENDING: st = "pending"
+  elif fi.status == newsgate.moderation.feed.ST_DELETED: st = "deleted"
+
+  prn(get_cell_value(status, 
+                     [ ("s", st) ],
+                     ' class="status" value="' + str(fi.status) + '"'))
+
+  feed_lang_name = str(fi.lang == el.Lang.nonexistent and "auto" or \
+                       fi.lang == el.Lang.null and "undefined" or "")
+  
+  prn(get_cell_value(feed_lang, 
+                     [ ("2", 
+                        str(feed_lang_name != "" and feed_lang_name or \
+                            fi.lang.l2_code())),
+                        ("3", 
+                         str(feed_lang_name != "" and feed_lang_name or \
+                             fi.lang.l3_code())), 
+                        ("u",
+                          str(feed_lang_name != "" and feed_lang_name or \
+                              fi.lang.num_code())), 
+                        ("n", 
+                         str(feed_lang_name != "" and feed_lang_name or \
+                             el.string.manip.xml_encode(fi.lang.name(), 
+                                                        flags)),
+                        ("m", 
+                         str(feed_lang_name != "" and feed_lang_name or \
+                             el.string.manip.xml_encode(\
+                               fi.lang.name(), flags) + " (" + \
+                               fi.lang.l2_code() + " " + \
+                               fi.lang.l3_code() + " " + \
+                               str(fi.lang.num_code()) + ")"))) \
+                     ],
+                     ' class="lang" value="' + str(fi.lang.el_code()) + '"'))
+
+  feed_country_name = str(fi.country == el.Country.nonexistent and "auto" or \
+                       fi.country == el.Country.null and "undefined" or "")
+  
+  prn(get_cell_value(feed_country, 
+                     [ ("2", 
+                        str(feed_country_name != "" and feed_country_name or \
+                            fi.country.l2_code())),
+                        ("3", 
+                         str(feed_country_name != "" and feed_country_name or \
+                             fi.country.l3_code())), 
+                        ("n", 
+                         str(feed_country_name != "" and feed_country_name or \
+                             el.string.manip.xml_encode(fi.country.name(), 
+                                                        flags)),
+                        ("m", 
+                         str(feed_country_name != "" and feed_country_name or \
+                             el.string.manip.xml_encode(\
+                               fi.country.name(), flags) + " (" + \
+                               fi.country.l2_code() + " " + \
+                               fi.country.l3_code() + ")"))) \
+                     ],
+                     ' class="country" value="' + str(fi.country.el_code()) + '"'))
+
+
+#  newsgate_url = "/psp/search?mod_init=mod_init&mod_script=" +\
+#         el.string.manip.mime_url_encode("/fixed/js/category/mod_script.js") +\
+#         "&mod_css=" + \
+#         el.string.manip.mime_url_encode("/fixed/css/category/mod_css.css") +\
+#         "&v=S" + el.string.manip.mime_url_encode(fi.url)
+
+  newsgate_url = feed_search_link(feed_creator, feed_moderator, fi.url)
+
+  if post:
+    target = ""
+    feed_url = make_ref(newsgate_url, True, False, False)
+  else:
+    target = ' target="_blank"'
+    feed_url = el.string.manip.xml_encode(newsgate_url, attr_flags)
+
+  prn(get_cell_value(
+    url, 
+    [ ("s",
+       '<a href="' + feed_url + '"' + target + '>' + \
+       el.string.manip.xml_encode(fi.url, flags) + '</a>'),
+      ("t", 
+       '<a href="' + feed_url + '"' + target + '>' + \
+       el.string.manip.xml_encode(truncate_string(fi.url, 50), 
+                                  flags) + '</a>') ]))
+
+  prn(get_cell_value(keywords,
+                     [ ("s", 
+                       el.string.manip.xml_encode(fi.keywords, flags).
+                         replace("\n", "<br>")),
+                       ("t",
+                         el.string.manip.xml_encode(truncate_phrase( \
+                           fi.keywords, 30), 
+                           flags).replace("\n", "<br>")) ]))
+
+  prn(get_cell_value(adjustment_script,
+                     [ ("s", 
+                       el.string.manip.xml_encode(fi.adjustment_script, flags).
+                         replace("\n", "<br>")),
+                       ("t",
+                         el.string.manip.xml_encode(truncate_phrase( \
+                           fi.adjustment_script, 30), 
+                           flags).replace("\n", "<br>")) ]))
+
+  prn(get_cell_value(title, 
+                     [ ("s", 
+                       el.string.manip.xml_encode(fi.channel_title, flags)),
+                       ("t",
+                         el.string.manip.xml_encode(truncate_phrase( \
+                           fi.channel_title, 30), 
+                           flags)) ]))
+
+  prn(get_cell_value(description, 
+                     [ ("s", 
+                       el.string.manip.xml_encode(fi.channel_description, 
+                                                  flags)),
+                       ("t",
+                         el.string.manip.xml_encode(truncate_phrase( \
+                           fi.channel_description, 30), 
+                           flags)) ]))
+
+  prn(get_cell_value(html_link, 
+                     [ ("s", 
+                       el.string.manip.xml_encode(fi.channel_html_link, 
+                                                  flags)),
+                       ("t",
+                         el.string.manip.xml_encode(truncate_phrase( \
+                           fi.channel_html_link, 30), 
+                           flags)) ]))
+
+  prn(get_cell_value(lang, [ ("2", 
+                              str(fi.channel_lang != el.Lang.null and \
+                                  fi.channel_lang.l2_code() or "")),
+                             ("3", 
+                              str(fi.channel_lang != el.Lang.null and \
+                                  fi.channel_lang.l3_code() or "")), 
+                             ("u", 
+                              str(fi.channel_lang != el.Lang.null and \
+                                  fi.channel_lang.num_code() or "")), 
+                             ("n", 
+                              str(fi.channel_lang != el.Lang.null and \
+                                  el.string.manip.xml_encode(\
+                                    fi.channel_lang.name(), 
+                                    flags) or "")),
+                             ("m", 
+                              str(fi.channel_lang != el.Lang.null and \
+                              el.string.manip.xml_encode(\
+                              fi.channel_lang.name(), flags) + " (" + \
+                              fi.channel_lang.l2_code() + " " + \
+                              fi.channel_lang.l3_code() + " " + \
+                              str(fi.channel_lang.num_code()) + ")" or "")) 
+                           ]))
+
+  prn(get_cell_value(country, [ ("2", 
+                                 str(fi.channel_country != el.Country.null \
+                                     and fi.channel_country.l2_code() or "")),
+                                ("3", 
+                                 str(fi.channel_country != el.Country.null \
+                                     and fi.channel_country.l3_code() or "")), 
+                                ("n", 
+                                 str(fi.channel_country != el.Country.null \
+                                     and el.string.manip.xml_encode(\
+                                           fi.channel_country.name(), 
+                                           flags) or "")),
+                                ("m", 
+                                str(fi.channel_country != el.Country.null and \
+                                el.string.manip.xml_encode(\
+                                fi.channel_country.name(), flags) + " (" + \
+                                fi.channel_country.l2_code() + " " + \
+                                fi.channel_country.l3_code() + ")" or "")) 
+                           ]))
+
+  if creator == "n" or creator == "m":
+    if fi.creator in moderator_id_to_name_map:
+      nm = moderator_id_to_name_map[fi.creator] 
+    else: nm = "#" + str(fi.creator)
+  else: nm = ""
+
+  prn(get_cell_value(creator, 
+      [ ("i", fi.creator, True), 
+        ("n", el.string.manip.xml_encode(nm, flags)),
+        ("m", el.string.manip.xml_encode(nm + " (" + str(fi.creator) + ")", 
+                                         flags)) 
+      ]))
+
+  if fi.creator_type == newsgate.moderation.feed.CT_CRAWLER: ct = "crawler"
+  elif fi.creator_type == newsgate.moderation.feed.CT_MODERATOR: ct = "moderator"
+  elif fi.creator_type == newsgate.moderation.feed.CT_USER: ct = "user"
+  elif fi.creator_type == newsgate.moderation.feed.CT_ADMIN: ct = "admin"
+
+  prn(get_cell_value(creator_type, [ ("s", ct) ]))
+
+  prn(get_cell_value(created, 
+      [ ("s", 
+         el.string.manip.xml_encode(fi.created.iso8601(), flags)) ]))
+
+  prn(get_cell_value(updated, 
+      [ ("s", 
+         el.string.manip.xml_encode(fi.updated.iso8601(), flags)) ]))
+
+  prn(get_cell_value(comment, 
+      [ ("s", 
+         el.string.manip.xml_encode(fi.comment, flags)),
+        ("t",
+         el.string.manip.xml_encode(truncate_phrase(fi.comment, 30), 
+                                    flags)) 
+      ]))
+
+  if fi.channel_ttl >= 0: ch_ttl = str(fi.channel_ttl)
+  else: ch_ttl = ""
+
+  prn(get_cell_value(ttl, [ ("s", ch_ttl, True) ]))
+
+  prn(get_cell_value(last_build_date, 
+                     [ ("s", 
+                        str(fi.channel_last_build_date != el.Moment.null \
+                        and fi.channel_last_build_date.iso8601() or "")) ]))
+
+  prn(get_cell_value(last_request_date, 
+                     [ ("s", 
+                        str(fi.last_request_date != el.Moment.null \
+                        and fi.last_request_date.iso8601() or "")) ]))
+
+  prn(get_cell_value(last_modified_hdr, [ ("s", fi.last_modified_hdr) ]))
+  prn(get_cell_value(etag_hdr, [ ("s", fi.etag_hdr) ]))
+
+  if fi.content_length_hdr < 0: clh = ""
+  else: clh = fi.content_length_hdr
+
+  prn(get_cell_value(content_length_hdr, [ ("s", clh, True) ]))
+  prn(get_cell_value(entropy, [ ("s", fi.entropy, True) ]))
+
+  prn(get_cell_value(entropy_updated_date, 
+                     [ ("s", str(fi.entropy_updated_date != el.Moment.null \
+                        and fi.entropy_updated_date.iso8601() or "")) ]))
+
+  prn(get_cell_value(size, [ ("s", fi.size, True) ]))
+
+  if fi.single_chunked < 0: sc = ""
+  elif fi.single_chunked > 0: sc = "yes"
+  else: sc = "no"
+
+  prn(get_cell_value(single_chunked, [ ("s", sc, True) ]))
+
+  if fi.first_chunk_size < 0: fcs = ""
+  else: fcs = fi.first_chunk_size
+
+  prn(get_cell_value(first_chunk_size, [ ("s", fcs, True) ]))
+
+  prn(get_cell_value(heuristics_counter, [ ("s", 
+                                            fi.heuristics_counter, 
+                                            True) ]))
+
+  prn(get_cell_value(requests, [ ("s", fi.requests, True) ]))
+  prn(get_cell_value(failed, [ ("s", fi.failed, True) ]))
+  prn(get_cell_value(unchanged, [ ("s", fi.unchanged, True) ]))
+  prn(get_cell_value(not_modified, [ ("s", fi.not_modified, True) ]))
+
+  prn(get_cell_value(presumably_unchanged, [ ("s", 
+                                              fi.presumably_unchanged, 
+                                              True) ]))
+
+  prn(get_cell_value(has_changes, [ ("s", fi.has_changes, True) ]))
+
+  prn(get_cell_value(wasted, [ ("s", fi.wasted, True) ]))
+
+  prn(get_cell_value(outbound, [ ("s", fi.outbound, True),
+                                 ("f", traffic(fi.outbound), True) ]))
+
+  prn(get_cell_value(inbound, [ ("s", fi.inbound, True),
+                                ("f", traffic(fi.inbound), True) ]))
+
+  prn(get_cell_value(requests_duration, [ ("s", 
+                                           fi.requests_duration,
+                                           True),
+                                          ("f", 
+                                           time(fi.requests_duration * 1000), 
+                                           True) ]))
+
+  prn(get_cell_value(messages, [ ("s", fi.messages, True) ]))
+
+  prn(get_cell_value(messages_size, [ ("s", 
+                                       traffic(fi.messages_size), 
+                                       True) ]))
+
+  prn(get_cell_value(messages_delay, [ ("s", 
+                                        fi.messages_delay,
+                                        True),
+                                       ("f", 
+                                        time(fi.messages_delay * 1000000), 
+                                        True) ]))
+
+  prn(get_cell_value(max_message_delay, 
+                     [ ("s", 
+                        fi.max_message_delay,
+                        True),
+                       ("f", 
+                        time(fi.max_message_delay * 1000000),
+                        True) ]))
+
+  prn(get_cell_value(msg_impressions, [ ("s", fi.msg_impressions, True) ]))
+  prn(get_cell_value(msg_clicks, [ ("s", fi.msg_clicks, True) ]))
+  prn(get_cell_value(msg_ctr, [ ("s", fi.msg_ctr, True) ]))
+
+  prn("</tr>")
+
+prn(
+R'''    </table> 
+      <input type="hidden" name="s" value="''', start_from, R'''"/>
+      <input type="hidden" name="r" value="''', feed_per_page, R'''"/>
+    </form>
+    </td></tr></table>
+  </td></tr>
+''', create_copyright(context), R'''
+</table>''')
+
+prn('\n<script type="text/javascript">')
+
+if show_word_boxes: 
+  prn('\nmod_init("', el.string.manip.js_escape(mod_params), '");')
+
+if len(anchor_refs) > 0:
+
+  prn("\npost_refs = new Array();")
+  index = 0
+
+  for ref in anchor_refs:
+    prn("\npost_refs.push('", el.string.manip.js_escape(ref), "');")
+    index += 1
+
+prn('\n</script>')
+
+prn(R'''
+</body>
+</html>
+''')

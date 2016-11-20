@@ -1,0 +1,68 @@
+#ad
+{
+  width: 50em;
+  font-size: 100%;
+  padding: 0 0 0 0;
+  margin: 0 0 0 0;
+}
+
+#tx
+{
+  width: 100%;
+  font-family: Verdana,Tahoma,Geneva,Helvetica,Arial,Sans-serif;
+  font-size: 95%;
+}
+
+.option_row td
+{
+  padding: 0.3em;
+  vertical-align: top;
+}
+
+#sizes
+{
+  padding: 0.3em;
+}
+
+#choice
+{
+  font-size: 100%;
+  padding: 0 0 0 0;
+  margin: 0 0 0 0;
+  vertical-align:top;
+}
+
+#szt
+{
+  width: 35em;
+  font-size: 100%;
+  padding: 0 0 0 0;
+  margin: 0 0 0 0;
+}
+
+#slt
+{
+  width: 55em;
+  font-size: 100%;
+  padding: 0 0 0 0;
+  margin: 0 0 0 0;
+}
+
+.radio_cell 
+{
+  width: 1em;
+}
+
+#header td
+{
+  border-bottom: 1px solid rgb(0,0,80);
+  padding: 0 0.3em 0.3em 0.3em;
+}
+
+#plc
+{
+  width: 50em;
+  font-size: 100%;
+  padding: 0 0 0 0;
+  margin: 1.3em 0 0 0;
+}

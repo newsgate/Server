@@ -1,0 +1,25 @@
+# @file   Makefile.in
+# @author Karen Aroutiounov
+# $Id:$
+
+include Common.pre.rules
+include $(osbe_builddir)/config/CXX/CXX.pre.rules
+include $(osbe_builddir)/config/CXX/Corba.pre.rules
+
+include $(osbe_builddir)/config/CXX/External/MD5.pre.rules
+include $(osbe_builddir)/config/CXX/External/ACE.pre.rules
+include $(osbe_builddir)/config/CXX/External/Xerces.pre.rules
+
+include $(osbe_builddir)/config/CXX/External/ElBasic.pre.rules
+include $(osbe_builddir)/config/CXX/External/ElMySQL.pre.rules
+include $(osbe_builddir)/config/CXX/External/ElCorba.pre.rules
+
+include $(top_builddir)/config/xsd/Config.so.pre.rules
+
+include $(top_builddir)/config/Services/Moderator/Commons/ModeratorServicesCommons.so.pre.rules
+
+sources  := AdManagerImpl.cpp AdManagerMain.cpp
+target   := AdManager
+
+include $(osbe_builddir)/config/CXX/Corba.post.rules
+include $(osbe_builddir)/config/CXX/Ex.post.rules

@@ -1,0 +1,442 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema 
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+    targetNamespace="http://www.newsgate.com/Server/TestRSSFeed/Config" 
+    xmlns="http://www.newsgate.com/Server/TestRSSFeed/Config" 
+    elementFormDefault="qualified" 
+    xml:lang="en" 
+    version="1.0">
+  
+  <xsd:annotation>
+    <xsd:documentation>Test RSS Feed Service Configuration File XML Schema
+    </xsd:documentation>
+  </xsd:annotation>
+
+  <xsd:element name="config" type="ConfigType"/>
+
+  <xsd:complexType name="ConfigType">
+    <xsd:annotation>
+      <xsd:documentation>Element that contains runtime parameters for 
+                         RSS Feed Service.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:all>
+
+      <xsd:element name="logger" type="LoggerType">
+        <xsd:annotation>
+          <xsd:documentation>Element that specifies logger options.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+
+      <xsd:element name="rss_feeds">
+      <xsd:complexType>
+        <xsd:annotation>
+          <xsd:documentation>Element that contain elements describing 
+                             RSS feeds.
+          </xsd:documentation>
+        </xsd:annotation>
+
+        <xsd:sequence>
+          <xsd:element name="feed" minOccurs="1" maxOccurs="unbounded">
+          <xsd:complexType>
+
+            <xsd:all>
+
+              <xsd:element name="channel">
+              <xsd:complexType>
+
+                <xsd:annotation>
+                  <xsd:documentation>Element that contain elements describing 
+                                     RSS feed channel options.
+                  </xsd:documentation>
+                </xsd:annotation>
+
+                <xsd:attribute name="title_len" 
+                               type="xsd:nonNegativeInteger" 
+                               default="0">
+                  <xsd:annotation>
+                    <xsd:documentation>Sets approximate length of channel 
+                                       title in bytes; if set to 0 then
+                                       channel will have no title.
+                    </xsd:documentation>
+                  </xsd:annotation>
+                </xsd:attribute>
+
+                <xsd:attribute name="description_len" 
+                               type="xsd:nonNegativeInteger" 
+                               default="0">
+                  <xsd:annotation>
+                    <xsd:documentation>Sets approximate length of channel 
+                                       description in bytes; if set to 0 then
+                                       channel will have no description.
+                    </xsd:documentation>
+                  </xsd:annotation>
+                </xsd:attribute>
+
+                <xsd:attribute name="lang" type="xsd:language">
+                  <xsd:annotation>
+                    <xsd:documentation>Sets channel language.</xsd:documentation>
+                  </xsd:annotation>
+                </xsd:attribute>
+
+                <xsd:attribute name="last_build_date" 
+                               type="RFC_0882_Zone" 
+                               default="">
+                  <xsd:annotation>
+                    <xsd:documentation>Sets timezone setting for channel
+                                       lastBuildDate attribute; if set to ""
+                                       then channel will have no 
+                                       lastBuildDate attribute.
+                    </xsd:documentation>
+                  </xsd:annotation>
+                </xsd:attribute>
+
+                <xsd:attribute name="ttl" 
+                               type="xsd:nonNegativeInteger" 
+                               default="0">
+                  <xsd:annotation>
+                    <xsd:documentation>Sets ttl channel attribute value; 
+                                       if set to 0 then channel will have no 
+                                       ttl.
+                    </xsd:documentation>
+                  </xsd:annotation>
+                </xsd:attribute>
+
+              </xsd:complexType>
+              </xsd:element>
+              <!-- end of ConfigType::rss_feeds::feed::channel -->
+
+              <xsd:element name="item">
+              <xsd:complexType>
+
+                <xsd:annotation>
+                  <xsd:documentation>Element that contain elements describing 
+                                     RSS feed channel item options.
+                  </xsd:documentation>
+                </xsd:annotation>
+
+                <xsd:attribute name="title_len" 
+                               type="xsd:nonNegativeInteger" 
+                               default="0">
+                  <xsd:annotation>
+                    <xsd:documentation>Sets approximate length of channel 
+                                       item title in bytes; if set to 0 then
+                                       channel item will have no title.
+                    </xsd:documentation>
+                  </xsd:annotation>
+                </xsd:attribute>
+
+                <xsd:attribute name="description_len" 
+                               type="xsd:nonNegativeInteger" 
+                               default="0">
+                  <xsd:annotation>
+                    <xsd:documentation>Sets approximate length of channel item
+                                       description in bytes; if set to 0 then
+                                       channel item will have no description.
+                    </xsd:documentation>
+                  </xsd:annotation>
+                </xsd:attribute>
+
+                <xsd:attribute name="description_format" 
+                               type="DescriptionFormats" 
+                               default="text">
+                  <xsd:annotation>
+                    <xsd:documentation>Sets format of channel item 
+                                       description attribute value.
+                    </xsd:documentation>
+                  </xsd:annotation>
+                </xsd:attribute>
+
+                <xsd:attribute name="category_len" 
+                               type="xsd:nonNegativeInteger" 
+                               default="0">
+                  <xsd:annotation>
+                    <xsd:documentation>Sets approximate length of channel 
+                                       item category in bytes; if set to 0 then
+                                       channel item will have no category.
+                    </xsd:documentation>
+                  </xsd:annotation>
+                </xsd:attribute>
+
+                <xsd:attribute name="pub_date" 
+                               type="RFC_0882_Zone" 
+                               default="">
+                  <xsd:annotation>
+                    <xsd:documentation>Sets timezone setting for channel item
+                                       pubDate attribute; if set to ""
+                                       then channel item will have no 
+                                       pubDate attribute.
+                    </xsd:documentation>
+                  </xsd:annotation>
+                </xsd:attribute>
+
+                <xsd:attribute name="link_prefix" type="xsd:string" default="">
+                  <xsd:annotation>
+                    <xsd:documentation>Specifies link prefix to be used 
+                                       for generated links; if not 
+                                       specified then link element will not be
+                                       present in channel item element.
+                    </xsd:documentation>
+                  </xsd:annotation>
+                </xsd:attribute>
+
+                <xsd:attribute name="guid_prefix" type="xsd:string" default="">
+                  <xsd:annotation>
+                    <xsd:documentation>Specifies guid prefix to be used 
+                                       for generated guids; if not 
+                                       specified then guid element will not be
+                                       present in channel item element.
+                    </xsd:documentation>
+                  </xsd:annotation>
+                </xsd:attribute>
+
+              </xsd:complexType>
+              </xsd:element>
+              <!-- end of ConfigType::rss_feeds::feed::item -->
+
+              <xsd:element name="http_response">
+              <xsd:complexType>
+
+                <xsd:annotation>
+                  <xsd:documentation>Element describing RSS HTTP 
+                                     server options.
+                  </xsd:documentation>
+                </xsd:annotation>
+
+                <xsd:attribute name="content_length"
+                               type="xsd:boolean" 
+                               default="true">
+                  <xsd:annotation>
+                    <xsd:documentation>Specify if Content-Length HTTP header 
+                                       should present in response.
+                    </xsd:documentation>
+                  </xsd:annotation>
+                </xsd:attribute>
+
+                <xsd:attribute name="chunked"
+                               type="xsd:nonNegativeInteger" 
+                               default="0">
+                  <xsd:annotation>
+                    <xsd:documentation>If not 0, then specifies chunk size 
+                                       for chunked transfer encoding 
+                                       to be used in response.
+                    </xsd:documentation>
+                  </xsd:annotation>
+                </xsd:attribute>
+
+                <xsd:attribute name="etag"
+                               type="xsd:boolean" 
+                               default="false">
+                  <xsd:annotation>
+                    <xsd:documentation>Specify if ETag HTTP header 
+                                       should present in response.
+                    </xsd:documentation>
+                  </xsd:annotation>
+                </xsd:attribute>
+
+                <xsd:attribute name="last_modified"
+                               type="xsd:boolean" 
+                               default="false">
+                  <xsd:annotation>
+                    <xsd:documentation>Specify if Last-Modified HTTP header 
+                                       should present in response.
+                    </xsd:documentation>
+                  </xsd:annotation>
+                </xsd:attribute>
+
+              </xsd:complexType>
+              </xsd:element>
+              <!-- end of ConfigType::rss_feeds::feed::http_response -->
+
+            </xsd:all>
+
+            <xsd:attribute name="id" type="xsd:string" use="required">
+              <xsd:annotation>
+                <xsd:documentation>Sets unique name of a feed.
+                </xsd:documentation>
+              </xsd:annotation>
+            </xsd:attribute>
+
+            <xsd:attribute name="count" type="xsd:positiveInteger" default="1">
+              <xsd:annotation>
+                <xsd:documentation>Set number of feeds to be created with 
+                                   specified settings. Each feed will have an 
+                                   id equal to "(id)(seq_number)". So for 
+                                   example if id='feedA' and count='10', then
+                                   feed ids will be 
+                                   feedA0, feedA2, ..., feedA9.
+                </xsd:documentation>
+              </xsd:annotation>
+            </xsd:attribute>
+
+            <xsd:attribute name="word_file" type="xsd:string" use="required">
+              <xsd:annotation>
+                <xsd:documentation>Sets path to a file which contains words
+                                   to be used to compose a feed.
+                </xsd:documentation>
+              </xsd:annotation>
+            </xsd:attribute>
+
+            <xsd:attribute name="time_frame" 
+                           type="xsd:positiveInteger" 
+                           use="required">
+              <xsd:annotation>
+                <xsd:documentation>Sets time period messages are kept in feed, 
+                                   in seconds.
+                </xsd:documentation>
+              </xsd:annotation>
+            </xsd:attribute>
+
+            <xsd:attribute name="min_msg_freq" 
+                           type="xsd:nonNegativeInteger" 
+                           default="0">
+              <xsd:annotation>
+                <xsd:documentation>Sets minimum message appearance frequency in
+                                   seconds.
+                </xsd:documentation>
+              </xsd:annotation>
+            </xsd:attribute>
+
+            <xsd:attribute name="max_msg_freq" 
+                           type="xsd:nonNegativeInteger" 
+                           default="864000">
+              <xsd:annotation>
+                <xsd:documentation>Sets maximum message appearance frequency in
+                                   seconds.
+                </xsd:documentation>
+             </xsd:annotation>
+            </xsd:attribute>
+
+            <xsd:attribute name="msg_sort" 
+                           type="SortMode" 
+                           default="random">
+              <xsd:annotation>
+                <xsd:documentation>Sets order of messages (by pubDate) they 
+                                   appear in a channel.
+                </xsd:documentation>
+             </xsd:annotation>
+           </xsd:attribute>
+
+            <xsd:attribute name="msg_retiming" 
+                           type="Percentage" 
+                           default="0">
+              <xsd:annotation>
+                <xsd:documentation>Sets percentage on new messages to be 
+                                   just copies of existing ones with pubDate
+                                   reset.
+                </xsd:documentation>
+             </xsd:annotation>
+            </xsd:attribute>
+
+          </xsd:complexType>
+          </xsd:element>
+          <!-- end of ConfigType::rss_feeds::feed -->
+
+        </xsd:sequence>
+      </xsd:complexType>
+      </xsd:element>
+      <!-- end of ConfigType::rss_feeds -->
+
+    </xsd:all>
+
+  </xsd:complexType> 
+  <!-- end of ConfigType -->
+
+  <xsd:complexType name="LoggerType">
+
+    <xsd:all>
+
+      <xsd:element name="time_span_policy" minOccurs="0">
+      <xsd:complexType>
+        <xsd:attribute name="time" type="xsd:positiveInteger" use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets time interval for log rotation, in seconds.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+      </xsd:complexType>
+      </xsd:element>
+      <!-- end of LoggerType::time_span_policy -->
+	
+      <xsd:element name="size_span_policy" minOccurs="0">
+      <xsd:complexType>
+        <xsd:attribute name="size" type="xsd:positiveInteger" use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets size limit for log rotation, in bytes.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+      </xsd:complexType>
+      </xsd:element>
+      <!-- end of LoggerType::size_span_policy -->
+
+    </xsd:all>
+
+    <xsd:attribute name="filename" type="xsd:string" use="required">
+      <xsd:annotation>
+        <xsd:documentation>Sets the log file name.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+	
+    <xsd:attribute name="log_level" type="xsd:positiveInteger" use="required">
+      <xsd:annotation>
+        <xsd:documentation>Sets logging level.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+  </xsd:complexType>
+  <!-- end of LoggerType -->
+
+  <xsd:simpleType name="RFC_0882_Zone">
+    <xsd:restriction base="xsd:string">
+      <xsd:pattern value="GMT|[\-+]([0-1][0-9]|2[0-3])[0-5][0-9]|"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="DescriptionFormats">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="text">
+        <xsd:annotation>
+            <xsd:documentation>Denotes plain text format</xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="html">
+        <xsd:annotation>
+            <xsd:documentation>Denotes HTML format</xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="SortMode">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="descending">
+        <xsd:annotation>
+            <xsd:documentation>Denotes descending order of items.
+            </xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="ascending">
+        <xsd:annotation>
+            <xsd:documentation>Denotes ascending order of items.
+            </xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="random">
+        <xsd:annotation>
+            <xsd:documentation>Denotes random order of items.
+            </xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="Percentage">
+    <xsd:restriction base="xsd:nonNegativeInteger">
+      <xsd:maxInclusive value="100"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+</xsd:schema>

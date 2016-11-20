@@ -1,0 +1,299 @@
+from moderation_func import *
+
+request, conf = context.request, context.config.get
+message = context.forward_params
+prn, param = request.output.stream.prn, request.input.parameters().find
+
+moderator = connect_moderator(request, moderator_connector)
+advertiser_id = moderator.advertiser_id
+
+ad_manager = \
+  moderator.has_privilege(newsgate.moderation.moderator.PV_AD_MANAGER)
+
+if not advertiser_id:
+  el.exit(403) # Forbidden
+
+id = long(param("id", 0))
+cid = long(param("cid", 0))
+
+svc = SetValueCtx()
+
+if param("u"):
+
+  cmp = moderator.ad_manager.get_campaign(cid, advertiser_id)
+  cur_grp = id and moderator.ad_manager.get_group(id, advertiser_id) or None
+
+  grp = newsgate.moderation.ad.Group()
+
+  grp.id = id
+  grp.campaign = cid
+  grp.campaign_name = cmp.name
+  grp.advertiser = advertiser_id
+  if cur_grp: grp.ad_placements = cur_grp.ad_placements 
+
+  try: grp.name = param("gn").strip()
+  except: svc.error = "Name can't be empty"
+
+  status = param("gs")
+
+  if status == "E": grp.status = newsgate.moderation.ad.GS_ENABLED
+  elif status == "D": grp.status = newsgate.moderation.ad.GS_DISABLED
+  else: grp.status = newsgate.moderation.ad.GS_DELETED
+
+  grp.auction_factor = \
+    set_float_value("ga",
+                    param("ga"), 
+                    0.0,
+                    10000.0, 
+                    "Auction Factor should be a float number from 0 to 10000",
+                    svc)
+
+  for p in request.input.parameters():
+
+    pos = p.name.find('_')
+    if pos > 0 and p.name[0:pos] == 'cn':
+  
+      cond = newsgate.moderation.ad.Condition()
+      cond.id = long(p.name[pos + 1:])
+
+      pos = p.value.find('_')
+      cond.status = long(p.value[0:pos])
+      cond.name = p.value[pos + 1:]
+
+      grp.conditions.append(cond)
+
+  if not svc.error:
+
+    if id:
+      update = newsgate.moderation.ad.GroupUpdate()
+
+      update.id = id
+      update.advertiser = advertiser_id
+      update.status = grp.status
+      update.name = grp.name
+      update.auction_factor = grp.auction_factor
+      update.reset_cap_min_time = param("rc") == "1"
+
+      for c in grp.conditions:
+        update.conditions.append(c.id)
+
+      try:
+        grp = moderator.ad_manager.update_group(update)
+      except newsgate.moderation.ad.ObjectNotFound:
+        svc.error = "Group not found"
+      except newsgate.moderation.ad.ObjectAlreadyExist:
+        svc.error = "Such group name is already used"
+
+    else:
+
+      try:
+        grp = moderator.ad_manager.create_group(grp)
+        id = grp.id
+      except newsgate.moderation.ad.ObjectAlreadyExist:
+        svc.error = "Such group name is already used"
+
+elif id:
+    grp = moderator.ad_manager.get_group(id, advertiser_id)
+else:
+    cmp = moderator.ad_manager.get_campaign(cid, advertiser_id)
+
+    grp = newsgate.moderation.ad.Group()
+    grp.campaign = cid
+    grp.campaign_name = cmp.name
+    grp.advertiser = advertiser_id
+
+prn(
+R'''<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>Management: ''', el.string.manip.xml_encode(grp.name), 
+R''' Ad Group</title>
+<link rel="stylesheet" type="text/css" href="/fixed/css/common.css" media="all" />
+<link rel="stylesheet" type="text/css" href="/fixed/css/ad/common.css" media="all" />
+<link rel="stylesheet" type="text/css" href="/fixed/css/ad/group.css" media="all" />
+<script src="/fixed/js/elements.js" type="text/javascript"></script>
+<script src="/fixed/js/commons.js" type="text/javascript"></script>
+<script src="/fixed/js/ad/commons.js" type="text/javascript"></script>
+<script src="/fixed/js/ad/group.js" type="text/javascript"></script>
+</head>
+<body onload="setTimeout('filter_tables()', 500)">
+<table id="skeleton" cellspacing="0">
+''')
+
+menus = []
+create_topbar_main_menus(context, moderator, "Ad", menus)
+
+prn(create_topbar(create_ad_menus(moderator, 
+                                  grp.id and "Group" or "New Group",
+                                  grp.campaign),
+                  menus[0], 
+                  menus[1]))
+
+prn(R'''
+  <tr><td id="main_area" valign="top" align="center">
+    <form id="form" method="post" action="group">
+    <table id="group">''')
+
+if svc.error:
+  prn('\n    <tr><td colspan="2" class="error">', 
+      el.string.manip.xml_encode(svc.error), '</td></tr>')
+
+prn(R'''
+    <tr class="option_row"><td class="label">Campaign</td><td>
+      <a href="/psp/ad/campaign?id=''', grp.campaign, '">', 
+      el.string.manip.xml_encode(grp.campaign_name),
+    R'''</a></td></tr>
+    <tr class="option_row"><td class="label">Name</td><td>
+      <input type="text" value="''', el.string.manip.xml_encode(grp.name),
+    R'''" name="gn" class="text_option"></td></tr>
+    <tr class="option_row"><td class="label">Status</td><td>
+    <select name="gs">''')
+
+statuses = [ (newsgate.moderation.ad.CS_ENABLED, "Enabled", "E"), 
+             (newsgate.moderation.ad.CS_DISABLED, "Disabled", "D"),
+             (newsgate.moderation.ad.CS_DELETED, "Deleted", "L")
+           ]
+
+for s in statuses:
+  prn('<option', grp.status == s[0] and ' selected="selected"' or '', 
+      ' value="', s[2], '">', s[1], '</option>')
+
+prn(R'''</select></td></tr>
+    <tr class="option_row"><td class="label">Auction Factor</td><td>
+      <input type="text" value="''', 
+    float_value("ga", "%.3f" % grp.auction_factor, svc),
+    R'''" name="ga" class="text_option"></td></tr>
+    <tr class="option_row"><td></td><td>
+    <input type="checkbox" name="rc" value="1">Drop past group impressions
+    </td></tr>
+  </table>''')
+
+prn(R'''
+    <table id="tbl">
+    <tr align="center" class="header"><td>Condition Name</td>
+    <td>Status</td><td colspan="2">&nbsp;</td>
+    </tr>
+''')
+
+for cond in grp.conditions:
+
+  if not moderator.show_deleted and \
+     cond.status == newsgate.moderation.ad.AS_DELETED:
+    continue
+
+  if cond.status == newsgate.moderation.ad.CS_ENABLED: 
+    status = "Enabled"
+  elif cond.status == newsgate.moderation.ad.CS_DISABLED:
+    status = "Disabled"
+  else: 
+    status = "Deleted"
+
+  prn('\n    <tr class="option_row" id="cr_', cond.id, 
+      '"><td><a href="/psp/ad/condition?id=', 
+      cond.id, '">', el.string.manip.xml_encode(cond.name), '</a></td><td>', 
+      status, '</td><td colspan="2"><a href="javascript:delete_condition(',
+      cond.id, ')">delete</a><input type="hidden" name="cn_', cond.id, 
+      '" value="', cond.status, '_', el.string.manip.xml_encode(cond.name),
+      '"/></td></tr>')
+
+prn('<tr class="option_row" id="add_cond"><td colspan="4">\
+<a href="javascript:add_condition()">\
+ADD&nbsp;CONDITION</a></td></tr>')
+
+if grp.id:
+
+  prn(R'''
+    <tr><td colspan="4">&nbsp;</td></tr>
+    <tr align="center" class="header"><td>Ad Placement Name</td><td>Status</td>
+    <td>Display</td><td>CPM</td>
+    </tr>''')
+
+  if grp.ad_placements:
+    prn('\n    <tr>', table_filter_edit('apn', '100%'),
+        table_filter_edit('aps', '5em'), table_filter_edit('apd', '5em'), 
+        table_filter_edit('apc', '5em'))
+
+  statuses = [ (newsgate.moderation.ad.TS_ENABLED, "Enabled"), 
+               (newsgate.moderation.ad.TS_DISABLED, "Disabled"),
+               (newsgate.moderation.ad.TS_DELETED, "Deleted")
+             ]
+
+  for plc in grp.ad_placements:
+
+    if not moderator.show_deleted and \
+       plc.status == newsgate.moderation.ad.TS_DELETED:
+      continue
+
+    prn(R'''
+    <tr class="option_row filter_row">
+    <td class="filter_row_apn"><a href="/psp/ad/placement?id=''',
+        plc.id, '">', el.string.manip.xml_encode(plc.name), 
+        '</a></td><td class="number_option filter_row_aps">')
+
+    for s in statuses:
+      if s[0] == plc.status:
+        prn(s[1])
+        break
+
+    prn('</td><td class="number_option filter_row_apd">', plc.display_status and 'Inactive' or 'Active', 
+        '</td><td class="number_option filter_row_apc">', "%.2f" % plc.cpm, '</td></tr>')
+
+  prn('\n    <tr class="option_row"><td colspan="4"><a href="/psp/ad/placement?gid=',
+        grp.id, '" target="_blank">ADD&nbsp;PLACEMENT</a></td></tr>')
+
+  prn(R'''
+    <tr><td colspan="4">&nbsp;</td></tr>
+    <tr align="center" class="header"><td>Counter Placement Name</td><td>Status</td>
+    <td colspan="2">Display</td>
+    </tr>
+''')
+
+  if grp.ad_placements:
+    prn('\n    <tr>', table_filter_edit('cpn', '100%'),
+        table_filter_edit('cps', '5em'), table_filter_edit('cpd', '10em', 2))
+
+
+  statuses = [ (newsgate.moderation.ad.OS_ENABLED, "Enabled"), 
+               (newsgate.moderation.ad.OS_DISABLED, "Disabled"),
+               (newsgate.moderation.ad.OS_DELETED, "Deleted")
+             ]
+
+  for plc in grp.counter_placements:
+
+    if not moderator.show_deleted and \
+       plc.status == newsgate.moderation.ad.OS_DELETED:
+      continue
+
+    prn('\n    <tr class="option_row filter_row"><td class="filter_row_cpn"><a href="/psp/ad/counter_placement?id=',
+        plc.id, '">', el.string.manip.xml_encode(plc.name), 
+        '</a></td><td class="number_option filter_row_cps">')
+
+    for s in statuses:
+      if s[0] == plc.status:
+        prn(s[1])
+        break
+
+    prn('</td><td colspan="2" class="number_option filter_row_cpd">', 
+        plc.display_status and 'Inactive' or 'Active', '</td></tr>')
+
+  prn('\n    <tr class="option_row"><td colspan="4">\
+<a href="/psp/ad/counter_placement?gid=',
+        grp.id, '" target="_blank">ADD&nbsp;PLACEMENT</a></td></tr>')
+
+prn(R'''
+    <tr><td colspan="3">
+      <input type="submit" name="u" value="''', id and "Update" or "Create", 
+    R'''"/>
+    </td></tr>''')
+
+prn(R'''
+    </table>
+  <input type="hidden" name="id" value="''', grp.id, R'''">
+  <input type="hidden" name="cid" value="''', grp.campaign, R'''">
+  </form>
+  </td></tr>
+''', create_copyright(context), R'''
+</table>
+</body>
+</html>
+''')

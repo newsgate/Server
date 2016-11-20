@@ -1,0 +1,1505 @@
+#!/bin/sh
+
+# product   : NewsGate - news search WEB server
+# copyright : Copyright (c) 2005-2016 Karen Arutyunov
+# licenses  : CC BY-NC-SA 3.0; see accompanying LICENSE file
+#             Commercial; contact karen.arutyunov@gmail.com
+
+ARGV="$@"
+DB_NAME="NewsGate"
+
+if test "$ARGV" = "--recreate"; then
+  echo "Droping $DB_NAME database ..."
+  echo "drop database $DB_NAME;" | ng-mysql --user=root
+  
+  if test $? -ne 0; then
+    echo "failed"
+    exit $?
+  fi
+fi
+
+echo "Creating database $DB_NAME ..."
+echo "create database if not exists $DB_NAME character set 'utf8';"\
+ | ng-mysql --user=root
+
+if test $? -ne 0; then
+  echo "failed"
+  exit $?
+fi
+
+echo "Creating table FeedUpdateNum ..."
+echo "create table if not exists FeedUpdateNum ( \
+      update_num BIGINT UNSIGNED NOT NULL DEFAULT 0 \
+) engine=InnoDB;" | ng-mysql --user=root $DB_NAME
+
+if test $? -ne 0; then
+  echo "failed"
+  exit $?
+fi
+
+res=`echo "select * from FeedUpdateNum" | ng-mysql --skip-column-names --user root $DB_NAME`
+
+if test -z "$res"; then
+
+  echo "Filling table FeedUpdateNum ..."
+  echo "insert ignore into FeedUpdateNum set update_num=0;" \
+| ng-mysql --user=root $DB_NAME
+
+  if test $? -ne 0; then
+    echo "failed"
+    exit $?
+  fi
+fi
+
+# Creator types are: C(rawler), U(ser), M(oderator), A(dministrator)
+# Statuses are: E(nabled), D(isabled)
+# Types are: S(ingle-feed), M(ulti-feed), me(T)a-url
+# Processing Types are: (C)heck feeds, parse P(age), look A(round), 
+#                       parse (D)omain
+
+echo "Creating table FeedSource ..."
+echo "create table if not exists FeedSource ( \
+      id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY, \
+      url VARCHAR(512) character set utf8 BINARY NOT NULL, \
+      type ENUM ('S', 'M', 'T') NOT NULL DEFAULT 'S', \
+      processing_type ENUM ('C', 'P', 'A', 'D') NOT NULL DEFAULT 'P', \
+      requests INTEGER UNSIGNED NOT NULL DEFAULT 1, \
+      failed INTEGER UNSIGNED NOT NULL DEFAULT 0, \
+      updated TIMESTAMP NOT NULL, \
+      created TIMESTAMP NOT NULL, \
+      creator_type ENUM ('C', 'M', 'U', 'A') NOT NULL DEFAULT 'A',
+      creator BIGINT UNSIGNED NOT NULL DEFAULT 0, \
+      status ENUM ('E', 'D') NOT NULL DEFAULT 'E', \
+      comment TEXT, \
+      UNIQUE (url(255)) \
+) engine=InnoDB;" | ng-mysql --user=root $DB_NAME
+
+# Creator types are: C(rawler), U(ser), M(oderator), A(dministrator)
+# Statuses are: E(nabled), D(isabled), P(ending), de(L)eted
+
+echo "Creating table Feed ..."
+echo "create table if not exists Feed ( \
+      id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY, \
+      type SMALLINT UNSIGNED NOT NULL, \
+      url VARCHAR(512) character set utf8 BINARY NOT NULL, \
+      encoding VARCHAR(128) character set ascii NOT NULL, \
+      space SMALLINT UNSIGNED NOT NULL DEFAULT 0, \
+      lang SMALLINT UNSIGNED NOT NULL DEFAULT 0xFFFF, \
+      country SMALLINT UNSIGNED NOT NULL DEFAULT 0xFFFF, \
+      updated TIMESTAMP NOT NULL, \
+      update_num BIGINT UNSIGNED NOT NULL, \
+      created TIMESTAMP NOT NULL, \
+      creator_type ENUM ('C', 'M', 'U', 'A') NOT NULL DEFAULT 'A', \
+      creator BIGINT UNSIGNED NOT NULL DEFAULT 0, \
+      status ENUM ('E', 'D', 'P', 'L') NOT NULL DEFAULT 'P', \
+      keywords TEXT, \
+      adjustment_script MEDIUMTEXT, \
+      comment TEXT, \
+      UNIQUE (url(255)) \
+) engine=InnoDB;" | ng-mysql --user=root $DB_NAME
+
+if test $? -ne 0; then
+  echo "failed"
+  exit $?
+fi
+
+echo "Creating table FeedFormerUrl ..."
+
+echo "create table if not exists FeedFormerUrl ( \
+      feed_id BIGINT UNSIGNED NOT NULL REFERENCES Feed ( id ), \
+      url VARCHAR(512) character set utf8 BINARY NOT NULL, \
+      replaced TIMESTAMP NOT NULL,
+      PRIMARY KEY (feed_id, url(255)) ) \
+      engine=InnoDB;" | ng-mysql --user=root $DB_NAME
+
+if test $? -ne 0; then
+  echo "failed"
+  exit $?
+fi
+
+echo "Creating table FeedUpdateBuff ..."
+echo "create table if not exists FeedUpdateBuff ( \
+      id_ BIGINT UNSIGNED NOT NULL PRIMARY KEY, \
+      type_ SMALLINT UNSIGNED, \
+      url_ VARCHAR(512) character set utf8 BINARY, \
+      encoding_ VARCHAR(128) character set ascii NOT NULL, \
+      space_ SMALLINT UNSIGNED NOT NULL, \
+      lang_ SMALLINT UNSIGNED NOT NULL DEFAULT 0xFFFF, \
+      country_ SMALLINT UNSIGNED NOT NULL DEFAULT 0xFFFF, \
+      updated_ TIMESTAMP, \
+      update_num_ BIGINT UNSIGNED NOT NULL, \
+      created_ TIMESTAMP, \
+      creator_type_ ENUM ('C', 'M', 'U', 'A'), \
+      creator_ BIGINT UNSIGNED, \
+      status_ ENUM ('E', 'D', 'P', 'L') NOT NULL, \
+      keywords_ TEXT, \
+      adjustment_script_ MEDIUMTEXT, \
+      comment_ TEXT \
+) engine=InnoDB;" | ng-mysql --user=root $DB_NAME
+
+if test $? -ne 0; then
+  echo "failed"
+  exit $?
+fi
+
+echo "Creating table RSSFeedState ..."
+echo "create table if not exists RSSFeedState ( \
+      feed_id BIGINT UNSIGNED NOT NULL UNIQUE KEY \
+              REFERENCES Feed ( id ), \
+      channel_title VARCHAR(256), \
+      channel_description TEXT, \
+      channel_html_link VARCHAR(2048), \
+      channel_lang SMALLINT UNSIGNED, \
+      channel_country SMALLINT UNSIGNED, \
+      channel_ttl SMALLINT UNSIGNED, \
+      channel_last_build_date DATETIME, \
+      last_request_date DATETIME, \
+      last_modified_hdr VARCHAR(50), \
+      etag_hdr VARCHAR(1024), \
+      content_length_hdr BIGINT, \
+      entropy INTEGER UNSIGNED NOT NULL, \
+      entropy_updated_date DATETIME, \
+      size INTEGER UNSIGNED NOT NULL, \
+      single_chunked TINYINT NOT NULL, \
+      first_chunk_size BIGINT, \
+      heuristics_counter INTEGER NOT NULL, \
+      cache BLOB(102400) NOT NULL \
+) engine=InnoDB;" | ng-mysql --user=root $DB_NAME
+
+if test $? -ne 0; then
+  echo "failed"
+  exit $?
+fi
+
+echo "Creating table RSSFeedMessageCodes ..."
+echo "create table if not exists RSSFeedMessageCodes ( \
+      feed_id BIGINT UNSIGNED NOT NULL \
+              REFERENCES Feed ( id ), \
+      msg_id INTEGER UNSIGNED NOT NULL, \
+      published BIGINT UNSIGNED NOT NULL, \
+      PRIMARY KEY (feed_id, msg_id) \
+) engine=InnoDB;" | ng-mysql --user=root $DB_NAME
+
+if test $? -ne 0; then
+  echo "failed"
+  exit $?
+fi
+
+echo "Creating table RSSFeedStat ..."
+echo "create table if not exists RSSFeedStat ( \
+      date DATETIME NOT NULL, \
+      feed_id BIGINT UNSIGNED NOT NULL \
+              REFERENCES Feed ( id ), \
+      requests INTEGER UNSIGNED NOT NULL, \
+      failed INTEGER UNSIGNED NOT NULL, \
+      unchanged INTEGER UNSIGNED NOT NULL, \
+      not_modified INTEGER UNSIGNED NOT NULL, \
+      presumably_unchanged INTEGER UNSIGNED NOT NULL, \
+      has_changes INTEGER UNSIGNED NOT NULL, \
+      wasted FLOAT(8,2) UNSIGNED NOT NULL, \
+      outbound INTEGER UNSIGNED NOT NULL, \
+      inbound INTEGER UNSIGNED NOT NULL, \
+      requests_duration BIGINT UNSIGNED NOT NULL, \
+      messages INTEGER UNSIGNED NOT NULL, \
+      messages_size INTEGER UNSIGNED NOT NULL, \
+      messages_delay BIGINT UNSIGNED NOT NULL, \
+      max_message_delay BIGINT UNSIGNED NOT NULL, \
+      mistiming BIGINT NOT NULL, \
+      PRIMARY KEY (date, feed_id), \
+      INDEX feed_id_index (feed_id) \
+) engine=InnoDB;" | ng-mysql --user=root $DB_NAME
+
+if test $? -ne 0; then
+  echo "failed"
+  exit $?
+fi
+
+echo "Creating table MessageBankSession ..."
+echo "create table if not exists MessageBankSession ( \
+      bank_ior VARCHAR(512) character set ascii NOT NULL, \
+      session_id VARCHAR(1024) character set ascii, \
+      last_ping_time DATETIME, \
+      PRIMARY KEY (bank_ior) \
+) engine=InnoDB;" | ng-mysql --user=root $DB_NAME
+
+if test $? -ne 0; then
+  echo "failed"
+  exit $?
+fi
+
+echo "Creating table MessageBankManagerState ..."
+
+echo "create table if not exists MessageBankManagerState ( \
+      bank_manager_id VARCHAR(512) character set ascii NOT NULL, \
+      last_check_banks_presence_time DATETIME NOT NULL, \
+      PRIMARY KEY (bank_manager_id) \
+) engine=InnoDB;" | ng-mysql --user=root $DB_NAME
+
+if test $? -ne 0; then
+  echo "failed"
+  exit $?
+fi
+
+# text field len = len in unicode chars * uchar max utf8 len in bytes
+# like 1024 = 256 * 4,
+# as Unicode 3.0 supports characters up to 10FFFF UTF-8 sequence max len is 4
+
+echo "Creating table Message ..."
+
+echo "create table if not exists Message ( \
+      id BIGINT UNSIGNED NOT NULL PRIMARY KEY, \
+      flags TINYINT UNSIGNED NOT NULL, \
+      signature BIGINT UNSIGNED NOT NULL, \
+      url_signature BIGINT UNSIGNED NOT NULL, \
+      source_id BIGINT UNSIGNED NOT NULL, \
+      published BIGINT UNSIGNED NOT NULL, \
+      fetched BIGINT UNSIGNED NOT NULL, \
+      space SMALLINT UNSIGNED NOT NULL, \
+      complements BLOB(40960) NOT NULL, \
+      url VARCHAR(2048) character set utf8, \
+      lang SMALLINT UNSIGNED NOT NULL, \
+      country SMALLINT UNSIGNED NOT NULL, \
+      source_title VARCHAR(1024), \
+      source_html_link VARCHAR(2048) character set utf8, \
+      broken_down BLOB(20480) NOT NULL \
+) engine=InnoDB;" | ng-mysql --user=root $DB_NAME
+
+if test $? -ne 0; then
+  echo "failed"
+  exit $?
+fi
+
+echo "Creating table MessageDict ..."
+
+echo "create table if not exists MessageDict ( \
+      id BIGINT UNSIGNED NOT NULL PRIMARY KEY, \
+      hash INTEGER UNSIGNED NOT NULL \
+) engine=InnoDB;" | ng-mysql --user=root $DB_NAME
+
+if test $? -ne 0; then
+  echo "failed"
+  exit $?
+fi
+
+echo "Creating table MessageCat ..."
+
+echo "create table if not exists MessageCat ( \
+      id BIGINT UNSIGNED NOT NULL PRIMARY KEY, \
+      categorizer_hash INTEGER UNSIGNED NOT NULL, \
+      categories BLOB(40960) NOT NULL \
+) engine=InnoDB;" | ng-mysql --user=root $DB_NAME
+
+if test $? -ne 0; then
+  echo "failed"
+  exit $?
+fi
+
+echo "Creating table MessageCatBuff ..."
+
+echo "create table if not exists MessageCatBuff ( \
+      id BIGINT UNSIGNED NOT NULL PRIMARY KEY, \
+      categorizer_hash INTEGER UNSIGNED NOT NULL \
+) engine=InnoDB;" | ng-mysql --user=root $DB_NAME
+
+if test $? -ne 0; then
+  echo "failed"
+  exit $?
+fi
+
+echo "Creating table MessageStat ..."
+
+echo "create table if not exists MessageStat ( \
+      id BIGINT UNSIGNED NOT NULL PRIMARY KEY, \
+      event_id BIGINT UNSIGNED NOT NULL, \
+      event_capacity INTEGER UNSIGNED NOT NULL, \
+      impressions BIGINT UNSIGNED NOT NULL, \
+      clicks BIGINT UNSIGNED NOT NULL, \
+      visited BIGINT UNSIGNED NOT NULL \
+) engine=InnoDB;" | ng-mysql --user=root $DB_NAME
+
+if test $? -ne 0; then
+  echo "failed"
+  exit $?
+fi
+
+echo "Creating MessageFilterUpdateNum table ..."
+
+echo "create table if not exists MessageFilterUpdateNum ( \
+      update_num BIGINT UNSIGNED NOT NULL DEFAULT 0 ) \
+      engine=InnoDB;" | \
+ng-mysql --user root $DB_NAME
+
+if test $? -ne 0; then
+  echo "failed"
+  exit $?
+fi
+
+res=`echo "select * from MessageFilterUpdateNum" | ng-mysql --skip-column-names --user root $DB_NAME`
+
+if test -z "$res"; then
+
+  echo "Filling table MessageFilterUpdateNum ..."
+
+  echo "insert ignore into MessageFilterUpdateNum set update_num=0;" \
+| ng-mysql --user=root $DB_NAME
+
+  if test $? -ne 0; then
+    echo "failed"
+    exit $?
+  fi
+fi
+
+echo "Creating MessageFetchFilter table ..."
+
+echo "create table if not exists MessageFetchFilter ( \
+      expression MEDIUMTEXT, \
+      description TEXT(1024) ) \
+      engine=InnoDB;" | \
+ng-mysql --user root $DB_NAME
+
+if test $? -ne 0; then
+  echo "failed"
+  exit $?
+fi
+
+echo "Creating table MessageFilter ..."
+
+echo "create table if not exists MessageFilter ( \
+      id BIGINT UNSIGNED NOT NULL PRIMARY KEY, \
+      updated TIMESTAMP NOT NULL, \
+      INDEX updated_index (updated) \
+) engine=InnoDB;" | ng-mysql --user=root $DB_NAME
+
+if test $? -ne 0; then
+  echo "failed"
+  exit $?
+fi
+
+echo "Creating MessageBuff table ..."
+
+echo "create table if not exists MessageBuff ( \
+      id BIGINT UNSIGNED NOT NULL PRIMARY KEY, \
+      flags TINYINT UNSIGNED NOT NULL, \
+      signature BIGINT UNSIGNED NOT NULL, \
+      url_signature BIGINT UNSIGNED NOT NULL, \
+      source_id BIGINT UNSIGNED NOT NULL, \
+      published BIGINT UNSIGNED NOT NULL, \
+      fetched BIGINT UNSIGNED NOT NULL, \
+      space SMALLINT UNSIGNED NOT NULL, \
+      complements BLOB(40960) NOT NULL, \
+      url VARCHAR(2048) character set utf8, \
+      lang SMALLINT UNSIGNED NOT NULL, \
+      country SMALLINT UNSIGNED NOT NULL, \
+      source_title VARCHAR(1024), \
+      source_html_link VARCHAR(2048) character set utf8, \
+      broken_down BLOB(20480) NOT NULL ) \
+      engine=InnoDB;" | \
+ng-mysql --user root $DB_NAME
+
+if test $? -ne 0; then
+  echo "failed"
+  exit 1
+fi
+
+echo "Creating table Event ..."
+
+echo "create table if not exists Event ( \
+      event_id BIGINT UNSIGNED NOT NULL PRIMARY KEY, \
+      lang SMALLINT UNSIGNED NOT NULL, \
+      data MEDIUMBLOB NOT NULL \
+) engine=InnoDB;" | ng-mysql --user=root $DB_NAME
+
+if test $? -ne 0; then
+  echo "failed"
+  exit $?
+fi
+
+echo "Creating table EventMessage ..."
+
+echo "create table if not exists EventMessage ( \
+      id BIGINT UNSIGNED NOT NULL PRIMARY KEY, \
+      lang SMALLINT UNSIGNED NOT NULL, \
+      data TINYBLOB NOT NULL \
+) engine=InnoDB;" | ng-mysql --user=root $DB_NAME
+
+if test $? -ne 0; then
+  echo "failed"
+  exit $?
+fi
+
+echo "Creating table Category ..."
+
+echo "create table if not exists Category ( \
+      id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY, \
+      name VARCHAR(512) BINARY NOT NULL, \
+      status ENUM ('E', 'D') NOT NULL DEFAULT 'D', \
+      searcheable ENUM ('Y', 'N') NOT NULL DEFAULT 'Y', \
+      updated TIMESTAMP NOT NULL, \
+      created TIMESTAMP NOT NULL, \
+      creator BIGINT UNSIGNED NOT NULL DEFAULT 0, \
+      version BIGINT UNSIGNED NOT NULL DEFAULT 1, \
+      description TEXT(1024) \
+) engine=InnoDB;" | ng-mysql --user=root $DB_NAME
+
+if test $? -ne 0; then
+  echo "failed"
+  exit $?
+fi
+
+res=`echo "select * from Category" | ng-mysql --skip-column-names --user root $DB_NAME`
+
+if test -z "$res"; then
+
+  echo "Filling table Category ..."
+
+  echo "insert ignore into Category (name, status, searcheable, created) values \
+('', 'E', 'Y', NOW());" \
+| ng-mysql --user=root $DB_NAME
+
+  if test $? -ne 0; then
+    echo "failed"
+    exit $?
+  fi
+fi
+
+echo "Creating table CategoryChild ..."
+
+echo "create table if not exists CategoryChild ( \
+      id BIGINT UNSIGNED NOT NULL REFERENCES Category ( id ), \
+      child_id BIGINT UNSIGNED NOT NULL REFERENCES Category ( id ),
+      PRIMARY KEY (id, child_id) \
+) engine=InnoDB;" | ng-mysql --user=root $DB_NAME
+
+if test $? -ne 0; then
+  echo "failed"
+  exit $?
+fi
+
+echo "Creating table CategoryWordList ..."
+
+echo "create table if not exists CategoryWordList ( \
+      category_id BIGINT UNSIGNED NOT NULL REFERENCES Category ( id ),
+      name VARCHAR(128) BINARY NOT NULL, \
+      words MEDIUMTEXT, \
+      version BIGINT UNSIGNED NOT NULL DEFAULT 1, \
+      description TEXT(1024), \
+      PRIMARY KEY (category_id, name) \
+) engine=InnoDB;" | ng-mysql --user=root $DB_NAME
+
+if test $? -ne 0; then
+  echo "failed"
+  exit $?
+fi
+
+echo "Creating table CategoryExpression ..."
+
+echo "create table if not exists CategoryExpression ( \
+      category_id BIGINT UNSIGNED NOT NULL REFERENCES Category ( id ),
+      expression MEDIUMTEXT, \
+      description TEXT(1024), \
+      INDEX category_id_index (category_id)
+) engine=InnoDB;" | ng-mysql --user=root $DB_NAME
+
+if test $? -ne 0; then
+  echo "failed"
+  exit $?
+fi
+
+echo "Creating table CategoryLocale ..."
+
+echo "create table if not exists CategoryLocale ( \
+      category_id BIGINT UNSIGNED NOT NULL REFERENCES Category ( id ),
+      lang SMALLINT UNSIGNED NOT NULL, \
+      country SMALLINT UNSIGNED NOT NULL, \
+      name VARCHAR(512) BINARY NOT NULL, \
+      title TEXT(1024) BINARY NOT NULL, \
+      short_title TEXT(512) BINARY NOT NULL, \
+      description TEXT(1024) BINARY NOT NULL, \
+      keywords TEXT(1024) BINARY NOT NULL, \
+      PRIMARY KEY (category_id, lang, country),
+      INDEX category_id_index (category_id)
+) engine=InnoDB;" | ng-mysql --user=root $DB_NAME
+
+if test $? -ne 0; then
+  echo "failed"
+  exit $?
+fi
+
+echo "Creating table CategoryMessage ..."
+
+echo "create table if not exists CategoryMessage ( \
+      category_id BIGINT UNSIGNED NOT NULL REFERENCES Category ( id ), \
+      message_id BIGINT UNSIGNED NOT NULL, \
+      relation ENUM ('I', 'E') NOT NULL, \
+      updated TIMESTAMP NOT NULL, \
+      PRIMARY KEY (category_id, message_id) \
+) engine=InnoDB;" | ng-mysql --user=root NewsGate
+
+if test $? -ne 0; then
+  echo "failed"
+  exit $?
+fi
+
+echo "Creating table CategoryUpdateNum ..."
+
+echo "create table if not exists CategoryUpdateNum ( \
+      update_num BIGINT UNSIGNED NOT NULL DEFAULT 0 ) \
+      engine=InnoDB;" | \
+ng-mysql --user root $DB_NAME
+
+if test $? -ne 0; then
+  echo "failed"
+  exit $?
+fi
+
+res=`echo "select * from CategoryUpdateNum" | ng-mysql --skip-column-names --user root $DB_NAME`
+
+if test -z "$res"; then
+
+  echo "Filling table CategoryUpdateNum ..."
+
+  echo "insert ignore into CategoryUpdateNum set update_num=0;" \
+| ng-mysql --user=root $DB_NAME
+
+  if test $? -ne 0; then
+    echo "failed"
+    exit $?
+  fi
+fi
+
+echo "Creating table ModerationChangeLog ..."
+
+echo "create table if not exists ModerationChangeLog ( \
+      id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+      type SMALLINT UNSIGNED NOT NULL, \
+      subtype SMALLINT UNSIGNED NOT NULL, \
+      time TIMESTAMP NOT NULL, \
+      ip VARCHAR(16) NOT NULL, \
+      moderator BIGINT UNSIGNED NOT NULL, \
+      moderator_name VARCHAR(100) NOT NULL, \
+      url VARCHAR(1024) character set ascii NOT NULL, \
+      summary TEXT NOT NULL, \
+      details LONGTEXT NOT NULL \
+) engine=InnoDB;" | ng-mysql --user=root $DB_NAME
+
+if test $? -ne 0; then
+  echo "failed"
+  exit $?
+fi
+
+echo "Creating EventBuff table ..."
+
+echo "create table if not exists EventBuff ( \
+      event_id BIGINT UNSIGNED NOT NULL PRIMARY KEY, \
+      lang_ SMALLINT UNSIGNED NOT NULL, \
+      data_ MEDIUMBLOB NOT NULL \
+) engine=InnoDB;" | ng-mysql --user root $DB_NAME
+
+if test $? -ne 0; then
+  echo "failed"
+  exit 1
+fi
+
+echo "Creating table EventMessageBuff ..."
+
+echo "create table if not exists EventMessageBuff ( \
+      id BIGINT UNSIGNED NOT NULL PRIMARY KEY, \
+      lang_ SMALLINT UNSIGNED NOT NULL, \
+      data_ TINYBLOB NOT NULL
+) engine=InnoDB;" | ng-mysql --user=root $DB_NAME
+
+if test $? -ne 0; then
+  echo "failed"
+  exit $?
+fi
+
+echo "Creating RSSFeedMessageCodesBuff table ..."
+
+echo "create table if not exists RSSFeedMessageCodesBuff ( \
+      feed_id_ BIGINT UNSIGNED NOT NULL \
+      REFERENCES Feed ( id ), \
+      msg_id_ INTEGER UNSIGNED NOT NULL, \
+      published_ BIGINT UNSIGNED NOT NULL, \
+      PRIMARY KEY (feed_id_, msg_id_) ) \
+      engine=InnoDB;" | \
+ng-mysql --user root $DB_NAME
+
+if test $? -ne 0; then
+  echo "failed"
+  exit 1
+fi
+
+echo "Creating RSSFeedStatBuff table ..."
+
+echo "create table if not exists RSSFeedStatBuff ( \
+      date_ DATETIME NOT NULL, \
+      feed_id_ BIGINT UNSIGNED NOT NULL \
+        REFERENCES Feed ( id ), \
+      requests_ INTEGER UNSIGNED NOT NULL, \
+      failed_ INTEGER UNSIGNED NOT NULL, \
+      unchanged_ INTEGER UNSIGNED NOT NULL, \
+      not_modified_ INTEGER UNSIGNED NOT NULL, \
+      presumably_unchanged_ INTEGER UNSIGNED NOT NULL, \
+      has_changes_ INTEGER UNSIGNED NOT NULL, \
+      wasted_ FLOAT(8,2) UNSIGNED NOT NULL, \
+      outbound_ INTEGER UNSIGNED NOT NULL, \
+      inbound_ INTEGER UNSIGNED NOT NULL, \
+      requests_duration_ BIGINT UNSIGNED NOT NULL, \
+      messages_ INTEGER UNSIGNED NOT NULL, \
+      messages_size_ INTEGER UNSIGNED NOT NULL, \
+      messages_delay_ BIGINT UNSIGNED NOT NULL, \
+      max_message_delay_ BIGINT UNSIGNED NOT NULL, \
+      mistiming_ BIGINT NOT NULL, \
+      PRIMARY KEY (date_, feed_id_) ) \
+      engine=InnoDB;" | \
+ng-mysql --user root $DB_NAME
+
+if test $? -ne 0; then
+  echo "failed"
+  exit 1
+fi
+
+echo "Creating FeedBuff table ..."
+
+echo "create table if not exists FeedBuff ( \
+      type SMALLINT UNSIGNED NOT NULL, \
+      url VARCHAR(512) character set utf8 BINARY NOT NULL, \
+      update_num BIGINT UNSIGNED NOT NULL DEFAULT 0, \
+      created TIMESTAMP, \
+      creator_type ENUM ('C', 'M', 'U', 'A') NOT NULL, \
+      creator BIGINT UNSIGNED NOT NULL, \
+      status ENUM ('E', 'D', 'P', 'L') NOT NULL DEFAULT 'P', \
+      adjustment_script MEDIUMTEXT, \
+      UNIQUE (url(255)) \
+) engine=InnoDB;" | \
+ng-mysql --user root $DB_NAME
+
+if test $? -ne 0; then
+  echo "failed"
+  exit 1
+fi
+
+echo "Creating FeedSourceBuff table ..."
+
+echo "create table if not exists FeedSourceBuff ( \
+      url VARCHAR(512) character set utf8 BINARY NOT NULL, \
+      type ENUM ('S', 'M', 'T') NOT NULL DEFAULT 'S', \
+      processing_type ENUM ('C', 'P', 'A', 'D') NOT NULL \
+      DEFAULT 'P', created TIMESTAMP, \
+      creator_type ENUM ('C', 'M', 'U', 'A') NOT NULL, \
+      creator BIGINT UNSIGNED NOT NULL, \
+      UNIQUE (url(255)) \
+)     engine=InnoDB;" | \
+ng-mysql --user root $DB_NAME
+
+if test $? -ne 0; then
+  echo "failed"
+  exit 1
+fi
+
+echo "Creating StatSearchRequest table ..."
+
+echo "create table if not exists StatSearchRequest ( \
+      id CHAR(32) character set ascii NOT NULL, \
+      time DATETIME NOT NULL, \
+      time_usec MEDIUMINT UNSIGNED NOT NULL, \
+      request_duration INTEGER UNSIGNED NOT NULL, \
+      search_duration INTEGER UNSIGNED NOT NULL, \
+      host VARCHAR(256) character set utf8 NOT NULL, \
+      client_id VARCHAR(32) character set ascii NOT NULL, \
+      client_type ENUM ('C', 'R', 'B', 'U') NOT NULL, \
+      client_name VARCHAR(20) character set ascii NOT NULL, \
+      client_os VARCHAR(20) character set ascii NOT NULL, \
+      device_type ENUM ('C', 'T', 'P', 'U') NOT NULL, \
+      device VARCHAR(20) character set ascii NOT NULL, \
+      user_agent VARBINARY(256) NOT NULL, \
+      lang CHAR(3) character set ascii NOT NULL, \
+      country CHAR(3) character set ascii NOT NULL, \
+      ip CHAR(15) character set ascii NOT NULL, \
+      ref_internal TINYINT NOT NULL, \
+      ref_site VARCHAR(256) character set utf8 NOT NULL, \
+      ref_company_domain VARCHAR(256) character set utf8 NOT NULL, \
+      ref_page VARCHAR(1024) character set utf8 NOT NULL, \
+      ref_url VARCHAR(1024) character set utf8 NOT NULL, \
+      protocol ENUM ('R', 'X', 'H', 'J', 'O') NOT NULL, \
+      create_informer TINYINT NOT NULL, \
+      columns TINYINT NOT NULL, \
+      sorting_type TINYINT NOT NULL, \
+      suppression_type TINYINT NOT NULL, \
+      start_item INTEGER UNSIGNED NOT NULL, \
+      item_count INTEGER UNSIGNED NOT NULL, \
+      annotation_len INTEGER NOT NULL, \
+      sr_flags INTEGER UNSIGNED NOT NULL, \
+      gm_flags BIGINT UNSIGNED NOT NULL, \
+      locale_lang CHAR(3) character set ascii NOT NULL, \
+      locale_country CHAR(3) character set ascii NOT NULL, \
+      query VARBINARY(1024) NOT NULL, \
+      informer_params VARBINARY(1024) NOT NULL, \
+      modifier_type ENUM ('E', 'S', 'C', 'A') NOT NULL, \
+      modifier_value VARBINARY(1024) NOT NULL, \
+      filter_lang CHAR(3) character set ascii NOT NULL, \
+      filter_country CHAR(3) character set ascii NOT NULL, \
+      filter_event BIGINT UNSIGNED NOT NULL, \
+      filter_feed VARCHAR(512) character set utf8 NOT NULL, \
+      filter_category VARBINARY(1024) NOT NULL,
+      response_messages_loaded TINYINT NOT NULL, \
+      response_total_matched_messages INTEGER UNSIGNED NOT NULL, \
+      response_suppressed_messages INTEGER UNSIGNED NOT NULL, \
+      optimized_query VARBINARY(1024) NOT NULL, \
+      translate_def_lang CHAR(3) character set ascii NOT NULL, \
+      translate_lang CHAR(3) character set ascii NOT NULL, \
+      message_view ENUM ('P', 'L') NOT NULL, \
+      print_left_bar TINYINT NOT NULL \
+) engine=InnoDB;" | ng-mysql --user=root $DB_NAME
+
+if test $? -ne 0; then
+  echo "failed"
+  exit 1
+fi
+
+echo "Creating StatPageImpression table ..."
+
+echo "create table if not exists StatPageImpression ( \
+      id CHAR(32) character set ascii NOT NULL, \
+      ref_url VARCHAR(1024) character set utf8 NOT NULL, \
+      time DATETIME NOT NULL, \
+      time_usec MEDIUMINT UNSIGNED NOT NULL, \
+      protocol ENUM ('R', 'X', 'H', 'J', 'O') NOT NULL, \
+      ref_internal TINYINT NOT NULL, \
+      ref_site VARCHAR(256) character set utf8 NOT NULL, \
+      ref_company_domain VARCHAR(256) character set utf8 NOT NULL, \
+      ref_page VARCHAR(1024) character set utf8 NOT NULL, \
+      count BIGINT UNSIGNED NOT NULL DEFAULT 1, \
+      PRIMARY KEY (id, ref_url(255)) \
+) engine=InnoDB;" | ng-mysql --user=root $DB_NAME
+
+if test $? -ne 0; then
+  echo "failed"
+  exit 1
+fi
+
+echo "Creating StatPageImpressionBuff table ..."
+
+echo "create table if not exists StatPageImpressionBuff ( \
+      id CHAR(32) character set ascii NOT NULL, \
+      ref_url VARCHAR(1024) character set utf8 NOT NULL, \
+      time DATETIME NOT NULL, \
+      time_usec MEDIUMINT UNSIGNED NOT NULL, \
+      protocol ENUM ('R', 'X', 'H', 'J', 'O') NOT NULL, \
+      ref_internal TINYINT NOT NULL, \
+      ref_site VARCHAR(256) character set utf8 NOT NULL, \
+      ref_company_domain VARCHAR(256) character set utf8 NOT NULL, \
+      ref_page VARCHAR(1024) character set utf8 NOT NULL, \
+      count BIGINT UNSIGNED NOT NULL DEFAULT 1 \
+) engine=InnoDB;" | ng-mysql --user=root $DB_NAME
+
+if test $? -ne 0; then
+  echo "failed"
+  exit 1
+fi
+
+echo "Creating StatMessageImpression table ..."
+
+echo "create table if not exists StatMessageImpression ( \
+      request_id CHAR(32) character set ascii NOT NULL \
+        REFERENCES StatSearchRequest ( id ), \
+      message_id BIGINT UNSIGNED NOT NULL, \
+      client_id VARCHAR(32) character set ascii NOT NULL, \
+      time DATETIME NOT NULL, \
+      time_usec MEDIUMINT UNSIGNED NOT NULL, \
+      count BIGINT UNSIGNED NOT NULL DEFAULT 1, \
+      PRIMARY KEY (request_id, message_id, client_id) \
+) engine=InnoDB;" | ng-mysql --user=root $DB_NAME
+
+if test $? -ne 0; then
+  echo "failed"
+  exit 1
+fi
+
+echo "Creating StatMessageImpressionBuff table ..."
+
+echo "create table if not exists StatMessageImpressionBuff ( \
+      request_id CHAR(32) character set ascii NOT NULL \
+        REFERENCES StatSearchRequest ( id ), \
+      message_id BIGINT UNSIGNED NOT NULL, \
+      client_id VARCHAR(32) character set ascii NOT NULL, \
+      time DATETIME NOT NULL, \
+      time_usec MEDIUMINT UNSIGNED NOT NULL, \
+      count BIGINT UNSIGNED NOT NULL DEFAULT 1 \
+) engine=InnoDB;" | ng-mysql --user=root $DB_NAME
+
+if test $? -ne 0; then
+  echo "failed"
+  exit 1
+fi
+
+echo "Creating StatMessageClick table ..."
+
+echo "create table if not exists StatMessageClick ( \
+      request_id CHAR(32) character set ascii NOT NULL \
+        REFERENCES StatSearchRequest ( id ), \
+      message_id BIGINT UNSIGNED NOT NULL, \
+      client_id VARCHAR(32) character set ascii NOT NULL, \
+      time DATETIME NOT NULL, \
+      time_usec MEDIUMINT UNSIGNED NOT NULL, \
+      count BIGINT UNSIGNED NOT NULL DEFAULT 1, \
+      PRIMARY KEY (request_id, message_id, client_id) \
+) engine=InnoDB;" | ng-mysql --user=root $DB_NAME
+
+if test $? -ne 0; then
+  echo "failed"
+  exit 1
+fi
+
+echo "Creating StatMessageClickBuff table ..."
+
+echo "create table if not exists StatMessageClickBuff ( \
+      request_id CHAR(32) character set ascii NOT NULL \
+        REFERENCES StatSearchRequest ( id ), \
+      message_id BIGINT UNSIGNED NOT NULL, \
+      client_id VARCHAR(32) character set ascii NOT NULL, \
+      time DATETIME NOT NULL, \
+      time_usec MEDIUMINT UNSIGNED NOT NULL, \
+      count BIGINT UNSIGNED NOT NULL DEFAULT 1 \
+) engine=InnoDB;" | ng-mysql --user=root $DB_NAME
+
+if test $? -ne 0; then
+  echo "failed"
+  exit 1
+fi
+
+echo "Creating table StatFeed ..."
+echo "create table if not exists StatFeed ( \
+      date DATETIME NOT NULL, \
+      feed_id BIGINT UNSIGNED NOT NULL REFERENCES Feed ( id ), \
+      msg_impressions BIGINT UNSIGNED NOT NULL, \
+      msg_clicks BIGINT UNSIGNED NOT NULL, \
+      PRIMARY KEY (date, feed_id), \
+      INDEX feed_id_index (feed_id) \
+) engine=InnoDB;" | ng-mysql --user=root $DB_NAME
+
+if test $? -ne 0; then
+  echo "failed"
+  exit $?
+fi
+
+echo "Creating table StatFeedBuff ..."
+echo "create table if not exists StatFeedBuff ( \
+      date DATETIME NOT NULL, \
+      feed_id BIGINT UNSIGNED NOT NULL, \
+      msg_impressions BIGINT UNSIGNED NOT NULL, \
+      msg_clicks BIGINT UNSIGNED NOT NULL \
+) engine=InnoDB;" | ng-mysql --user=root $DB_NAME
+
+if test $? -ne 0; then
+  echo "failed"
+  exit $?
+fi
+
+echo "Creating table Customer ..."
+echo "create table if not exists Customer ( \
+      id BIGINT UNSIGNED NOT NULL PRIMARY KEY, \
+      status ENUM ('E', 'D') NOT NULL, \
+      balance DOUBLE NOT NULL DEFAULT 0 \
+) engine=InnoDB;" | ng-mysql --user=root $DB_NAME
+
+if test $? -ne 0; then
+  echo "failed"
+  exit $?
+fi
+
+res=`echo "select * from Customer" | ng-mysql --skip-column-names --user root $DB_NAME`
+
+if test -z "$res"; then
+
+  echo "Filling Customer ..."
+
+  echo "insert ignore into Customer \
+(id, status) values (1, 'E');" \
+| ng-mysql --user=root $DB_NAME
+
+  if test $? -ne 0; then
+    echo "failed"
+    exit $?
+  fi
+fi
+
+echo "Creating table Advertiser ..."
+echo "create table if not exists Advertiser ( \
+      id BIGINT UNSIGNED NOT NULL PRIMARY KEY REFERENCES Customer ( id ), \
+      name CHAR(128) NOT NULL UNIQUE KEY, \
+      status ENUM ('E', 'D') NOT NULL, \
+      max_ads_per_page INTEGER UNSIGNED NOT NULL DEFAULT 5 \
+) engine=InnoDB;" | ng-mysql --user=root $DB_NAME
+
+if test $? -ne 0; then
+  echo "failed"
+  exit $?
+fi
+
+res=`echo "select * from Advertiser" | ng-mysql --skip-column-names --user root $DB_NAME`
+
+if test -z "$res"; then
+
+  echo "Filling Advertiser ..."
+
+  echo "insert ignore into Advertiser (id, name, status) values \
+(1, 'admin', 'E');" | ng-mysql --user=root $DB_NAME
+
+  if test $? -ne 0; then
+    echo "failed"
+    exit $?
+  fi
+fi
+
+echo "Creating table AdPage ..."
+echo "create table if not exists AdPage ( \
+      id INTEGER UNSIGNED NOT NULL PRIMARY KEY, \
+      name CHAR(128) character set ascii NOT NULL UNIQUE KEY, \
+      status ENUM ('E', 'D') NOT NULL, \
+      max_ad_num INTEGER UNSIGNED NOT NULL \
+) engine=InnoDB;" | ng-mysql --user=root $DB_NAME
+
+if test $? -ne 0; then
+  echo "failed"
+  exit $?
+fi
+
+res=`echo "select * from AdPage" | ng-mysql --skip-column-names --user root $DB_NAME`
+
+if test -z "$res"; then
+
+  echo "Filling AdPage ..."
+
+  echo "insert ignore into AdPage \
+(id, name, status, max_ad_num) values \
+(1, 'Desktop Search, 2 Column Paper View', 'E', 8), \
+(2, 'Desktop Search, Newsline View', 'E', 5), \
+(3, 'Desktop Search, 1 Column Paper View', 'E', 7), \
+(4, 'Tab Search, 2 Column Paper View', 'E', 8), \
+(5, 'Tab Search, Newsline View', 'E', 5), \
+(6, 'Tab Search, 1 Column Paper View', 'E', 7), \
+(7, 'Mobile Search, Newsline View', 'E', 3), \
+(8, 'Mobile Search, 1 Column Paper View', 'E', 5), \
+(9, 'Desktop Message', 'E', 6), \
+(10, 'Tab Message', 'E', 6), \
+(11, 'Mobile Message', 'E', 4) \
+;" \
+| ng-mysql --user=root $DB_NAME
+
+  if test $? -ne 0; then
+    echo "failed"
+    exit $?
+  fi
+fi
+
+echo "Creating table AdSlot ..."
+echo "create table if not exists AdSlot ( \
+      id INTEGER UNSIGNED NOT NULL PRIMARY KEY, \
+      page INTEGER UNSIGNED NOT NULL REFERENCES AdPage ( id ), \
+      name CHAR(128) character set ascii NOT NULL UNIQUE KEY, \
+      status ENUM ('E', 'D') NOT NULL, \
+      min_width INTEGER UNSIGNED NOT NULL, \
+      max_width INTEGER UNSIGNED NOT NULL, \
+      min_height INTEGER UNSIGNED NOT NULL, \
+      max_height INTEGER UNSIGNED NOT NULL \
+) engine=InnoDB;" | ng-mysql --user=root $DB_NAME
+
+if test $? -ne 0; then
+  echo "failed"
+  exit $?
+fi
+
+res=`echo "select * from AdSlot" | ng-mysql --skip-column-names --user root $DB_NAME`
+
+if test -z "$res"; then
+
+  echo "Filling AdSlot ..."
+
+  echo "insert ignore into AdSlot \
+(id, page, name, status, min_width, max_width, min_height, max_height) values \
+(1, 1, 'Message 1 of Desktop Search, 2 Column Paper View', 'E', 30, 750, 10, 300), \
+(2, 1, 'Message 2 of Desktop Search, 2 Column Paper View', 'E', 30, 750, 10, 300), \
+(3, 1, 'Message Area 1 of Desktop Search, 2 Column Paper View', 'E', 30, 750, 10, 600), \
+(4, 1, 'Message Area 2 of Desktop Search, 2 Column Paper View', 'E', 30, 750, 10, 600), \
+(5, 1, 'Right Bar 1 of Desktop Search, 2 Column Paper View', 'E', 30, 200, 30, 300), \
+(6, 1, 'Right Bar 2 of Desktop Search, 2 Column Paper View', 'E', 30, 200, 30, 1000), \
+(7, 1, 'Roof of Desktop Search, 2 Column Paper View', 'E', 30, 1500, 10, 300), \
+(8, 1, 'Basement of Desktop Search, 2 Column Paper View', 'E', 30, 1500, 10, 300), \
+\
+(1000, 2, 'Message Area 1 of Desktop Search, Newsline View', 'E', 30, 1500, 10, 500), \
+(1001, 2, 'Right Bar 1 of Desktop Search, Newsline View', 'E', 30, 200, 30, 300), \
+(1002, 2, 'Right Bar 2 of Desktop Search, Newsline View', 'E', 30, 200, 30, 1000), \
+(1003, 2, 'Roof of Desktop Search, Newsline View', 'E', 30, 1500, 10, 300), \
+(1004, 2, 'Basement of Desktop Search, Newsline View', 'E', 30, 1500, 10, 300), \
+\
+(2000, 3, 'Message 1 of Desktop Search, 1 Column Paper View', 'E', 30, 1500, 10, 300), \
+(2001, 3, 'Message 2 of Desktop Search, 1 Column Paper View', 'E', 30, 1500, 10, 300), \
+(2002, 3, 'Message Area 1 of Desktop Search, 1 Column Paper View', 'E', 30, 1500, 10, 600), \
+(2003, 3, 'Right Bar 1 of Desktop Search, 1 Column Paper View', 'E', 30, 200, 30, 300), \
+(2004, 3, 'Right Bar 2 of Desktop Search, 1 Column Paper View', 'E', 30, 200, 30, 1000), \
+(2005, 3, 'Roof of Desktop Search, 1 Column Paper View', 'E', 30, 1500, 10, 300), \
+(2006, 3, 'Basement of Desktop Search, 1 Column Paper View', 'E', 30, 1500, 10, 300), \
+\
+(3000, 4, 'Message 1 of Tab Search, 2 Column Paper View', 'E', 30, 750, 10, 300), \
+(3001, 4, 'Message 2 of Tab Search, 2 Column Paper View', 'E', 30, 750, 10, 300), \
+(3002, 4, 'Message Area 1 of Tab Search, 2 Column Paper View', 'E', 30, 750, 10, 600), \
+(3003, 4, 'Message Area 2 of Tab Search, 2 Column Paper View', 'E', 30, 750, 10, 600), \
+(3004, 4, 'Right Bar 1 of Tab Search, 2 Column Paper View', 'E', 30, 200, 30, 300), \
+(3005, 4, 'Right Bar 2 of Tab Search, 2 Column Paper View', 'E', 30, 200, 30, 1000), \
+(3006, 4, 'Roof of Tab Search, 2 Column Paper View', 'E', 30, 1500, 10, 300), \
+(3007, 4, 'Basement of Tab Search, 2 Column Paper View', 'E', 30, 1500, 10, 300), \
+\
+(4000, 5, 'Message Area 1 of Tab Search, Newsline View', 'E', 30, 1500, 10, 500), \
+(4001, 5, 'Right Bar 1 of Tab Search, Newsline View', 'E', 30, 200, 30, 300), \
+(4002, 5, 'Right Bar 2 of Tab Search, Newsline View', 'E', 30, 200, 30, 1000), \
+(4003, 5, 'Roof of Tab Search, Newsline View', 'E', 30, 1500, 10, 300), \
+(4004, 5, 'Basement of Tab Search, Newsline View', 'E', 30, 1500, 10, 300), \
+\
+(5000, 6, 'Message 1 of Tab Search, 1 Column Paper View', 'E', 30, 1500, 10, 300), \
+(5001, 6, 'Message 2 of Tab Search, 1 Column Paper View', 'E', 30, 1500, 10, 300), \
+(5002, 6, 'Message Area 1 of Tab Search, 1 Column Paper View', 'E', 30, 1500, 10, 600), \
+(5003, 6, 'Right Bar 1 of Tab Search, 1 Column Paper View', 'E', 30, 200, 30, 300), \
+(5004, 6, 'Right Bar 2 of Tab Search, 1 Column Paper View', 'E', 30, 200, 30, 1000), \
+(5005, 6, 'Roof of Tab Search, 1 Column Paper View', 'E', 30, 1500, 10, 300), \
+(5006, 6, 'Basement of Tab Search, 1 Column Paper View', 'E', 30, 1500, 10, 300), \
+\
+(6000, 7, 'Message Area 1 of Mobile Search, Newsline View', 'E', 30, 1000, 10, 500), \
+(6001, 7, 'Roof of Mobile Search, Newsline View', 'E', 30, 1000, 10, 200), \
+(6002, 7, 'Basement of Mobile Search, Newsline View', 'E', 30, 1000, 10, 200), \
+\
+(7000, 8, 'Message 1 of Mobile Search, 1 Column Paper View', 'E', 30, 1000, 10, 300), \
+(7001, 8, 'Message 2 of Mobile Search, 1 Column Paper View', 'E', 30, 1000, 10, 300), \
+(7002, 8, 'Message Area 1 of Mobile Search, 1 Column Paper View', 'E', 30, 1000, 10, 600), \
+(7003, 8, 'Roof of Mobile Search, 1 Column Paper View', 'E', 30, 1000, 10, 300), \
+(7004, 8, 'Basement of Mobile Search, 1 Column Paper View', 'E', 30, 1000, 10, 300), \
+\
+(8000, 9, 'Message Image of Desktop Message', 'E', 30, 1500, 10, 300), \
+(8001, 9, 'Message Middle of Desktop Message', 'E', 30, 1500, 10, 300), \
+(8002, 9, 'Message Bottom of Desktop Message', 'E', 30, 1500, 10, 600), \
+(8003, 9, 'Right Bar 1 of Desktop Message', 'E', 30, 200, 30, 300), \
+(8004, 9, 'Right Bar 2 of Desktop Message', 'E', 30, 200, 30, 1000), \
+(8005, 9, 'Roof of Desktop Message', 'E', 30, 1500, 10, 300), \
+(8006, 9, 'Basement of Desktop Message', 'E', 30, 1500, 10, 300), \
+\
+(9000, 10, 'Message Image of Tab Message', 'E', 30, 1500, 10, 300), \
+(9001, 10, 'Message Middle of Tab Message', 'E', 30, 1500, 10, 300), \
+(9002, 10, 'Message Bottom of Tab Message', 'E', 30, 1500, 10, 600), \
+(9003, 10, 'Right Bar 1 of Tab Message', 'E', 30, 200, 30, 300), \
+(9004, 10, 'Right Bar 2 of Tab Message', 'E', 30, 200, 30, 1000), \
+(9005, 10, 'Roof of Tab Message', 'E', 30, 1500, 10, 300), \
+(9006, 10, 'Basement of Tab Message', 'E', 30, 1500, 10, 300), \
+\
+(10000, 11, 'Message Image of Mobile Message', 'E', 30, 1000, 10, 300), \
+(10001, 11, 'Message Middle of Mobile Message', 'E', 30, 1000, 10, 300), \
+(10002, 11, 'Message Bottom of Mobile Message', 'E', 30, 1000, 10, 600), \
+(10003, 11, 'Roof of Mobile Message', 'E', 30, 1000, 10, 300), \
+(10004, 11, 'Basement of Mobile Message', 'E', 30, 1000, 10, 300) \
+;" \
+| ng-mysql --user=root $DB_NAME
+
+  if test $? -ne 0; then
+    echo "failed"
+    exit $?
+  fi
+fi
+
+echo "Creating table AdSize ..."
+echo "create table if not exists AdSize ( \
+      id INTEGER UNSIGNED NOT NULL PRIMARY KEY, \
+      name CHAR(64) character set ascii NOT NULL UNIQUE KEY, \
+      status ENUM ('E', 'D') NOT NULL, \
+      width INTEGER UNSIGNED NOT NULL, \
+      height INTEGER UNSIGNED NOT NULL,
+      KEY(width, height)  \
+) engine=InnoDB;" | ng-mysql --user=root $DB_NAME
+
+if test $? -ne 0; then
+  echo "failed"
+  exit $?
+fi
+
+res=`echo "select * from AdSize" | ng-mysql --skip-column-names --user root $DB_NAME`
+
+if test -z "$res"; then
+
+  echo "Filling AdSize ..."
+
+  echo "insert ignore into AdSize \
+(id, name, status, width, height) values \
+(1, 'Leaderboard', 'E', 728, 90), \
+(2, 'Banner', 'E', 468, 60), \
+(3, 'Large Rectangle', 'E', 336, 280), \
+(4, 'Netboard', 'E', 580, 400), \
+(5, 'Medium Rectangle', 'E', 300, 250), \
+(6, 'Wide Skyscraper', 'E', 160, 600), \
+(7, 'Mobile Banner', 'E', 320, 50), \
+(8, 'Half Banner', 'E', 234, 60), \
+(9, 'Large Mobile Banner', 'E', 320, 100), \
+(10, 'Large Leaderboard', 'E', 970, 90), \
+(11, 'Skyscraper', 'E', 120, 600), \
+(12, 'Vertical Banner', 'E', 120, 240), \
+(13, 'Large Skyscraper', 'E', 300, 600), \
+(14, 'Square', 'E', 250, 250), \
+(15, 'Small Square', 'E', 200, 200), \
+(16, 'Small Rectangle', 'E', 180, 150), \
+(17, 'Button', 'E', 125, 125), \
+(18, 'Vertical Rectangle', 'E', 240, 400), \
+(19, 'Panorama', 'E', 980, 120), \
+(20, 'Triple Widescreen', 'E', 250, 360), \
+(21, 'Top Banner', 'E', 930, 180), \
+(22, 'Horizontal Large', 'E', 728, 15), \
+(23, 'Horizontal Medium', 'E', 468, 15), \
+(24, 'Vertical X-Large', 'E', 200, 90), \
+(25, 'Vertical Large', 'E', 180, 90), \
+(26, 'Vertical Medium', 'E', 160, 90), \
+(27, 'Vertical Small', 'E', 120, 90) \
+;" \
+| ng-mysql --user=root $DB_NAME
+
+  if test $? -ne 0; then
+    echo "failed"
+    exit $?
+  fi
+fi
+
+echo "Creating table AdCondition ..."
+echo "create table if not exists AdCondition ( \
+      id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY, \
+      advertiser BIGINT UNSIGNED NOT NULL REFERENCES Advertiser ( id ), \
+      name VARCHAR(128) NOT NULL, \
+      status ENUM ('E', 'D', 'L') NOT NULL, \
+      rnd_mod TINYINT UNSIGNED NOT NULL, \
+      rnd_mod_from TINYINT UNSIGNED NOT NULL, \
+      rnd_mod_to TINYINT UNSIGNED NOT NULL, \
+      group_freq_cap INTEGER UNSIGNED NOT NULL, \
+      group_count_cap INTEGER UNSIGNED NOT NULL, \
+      query_types BIGINT UNSIGNED NOT NULL, \
+      query_type_exclusions BIGINT UNSIGNED NOT NULL, \
+      page_sources VARCHAR(40960) NOT NULL, \
+      page_source_exclusions VARCHAR(40960) NOT NULL, \
+      message_sources VARCHAR(40960) NOT NULL, \
+      message_source_exclusions VARCHAR(40960) NOT NULL, \
+      page_categories VARCHAR(4096) NOT NULL, \
+      page_category_exclusions VARCHAR(4096) NOT NULL, \
+      message_categories VARCHAR(4096) NOT NULL, \
+      message_category_exclusions VARCHAR(4096) NOT NULL, \
+      search_engines VARCHAR(256) character set ascii NOT NULL, \
+      search_engine_exclusions VARCHAR(256) character set ascii NOT NULL, \
+      crawlers VARCHAR(512) character set ascii NOT NULL, \
+      crawler_exclusions VARCHAR(512) character set ascii NOT NULL, \
+      languages VARCHAR(512) character set ascii NOT NULL, \
+      language_exclusions VARCHAR(512) character set ascii NOT NULL, \
+      countries VARCHAR(512) character set ascii NOT NULL, \
+      country_exclusions VARCHAR(512) character set ascii NOT NULL, \
+      ip_masks VARCHAR(102400) character set ascii NOT NULL, \
+      ip_mask_exclusions VARCHAR(102400) character set ascii NOT NULL, \
+      tags VARCHAR(512) character set ascii NOT NULL, \
+      tag_exclusions VARCHAR(512) character set ascii NOT NULL, \
+      referers VARCHAR(40960) NOT NULL, \
+      referer_exclusions VARCHAR(40960) NOT NULL, \
+      content_languages VARCHAR(512) character set ascii NOT NULL, \
+      content_language_exclusions VARCHAR(512) character set ascii NOT NULL, \
+      INDEX advertiser (advertiser), UNIQUE (advertiser, name) \
+) engine=InnoDB;" | ng-mysql --user=root $DB_NAME
+
+if test $? -ne 0; then
+  echo "failed"
+  exit $?
+fi
+
+echo "Creating table Ad ..."
+echo "create table if not exists Ad ( \
+      id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY, \
+      advertiser BIGINT UNSIGNED NOT NULL REFERENCES Advertiser ( id ), \
+      name VARCHAR(128) NOT NULL, \
+      status ENUM ('E', 'D', 'L') NOT NULL, \
+      size INTEGER UNSIGNED NOT NULL REFERENCES AdSize ( id ), \
+      text VARCHAR(10240) NOT NULL, \
+      INDEX advertiser (advertiser), UNIQUE (advertiser, name) \
+) engine=InnoDB;" | ng-mysql --user=root $DB_NAME
+
+if test $? -ne 0; then
+  echo "failed"
+  exit $?
+fi
+
+echo "Creating table AdCounter ..."
+echo "create table if not exists AdCounter ( \
+      id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY, \
+      advertiser BIGINT UNSIGNED NOT NULL REFERENCES Advertiser ( id ), \
+      name VARCHAR(128) NOT NULL, \
+      status ENUM ('E', 'D', 'L') NOT NULL, \
+      text VARCHAR(10240) NOT NULL, \
+      INDEX advertiser (advertiser), UNIQUE (advertiser, name) \
+) engine=InnoDB;" | ng-mysql --user=root $DB_NAME
+
+if test $? -ne 0; then
+  echo "failed"
+  exit $?
+fi
+
+echo "Creating table AdPageAdvRestriction ..."
+echo "create table if not exists AdPageAdvRestriction ( \
+      advertiser BIGINT UNSIGNED NOT NULL REFERENCES Advertiser ( id ), \
+      page INTEGER UNSIGNED NOT NULL REFERENCES AdPage ( id ), \
+      max_ad_num INTEGER UNSIGNED NOT NULL, \
+      PRIMARY KEY (advertiser, page) \
+) engine=InnoDB;" | ng-mysql --user=root $DB_NAME
+
+if test $? -ne 0; then
+  echo "failed"
+  exit $?
+fi
+
+echo "Creating table AdPageAdvAdvRestriction ..."
+echo "create table if not exists AdPageAdvAdvRestriction ( \
+      advertiser BIGINT UNSIGNED NOT NULL REFERENCES Advertiser ( id ), \
+      page INTEGER UNSIGNED NOT NULL REFERENCES AdPage ( id ), \
+      advertiser2 BIGINT UNSIGNED NOT NULL REFERENCES Advertiser ( id ), \
+      max_ad_num INTEGER UNSIGNED NOT NULL, \
+      PRIMARY KEY (advertiser, page, advertiser2) \
+) engine=InnoDB;" | ng-mysql --user=root $DB_NAME
+
+if test $? -ne 0; then
+  echo "failed"
+  exit $?
+fi
+
+echo "Creating table AdCampaign ..."
+echo "create table if not exists AdCampaign ( \
+      id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY, \
+      advertiser BIGINT UNSIGNED NOT NULL REFERENCES Advertiser ( id ), \
+      name VARCHAR(128) NOT NULL, \
+      status ENUM ('E', 'D', 'L') NOT NULL, \
+      INDEX advertiser (advertiser), UNIQUE (advertiser, name) \
+) engine=InnoDB;" | ng-mysql --user=root $DB_NAME
+
+if test $? -ne 0; then
+  echo "failed"
+  exit $?
+fi
+
+echo "Creating table AdGroup ..."
+echo "create table if not exists AdGroup ( \
+      id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY, \
+      advertiser BIGINT UNSIGNED NOT NULL REFERENCES Advertiser ( id ), \
+      campaign BIGINT UNSIGNED NOT NULL REFERENCES AdCampaign ( id ), \
+      name VARCHAR(128) NOT NULL, \
+      status ENUM ('E', 'D', 'L') NOT NULL, \
+      auction_factor DOUBLE NOT NULL, \
+      cap_min_time BIGINT UNSIGNED NOT NULL DEFAULT 0, \
+      INDEX campaign (campaign), UNIQUE (campaign, name) \
+) engine=InnoDB;" | ng-mysql --user=root $DB_NAME
+
+if test $? -ne 0; then
+  echo "failed"
+  exit $?
+fi
+
+echo "Creating table AdGroupCondition ..."
+echo "create table if not exists AdGroupCondition ( \
+      group_id BIGINT UNSIGNED NOT NULL REFERENCES AdGroup ( id ), \
+      condition_id BIGINT UNSIGNED NOT NULL REFERENCES AdCondition ( id ), \
+      advertiser BIGINT UNSIGNED NOT NULL REFERENCES Advertiser ( id ), \
+      PRIMARY KEY (group_id, condition_id) \
+) engine=InnoDB;" | ng-mysql --user=root $DB_NAME
+
+if test $? -ne 0; then
+  echo "failed"
+  exit $?
+fi
+
+echo "Creating table AdCampaignCondition ..."
+echo "create table if not exists AdCampaignCondition ( \
+      campaign_id BIGINT UNSIGNED NOT NULL REFERENCES AdCampaign ( id ), \
+      condition_id BIGINT UNSIGNED NOT NULL REFERENCES AdCondition ( id ), \
+      advertiser BIGINT UNSIGNED NOT NULL REFERENCES Advertiser ( id ), \
+      PRIMARY KEY (campaign_id, condition_id) \
+) engine=InnoDB;" | ng-mysql --user=root $DB_NAME
+
+if test $? -ne 0; then
+  echo "failed"
+  exit $?
+fi
+
+echo "Creating table AdPlacement ..."
+echo "create table if not exists AdPlacement ( \
+      id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY, \
+      advertiser BIGINT UNSIGNED NOT NULL REFERENCES Advertiser ( id ), \
+      group_id BIGINT UNSIGNED NOT NULL REFERENCES AdGroup ( id ), \
+      name VARCHAR(128) NOT NULL, \
+      status ENUM ('E', 'D', 'L') NOT NULL, \
+      slot BIGINT UNSIGNED NOT NULL REFERENCES AdSlot ( id ), \
+      ad BIGINT UNSIGNED NOT NULL REFERENCES Ad ( id ), \
+      cpm DOUBLE NOT NULL, \
+      inject ENUM ('D', 'F') NOT NULL, \
+      INDEX group_id (group_id), UNIQUE (group_id, name) \
+) engine=InnoDB;" | ng-mysql --user=root $DB_NAME
+
+if test $? -ne 0; then
+  echo "failed"
+  exit $?
+fi
+
+echo "Creating table AdCounterPlacement ..."
+echo "create table if not exists AdCounterPlacement ( \
+      id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY, \
+      advertiser BIGINT UNSIGNED NOT NULL REFERENCES Advertiser ( id ), \
+      group_id BIGINT UNSIGNED NOT NULL REFERENCES AdGroup ( id ), \
+      name VARCHAR(128) NOT NULL, \
+      status ENUM ('E', 'D', 'L') NOT NULL, \
+      page BIGINT UNSIGNED NOT NULL REFERENCES AdPage ( id ), \
+      counter BIGINT UNSIGNED NOT NULL REFERENCES AdCounter ( id ), \
+      INDEX group_id (group_id), UNIQUE (group_id, name) \
+) engine=InnoDB;" | ng-mysql --user=root $DB_NAME
+
+if test $? -ne 0; then
+  echo "failed"
+  exit $?
+fi
+
+echo "Creating table AdSelector ..."
+
+echo "create table if not exists AdSelector (\
+      status ENUM ('E', 'D') NOT NULL, \
+      update_num BIGINT UNSIGNED NOT NULL, \
+      pcws_weight_zones INTEGER UNSIGNED NOT NULL DEFAULT 0, \
+      pcws_reduction_rate DOUBLE NOT NULL DEFAULT 0.5) \
+      engine=InnoDB;" | \
+ng-mysql --user root $DB_NAME
+
+if test $? -ne 0; then
+  echo "failed"
+  exit $?
+fi
+
+res=`echo "select * from AdSelector" | ng-mysql --skip-column-names --user root $DB_NAME`
+
+if test -z "$res"; then
+
+  echo "Filling table AdSelector ..."
+
+  echo "insert ignore into AdSelector set status='E', update_num=0;" \
+  | ng-mysql --user=root $DB_NAME
+
+  if test $? -ne 0; then
+    echo "failed"
+    exit $?
+  fi
+fi
+
+echo "Creating table SearchMailSubscription ..."
+echo "create table if not exists SearchMailSubscription ( \
+      id CHAR(32) character set ascii NOT NULL PRIMARY KEY, \
+      status ENUM ('E', 'D', 'L') NOT NULL, \
+      reg_time DATETIME NOT NULL, \
+      reg_time_usec MEDIUMINT UNSIGNED NOT NULL, \
+      update_time DATETIME NOT NULL, \
+      update_time_usec MEDIUMINT UNSIGNED NOT NULL, \
+      search_time BIGINT UNSIGNED NOT NULL, \
+      email VARCHAR(256) COLLATE utf8_bin NOT NULL, \
+      format TINYINT UNSIGNED NOT NULL, \
+      length SMALLINT UNSIGNED NOT NULL, \
+      time_offset SMALLINT NOT NULL, \
+      title TEXT(1024) NOT NULL, \
+      query TEXT(4096) NOT NULL, \
+      modifier BLOB(4096) NOT NULL, \
+      filter BLOB(4096) NOT NULL, \
+      res_query TEXT(4096) NOT NULL, \
+      res_filter_category VARCHAR(2048) NOT NULL, \
+      res_filter_feed VARCHAR(2048) NOT NULL, \
+      res_filter_event BIGINT UNSIGNED NOT NULL, \
+      res_filter_lang CHAR(3) character set ascii NOT NULL, \
+      res_filter_country CHAR(3) character set ascii NOT NULL, \
+      locale_lang CHAR(3) character set ascii NOT NULL, \
+      locale_country CHAR(3) character set ascii NOT NULL, \
+      lang CHAR(3) character set ascii NOT NULL, \
+      user_id VARCHAR(32) character set ascii NOT NULL, \
+      user_ip CHAR(15) character set ascii NOT NULL, \
+      user_agent VARCHAR(256) NOT NULL, \
+      user_session CHAR(32) character set ascii NOT NULL, \
+      times BLOB(512) NOT NULL, \
+      index invariant (email, res_query(256), res_filter_category(128), \
+             res_filter_feed(128), res_filter_event, res_filter_lang, \
+             res_filter_country), \
+      index trust (email, user_id, user_ip, user_agent, user_session, \
+                   update_time) \
+) engine=InnoDB;" | ng-mysql --user=root $DB_NAME
+
+if test $? -ne 0; then
+  echo "failed"
+  exit $?
+fi
+
+echo "Creating table SearchMailSubscriptionUpdate ..."
+echo "create table if not exists SearchMailSubscriptionUpdate ( \
+      token CHAR(32) character set ascii NOT NULL PRIMARY KEY, \
+      state ENUM ('N', 'T', 'C', 'E') NOT NULL, \
+      type TINYINT UNSIGNED NOT NULL, \
+      conf_email VARCHAR(256) COLLATE utf8_bin NOT NULL, \
+      conf_time BIGINT UNSIGNED NOT NULL, \
+      id CHAR(32) character set ascii NOT NULL, \
+      status ENUM ('E', 'D', 'L') NOT NULL, \
+      req_time DATETIME NOT NULL, \
+      req_time_usec MEDIUMINT UNSIGNED NOT NULL, \
+      email VARCHAR(256) COLLATE utf8_bin NOT NULL, \
+      format TINYINT UNSIGNED NOT NULL, \
+      length SMALLINT UNSIGNED NOT NULL, \
+      time_offset SMALLINT NOT NULL, \
+      title TEXT(1024) NOT NULL, \
+      query TEXT(4096) NOT NULL, \
+      modifier BLOB(4096) NOT NULL, \
+      filter BLOB(4096) NOT NULL, \
+      res_query TEXT(4096) NOT NULL, \
+      res_filter_category VARCHAR(2048) NOT NULL, \
+      res_filter_feed VARCHAR(2048) NOT NULL, \
+      res_filter_event BIGINT UNSIGNED NOT NULL, \
+      res_filter_lang CHAR(3) character set ascii NOT NULL, \
+      res_filter_country CHAR(3) character set ascii NOT NULL, \
+      locale_lang CHAR(3) character set ascii NOT NULL, \
+      locale_country CHAR(3) character set ascii NOT NULL, \
+      lang CHAR(3) character set ascii NOT NULL, \
+      user_id VARCHAR(32) character set ascii NOT NULL, \
+      user_ip CHAR(15) character set ascii NOT NULL, \
+      user_agent VARCHAR(256) NOT NULL, \
+      user_session CHAR(32) character set ascii NOT NULL, \
+      times BLOB(512) NOT NULL, \
+      index trust (email, user_id, user_ip, user_agent, user_session, \
+                   conf_time) \
+) engine=InnoDB;" | ng-mysql --user=root $DB_NAME
+
+if test $? -ne 0; then
+  echo "failed"
+  exit $?
+fi
+
+echo "Creating table SearchMailState ..."
+
+echo "create table if not exists SearchMailState ( \
+      last_dispatch_time BIGINT UNSIGNED NOT NULL DEFAULT 0, \
+      mailer_id VARCHAR(256) NOT NULL \
+) engine=InnoDB;" | \
+ng-mysql --user root $DB_NAME
+
+if test $? -ne 0; then
+  echo "failed"
+  exit $?
+fi
+
+res=`echo "select * from SearchMailState" | ng-mysql --skip-column-names --user root $DB_NAME`
+
+if test -z "$res"; then
+
+  echo "Filling table SearchMailState ..."
+
+  echo "insert ignore into SearchMailState set last_dispatch_time=0;" \
+| ng-mysql --user=root $DB_NAME
+
+  if test $? -ne 0; then
+    echo "failed"
+    exit $?
+  fi
+fi
+
+echo "done"

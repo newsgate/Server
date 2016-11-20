@@ -1,0 +1,140 @@
+#!/bin/sh
+
+# product   : NewsGate - news search WEB server
+# copyright : Copyright (c) 2005-2016 Karen Arutyunov
+# licenses  : CC BY-NC-SA 3.0; see accompanying LICENSE file
+#             Commercial; contact karen.arutyunov@gmail.com
+
+USAGE=\
+"Usage: ng-convert (--to <major.iteration.minor.build>)? (--pre-convert <shell command>)"
+
+source "$SITE_CONFIG_ROOT/lib.sh"
+
+function numeric_version()
+{ 
+  echo "$1" | (read a b c d; expr $a \* 1000000 + $b \* 10000 + $c \* 100 + $d) 2>/dev/null
+  return $?
+}
+
+if test "$1" = "--to"; then
+  shift
+  V_TO="$1"
+  shift
+fi
+
+if test "$1" = "--pre-convert"; then
+  shift
+  pre_convert="$1"
+  shift
+fi
+
+conversion_root="$SERVER_SCRIPTS/Convert"
+
+V_FROM=`cat "$DATA_ROOT/VERSION" 2>/dev/null`
+
+if test $? -ne 0; then
+  echo "ng-convert: nothing to convert - data version undefined"
+
+  cp "$SITE_CONFIG_ROOT/VERSION" "$DATA_ROOT"
+
+  if test $? -ne 0; then
+    exit 1
+  fi
+
+  exit 0
+fi
+
+if test -z "$V_TO"; then
+  V_TO=`cat "$SITE_CONFIG_ROOT/VERSION"`
+fi
+
+if test "$V_FROM" = "$V_TO"; then
+  echo_date "ng-convert: nothing to convert - data up to date"
+  exit 0
+fi
+
+echo "ng-convert: converting from $V_FROM to $V_TO ..."
+
+ver=`echo "$V_FROM" | sed -n -e "s/\(.*\)\.\(.*\)\.\(.*\)\.\(.*\)/\1 \2 \3 \4/p"`
+V_FROM=`numeric_version "$ver"`
+
+if test $? -ne 0; then
+  echo "Invalid file format for $DATA_ROOT/VERSION"
+  exit 1
+fi
+
+ver=`echo "$V_TO" | sed -n -e "s/\(.*\)\.\(.*\)\.\(.*\)\.\(.*\)/\1 \2 \3 \4/p"`
+V_TO=`numeric_version "$ver"`
+
+if test $? -ne 0; then
+  echo "Invalid file format for $SITE_CONFIG_ROOT/VERSION"
+  exit 1
+fi
+
+convertors="$conversion_root/ng-convert-*"
+convertor_version=""
+
+for cnv in $convertors; do
+
+  ver=`echo "$cnv" | sed -n -e "s/.*-\(.*\)-\(.*\)-\(.*\)-\(.*\)/\1 \2 \3 \4/p"`
+  vernum=`numeric_version "$ver"`
+
+  if test $? -eq 0; then
+    if test $vernum -gt $V_FROM -a $vernum -le $V_TO; then
+      convertor_version="$convertor_version
+$vernum $cnv"
+    fi
+  fi
+
+done
+
+convertors=`echo "$convertor_version" | sort | while read v p; do echo $p; done`
+check_dbs=0
+
+for cnv in $convertors; do
+
+  if test -n "$pre_convert"; then
+    echo_date "ng-convert: executing $pre_convert ..."
+    eval $pre_convert
+    if test $? -ne 0; then exit 1; fi
+    pre_convert=""
+
+# Decided to suppress post conversion check for now due to long server startup
+# on big DBs
+#    check_dbs=1
+
+  fi
+
+  echo_date "ng-convert: executing $cnv"
+  $cnv "$SITE_CONFIG_ROOT" "$DATA_ROOT" "$CACHE_ROOT"
+
+  if test $? -ne 0; then
+    exit 1
+  fi
+done
+
+cp "$SITE_CONFIG_ROOT/VERSION" "$DATA_ROOT"
+
+if test $? -ne 0; then
+  exit 1
+fi
+
+if test $check_dbs -eq 1; then
+
+  echo_date "ng-convert: checking DBs ... "
+
+  if test "$NO_DB_CHECK" = "1"; then
+    echo "Skipped"
+  else
+    mysqlcheck -C --port=$MYSQL_PORT \
+               --socket="$MYSQL_WORKSPACE_ROOT/mysql.socket" \
+               --user root NewsGate && \
+    mysqlcheck -C --port=$MYSQL_PORT \
+               --socket="$MYSQL_WORKSPACE_ROOT/mysql.socket" \
+               --user root NewsGateModeration
+  fi
+
+  if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+fi
+
+echo_date "ng-convert: conversion successfully completed"

@@ -1,0 +1,160 @@
+from moderation_func import *
+
+request = context.request
+prn, param = request.output.stream.prn, request.input.parameters().find
+conf = context.config.get
+
+moderator = connect_moderator(request, moderator_connector)
+
+is_customer_manager = \
+  moderator.has_privilege(newsgate.moderation.moderator.PV_CUSTOMER_MANAGER) \
+  and conf("moderation.customer_moderating") == "1"
+
+if is_customer_manager == False: el.exit(403) # Forbidden
+
+xml_encode_flags = el.string.manip.XE_TEXT_ENCODING | \
+                   el.string.manip.XE_ATTRIBUTE_ENCODING | \
+                   el.string.manip.XE_PRESERVE_UTF8
+focus_id = "n"
+message = None
+error_occured = False
+
+try:
+  subordinates = moderator.moderator_manager.get_subordinates()
+
+except newsgate.moderation.InvalidSession:
+  el.exit(el.psp.Forward("/psp/login.psp", 
+                         "Your session expired.<br>Please, relogin."))
+
+except newsgate.moderation.NotReady:
+  el.exit(el.psp.Forward(\
+          "/psp/accounts.psp", 
+          "The system is not ready to serve your request.<br>Please, try again in several minutes."))
+
+account_id = int(param("i"))
+account = None
+
+#if account_id == moderator.id and moderator.id == 1:
+if False:
+  account = moderator
+else:
+  for sub in subordinates:
+    if sub.id == account_id:
+      account = sub
+      break
+
+if account == None or conf("moderation.customer_moderating") != "1" or \
+   account.is_customer() == False:
+  el.exit(el.psp.Forward(\
+          "/psp/accounts.psp", 
+          "You have no permission to access this account"))
+
+try:
+  if param("u") == "":
+
+    balance_change = 0.0
+    customer = moderator.customer_manager.get_customer(account_id)
+
+  else:
+
+    balance_change = param("bc")
+
+    try:
+      balance_change = float(balance_change)
+
+    except:  
+      message = "Balance Change should be a float number"
+      error_occured = True
+      focus_id = "bc"
+
+    if error_occured == False:
+      update_info = newsgate.moderation.customer.CustomerUpdateInfo()
+
+      update_info.id = account_id
+      update_info.balance_change = balance_change
+
+      if account.status == newsgate.moderation.moderator.MS_ENABLED:
+         update_info.status = newsgate.moderation.customer.CS_ENABLED
+      else:
+         update_info.status = newsgate.moderation.customer.CS_DISABLED
+
+      customer = moderator.customer_manager.update_customer(update_info)
+      message = "Account '" + account.name + "' was successfully updated"
+
+except newsgate.moderation.moderator.AccountNotExist:
+  el.exit(el.psp.Forward("/psp/accounts.psp", "User account do not exist."))
+
+except newsgate.moderation.InvalidSession:
+  el.exit(el.psp.Forward("/psp/login.psp", 
+                         "Your session expired.<br>Please, relogin."))
+
+except newsgate.moderation.moderator.PermissionDenied:
+      el.exit(403) # Forbidden
+
+except newsgate.moderation.NotReady:
+  el.exit(el.psp.Forward(\
+    "/psp/accounts.psp", 
+    "The system is not ready to serve your request.<br>Please, try again in several minutes."))
+
+encoded_user_name = el.string.manip.xml_encode(account.name, xml_encode_flags)
+
+prn(
+R'''
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>Management: Accounting for ''', encoded_user_name, R'''</title>
+<link rel="stylesheet" type="text/css" href="/fixed/css/common.css" media="all" />
+<link rel="stylesheet" type="text/css" href="/fixed/css/account/accounting.css" media="all"/>
+</head>
+
+<body onload='document.getElementById("''', focus_id, R'''").focus()'>
+<table id="skeleton" cellspacing="0">
+''')
+
+menus = []
+create_topbar_main_menus(context, moderator, "Accounts", menus)
+
+left_menu = [ ("View", "/psp/account/view") ]
+
+if moderator.has_privilege(newsgate.moderation.moderator.PV_ACCOUNT_MANAGER):
+  left_menu.append( ("New", "/psp/account/create") )
+
+  if account_id != 1:
+    left_menu.append( ("Edit", "/psp/account/update?i=" + str(account_id)) )
+
+#left_menu.append( ( "Accounting (" + account.name + ")", "" ) )
+left_menu.append( ( "Accounting", "" ) )
+
+prn(create_topbar(left_menu,
+                  menus[0], 
+                  menus[1]))
+
+prn(R'''
+  <tr><td id="main_area" align="center" valign="top">
+  <form action="/psp/account/accounting">
+    <table id="edit_form" cellspacing="0">
+    <tr><td>Name:</td><td>''', encoded_user_name, R'''</td></tr>
+    <tr><td>Balance:</td><td>''', "%.2f" % customer.balance, R'''</td></tr>
+    <tr><td>Balance Change:</td><td><input class="edit" type="text" name="bc" id="bc" value="''',
+    el.string.manip.xml_encode("%.2f" % balance_change, xml_encode_flags), 
+    R'''"/></td></tr>
+    <tr><td></td><td><input type="submit" value="Update" name="u"/></td></tr>
+    <tr><td colspan="2" class="''', 
+    str(error_occured and "error" or "success"), '">')
+
+if message != None:
+  prn(el.string.manip.xml_encode(message, xml_encode_flags))
+
+prn(R'''</td></tr>
+    </table>
+  <input type="hidden" value="''', account_id, R'''" name="i"/>
+  </form>
+  </td></tr>''')
+
+prn(create_copyright(context), 
+    R'''
+</table>
+</body>
+</html>
+''')

@@ -1,0 +1,64 @@
+from moderation_func import *
+
+request = context.request
+param = request.input.parameters().find
+
+try:
+  moderator = moderator_connector.connect(request, False)
+except:
+  el.exit(401) # Unauthorized
+
+if moderator.has_privilege(newsgate.moderation.moderator.PV_FEED_MANAGER) == False:
+  el.exit(403) # Forbidden
+
+op = param("o")
+arg = param("a")
+
+prefs = el.NameValueMap(request.input.cookies().most_specific("mp"), ':', '-')
+
+if op == "inplace": prefs["inplace"] = arg
+elif op == "space" or op == "lang" or op == "country" or op == "status":
+  
+  vals = arg.split("_")
+
+  feed_info = moderator.feed_manager.feed_info_seq([ vals[0] ],
+                                                   False, 
+                                                   el.Moment(el.TimeValue(0)),
+                                                   el.Moment(el.TimeValue(0)))
+
+  if len(feed_info) == 0: el.exit(400) # Bad request
+
+  feed_info = feed_info[0]
+
+  feed_update_info = newsgate.moderation.feed.FeedUpdateInfo()
+
+  feed_update_info.id = feed_info.id
+  feed_update_info.space = feed_info.space
+  feed_update_info.lang = feed_info.lang.el_code()
+  feed_update_info.country = feed_info.country.el_code()
+  feed_update_info.status = feed_info.status
+  feed_update_info.encoding = feed_info.encoding
+  feed_update_info.adjustment_script = feed_info.adjustment_script
+  feed_update_info.comment = feed_info.comment
+
+  if op == "space": feed_update_info.space = long(vals[1])
+  elif op == "status": feed_update_info.status = long(vals[1])
+  elif op == "lang": feed_update_info.lang = long(vals[1])
+  elif op == "country": feed_update_info.country = long(vals[1])
+
+  moderator.feed_manager.feed_update_info([ feed_update_info ])
+
+else:
+  el.exit(400) # Bad request
+
+expiration = el.Moment(el.TimeValue(request.time().sec() + 2 * 365 * 86400))
+
+request.output.send_header("Cache-Control", "no-cache")
+
+request.output.send_cookie(
+  el.net.http.CookieSetter("mp", 
+                           prefs.string(), 
+                           expiration, 
+                           "/", 
+                           "", 
+                           request.secure()))

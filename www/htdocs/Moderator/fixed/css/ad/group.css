@@ -1,0 +1,33 @@
+#tbl
+{
+  width: 40em;
+  font-size: 100%;
+  padding: 0 0 0 0;
+  margin: 1.3em 0 0 0;
+}
+
+#group
+{
+  width: 40em;
+  font-size: 100%;
+  padding: 0 0 0 0;
+  margin: 0 0 0 0;
+}
+
+.option_row td
+{
+  padding: 0.3em;
+  vertical-align: top;
+}
+
+.header td
+{
+  border-bottom: 1px solid rgb(0,0,80);
+  padding: 0 0.3em 0.3em 0.3em;
+  vertical-align: top;
+}
+
+.label
+{
+  width: 8em;
+}

@@ -1,0 +1,81 @@
+from moderation_func import *
+
+request = context.request
+prn = request.output.stream.prn
+
+moderator = connect_moderator(request, moderator_connector)
+
+if moderator.has_privilege(newsgate.moderation.moderator.PV_FEED_CREATOR) == False:
+  el.exit(403) # Forbidden
+
+prn(
+R'''
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>Management: Register New Feeds</title>
+<link rel="stylesheet" type="text/css" href="/fixed/css/common.css" media="all" />
+<link rel="stylesheet" type="text/css" href="/fixed/css/feed/register.css" media="all" />
+</head>
+
+<body>
+<table id="skeleton" cellspacing="0">
+''')
+
+left_menu = [ ]
+
+feed_moderator = \
+  moderator.has_privilege(newsgate.moderation.moderator.PV_FEED_MANAGER)
+
+if feed_moderator:
+ left_menu.append( ("View", "/psp/feed/view") )
+
+feed_creator = \
+  moderator.has_privilege(newsgate.moderation.moderator.PV_FEED_CREATOR)
+
+if feed_creator:
+  left_menu.append( ("New", "") )
+  left_menu.append( ("Crawling Tasks", "/psp/feed/validations") )
+
+if feed_moderator:
+  left_menu.append( ("XPath", "/psp/feed/xpath") )
+
+left_menu.append( ("Search", 
+                   feed_search_link(feed_creator, feed_moderator, None)) )
+
+menus = []
+create_topbar_main_menus(context, moderator, "Feeds", menus)
+
+prn(create_topbar(left_menu, menus[0], menus[1]))
+
+prn(
+R'''
+  <tr><td id="main_area" align="center" valign="top">
+  <form action="/psp/feed/validate" method="post">
+    <table id="register_form" cellspacing="0">
+      <tr><td colspan="2">Feeds and WEB page urls:</td></tr>
+      <tr><td colspan="2"><textarea rows="10" cols="85" name="f" ></textarea></td></tr>
+      <tr><td colspan="2" id="note">Note: you can specify meta-url like http://www.abc.com/feeds/{{1-20}}.xml</td></tr>
+      <tr><td>Action:</td>
+      <td><select name="s" id="s">
+        <option>Add XML and HTML feeds</option>
+        <option selected="selected">Parse WEB pages, grab XML feeds</option>
+        <option>Look around WEB pages, grab XML feeds</option>
+        <option>Traverse company domain, grab XML feeds ( warning: traffic consuming ! )</option>
+      </select>
+      </td></tr>
+      <tr><td>Request period:</td>
+      <td><input type="text" name="p" id="p" value="1000" maxlength="7"/> milliseconds</td>
+      <tr><td colspan="2"><input type="submit" value="Execute" name="e"/></td></tr>
+    </table>
+  </form>
+''')
+
+prn(
+R'''
+  </td></tr>
+''', create_copyright(context), R'''
+</table>
+</body>
+</html>
+''')

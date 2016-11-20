@@ -1,0 +1,25 @@
+# @file   Makefile.in
+# @author Karen Aroutiounov
+# $Id:$
+
+include Common.pre.rules
+include $(osbe_builddir)/config/CXX/CXX.pre.rules
+include $(osbe_builddir)/config/CXX/Corba.pre.rules
+
+include $(osbe_builddir)/config/CXX/External/Python.pre.rules
+include $(osbe_builddir)/config/CXX/External/ACE.pre.rules
+include $(osbe_builddir)/config/CXX/External/Apache.pre.rules
+
+include $(osbe_builddir)/config/CXX/External/ElBasic.pre.rules
+include $(osbe_builddir)/config/CXX/External/ElPython.pre.rules
+include $(osbe_builddir)/config/CXX/External/ElNet.pre.rules
+include $(osbe_builddir)/config/CXX/External/ElApache.pre.rules
+include $(osbe_builddir)/config/CXX/External/ElCorba.pre.rules
+
+include $(top_builddir)/config/tests/RSSFeed/Service/RSSFeedStubs.so.pre.rules
+
+sources := Frontend.cpp
+target := RSSFrontend
+
+include $(osbe_builddir)/config/CXX/Corba.post.rules
+include $(osbe_builddir)/config/CXX/So.post.rules

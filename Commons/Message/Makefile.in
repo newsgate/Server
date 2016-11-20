@@ -1,0 +1,37 @@
+# @file   Makefile.in
+# @author Karen Aroutiounov
+# $Id:$
+
+include Common.pre.rules
+include $(osbe_builddir)/config/CXX/CXX.pre.rules
+include $(osbe_builddir)/config/CXX/Corba.pre.rules
+
+include $(osbe_builddir)/config/CXX/External/Python.pre.rules
+include $(osbe_builddir)/config/CXX/External/ACE.pre.rules
+include $(osbe_builddir)/config/CXX/External/Google.pre.rules
+
+include $(osbe_builddir)/config/CXX/External/ElBasic.pre.rules
+include $(osbe_builddir)/config/CXX/External/ElPython.pre.rules
+include $(osbe_builddir)/config/CXX/External/ElDictionary.pre.rules
+include $(osbe_builddir)/config/CXX/External/ElNet.pre.rules
+include $(osbe_builddir)/config/CXX/External/ElCorba.pre.rules
+include $(osbe_builddir)/config/CXX/External/ElLibXML.pre.rules
+
+include $(top_builddir)/config/Commons/Feed/FeedCommons.so.pre.rules
+include $(top_builddir)/config/Commons/Python/PythonCommons.so.pre.rules
+
+sources := TransportImpl.cpp \
+           Message.cpp \
+           StoredMessage.cpp \
+           Automation/Automation.cpp
+
+includes := .
+
+corba_stub_idls := MessageTransport.idl
+corba_includes := .
+corba_idl_includes := .
+
+target := MessageCommons
+
+include $(osbe_builddir)/config/CXX/Corba.post.rules
+include $(osbe_builddir)/config/CXX/So.post.rules

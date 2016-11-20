@@ -1,0 +1,446 @@
+#!/bin/sh
+
+# product   : NewsGate - news search WEB server
+# copyright : Copyright (c) 2005-2016 Karen Arutyunov
+# licenses  : CC BY-NC-SA 3.0; see accompanying LICENSE file
+#             Commercial; contact karen.arutyunov@gmail.com
+
+echo "Re-creating MessageBuff table ..."
+
+echo "drop table if exists MessageBuff;" | \
+ng-mysql --user root NewsGate
+
+if test $? -ne 0; then
+  echo "Failed"
+  exit 1
+fi
+
+echo "create table MessageBuff ( \
+      id BIGINT UNSIGNED NOT NULL PRIMARY KEY, \
+      event_id BIGINT UNSIGNED NOT NULL, \
+      event_capacity INTEGER UNSIGNED NOT NULL, \
+      flags TINYINT UNSIGNED NOT NULL, \
+      signature BIGINT UNSIGNED NOT NULL, \
+      dict_hash INTEGER UNSIGNED NOT NULL, \
+      published INTEGER UNSIGNED NOT NULL, \
+      updated INTEGER UNSIGNED NOT NULL, \
+      fetched INTEGER UNSIGNED NOT NULL, \
+      type SMALLINT UNSIGNED NOT NULL, \
+      space SMALLINT UNSIGNED NOT NULL, \
+      complements BLOB(40960) NOT NULL, \
+      url VARCHAR(512) character set ascii, \
+      lang SMALLINT UNSIGNED NOT NULL, \
+      country SMALLINT UNSIGNED NOT NULL, \
+      source_title VARCHAR(256), \
+      source_description VARCHAR(4096), \
+      broken_down BLOB(20480) NOT NULL ) \
+      engine=InnoDB;" | \
+ng-mysql --user root NewsGate
+
+if test $? -eq 0; then
+  echo "Done"
+else
+  echo "Failed"
+  exit 1
+fi
+
+echo "Re-creating MessageNormBuff table ..."
+
+echo "drop table if exists MessageNormBuff;" | \
+ng-mysql --user root NewsGate
+
+if test $? -ne 0; then
+  echo "Failed"
+  exit 1
+fi
+
+echo "create table MessageNormBuff ( \
+      id BIGINT UNSIGNED NOT NULL PRIMARY KEY, \
+      event_id BIGINT UNSIGNED NOT NULL, \
+      event_capacity INTEGER UNSIGNED NOT NULL, \
+      flags TINYINT UNSIGNED NOT NULL, \
+      signature BIGINT UNSIGNED NOT NULL, \
+      dict_hash_ INTEGER UNSIGNED NOT NULL, \
+      published INTEGER UNSIGNED NOT NULL, \
+      updated INTEGER UNSIGNED NOT NULL, \
+      fetched INTEGER UNSIGNED NOT NULL, \
+      type SMALLINT UNSIGNED NOT NULL, \
+      space SMALLINT UNSIGNED NOT NULL, \
+      complements BLOB(40960) NOT NULL, \
+      url VARCHAR(512) character set ascii NOT NULL, \
+      lang_ SMALLINT UNSIGNED NOT NULL, \
+      country SMALLINT UNSIGNED NOT NULL, \
+      source_title VARCHAR(256), \
+      source_description VARCHAR(4096), \
+      broken_down_ BLOB(20480) NOT NULL ) \
+      engine=InnoDB;" | \
+ng-mysql --user root NewsGate
+
+if test $? -eq 0; then
+  echo "Done"
+else
+  echo "Failed"
+  exit 1
+fi
+
+echo "Re-creating MessageEventBuff table ..."
+
+echo "drop table if exists MessageEventBuff;" | \
+ng-mysql --user root NewsGate
+
+if test $? -ne 0; then
+  echo "Failed"
+  exit 1
+fi
+
+echo "create table MessageEventBuff ( \
+      id BIGINT UNSIGNED NOT NULL PRIMARY KEY, \
+      event_id_ BIGINT UNSIGNED NOT NULL, \
+      event_capacity_ INTEGER UNSIGNED NOT NULL, \
+      flags TINYINT UNSIGNED NOT NULL DEFAULT 0, \
+      signature BIGINT UNSIGNED NOT NULL DEFAULT 0, \
+      dict_hash INTEGER UNSIGNED NOT NULL DEFAULT 0, \
+      published INTEGER UNSIGNED NOT NULL DEFAULT 0, \
+      updated INTEGER UNSIGNED NOT NULL DEFAULT 0, \
+      fetched INTEGER UNSIGNED NOT NULL DEFAULT 0, \
+      type SMALLINT UNSIGNED NOT NULL DEFAULT 0, \
+      space SMALLINT UNSIGNED NOT NULL DEFAULT 0, \
+      complements BLOB(40960) NOT NULL DEFAULT '', \
+      url VARCHAR(512) character set ascii, \
+      lang SMALLINT UNSIGNED NOT NULL DEFAULT 0, \
+      country SMALLINT UNSIGNED NOT NULL DEFAULT 0, \
+      source_title VARCHAR(256), \
+      source_description VARCHAR(4096), \
+      broken_down BLOB(20480) NOT NULL DEFAULT '' ) \
+      engine=InnoDB;" | \
+ng-mysql --user root NewsGate
+
+if test $? -eq 0; then
+  echo "Done"
+else
+  echo "Failed"
+  exit 1
+fi
+
+echo "Re-creating EventBuff table ..."
+
+echo "drop table if exists EventBuff;" | \
+ng-mysql --user root NewsGate
+
+if test $? -ne 0; then
+  echo "Failed"
+  exit 1
+fi
+
+echo "create table EventBuff ( \
+      event_id BIGINT UNSIGNED NOT NULL, \
+      updated_ INTEGER UNSIGNED NOT NULL, \
+      data_ BLOB(40960) NOT NULL, \
+      PRIMARY KEY (event_id) ) \
+      engine=InnoDB;" | \
+ng-mysql --user root NewsGate
+
+if test $? -eq 0; then
+  echo "Done"
+else
+  echo "Failed"
+  exit 1
+fi
+
+echo "Re-creating RSSFeedMessageCodesBuff table ..."
+
+echo "drop table if exists RSSFeedMessageCodesBuff;" | \
+ng-mysql --user root NewsGate
+
+if test $? -ne 0; then
+  echo "Failed"
+  exit 1
+fi
+
+echo "create table RSSFeedMessageCodesBuff ( \
+      feed_id_ BIGINT UNSIGNED NOT NULL \
+      REFERENCES RSSFeed ( id ), \
+      msg_id_ INTEGER UNSIGNED NOT NULL, \
+      published_ INTEGER UNSIGNED NOT NULL, \
+      updated_ INTEGER UNSIGNED NOT NULL, \
+      PRIMARY KEY (feed_id_, msg_id_) ) \
+      engine=InnoDB;" | \
+ng-mysql --user root NewsGate
+
+if test $? -eq 0; then
+  echo "Done"
+else
+  echo "Failed"
+  exit 1
+fi
+
+echo "Re-creating RSSFeedStatBuff table ..."
+
+echo "drop table if exists RSSFeedStatBuff;" | \
+ng-mysql --user root NewsGate
+
+if test $? -ne 0; then
+  echo "Failed"
+  exit 1
+fi
+
+echo "create table RSSFeedStatBuff ( \
+      date_ DATETIME NOT NULL, \
+      feed_id_ BIGINT UNSIGNED NOT NULL \
+        REFERENCES Feed ( id ), \
+      requests_ INTEGER UNSIGNED NOT NULL, \
+      failed_ INTEGER UNSIGNED NOT NULL, \
+      unchanged_ INTEGER UNSIGNED NOT NULL, \
+      not_modified_ INTEGER UNSIGNED NOT NULL, \
+      presumably_unchanged_ INTEGER UNSIGNED NOT NULL, \
+      has_changes_ INTEGER UNSIGNED NOT NULL, \
+      wasted_ FLOAT(8,2) UNSIGNED NOT NULL, \
+      outbound_ INTEGER UNSIGNED NOT NULL, \
+      inbound_ INTEGER UNSIGNED NOT NULL, \
+      requests_duration_ INTEGER UNSIGNED NOT NULL, \
+      messages_ INTEGER UNSIGNED NOT NULL, \
+      messages_size_ INTEGER UNSIGNED NOT NULL, \
+      messages_delay_ INTEGER UNSIGNED NOT NULL, \
+      max_message_delay_ INTEGER UNSIGNED NOT NULL, \
+      mistiming_ INTEGER NOT NULL, \
+      PRIMARY KEY (date_, feed_id_) ) \
+      engine=InnoDB;" | \
+ng-mysql --user root NewsGate
+
+if test $? -eq 0; then
+  echo "Done"
+else
+  echo "Failed"
+  exit 1
+fi
+
+echo "Re-creating FeedBuff table ..."
+
+echo "drop table if exists FeedBuff;" | \
+ng-mysql --user root NewsGate
+
+if test $? -ne 0; then
+  echo "Failed"
+  exit 1
+fi
+
+echo "create table FeedBuff ( \
+      type SMALLINT UNSIGNED NOT NULL, \
+      url VARCHAR(512) character set ascii BINARY NOT NULL UNIQUE KEY, \
+      update_num INTEGER UNSIGNED NOT NULL DEFAULT 0, \
+      created TIMESTAMP, \
+      creator_type ENUM ('C', 'M', 'U', 'A') NOT NULL, \
+      creator BIGINT UNSIGNED NOT NULL, \
+      status ENUM ('E', 'D', 'P', 'L') NOT NULL DEFAULT 'P' ) \
+      engine=InnoDB;" | \
+ng-mysql --user root NewsGate
+
+if test $? -eq 0; then
+  echo "Done"
+else
+  echo "Failed"
+  exit 1
+fi
+
+echo "Re-creating FeedSourceBuff table ..."
+
+echo "drop table if exists FeedSourceBuff;" | \
+ng-mysql --user root NewsGate
+
+if test $? -ne 0; then
+  echo "Failed"
+  exit 1
+fi
+
+echo "create table FeedSourceBuff ( \
+      url VARCHAR(512) character set ascii BINARY NOT NULL UNIQUE KEY, \
+      type ENUM ('S', 'M', 'T') NOT NULL DEFAULT 'S', \
+      processing_type ENUM ('C', 'P', 'A', 'D') NOT NULL \
+      DEFAULT 'P', created TIMESTAMP, \
+      creator_type ENUM ('C', 'M', 'U', 'A') NOT NULL, \
+      creator BIGINT UNSIGNED NOT NULL ) \
+      engine=InnoDB;" | \
+ng-mysql --user root NewsGate
+
+if test $? -eq 0; then
+  echo "Done"
+else
+  echo "Failed"
+  exit 1
+fi
+
+echo "Updating FeedUpdateNum table ..."
+
+echo "alter table FeedUpdateNum engine=InnoDB;" | \
+ng-mysql --user root NewsGate
+
+if test $? -eq 0; then
+  echo "Done"
+else
+  echo "Failed"
+  exit 1
+fi
+
+echo "Updating FeedSource table ..."
+
+echo "alter table FeedSource change url url VARCHAR(512) \
+      character set ascii BINARY NOT NULL UNIQUE KEY, engine=InnoDB;" | \
+ng-mysql --user root NewsGate
+
+if test $? -eq 0; then
+  echo "Done"
+else
+  echo "Failed"
+  exit 1
+fi
+
+echo "Updating Feed table ..."
+
+echo "alter table Feed change url url VARCHAR(512) \
+      character set ascii BINARY NOT NULL UNIQUE KEY, engine=InnoDB;" | \
+ng-mysql --user root NewsGate
+
+if test $? -eq 0; then
+  echo "Done"
+else
+  echo "Failed"
+  exit 1
+fi
+
+echo "Updating FeedUpdateBuff table ..."
+
+echo "alter table FeedUpdateBuff change url_ url_ VARCHAR(512) \
+      character set ascii BINARY, engine=InnoDB;" | \
+ng-mysql --user root NewsGate
+
+if test $? -eq 0; then
+  echo "Done"
+else
+  echo "Failed"
+  exit 1
+fi
+
+echo "Updating RSSFeedState table ..."
+
+echo "alter table RSSFeedState engine=InnoDB;" | \
+ng-mysql --user root NewsGate
+
+if test $? -eq 0; then
+  echo "Done"
+else
+  echo "Failed"
+  exit 1
+fi
+
+echo "Updating RSSFeedMessageCodes table ..."
+
+echo "alter table RSSFeedMessageCodes engine=InnoDB;" | \
+ng-mysql --user root NewsGate
+
+if test $? -eq 0; then
+  echo "Done"
+else
+  echo "Failed"
+  exit 1
+fi
+
+echo "Updating RSSFeedStat table ..."
+
+echo "alter table RSSFeedStat engine=InnoDB;" | \
+ng-mysql --user root NewsGate
+
+if test $? -eq 0; then
+  echo "Done"
+else
+  echo "Failed"
+  exit 1
+fi
+
+echo "Updating MessageBankSession table ..."
+
+echo "alter table MessageBankSession change bank_ior bank_ior VARCHAR(512) \
+      character set ascii NOT NULL, change session_id session_id \
+      VARCHAR(1024) character set ascii, engine=InnoDB;" | \
+ng-mysql --user root NewsGate
+
+if test $? -eq 0; then
+  echo "Done"
+else
+  echo "Failed"
+  exit 1
+fi
+
+echo "Updating MessageBankManagerState table ..."
+
+echo "alter table MessageBankManagerState change bank_manager_id \
+      bank_manager_id VARCHAR(512) character set ascii NOT NULL, \
+      engine=InnoDB;" | \
+ng-mysql --user root NewsGate
+
+if test $? -eq 0; then
+  echo "Done"
+else
+  echo "Failed"
+  exit 1
+fi
+
+echo "Updating Message table ..."
+
+echo "alter table Message change url url VARCHAR(512) character set ascii, \
+      engine=InnoDB;" | \
+ng-mysql --user root NewsGate
+
+if test $? -eq 0; then
+  echo "Done"
+else
+  echo "Failed"
+  exit 1
+fi
+
+echo "Updating Event table ..."
+
+echo "alter table Event engine=InnoDB;" | \
+ng-mysql --user root NewsGate
+
+if test $? -eq 0; then
+  echo "Done"
+else
+  echo "Failed"
+  exit 1
+fi
+
+echo "Updating Moderator table ..."
+
+echo "alter table Moderator engine=InnoDB;" | \
+ng-mysql --user root NewsGateModeration
+
+if test $? -eq 0; then
+  echo "Done"
+else
+  echo "Failed"
+  exit 1
+fi
+
+echo "Updating Privilege table ..."
+
+echo "alter table Privilege engine=InnoDB;" | \
+ng-mysql --user root NewsGateModeration
+
+if test $? -eq 0; then
+  echo "Done"
+else
+  echo "Failed"
+  exit 1
+fi
+
+echo "Updating ModeratorPrivileges table ..."
+
+echo "alter table ModeratorPrivileges engine=InnoDB;" | \
+ng-mysql --user root NewsGateModeration
+
+if test $? -eq 0; then
+  echo "Done"
+else
+  echo "Failed"
+  exit 1
+fi

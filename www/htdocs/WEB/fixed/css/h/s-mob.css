@@ -1,0 +1,93 @@
+body
+{
+  -webkit-text-size-adjust: none;
+}
+
+#topbar_table
+{
+  padding: 0 0.1em 0.1em 0.1em;
+}
+
+#tagline 
+{
+  padding: 0.4em 0 0.4em 0.5em;
+}
+
+#menu
+{
+  padding: 0.2em 0em 0.2em 0.3em;
+}
+
+.mob_menu_img
+{
+  border-style: none;
+  margin: 0 2px;
+  vertical-align:bottom;
+}
+
+#main_area
+{
+  padding: 0;
+  margin: 0 auto;
+  width: 100%;
+}
+
+#help_area
+{
+  padding: 0 0.3em 1em;
+  border-style: none;
+  border-bottom: 1px solid rgb(80, 80, 80);
+}
+
+.op_group_heading
+{
+  font-size: 110%;
+  padding: 0.2em 0 0 0;
+}
+
+.op_group_intro
+{
+  padding: 0.2em 0 0;
+}
+
+.op_desc
+{
+  padding: 0.3em 0 0;
+}
+
+.sample_header
+{
+  padding: 0.1em 0 0 0;
+}
+
+.samples
+{
+  padding: 0 0 0 0.3em;
+}
+
+.op_precedence
+{
+  padding: 0.1em 0 0;
+}
+
+/*
+#right_bar 
+{
+  padding: 0.5em 0 0 0.4em;
+  width: 3em;
+}
+
+.right_bar_title
+{
+  width: auto;
+  padding: 0.1em 0 0.3em;
+  white-space: normal;
+  line-height: 90%;
+}
+
+.right_bar_item
+{
+  font-size: 75%;
+  padding: 0 0 0 0.5em;
+}
+*/

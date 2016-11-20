@@ -1,0 +1,5 @@
+#include ../../py/search_util.eng
+
+MSG_IMAGES_HEADING Another {{MSG_IMAGES_COUNT}} ( <a href="{{MSG_PAGE_REF}}" target="_blank">show</a> )
+
+MSG_SOURCE    Source:

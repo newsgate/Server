@@ -1,0 +1,32 @@
+#!/bin/sh
+
+# product   : NewsGate - news search WEB server
+# copyright : Copyright (c) 2005-2016 Karen Arutyunov
+# licenses  : CC BY-NC-SA 3.0; see accompanying LICENSE file
+#             Commercial; contact karen.arutyunov@gmail.com
+
+echo "Cleaning Event table ..."
+
+echo "truncate Event;" | ng-mysql --user root NewsGate
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+echo "Creating EventMessage table ..."
+
+echo "create table EventMessage ( \
+      id BIGINT UNSIGNED NOT NULL PRIMARY KEY, \
+      updated INTEGER UNSIGNED NOT NULL, \
+      data TINYBLOB NOT NULL, \
+      INDEX updated_index (updated) \
+) engine=InnoDB;" | ng-mysql --user=root NewsGate
+
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+echo "Creating EventMessageBuff table ..."
+
+echo "create table EventMessageBuff ( \
+      id BIGINT UNSIGNED NOT NULL PRIMARY KEY, \
+      updated_ INTEGER UNSIGNED NOT NULL, \
+      data_ TINYBLOB NOT NULL
+) engine=InnoDB;" | ng-mysql --user=root NewsGate
+
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi

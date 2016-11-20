@@ -1,0 +1,40 @@
+from random import *
+
+request = context.request
+prn = request.output.stream.prn
+
+prn(
+R'''<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>Session expired</title>
+</head>
+
+<body style="padding:0;margin:0;border:0">
+''')
+
+for i in range(0, 5):
+  prn('  <div style="font-size:150%;padding:5em 0 0 0">')
+
+  for i in range(0, 10):
+  
+    if i % 2 == 0:
+      sign = "-"
+      a = randint(101, 898)
+      b = randint(100, a)
+    else:
+      sign = "+"
+      a = randint(100, 898)
+      b = randint(100, 998 - a)
+
+    prn(R'''
+    <div style="float:left;width:2%">''', 
+    sign, '</div><div style="float:left;width:8%">', a, "<br>", b, '</div>')
+
+  prn('\n  </div>\n')
+
+prn(
+R'''
+</body>
+</html>
+''')

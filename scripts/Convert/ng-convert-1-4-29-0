@@ -1,0 +1,110 @@
+#!/bin/sh
+
+# product   : NewsGate - news search WEB server
+# copyright : Copyright (c) 2005-2016 Karen Arutyunov
+# licenses  : CC BY-NC-SA 3.0; see accompanying LICENSE file
+#             Commercial; contact karen.arutyunov@gmail.com
+
+echo "Updating ModeratorPrivileges table ..."
+
+ids=`echo "select moderator from ModeratorPrivileges where privilege = 2;" | \
+ng-mysql --skip-column-names --user root NewsGateModeration`
+
+if test $? -ne 0; then echo "Failed"; exit 1; fi
+
+for id in $ids; do
+
+  echo "insert ignore into ModeratorPrivileges set moderator=$id, privilege=4, granted_by=0;" \
+  | ng-mysql --user=root NewsGateModeration
+
+  if test $? -ne 0; then echo "Failed"; exit 1; fi
+
+done
+
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+echo "Dropping Privilege table ..."
+
+echo "drop table Privilege;" | ng-mysql --user root NewsGateModeration
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+echo "Creating Category table ..."
+
+echo "create table Category ( \
+      id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY, \
+      name VARCHAR(512) BINARY NOT NULL, \
+      status ENUM ('E', 'D') NOT NULL DEFAULT 'D', \
+      searcheable ENUM ('Y', 'N') NOT NULL DEFAULT 'Y', \
+      updated TIMESTAMP NOT NULL, \
+      created TIMESTAMP NOT NULL, \
+      creator BIGINT UNSIGNED NOT NULL DEFAULT 0, \
+      description TEXT(1024) \
+) engine=InnoDB;" | ng-mysql --user=root NewsGate
+
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+echo "Filling Category table ..."
+
+echo "insert ignore into Category (name, status, searcheable, created) values \
+('', 'E', 'Y', NOW());" \
+| ng-mysql --user=root NewsGate
+
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+echo "Creating CategoryChild table ..."
+
+echo "create table CategoryChild ( \
+      id BIGINT UNSIGNED NOT NULL REFERENCES Category ( id ), \
+      child_id BIGINT UNSIGNED NOT NULL REFERENCES Category ( id ),
+      PRIMARY KEY (id, child_id) \
+) engine=InnoDB;" | ng-mysql --user=root NewsGate
+
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+echo "Creating CategoryExpression table ..."
+
+echo "create table CategoryExpression ( \
+      category_id BIGINT UNSIGNED NOT NULL REFERENCES Category ( id ),
+      expression TEXT(40960), \
+      description TEXT(1024), \
+      INDEX category_id_index (category_id)
+) engine=InnoDB;" | ng-mysql --user=root NewsGate
+
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+echo "Creating CategoryUpdateNum table ..."
+
+echo "create table CategoryUpdateNum ( \
+      update_num INTEGER UNSIGNED NOT NULL DEFAULT 0 ) \
+      engine=InnoDB;" | \
+ng-mysql --user root NewsGate
+
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+echo "Filling CategoryUpdateNum table ..."
+
+echo "insert ignore into CategoryUpdateNum set update_num=0;" \
+| ng-mysql --user=root NewsGate
+
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+echo "Altering Message table ..."
+
+echo "alter table Message add categories BLOB(40960) DEFAULT NULL;" | \
+ng-mysql --user root NewsGate
+
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+echo "Altering MessageBuff table ..."
+
+echo "alter table MessageBuff add categories BLOB(40960) DEFAULT NULL;" | \
+ng-mysql --user root NewsGate
+
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+echo "Dropping MessageEventBuff, MessageNormBuff tables ..."
+
+echo "drop table MessageEventBuff, MessageNormBuff" | \
+ng-mysql --user root NewsGate
+
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi

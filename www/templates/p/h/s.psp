@@ -1,0 +1,201 @@
+import search_util
+
+class PageRender(search_util.SearchPageContext):
+
+  page_render_base = search_util.SearchPageContext
+
+  def __init__(this, context, search_engine):
+    
+    this.page_render_base.__init__(this, context, search_engine, "h", True)
+
+    this.query = ""
+    this.modifier = search_util.Modifier()
+    this.posted = False
+
+  def prn_css(this):
+
+    if this.static.development:
+      
+      this.page_render_base.prn_css(this)
+    
+      this.prn(\
+        '\n<link rel="stylesheet" type="text/css" href="',
+        this.resource_url('/fixed/css/h/s.css'),
+        '" media="all"/>')
+
+      if this.site_version == search_util.SearchPageContext.SV_MOB:
+        this.prn(\
+          '\n<link rel="stylesheet" type="text/css" href="',
+          this.resource_url('/fixed/css/h/s-mob.css'),
+          '" media="all"/>')
+
+    else:
+
+      if this.site_version == search_util.SearchPageContext.SV_MOB:
+        this.prn(\
+          '\n<link rel="stylesheet" type="text/css" href="',
+          this.compound_resource_url('css/h/s-mob.css'),
+          '" media="all"/>')
+
+      else:
+        this.prn(\
+          '\n<link rel="stylesheet" type="text/css" href="',
+          this.compound_resource_url('css/h/s.css'),
+          '" media="all"/>')
+
+request = context.request
+prn = request.output.stream.prn
+loc = context.localization.get
+lm = el.psp.LocalizationMarker
+
+render = PageRender(context, None)
+
+render.prn_html_open()
+render.prn_head_open()
+
+prn('\n<title>', lm, "PAGE_TITLE", ' - ',
+    el.string.manip.xml_encode(render.static.server_instance_name),
+    '</title>')
+
+prn('\n<meta name="description" content="', lm, "PAGE_DESC", '">')
+
+render.prn_css()
+render.prn_head_close()
+
+render.prn_body_open()
+
+prn(R'''
+<table id="topbar_table" cellspacing="0">
+  <tr>
+  <td id="tagline">''', lm, "PAGE_NAME", R'''</td>
+  <td id="menu"><a href="''',
+    el.string.manip.xml_encode(render.site + "/"), '">')
+
+if render.site_version == search_util.SearchPageContext.SV_MOB:
+  prn('<img src="', render.resource_url('/fixed/img/home32.png'),
+      '" width="32" height="32" class="mob_menu_img"/>')
+
+  separator = "<br>"
+
+else:
+  prn(lm, "NEW_SEARCH")
+  separator = "&nbsp;&#xB7; "
+
+prn(R'''</a>
+  </td>
+  </tr>
+</table>
+<table id="main_area" align="center" cellspacing="0">
+<tr>
+<td id="help_area">
+<div class="op_group_heading">''', lm, "OVERVIEW_HEADING", R'''</div>
+<div class="op_group_intro">''', lm, "OVERVIEW_INTRO", R'''</div>
+
+<div class="op_group_heading"><a name="BASE_OPS"></a>''', lm, 
+  "BASE_OPERATORS_HEADING", R'''</div>
+<div class="op_group_intro">''', lm, "BASE_OPERATORS_INTRO", R'''</div>
+
+<div class="op_desc"><a name="ALL"></a>''', lm, "ALL_SEARCH", R'''</div>
+<div class="samples">''', lm, "ALL_SEARCH_SAMPLES", R'''</div>
+<div class="op_desc"><a name="ANY"></a>''', lm, "ANY_SEARCH", R'''</div>
+<div class="samples">''', lm, "ANY_SEARCH_SAMPLES", R'''</div>
+<div class="op_desc"><a name="CATEGORY"></a>''', lm, "CATEGORY_SEARCH", 
+  R'''</div>
+<div class="samples">''', lm, "CATEGORY_SEARCH_SAMPLES", R'''</div>
+<div class="op_desc"><a name="EVERY"></a>''', lm, "EVERY_SEARCH", R'''</div>
+<div class="samples">''', lm, "EVERY_SEARCH_SAMPLES", R'''</div>
+<div class="op_desc"><a name="SITE"></a>''', lm, "SITE_SEARCH", R'''</div>
+<div class="samples">''', lm, "SITE_SEARCH_SAMPLES", R'''</div>
+<div class="op_desc"><a name="URL"></a>''', lm, "URL_SEARCH", R'''</div>
+<div class="samples">''', lm, "URL_SEARCH_SAMPLES", R'''</div>
+
+<div class="op_group_heading"><a name="LOGIC_OPS"></a>''', lm, 
+  "LOGIC_OPERATORS_HEADING", R'''</div>
+<div class="op_group_intro">''', lm, "LOGIC_OPERATORS_INTRO", R'''</div>
+
+<div class="op_desc"><a name="AND"></a>''', lm, "AND_SEARCH", R'''</div>
+<div class="samples">''', lm, "AND_SEARCH_SAMPLES", R'''</div>
+<div class="op_desc"><a name="EXCEPT"></a>''', lm, "EXCEPT_SEARCH", R'''</div>
+<div class="samples">''', lm, "EXCEPT_SEARCH_SAMPLES", R'''</div>
+<div class="op_desc"><a name="OR"></a>''', lm, "OR_SEARCH", R'''</div>
+<div class="samples">''', lm, "OR_SEARCH_SAMPLES", R'''</div>
+<div class="op_precedence">''', lm, "LOGIC_OPERATORS_PRECEDENCE", R'''</div>
+
+<div class="op_group_heading"><a name="RESTRICTING_OPS"></a>''', lm, 
+  "RESTRICTING_OPERATORS_HEADING", R'''</div>
+<div class="op_group_intro">''', lm, "RESTRICTING_OPERATORS_INTRO", R'''</div>
+
+<div class="op_desc"><a name="CAPACITY"></a>''', lm, "CAPACITY_SEARCH", 
+  R'''</div>
+<div class="samples">''', lm, "CAPACITY_SEARCH_SAMPLES", R'''</div>
+<div class="op_desc"><a name="COUNTRY"></a>''', lm, "COUNTRY_SEARCH", 
+  R'''</div>
+<div class="samples">''', lm, "COUNTRY_SEARCH_SAMPLES", R'''</div>
+<div class="op_desc"><a name="DATE"></a>''', lm, "DATE_SEARCH", R'''</div>
+<div class="samples">''', lm, "DATE_SEARCH_SAMPLES", R'''</div>
+<div class="op_desc"><a name="DOMAIN"></a>''', lm, "DOMAIN_SEARCH", R'''</div>
+<div class="samples">''', lm, "DOMAIN_SEARCH_SAMPLES", R'''</div>
+<div class="op_desc"><a name="FETCHED"></a>''', lm, "FETCHED_SEARCH", 
+  R'''</div>
+<div class="samples">''', lm, "FETCHED_SEARCH_SAMPLES", R'''</div>
+<div class="op_desc"><a name="LANGUAGE"></a>''', lm, "LANG_SEARCH", R'''</div>
+<div class="samples">''', lm, "LANG_SEARCH_SAMPLES", R'''</div>
+<div class="op_desc"><a name="VISITED"></a>''', lm, "VISITED_SEARCH", 
+  R'''</div>
+<div class="samples">''', lm, "VISITED_SEARCH_SAMPLES", R'''</div>
+<div class="op_desc"><a name="WITH"></a>''', lm, "WITH_SEARCH", R'''</div>
+<div class="samples">''', lm, "WITH_SEARCH_SAMPLES", R'''</div>
+
+<div class="op_group_heading"><a name="TIME"></a>''', lm, "TIME_HEADING", 
+R'''</div>
+<div class="op_group_intro">''', lm, "TIME_DESC", R'''</div>
+<div class="sample_header">''', lm, "TIME_1", R'''</div>
+<div class="samples">''', lm, "TIME_1_SAMPLE", R'''</div>
+<div class="sample_header">''', lm, "TIME_2", R'''</div>
+<div class="samples">''', lm, "TIME_2_SAMPLE", R'''</div>
+<div class="sample_header">''', lm, "TIME_3", R'''</div>
+<div class="samples">''', lm, "TIME_3_SAMPLE", R'''</div>
+
+</td>''')
+
+if render.site_version != search_util.SearchPageContext.SV_MOB:
+  prn(R'''
+<td id="right_bar">
+<div class="right_bar_title"><a href="#BASE_OPS">''', lm, 
+  "BASE_OPERATORS_HEADING", R'''</a></div>
+<div class="right_bar_item">
+<a href="#ALL">ALL</a>''', separator,
+'<a href="#ANY">ANY</a>', separator,
+'<a href="#CATEGORY">CATEGORY</a>', separator,
+'<a href="#EVERY">EVERY</a>', separator,
+'<a href="#SITE">SITE</a>', separator,
+  R'''<a href="#URL">URL</a>
+</div>
+<div class="right_bar_title"><a href="#LOGIC_OPS">''', lm, 
+  "LOGIC_OPERATORS_HEADING", R'''</a></div>
+<div class="right_bar_item">
+<a href="#AND">AND</a>''', separator,
+'<a href="#EXCEPT">EXCEPT', separator,
+      R'''<a href="#OR">OR</a>
+</div>
+<div class="right_bar_title"><a href="#RESTRICTING_OPS">''', lm, 
+  "RESTRICTING_OPERATORS_HEADING", R'''</a></div>
+<div class="right_bar_item">
+<a href="#CAPACITY">CAPACITY</a>''', separator,
+'<a href="#COUNTRY">COUNTRY</a>', separator,
+'<a href="#DATE">DATE</a>', separator,
+'<a href="#DOMAIN">DOMAIN</a>', separator,
+'<a href="#FETCHED">FETCHED</a>', separator,
+'<a href="#LANGUAGE">LANGUAGE</a>', separator,
+'<a href="#VISITED">VISITED</a>', separator,
+      R'''<a href="#WITH">WITH</a>
+</div>
+<div class="right_bar_title"><a href="#TIME">''', lm, "TIME_HEADING", 
+      '</a></div>\n</td>')
+
+prn('\n</tr></table>')
+
+render.prn_copyright()
+render.prn_counters()
+render.prn_body_close()
+render.prn_html_close()

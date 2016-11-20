@@ -1,0 +1,89 @@
+/*
+ * product   : NewsGate - news search WEB server
+ * copyright : Copyright (c) 2005-2016 Karen Arutyunov
+ * licenses  : CC BY-NC-SA 3.0; see accompanying LICENSE file
+ *             Commercial; contact karen.arutyunov@gmail.com
+ */
+
+/**
+ * @file NewsGate/Server/Services/Commons/Statistics/StatisticsServices.idl
+ * @author Karen Arutyunov
+ * $Id:$
+ */
+
+#ifndef _NEWSGATE_SERVER_SERVICES_COMMONS_STATISTICS_STATISTICSSERVICES_IDL_
+#define _NEWSGATE_SERVER_SERVICES_COMMONS_STATISTICS_STATISTICSSERVICES_IDL_
+
+module NewsGate
+{ 
+  module Statistics
+  {
+    module Transport
+    {
+      //
+      // Implementation in Services/Commons/Statistics/TransportImpl.hpp
+      //
+      
+      custom valuetype RequestInfoPack
+      {
+      };
+
+      custom valuetype PageImpressionInfoPack
+      {
+      };
+
+      custom valuetype MessageImpressionInfoPack
+      {
+      };
+
+      custom valuetype MessageClickInfoPack
+      {
+      };
+
+      custom valuetype MessageImpressionClickCounter
+      {
+      };
+    };
+    
+    exception ImplementationException
+    {
+      string description;
+    };
+
+    interface StatProcessor
+    {
+      // Increment whenever structures defined in
+      // Services/Commons/Statistics/StatLogger.hpp change
+      const unsigned long INTERFACE_VERSION = 5;
+      
+      string message_bank_manager() raises(ImplementationException);
+        
+      void search_request(in unsigned long interface_version,
+                          in Transport::RequestInfoPack pack)
+        raises(ImplementationException);
+
+      void page_impression(in unsigned long interface_version,
+                           in Transport::PageImpressionInfoPack pack)
+        raises(ImplementationException);
+
+      void message_impression(in unsigned long interface_version,
+                              in Transport::MessageImpressionInfoPack pack)
+        raises(ImplementationException);
+
+      void message_click(in unsigned long interface_version,
+                         in Transport::MessageClickInfoPack pack)
+        raises(ImplementationException);
+    };
+
+    interface FeedSink
+    {
+      void feed_impression_click(
+        in Transport::MessageImpressionClickCounter counter)
+        raises(ImplementationException);
+    };
+    
+  };
+  
+};
+
+#endif // _NEWSGATE_SERVER_SERVICES_COMMONS_STATISTICS_STATISTICSSERVICES_IDL_

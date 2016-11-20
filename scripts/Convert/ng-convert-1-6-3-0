@@ -1,0 +1,79 @@
+#!/bin/sh
+
+# product   : NewsGate - news search WEB server
+# copyright : Copyright (c) 2005-2016 Karen Arutyunov
+# licenses  : CC BY-NC-SA 3.0; see accompanying LICENSE file
+#             Commercial; contact karen.arutyunov@gmail.com
+
+source "$1/lib.sh"
+
+echo_date "Cleaning MessageBank service cache ..."
+
+rm $3/Message/Bank/*.mpk 2>/dev/null
+rm $3/Message/Bank/*.ffr 2>/dev/null
+
+# Resets possibly non-zero $?
+echo "" > /dev/null
+
+echo_date "Copying table Message ..."
+
+echo "create table Message2 ( \
+      id BIGINT UNSIGNED NOT NULL PRIMARY KEY, \
+      event_id BIGINT UNSIGNED NOT NULL, \
+      event_capacity INTEGER UNSIGNED NOT NULL, \
+      flags TINYINT UNSIGNED NOT NULL, \
+      signature BIGINT UNSIGNED NOT NULL, \
+      url_signature BIGINT UNSIGNED NOT NULL, \
+      source_id BIGINT UNSIGNED NOT NULL, \
+      dict_hash INTEGER UNSIGNED NOT NULL, \
+      impressions BIGINT UNSIGNED NOT NULL, \
+      clicks BIGINT UNSIGNED NOT NULL, \
+      published BIGINT UNSIGNED NOT NULL, \
+      updated BIGINT UNSIGNED NOT NULL, \
+      fetched BIGINT UNSIGNED NOT NULL, \
+      type SMALLINT UNSIGNED NOT NULL, \
+      space SMALLINT UNSIGNED NOT NULL, \
+      complements BLOB(40960) NOT NULL, \
+      url VARCHAR(2048) character set utf8, \
+      lang SMALLINT UNSIGNED NOT NULL, \
+      country SMALLINT UNSIGNED NOT NULL, \
+      source_title VARCHAR(1024), \
+      source_html_link VARCHAR(2048) character set utf8, \
+      broken_down BLOB(20480) NOT NULL, \
+      categories BLOB(40960) NOT NULL \
+) engine=InnoDB \
+select id, event_id, event_capacity, flags, signature, \
+url_signature as url_signature, source_id, dict_hash, impressions, clicks, \
+published, updated, fetched, type, space, complements, url, lang, country, \
+source_title, '' as source_html_link, broken_down, categories from Message;" | \
+ng-mysql --user=root NewsGate
+
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+echo_date "Dropping Message table ..."
+
+echo "drop table Message;" | ng-mysql --user=root NewsGate
+
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+echo_date "Renaming Message2 table to Message ..."
+
+echo "rename table Message2 to Message;" | ng-mysql --user=root NewsGate
+
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+echo_date "Altering MessageBuff table ..."
+
+echo "alter table MessageBuff drop source_description, \
+change source_title source_title VARCHAR(1024), \
+add column source_html_link VARCHAR(2048) character set utf8 after source_title;" | \
+ng-mysql --user root NewsGate
+
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+echo_date "Altering RSSFeedState table ..."
+
+echo "alter table RSSFeedState add column channel_html_link VARCHAR(2048) after channel_description;" | \
+ng-mysql --user root NewsGate
+
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi

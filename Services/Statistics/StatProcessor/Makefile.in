@@ -1,0 +1,36 @@
+# @file   Makefile.in
+# @author Karen Aroutiounov
+# $Id:$
+
+include Common.pre.rules
+include $(osbe_builddir)/config/CXX/CXX.pre.rules
+include $(osbe_builddir)/config/CXX/Corba.pre.rules
+
+#include $(osbe_builddir)/config/CXX/External/MD5.pre.rules
+include $(osbe_builddir)/config/CXX/External/ACE.pre.rules
+include $(osbe_builddir)/config/CXX/External/Xerces.pre.rules
+include $(osbe_builddir)/config/CXX/External/TokyoCabinet.pre.rules
+
+include $(osbe_builddir)/config/CXX/External/ElBasic.pre.rules
+include $(osbe_builddir)/config/CXX/External/ElMySQL.pre.rules
+include $(osbe_builddir)/config/CXX/External/ElCorba.pre.rules
+include $(osbe_builddir)/config/CXX/External/ElTokyoCabinet.pre.rules
+
+include $(top_builddir)/config/xsd/Config.so.pre.rules
+
+include $(top_builddir)/config/Services/Commons/Statistics/StatisticsServiceCommons.so.pre.rules
+
+sources  := StatProcessorMain.cpp \
+            StatProcessorImpl.cpp \
+            StatProcessorBase.cpp \
+            RequestStatProcessor.cpp \
+            PageImpStatProcessor.cpp \
+            MsgImpStatProcessor.cpp \
+            MsgClickStatProcessor.cpp \
+            FeedStatProcessor.cpp \
+            UserStatProcessor.cpp
+
+target   := StatProcessor
+
+include $(osbe_builddir)/config/CXX/Corba.post.rules
+include $(osbe_builddir)/config/CXX/Ex.post.rules

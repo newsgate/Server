@@ -1,0 +1,23 @@
+news
+blog
+talk
+article
+ad
+
+1. If looks like advertising (like job, goods adverising, 
+   product announcement, index) - this is an AD.
+
+2. If looks like forum (some kind of discussion) this is a TALK.
+
+3. If looks like blog (some kind of personalized narration or
+   monologue) - this is a BLOG. If this is personalized but
+   professionally made technical or scientific text (like magazine
+   article) - this is an ARTICLE.
+
+4. If looks like news message (some kind of event description) - this is NEWS.
+
+5. Otherwise - this is an ARTICLE.
+
+If you hesitate between NEWS and ARTICLE or AD, make it NEWS.
+If you hesitate between AD and ARTICLE, make it ARTICLE.
+If you hesitate between BLOG and ARTICLE, make it ARTICLE.

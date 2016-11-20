@@ -1,0 +1,116 @@
+from moderation_func import *
+
+request = context.request
+prn, param = request.output.stream.prn, request.input.parameters().find
+
+try:
+  moderator = moderator_connector.connect(request, False)
+except:
+  el.exit(401) # Unauthorized
+
+if moderator.has_privilege(newsgate.moderation.moderator.PV_FEED_MANAGER) == \
+  False:
+  el.exit(403) # Forbidden
+
+url = param("url")
+type = int(param("ftp"))
+space = int(param("spc"))
+lang = int(param("lng"))
+country = int(param("ctr"))
+script = param("scr", None)
+cache = param("cache")
+encoding = param("enc")
+
+keywords = el.Sequence()
+
+for k in param("kwd").split('\n'):
+  k = k.strip()
+  if k: keywords.append(k)
+
+xml_encode_flags = el.string.manip.XE_TEXT_ENCODING | \
+                   el.string.manip.XE_PRESERVE_UTF8 | el.string.manip.XE_LAX_ENCODING
+
+xml_attr_encode_flags = xml_encode_flags | \
+                        el.string.manip.XE_ATTRIBUTE_ENCODING                  
+
+request.output.content_type("text/xml; charset=UTF-8")
+
+prn('<?xml version="1.0" encoding="utf-8" ?><result>')
+
+try:
+  
+  if script == None:
+
+    context_seq = \
+      moderator.feed_manager.get_feed_items(url, 
+                                            type, 
+                                            space, 
+                                            country, 
+                                            lang,
+                                            encoding)
+
+    for ctx in context_seq:
+
+      for k in keywords: ctx.message.keywords.append(k)
+      item = ctx.item
+
+      prn(R'''
+    <context>
+      <item>
+        <title>''', xml_smart_encode(item.title), R'''</title>
+        <description>''', xml_smart_encode(item.description), R'''</description>
+      </item>''')
+
+      prn_message_items(ctx.message, prn)
+
+      prn(R'''
+    </context>''')
+
+  else:
+
+    res = \
+      moderator.feed_manager.get_html_items(url,
+                                            script,
+                                            type,
+                                            space,
+                                            country,
+                                            lang,
+                                            keywords,
+                                            cache,
+                                            encoding)
+
+    if res.error:
+
+      error = res.error
+
+      if error != "":
+        pos = error.find("name:")
+        if pos > 0: error = error[0:pos]
+
+      prn('\n  <error>',
+          el.string.manip.xml_encode(error, xml_encode_flags),
+          '</error>')
+
+    if res.log:
+      prn('\n  <log>', 
+          el.string.manip.xml_encode(res.log, xml_encode_flags),
+          '</log>')
+
+    if res.cache:
+      prn('\n  <cache>', 
+          el.string.manip.xml_encode(res.cache, xml_encode_flags),
+          '</cache>')
+
+    prn('\n  <interrupted>', res.interrupted and "1" or "0", '</interrupted>')
+
+    for msg in res.messages:
+      prn('\n    <context>')
+      prn_message_items(msg, prn)
+      prn('\n    </context>')
+
+except newsgate.moderation.feed.OperationFailed, e:
+  prn('\n  <error>', 
+      el.string.manip.xml_encode(e.args[0].reason, xml_encode_flags),
+      '</error>')
+
+prn('\n</result>')

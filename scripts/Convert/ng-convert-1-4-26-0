@@ -1,0 +1,23 @@
+#!/bin/sh
+
+# product   : NewsGate - news search WEB server
+# copyright : Copyright (c) 2005-2016 Karen Arutyunov
+# licenses  : CC BY-NC-SA 3.0; see accompanying LICENSE file
+#             Commercial; contact karen.arutyunov@gmail.com
+
+echo "Creating FeedFormerUrl table ..."
+
+echo "create table FeedFormerUrl ( \
+      feed_id BIGINT UNSIGNED NOT NULL REFERENCES Feed ( id ), \
+      url VARCHAR(512) character set ascii BINARY NOT NULL, \
+      replaced TIMESTAMP NOT NULL,
+      PRIMARY KEY (feed_id, url) ) \
+      engine=InnoDB;" | \
+ng-mysql --user root NewsGate
+
+if test $? -eq 0; then
+  echo "Done"
+else
+  echo "Failed"
+  exit 1
+fi

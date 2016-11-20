@@ -1,0 +1,922 @@
+from moderation_func import *
+
+def make_ref(url):
+  return make_reference(url, False, False, False, post, anchor_refs)
+
+MAX_COOKIE_LEN = 1024
+
+request, rule_error = context.request, context.forward_params
+prn, param = request.output.stream.prn, request.input.parameters().find
+conf = context.config.get
+url_prefix = (request.secure() and "https://" or "http://") + conf("endpoint")
+
+anchor_refs = []
+
+moderator = connect_moderator(request, moderator_connector)
+
+if moderator.has_privilege(newsgate.moderation.moderator.PV_FEED_MANAGER) ==\
+   False:
+  el.exit(403) # Forbidden
+
+post = False
+url_params = ""
+
+mod_params = param("mod_params", "")
+
+if mod_params != "":
+  post = True
+  url_params = "?mod_params=" + el.string.manip.mime_url_encode(mod_params)
+
+vo_prefs = el.NameValueMap(request.input.cookies().most_specific("vo"), 
+                           ':', 
+                           '~')
+
+prefs = param("vf", None)
+
+if prefs:
+  post = True
+  if url_params: url_params += "&"
+  else: url_params += "?"
+  url_params += "vf=" + el.string.manip.mime_url_encode(prefs)
+
+if prefs == None: prefs = request.input.cookies().most_specific("vf")
+prefs = el.NameValueMap(prefs, ':', '~')
+
+languages = []
+languages2 = []
+
+languages.append( ( "undefined",  el.Lang.null.el_code()) )
+
+languages2.append( ( "auto",  el.Lang.nonexistent.el_code()) )
+languages2.append( ( "undefined",  el.Lang.null.el_code()) )
+
+for l in el.Lang.all:
+  languages.append( ( l.l3_code(), l.el_code()) )
+  languages2.append( ( l.l3_code(), l.el_code()) )
+
+countries = []
+countries2 = []
+
+countries.append( ( "undefined",  el.Country.null.el_code()))
+
+countries2.append( ( "auto",  el.Country.nonexistent.el_code()))
+countries2.append( ( "undefined",  el.Country.null.el_code()))
+
+for c in el.Country.all:
+  countries.append( ( c.l3_code(), c.el_code() ) )
+  countries2.append( ( c.l3_code(), c.el_code() ) )
+
+statuses = [ ("Enabled", "'E'"),
+             ("Disabled", "'D'"),
+             ("Pending", "'P'")
+           ]
+
+if get_pref("dfd", vo_prefs, "h", param) == "s":
+  statuses.append(("Deleted", "'L'"))
+
+filter_rule_types = \
+[ 
+  ( "Feed Info", 0, ""),
+
+  ( "Id", newsgate.moderation.feed.FS_ID, "NumericRule"),
+
+  ( "Type", 
+    newsgate.moderation.feed.FS_TYPE,
+    "EnumRule",
+    [ ("RSS", newsgate.moderation.feed.TP_RSS),
+      ("ATOM", newsgate.moderation.feed.TP_ATOM),
+      ("RDF", newsgate.moderation.feed.TP_RDF),
+      ("HTML", newsgate.moderation.feed.TP_HTML)
+    ]
+  ),
+
+  ( "Space",
+    newsgate.moderation.feed.FS_SPACE,
+    "EnumRule",
+    [ ("Undefined", newsgate.moderation.feed.SP_UNDEFINED),
+      ("News", newsgate.moderation.feed.SP_NEWS),
+      ("Talk", newsgate.moderation.feed.SP_TALK),
+      ("Ad", newsgate.moderation.feed.SP_AD),
+      ("Blog", newsgate.moderation.feed.SP_BLOG),
+      ("Article", newsgate.moderation.feed.SP_ARTICLE),
+      ("Photo", newsgate.moderation.feed.SP_PHOTO),
+      ("Video", newsgate.moderation.feed.SP_VIDEO),
+      ("Audio", newsgate.moderation.feed.SP_AUDIO),
+      ("Printed", newsgate.moderation.feed.SP_PRINTED)
+    ]
+  ),
+
+  ( "Status",
+    newsgate.moderation.feed.FS_STATUS,
+    "EnumRule",
+    statuses
+  ),
+
+  ( "Language",
+    newsgate.moderation.feed.FS_LANG,
+    "EnumRule",
+    languages2
+  ),
+
+  ( "Country",
+    newsgate.moderation.feed.FS_COUNTRY,
+    "EnumRule",
+    countries2
+  ),
+
+  ( "Url", newsgate.moderation.feed.FS_URL, "StringRule"),
+
+  ( "Encoding", newsgate.moderation.feed.FS_ENCODING, "StringRule"),
+
+  ( "Keywords", 
+    newsgate.moderation.feed.FS_KEYWORDS, 
+    "StringRule"
+  ),
+
+  ( "Adjustment Script", 
+    newsgate.moderation.feed.FS_ADJUSTMENT_SCRIPT, 
+    "StringRule"
+  ),
+
+  ( "Creator", newsgate.moderation.feed.FS_CREATOR, "NumericRule"),
+
+  ( "Creator Type",
+    newsgate.moderation.feed.FS_CREATOR_TYPE,
+    "EnumRule",
+    [ ("Crawler", "'C'"),
+      ("Moderator", "'M'"),
+      ("User", "'U'"),
+      ("Admin", "'A'")
+    ]
+  ),
+
+  ( "Created", newsgate.moderation.feed.FS_CREATED, "DateRule" ),
+  ( "Updated", newsgate.moderation.feed.FS_UPDATED, "DateRule" ),
+  ( "Comment", newsgate.moderation.feed.FS_COMMENT, "StringRule"),
+
+  ( "Feed State", 0, ""),
+
+  ( "Title", newsgate.moderation.feed.FS_CHANNEL_TITLE, "StringRule"),
+  ( "Description", newsgate.moderation.feed.FS_CHANNEL_DESCRIPTION, "StringRule"),
+  ( "Html Link", newsgate.moderation.feed.FS_CHANNEL_HTML_LINK, "StringRule"),
+
+  ( "Calculated Language",
+    newsgate.moderation.feed.FS_CHANNEL_LANG,
+    "EnumRule",
+    languages
+  ),
+
+  ( "Calculated Country",
+    newsgate.moderation.feed.FS_CHANNEL_COUNTRY,
+    "EnumRule",
+    countries
+  ),
+
+  ( "TTL", newsgate.moderation.feed.FS_CHANNEL_TTL, "NumericRule"),
+
+  ( "Last Build Date", 
+    newsgate.moderation.feed.FS_CHANNEL_LAST_BUILD_DATE, 
+    "DateRule" ),
+
+  ( "Last Request Date", 
+    newsgate.moderation.feed.FS_LAST_REQUEST_DATE, 
+    "DateRule" ),
+
+  ( "Last-Modified Hdr", 
+    newsgate.moderation.feed.FS_LAST_MODIFIED_HDR, 
+    "StringRule"),
+
+  ( "ETag Hdr", 
+    newsgate.moderation.feed.FS_ETAG_HDR, 
+    "StringRule"),
+
+  ( "Content-Length Hdr", 
+    newsgate.moderation.feed.FS_CONTENT_LENGTH_HDR, 
+    "NumericRule"),
+
+  ( "Entropy", 
+    newsgate.moderation.feed.FS_ENTROPY, 
+    "NumericRule"),
+
+  ( "Entropy Update Date", 
+    newsgate.moderation.feed.FS_ENTROPY_UPDATED_DATE, 
+    "DateRule" ),
+
+  ( "Size", 
+    newsgate.moderation.feed.FS_SIZE, 
+    "NumericRule"),
+
+  ( "Single Chunked",
+    newsgate.moderation.feed.FS_SINGLE_CHUNKED,
+    "EnumRule",
+    [ ("Yes", 1),
+      ("No", 0)
+    ]
+  ),
+
+  ( "First Chunk Size", 
+    newsgate.moderation.feed.FS_FIRST_CHUNK_SIZE, 
+    "NumericRule"),
+
+  ( "Heuristic Counter", 
+    newsgate.moderation.feed.FS_HEURISTICS_COUNTER, 
+    "NumericRule"),
+
+  ( "Feed Statistics", 0, ""),
+
+  ( "Requests", 
+    newsgate.moderation.feed.FS_REQUESTS, 
+    "NumericRule"),
+
+  ( "Failed", 
+    newsgate.moderation.feed.FS_FAILED, 
+    "NumericRule"),
+
+  ( "Unchanged", 
+    newsgate.moderation.feed.FS_UNCHANGED,
+    "NumericRule"),
+
+  ( "Not Modified", 
+    newsgate.moderation.feed.FS_NOT_MODIFIED, 
+    "NumericRule"),
+
+  ( "Presumably Unchanged", 
+    newsgate.moderation.feed.FS_PRESUMABLY_UNCHANGED,
+    "NumericRule"),
+
+  ( "Has Changes", 
+    newsgate.moderation.feed.FS_HAS_CHANGES, 
+    "NumericRule"),
+
+  ( "Wasted", 
+    newsgate.moderation.feed.FS_WASTED, 
+    "NumericRule"),
+
+  ( "Outbound", 
+    newsgate.moderation.feed.FS_OUTBOUND, 
+    "NumericRule"),
+
+  ( "Inbound", 
+    newsgate.moderation.feed.FS_INBOUND, 
+    "NumericRule"),
+
+  ( "Requests Duration", 
+    newsgate.moderation.feed.FS_REQUESTS_DURATION, 
+    "NumericRule"),
+
+  ( "Messages",
+    newsgate.moderation.feed.FS_MESSAGES, 
+    "NumericRule"),
+
+  ( "Messages Size", 
+    newsgate.moderation.feed.FS_MESSAGES_SIZE, 
+    "NumericRule"),
+
+  ( "Messages Delay", 
+    newsgate.moderation.feed.FS_MESSAGES_DELAY, 
+    "NumericRule"),
+
+  ( "Max Message Delay", 
+    newsgate.moderation.feed.FS_MAX_MESSAGE_DELAY, 
+    "NumericRule"),
+
+  ( "Impressions",
+    newsgate.moderation.feed.FS_MSG_IMPRESSIONS, 
+    "NumericRule"),
+
+  ( "Clicks",
+    newsgate.moderation.feed.FS_MSG_CLICKS, 
+    "NumericRule"),
+
+  ( "CTR%",
+    newsgate.moderation.feed.FS_MSG_CTR, 
+    "NumericRule")
+
+]
+
+xml_encode_flags = el.string.manip.XE_TEXT_ENCODING | \
+                   el.string.manip.XE_ATTRIBUTE_ENCODING | \
+                   el.string.manip.XE_PRESERVE_UTF8
+
+redirect_url = ""
+
+if param("update") != "":
+
+  rules = {}
+
+  for p in request.input.parameters():
+
+    rule_info = p.name.split("_")
+    rule_part = rule_info[0]
+
+    if rule_part != "op" and rule_part != "vl": continue
+
+    rule_id = int(rule_info[1])
+
+    try: 
+      rule = rules[rule_id]
+    except:
+      rule = newsgate.moderation.feed.FilterRule()
+      rules[rule_id] = rule
+
+    rule.id = rule_id
+    rule.field = int(rule_info[2])
+
+    if rule_part == "op": rule.operation = int(p.value)
+    else:
+      try: rule.args.append(rule_info[3])
+      except: rule.args.append(p.value)
+
+  for id in rules.keys():
+    r = rules[id]
+
+    if r.operation in [newsgate.moderation.feed.FO_ANY_OF,
+                       newsgate.moderation.feed.FO_NONE_OF]:
+
+      is_string = False
+
+      for frt in filter_rule_types:
+        if frt[1] == r.field:
+          is_string = frt[2] == "StringRule"
+          break
+
+      new_list = el.Sequence()
+
+      for v in r.args:
+        v = v.replace('\n', ' ').replace('\r', ' ').replace('\t', ' ')
+
+        for nv in v.split(" "):
+          if nv: new_list.append(nv)
+
+      r.args = new_list
+
+    elif r.operation in [newsgate.moderation.feed.FO_REGEXP,
+                         newsgate.moderation.feed.FO_NOT_REGEXP,
+                         newsgate.moderation.feed.FO_LIKE,
+                         newsgate.moderation.feed.FO_NOT_LIKE]:
+
+      new_list = el.Sequence()
+
+      for v in r.args:
+        v = v.replace('\r', '\n')
+
+        for nv in v.split('\n'):
+          if nv: new_list.append(nv)
+
+      r.args = new_list
+
+  prefs = prefs_from_filter_rules(rules)
+
+else: 
+  rules = filter_rules_from_prefs(prefs)
+
+expiration = el.Moment(el.TimeValue(request.time().sec() + 2 * 365 * 86400))
+
+prefs_string = prefs.string()
+long_cookies = len(prefs_string) > MAX_COOKIE_LEN
+
+if long_cookies == False:
+  request.output.send_cookie(
+    el.net.http.CookieSetter("vf", 
+                             prefs_string, 
+                             expiration, 
+                             "/", 
+                             "", 
+                             request.secure()))
+
+result_per_page = param("r", None)
+
+if param("update") != "":
+  redirect_url = url_prefix + "/psp/feed/view?"
+  if result_per_page: redirect_url += "r=" + result_per_page
+
+  redirect_by_post = False
+
+  if mod_params != "":
+    redirect_url += "&mod_params=" + \
+                    el.string.manip.mime_url_encode(mod_params)
+    redirect_by_post = True
+
+
+  if long_cookies:
+    redirect_url += "&vf=" + el.string.manip.mime_url_encode(prefs_string)
+    redirect_by_post = True
+
+  if redirect_by_post == False:
+    request.output.send_location(redirect_url)
+    el.exit(302) # found
+
+prn(
+R'''
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>Management: Feed View Filter</title>
+<link rel="stylesheet" type="text/css" href="/fixed/css/common.css" media="all" />
+<link rel="stylesheet" type="text/css" href="/fixed/css/feed/view_filter.css" media="all" />
+<script src="/fixed/js/elements.js" type="text/javascript"></script>
+<script type="text/javascript" src="/fixed/js/feed/view_filter.js"></script>
+<script type="text/javascript" src="/fixed/js/calendar_adapter.js"></script>
+
+<link rel="stylesheet" type="text/css" href="/fixed/rc/rich_calendar/rich_calendar.css"/>
+<script type="text/javascript" src="/fixed/rc/rich_calendar/rich_calendar.js"></script>
+<script type="text/javascript" src="/fixed/rc/rich_calendar/rc_lang_en.js"></script>
+<script type="text/javascript" src="/fixed/rc/rich_calendar/rc_lang_ru.js"></script>
+<script type="text/javascript" src="/fixed/rc/domready/domready.js"></script>
+
+<script type="text/javascript">
+
+Rule.prototype = 
+{
+  label : undefined,
+  name : undefined,
+  values: undefined,
+  select_control : undefined,
+  value_control : undefined
+};
+
+function Rule()
+{
+}
+
+rule_prototype = new Rule();
+
+function rule_select_control(rule_number, name, operation, options)
+{
+  text = '<select name="op_' + rule_number + '_' + name + 
+         '" class="operation_choice">';
+
+  for(var i = 0; i < options.length; i++)
+  {
+    var o = options[i];
+    text += '\n<option value="' + o.name + '"';
+
+    if(o.name == operation)
+    {
+      text += ' selected="selected"';
+    }
+
+    text += '>' + o.label + '</option>';
+  }
+
+  text += '\n</select>';
+
+  return text;
+}
+
+StringRule.prototype = rule_prototype;
+
+function StringRule(label_val, name_val)
+{
+  with(this)
+  {
+    label = label_val;
+    name = name_val;
+
+    select_control = function(rule_number, name, operation)
+    {
+      var options = new Array( { name:"''', newsgate.moderation.feed.FO_REGEXP, 
+                                 R'''", label:"Regular Expression" },
+                               { name:"''', newsgate.moderation.feed.FO_NOT_REGEXP, 
+                                 R'''", label:"Not Regular Expression" },
+                               { name:"''', newsgate.moderation.feed.FO_LIKE, 
+                                 R'''", label:"Like" },
+                               { name:"''', newsgate.moderation.feed.FO_NOT_LIKE, 
+                                 R'''", label:"Not Like" },
+                               { name:"''', newsgate.moderation.feed.FO_ANY_OF, 
+                                 R'''", label:"Any Of" },
+                               { name:"''', newsgate.moderation.feed.FO_NONE_OF, 
+                                 R'''", label:"None Of" } 
+                             );
+
+      return rule_select_control(rule_number, name, operation, options);
+    };
+
+    value_control = function(rule_number, name, value)
+    {
+      var text = '<textarea name="vl_' + rule_number + '_' + name + 
+                 '" class="value_control" rows="3" title="' + value.length + '">';
+
+      for(var j = 0; j < value.length; j++)
+      {
+        if(j) 
+        {
+          text += "\n";
+        }
+          
+        text += el_xml_encode(value[j]);
+      }
+
+      text += '</textarea>';
+      return text;
+    };
+  }
+}
+
+NumericRule.prototype = rule_prototype;
+
+function NumericRule(label_val, name_val)
+{
+  with(this)
+  {
+    label = label_val;
+    name = name_val;
+
+    select_control = function(rule_number, name, operation)
+    {
+      var options = new Array( { name:"''', newsgate.moderation.feed.FO_EQ, 
+                                 R'''", label:"=" },
+                               { name:"''', newsgate.moderation.feed.FO_NE, 
+                                 R'''", label:"!=" },
+                               { name:"''', newsgate.moderation.feed.FO_LT, 
+                                 R'''", label:"&lt;" },
+                               { name:"''', newsgate.moderation.feed.FO_LE, 
+                                 R'''", label:"&lt;=" },
+                               { name:"''', newsgate.moderation.feed.FO_GT, 
+                                 R'''", label:"&gt;" },
+                               { name:"''', newsgate.moderation.feed.FO_GE, 
+                                 R'''", label:"&gt;=" },
+                               { name:"''', newsgate.moderation.feed.FO_ANY_OF, 
+                                 R'''", label:"Any Of" },
+                               { name:"''', newsgate.moderation.feed.FO_NONE_OF, 
+                                 R'''", label:"None Of" } );
+
+      return rule_select_control(rule_number, name, operation, options);
+    };
+
+    value_control = function(rule_number, name, value)
+    {
+      var text = '<input type="text" name="vl_' + rule_number + '_' + 
+                 name + '" class="value_control" value="';
+
+      value.sort();
+
+      for(var j = 0; j < value.length; )
+      {
+        var v1 = new Number(value[j]);
+        var v2 = v1;
+
+        for(var i = j + 1; i < value.length; i++)
+        {
+          var k = new Number(v1 + (i - j));
+
+          if(value[i] == k)
+          {
+            v2 = value[i];
+          }
+          else
+          {
+            break;
+          }
+        }
+
+        if(j)
+        {
+          text += " ";
+        }
+          
+        text += v1;
+
+        if(v1 != v2)
+        {
+          text += "-" + v2;
+        }
+ 
+        j = i;
+      }
+
+      text += '"/>';
+
+      return text;
+    };
+  }
+}
+
+DateRule.prototype = rule_prototype;
+
+function DateRule(label_val, name_val)
+{
+  with(this)
+  {
+    label = label_val;
+    name = name_val;
+
+    select_control = function(rule_number, name, operation)
+    {
+      var options = new Array( { name:"''', newsgate.moderation.feed.FO_EQ, 
+                                 R'''", label:"=" },
+                               { name:"''', newsgate.moderation.feed.FO_NE, 
+                                 R'''", label:"!=" },
+                               { name:"''', newsgate.moderation.feed.FO_LT, 
+                                 R'''", label:"&lt;" },
+                               { name:"''', newsgate.moderation.feed.FO_LE, 
+                                 R'''", label:"&lt;=" },
+                               { name:"''', newsgate.moderation.feed.FO_GT, 
+                                 R'''", label:"&gt;" },
+                               { name:"''', newsgate.moderation.feed.FO_GE, 
+                                 R'''", label:"&gt;=" } );
+
+      return rule_select_control(rule_number, name, operation, options);
+    };
+
+    value_control = function(rule_number, name, value)
+    {
+      var text = '<select id="dwc_' + rule_number + '" name="vl_' + 
+                 rule_number + '_' + name + '" class="value_control" \
+onchange="dwc_on_change(this)" onfocus="dwc_on_focus(this)">';
+
+      var values = new Array( { label:"Today", value:"t" }, 
+                              { label:"Yesterday", value:"y" }, 
+                              { label:"Week Ago", value:"w" }, 
+                              { label:"Month Ago", value:"m" }, 
+                              { label:"Year Ago", value:"r" },
+                              { label:"Calendar", value:"c" } );
+
+      var found = false;
+
+      for(var i = 0; i < values.length; i++)
+      {
+        var opt = values[i];
+        text += '\n<option value="' + opt.value + '"';
+
+        for(var j = 0; j < value.length; j++)
+        {
+          if(opt.value == value[j])
+          {
+            text += ' selected="selected"';
+            found = true;
+            break;
+          }
+        }
+
+        text += '>' + opt.label + '</option>'
+      }
+
+      if(!found && value.length > 0)
+      {
+        text += '\n<option value="' + value[0] + '" selected="selected">' +
+                value[0] + '</option>';
+      }
+
+      text += '\n</select>';
+      return text;
+    };
+  }
+}
+
+EnumRule.prototype = rule_prototype;
+
+function EnumRule(label_val, name_val, type_vals)
+{
+  with(this)
+  {
+    label = label_val;
+    name = name_val;
+    values = type_vals;
+
+    select_control = function(rule_number, name, operation)
+    {
+      var options = new Array( { name:"''', newsgate.moderation.feed.FO_ANY_OF, 
+                                 R'''", label:"Any Of" },
+                               { name:"''', newsgate.moderation.feed.FO_NONE_OF, 
+                                 R'''", label:"None Of" } );
+
+      return rule_select_control(rule_number, name, operation, options);
+    };
+
+    value_control = function(rule_number, name, value)
+    {
+      var res = "";
+      for(var i = 0; i < values.length; i++)
+      {
+        res += '<span class="enum_checkbox"><input type="checkbox" name="vl_' + 
+             rule_number + '_' + name + '_' + values[i].value + '"';
+
+        for(var j = 0; j < value.length; j++)
+        {
+          if(values[i].value == value[j])
+          {
+            res += ' checked="checked"';
+            break;
+          }
+        }
+
+        res += '/>' +  values[i].label + "</span> ";
+      }
+
+      return res + "&nbsp";
+    };
+  }
+}
+
+var filter_rule_types = new Array();
+''')
+
+i = 0
+for frt in filter_rule_types:
+
+  if frt[2] == "": continue
+
+  if frt[2] == "EnumRule":
+
+    type_vals_var = "type_vals_" + str(i)
+    i += 1
+
+    prn(R'''
+var ''', type_vals_var, ' = new Array();')
+
+    i = 0
+    for v in frt[3]:
+      prn('\n', type_vals_var, '[', i, '] = { value:', v[1], ', label:"', 
+          v[0], '" };')
+      i += 1
+
+    prn(R'''
+
+filter_rule_types["''', frt[1], '"] = new ', frt[2], '("', frt[0], '", "', 
+                  frt[1], '", ', type_vals_var, R''');
+''')
+
+  else:
+    prn(R'''
+filter_rule_types["''', frt[1], '"] = new ', frt[2], '("', frt[0], '", "', 
+                  frt[1], R'''");
+''')
+
+prn(R'''
+filter_init();
+
+function filter_init()
+{
+  var filter_rules = document.getElementById("filter_rules");
+
+  if(filter_rules == undefined)
+  {
+    setTimeout("filter_init()", 100);
+    return;
+  }
+  
+''')
+
+rule_ids = rules.keys()
+rule_ids.sort()
+
+for id in rule_ids:
+
+  r = rules[id]
+
+  prn(R'''
+add_specific_rule("''', r.field, '", "', r.operation, '", new Array(')
+
+  first = True
+
+  for v in r.args:
+    if first: first = False  
+    else: prn(", ")
+    
+    prn('"', el.string.manip.js_escape(v), '"')
+
+  prn('), ', 
+      str(rule_error != None and id == rule_error.id and "true" or "false"),
+      ');')
+
+prn(
+R'''
+}
+</script>
+
+</head>
+
+<body onload="page_loaded = 1;">
+<table id="skeleton" cellspacing="0">
+''')
+
+left_menu = [ ]
+
+feed_moderator = \
+  moderator.has_privilege(newsgate.moderation.moderator.PV_FEED_MANAGER)
+
+if feed_moderator:
+  left_menu.append( ("View", make_ref("/psp/feed/view" + url_params)) )
+  left_menu.append( ("View Options", 
+                      make_ref("/psp/feed/view_options" + url_params) ) )
+  left_menu.append( ("View Filter", "") )
+
+feed_creator = \
+  moderator.has_privilege(newsgate.moderation.moderator.PV_FEED_CREATOR)
+
+if feed_creator:
+  left_menu.append( ("New", "/psp/feed/register") )
+  left_menu.append( ("Crawling Tasks", "/psp/feed/validations") )
+
+if feed_moderator:
+  left_menu.append( ("XPath", "/psp/feed/xpath") )
+
+left_menu.append( ("Search", 
+                   feed_search_link(feed_creator, feed_moderator, None)) )
+
+menus = []
+create_topbar_main_menus(context, moderator, "Feeds", menus)
+
+prn(create_topbar(left_menu, menus[0], menus[1]))
+
+prn(
+R'''
+  <tr><td id="main_area" align="center" valign="top">
+''')
+
+
+prn(
+R'''    <form action="/psp/feed/view_filter" method="post" id="post">
+    <table id="edit_form" cellspacing="0">
+''')
+
+prn(
+R'''
+    <tr><td valign="top"><table id="filter_new_rules" cellspacing="0">''')
+
+prn(
+R'''
+    <tr><td valign="top" align="right">Filter by </td>
+    <td><select id="rules_choice">''')
+
+optgroup = False
+for rt in filter_rule_types:
+
+  if rt[2] == "":
+
+    if optgroup: prn('\n      </optgroup>')
+
+    optgroup = True
+    prn(R'''
+      <optgroup label="''', rt[0], '">')
+  else:
+    prn(R'''
+      <option value="''', rt[1], '">', rt[0], '</option>')
+
+if optgroup: prn('\n      </optgroup>')
+
+prn(
+R'''
+    </select></td>
+    <td><input type="button" value="Add Rule" onclick="add_rule();"/></td></tr>
+    </table></td></tr>
+    <tr><td id="message">''')
+
+if rule_error != None:
+  prn('<span id="error">', rule_error.description, '</span>')
+
+prn('''</td></tr>
+    <tr><td valign="top"><table id="filter_rules">''')
+
+if redirect_url == "":
+  prn('\n      <tr><td><input type="submit" value="Update" name="update"/>')
+
+  if result_per_page:
+    prn('\n              <input type="hidden" name="r" value="', 
+        result_per_page, '"/>')
+
+  if mod_params != "":
+    prn('\n    <input type="hidden" name="mod_params" value="', 
+        el.string.manip.xml_encode(mod_params, xml_encode_flags) , '"/>')
+
+  prn(R'''
+      </td></tr>''')
+
+prn('''
+    </table></td></tr>
+    </table>
+    </form>
+  </td></tr>
+''', create_copyright(context), R'''
+</table>''')
+
+if redirect_url != "":
+  prn(R'''
+<script type="text/javascript">''')
+
+  if long_cookies:
+    prn(R'''
+  alert("While being applied filter will not be saved to browser cookies as found to be too long");''')
+
+  prn(R'''
+  el_post_url("''', el.string.manip.js_escape(redirect_url), R'''");
+</script>''')
+
+elif len(anchor_refs) > 0:
+
+  prn(R'''<script type="text/javascript">
+  post_refs = new Array();''')
+
+  index = 0
+
+  for ref in anchor_refs:
+    prn("\npost_refs.push('", el.string.manip.js_escape(ref), "');")
+    index += 1
+
+  prn('\n</script>')
+
+prn(R'''
+</body>
+</html>
+''')

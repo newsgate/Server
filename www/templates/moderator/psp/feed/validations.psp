@@ -1,0 +1,102 @@
+from moderation_func import *
+
+request = context.request
+prn, param = request.output.stream.prn, request.input.parameters().find
+
+moderator = connect_moderator(request, moderator_connector)
+
+if moderator.has_privilege(newsgate.moderation.moderator.PV_FEED_CREATOR) == False:
+  el.exit(403) # Forbidden
+
+prefs = el.NameValueMap(request.input.cookies().most_specific("mp"), ':', '-')
+
+try:
+  subordinates = moderator.moderator_manager.get_subordinates()
+
+except newsgate.moderation.InvalidSession:
+  el.exit(el.psp.Forward("/psp/login.psp", 
+                         "Your session expired.<br>Please, relogin."))
+
+except newsgate.moderation.NotReady:
+  el.exit(el.psp.Forward(\
+          "/psp/feeds.psp", 
+          "The system is not ready to serve your request.<br>Please, try again in several minutes."))
+
+has_subordinate_feed_creator = False
+
+for sub in subordinates:
+  if sub.has_privilege(newsgate.moderation.moderator.PV_FEED_CREATOR):
+    has_subordinate_feed_creator = True
+    break
+
+prn(
+R'''
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>Management: Crawling Tasks</title>
+<link rel="stylesheet" type="text/css" href="/fixed/css/common.css" media="all" />
+<link rel="stylesheet" type="text/css" href="/fixed/css/feed/validations.css" media="all" />
+<script type="text/javascript">
+var wait_task="''', context.forward_params, R'''";
+</script>
+<script src="/fixed/js/feed/validations.js" type="text/javascript"></script>
+</head>
+
+<body onload="page_loaded = true;">
+<table id="skeleton" cellspacing="0">
+''')
+
+left_menu = [ ]
+
+feed_moderator = \
+  moderator.has_privilege(newsgate.moderation.moderator.PV_FEED_MANAGER)
+
+if feed_moderator:
+ left_menu.append( ("View", "/psp/feed/view") )
+
+feed_creator = \
+  moderator.has_privilege(newsgate.moderation.moderator.PV_FEED_CREATOR)
+
+if feed_creator:
+  left_menu.append( ("New", "/psp/feed/register") )
+  left_menu.append( ("Crawling Tasks", "") )
+
+if feed_moderator:
+  left_menu.append( ("XPath", "/psp/feed/xpath") )
+
+left_menu.append( ("Search", 
+                   feed_search_link(feed_creator, feed_moderator, None)) )
+
+menus = []
+create_topbar_main_menus(context, moderator, "Feeds", menus)
+
+prn(create_topbar(left_menu, menus[0], menus[1]))
+
+prn(
+R'''
+  <tr><td id="main_area" align="center" valign="top">
+  <div id="operations_bar">''')
+
+if has_subordinate_feed_creator:
+
+  try:
+    provide_subordinates_tasks = prefs["sst"] == "1"
+  except: provide_subordinates_tasks = False
+
+  text = provide_subordinates_tasks and "Hide" or "Show"
+  arg = provide_subordinates_tasks and "0" or "1"
+
+  prn(R'''<span id="show_subordinates_tasks"><a href="javascript:task_info_manager.task_op('subs', ''', 
+      arg, ');">', text, '</a></span> tasks of subordinates')
+
+prn(
+R'''</div>
+    <table id="tasks"><tr><td>Loading tasks info ...</td></tr>
+    </table>
+  </td></tr>
+''', create_copyright(context), R'''
+</table>
+</body>
+</html>
+''')

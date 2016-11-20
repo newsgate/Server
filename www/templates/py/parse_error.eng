@@ -1,0 +1,65 @@
+PARSE_ERROR_0   Message words expected for operator ALL.
+PARSE_ERROR_1   Message words expected for operator ANY.
+PARSE_ERROR_2   Site addresses expected for operator SITE.
+PARSE_ERROR_3   Urls expected for operator URL.
+PARSE_ERROR_4   Message IDs expected for operator MSG.
+PARSE_ERROR_5   Event IDs expected for operator EVENT.
+PARSE_ERROR_6   HTTPS is not supported for operator URL.
+PARSE_ERROR_7   Broken URL syntax.
+PARSE_ERROR_8   Broken message ID syntax.
+PARSE_ERROR_9   Broken event ID syntax.
+PARSE_ERROR_10  Expression operand expected.
+PARSE_ERROR_11  Close parenthesis expected.
+PARSE_ERROR_12  Expression operation expected.
+PARSE_ERROR_13  Time expected for operator FETCHED.
+PARSE_ERROR_14  Invalid time format for operator FETCHED.
+PARSE_ERROR_15  Time expected for operator DATE.
+PARSE_ERROR_16  Invalid time format for operator DATE.
+PARSE_ERROR_17  Language 3 letter code or word NOT expected for operator LANGUAGE.
+PARSE_ERROR_18  Language 3 letter code expected for operator LANGUAGE.
+PARSE_ERROR_19  Unrecognized language code for operator LANGUAGE.
+PARSE_ERROR_20  Country 3 letter code or word NOT expected for operator COUNTRY.
+PARSE_ERROR_21  Country 3 letter code expected for operator COUNTRY.
+PARSE_ERROR_22  Unrecognized country code for operator COUNTRY.
+PARSE_ERROR_26  Space or word NOT expected for operator SPACE.
+PARSE_ERROR_27  Space expected for operator SPACE.
+PARSE_ERROR_28  Unrecognized space specification for operator SPACE.
+PARSE_ERROR_29  Domain name or word NOT expected for operator DOMAIN.
+PARSE_ERROR_30  Domain name expected for operator DOMAIN.
+PARSE_ERROR_31  Event capacity or word NOT expected for operator CAPACITY.
+PARSE_ERROR_32  Event capacity expected for operator CAPACITY.
+PARSE_ERROR_33  Positive numeric value expected for operator CAPACITY.
+PARSE_ERROR_34  Categories expected for operator CATEGORY.
+PARSE_ERROR_35  Unexpected end of expression.
+PARSE_ERROR_36  Parameters expected for operator WITH.
+PARSE_ERROR_37  Message signature or word NOT expected for operator SIGNATURE.
+PARSE_ERROR_38  Message signature expected for operator SIGNATURE.
+PARSE_ERROR_39  Hexadecimal value expected for operator SIGNATURE.
+PARSE_ERROR_40  Message impression count or word NOT expected for operator IMPRESSIONS.
+PARSE_ERROR_41  Message impression count expected for operator IMPRESSIONS.
+PARSE_ERROR_42  Non-negative numeric value expected for operator IMPRESSIONS.
+PARSE_ERROR_43  Message click count or word NOT expected for operator CLICKS.
+PARSE_ERROR_44  Message click count expected for operator CLICKS.
+PARSE_ERROR_45  Non-negative numeric value expected for operator CLICKS.
+PARSE_ERROR_46  Message click through rate or word NOT expected for operator CTR.
+PARSE_ERROR_47  Message click through rate expected for operator CTR.
+PARSE_ERROR_48  Non-negative float value - click through rate expected for operator CTR.
+PARSE_ERROR_49  Message respected click through rate or word NOT expected for operator RCTR.
+PARSE_ERROR_50  Message respected click through rate expected for operator RCTR.
+PARSE_ERROR_51  Non-negative float value - respected click through rate expected for operator RCTR.
+PARSE_ERROR_52  Non-negative numeric value - respected impression level expected for operator RCTR.
+PARSE_ERROR_53  Feed message impression count or word NOT expected for operator F-IMPRESSIONS.
+PARSE_ERROR_54  Feed message impression count expected for operator F-IMPRESSIONS.
+PARSE_ERROR_55  Non-negative numeric value expected for operator F-IMPRESSIONS.
+PARSE_ERROR_56  Feed message click count or word NOT expected for operator F-CLICKS.
+PARSE_ERROR_57  Feed message click count expected for operator F-CLICKS.
+PARSE_ERROR_58  Non-negative numeric value expected for operator F-CLICKS.
+PARSE_ERROR_59  Feed message click through rate or word NOT expected for operator F-CTR.
+PARSE_ERROR_60  Feed message click through rate expected for operator F-CTR.
+PARSE_ERROR_61  Non-negative float value - click through rate expected for operator F-CTR.
+PARSE_ERROR_62  Feed message respected click through rate or word NOT expected for operator F-RCTR.
+PARSE_ERROR_63  Feed message respected click through rate expected for operator F-RCTR.
+PARSE_ERROR_64  Non-negative float value - respected click through rate expected for operator F-RCTR.
+PARSE_ERROR_65  Non-negative numeric value - respected impression level expected for operator F-RCTR.
+PARSE_ERROR_66  Time expected for operator VISITED.
+PARSE_ERROR_67  Invalid time format for operator VISITED.

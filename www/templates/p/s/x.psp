@@ -1,0 +1,414 @@
+import search_util
+
+class XSearchRender(search_util.SearchRequestContext):
+
+  xsearch_render_base = search_util.SearchRequestContext
+
+  def __init__(this, context, search_engine):
+    
+    this.xsearch_render_base.__init__(this,
+                                      context,
+                                      search_engine,
+                                      "x",
+                                      False)
+
+#    this.set_language(this.string_param("tr"))
+
+    l = this.string_param("tr")
+
+    if l:
+      this.locale = \
+        this.context.request.input.locale(el.Lang(l),
+                                          this.locale.country)
+
+    if this.interceptor: this.block = this.interceptor.bastion("xsearch")
+
+  def prn_category(this, category, path, parent_id):
+
+    if category == None: return
+
+    full_name = path + category.name.encode("utf-8") + "/"
+    encoded_full_name = search_util.xml_smart_encode(full_name)
+
+    full_localized_name = "/" + rc.translate_category_name(full_name)
+
+    encoded_full_localized_name = \
+      search_util.xml_smart_encode(full_localized_name)
+  
+    this.prn('\n    <item count="', category.matched_message_count, 
+             '" lcCount="', category.message_count, '" self="', category.id, 
+             '" parent="', parent_id, '"><id>', encoded_full_name, "</id><val>", 
+             encoded_full_localized_name, "</val></item>")
+
+    for cat in category.categories:
+      this.prn_category(cat, full_name, category.id)
+
+  def default_lang_filter(this, accept_languages_only = False):
+    
+    return el.Lang.null
+
+#
+# Initialization
+#
+
+request, loc = context.request, context.localization.get
+prn = request.output.stream.prn
+
+version = request.input.parameters().find("o", "1.3")
+if version != "1.3" and version != "1.4": el.exit(400) #bad request
+
+rc = XSearchRender(context, search_engine)
+
+search_context = rc.search_context()
+
+search_context.all_option = loc("ALL_OPTION")
+search_context.title_format = 0
+search_context.keywords_format = 0
+search_context.img_alt_format = 0
+
+re = rc.raw_param("z")
+
+calc_ttl = re.find("m") >= 0
+prn_req_date = re.find("r") >= 0
+prn_total = re.find("a") >= 0
+
+if re.find("b") >= 0:
+  search_context.sr_flags |= newsgate.search.SearchContext.RF_LANG_STAT
+
+if re.find("h") >= 0:
+  search_context.sr_flags |= newsgate.search.SearchContext.RF_COUNTRY_STAT
+
+if re.find("k") >= 0:
+  search_context.sr_flags |= newsgate.search.SearchContext.RF_FEED_STAT
+
+if re.find("j") >= 0:
+  search_context.sr_flags |= newsgate.search.SearchContext.RF_CATEGORY_STAT
+
+if re.find("t") >= 0: 
+  search_context.gm_flags |= newsgate.search.SearchContext.GM_TITLE
+
+if re.find("l") >= 0: 
+  search_context.gm_flags |= newsgate.search.SearchContext.GM_LINK
+
+if re.find("d") >= 0: 
+  search_context.gm_flags |= newsgate.search.SearchContext.GM_DESC
+
+if re.find("i") >= 0: 
+  search_context.gm_flags |= newsgate.search.SearchContext.GM_IMG
+
+if re.find("p") >= 0: 
+  search_context.gm_flags |= newsgate.search.SearchContext.GM_PUB_DATE
+
+if re.find("w") >= 0: 
+  search_context.gm_flags |= newsgate.search.SearchContext.GM_VISIT_DATE
+
+if re.find("f") >= 0: 
+  search_context.gm_flags |= newsgate.search.SearchContext.GM_FETCH_DATE
+
+if re.find("g") >= 0: 
+  search_context.gm_flags |= newsgate.search.SearchContext.GM_ID
+
+if re.find("n") >= 0: 
+  search_context.gm_flags |= newsgate.search.SearchContext.GM_LANG
+
+if re.find("s") >= 0: 
+  search_context.gm_flags |= newsgate.search.SearchContext.GM_SOURCE
+
+if re.find("e") >= 0: 
+  search_context.gm_flags |= newsgate.search.SearchContext.GM_EVENT
+
+if re.find("c") >= 0: 
+  search_context.gm_flags |= newsgate.search.SearchContext.GM_CORE_WORDS
+
+if re.find("o") >= 0:
+  search_context.gm_flags |= newsgate.search.SearchContext.GM_CATEGORIES
+
+if re.find("u") >= 0:
+  search_context.gm_flags |= newsgate.search.SearchContext.GM_STAT
+ 
+search_context.save_optimized_query = re.find("q") >= 0
+
+if re.find("w") >= 0:
+  search_context.gm_flags |= newsgate.search.SearchContext.GM_KEYWORDS
+
+if rc.text_segmentation:
+
+  flags = newsgate.search.SearchContext.FF_SEGMENTATION
+
+  search_context.title_format |= flags
+  search_context.description_format |= flags
+  search_context.img_alt_format |= flags
+  search_context.keywords_format |= flags
+
+orig_gm_flags = search_context.gm_flags
+
+if calc_ttl:
+  search_context.gm_flags |= newsgate.search.SearchContext.GM_PUB_DATE
+
+try: search_result = rc.search(search_context)
+except SyntaxError, e:
+  rc.exit(400) #bad request
+
+search_context.gm_flags = orig_gm_flags
+
+request.output.send_header("ETag", str(search_result.etag))
+
+if search_result.nochanges:
+  rc.exit(304) # not modified
+
+lang_l2 = rc.raw_param("l", "3") == "2"
+country_l2 = rc.raw_param("k", "3") == "2"
+
+request.output.content_type("text/xml; charset=UTF-8")
+
+prn(
+R'''<?xml version="1.0" encoding="utf-8" ?>
+<result xmlns="http://www.newsgate.com/XSearch''', version,
+'" version="', version, '" server="', rc.static.server_version, '"')
+
+if version == "1.3":
+  prn(' status="', search_result.message_load_status == \
+      newsgate.search.SearchResult.MLS_LOADING and "loading" or "loaded", 
+        '"')
+else:
+  prn(' status="', search_result.message_load_status == \
+      newsgate.search.SearchResult.MLS_LOADING and "loading" or \
+      search_result.message_load_status == \
+      newsgate.search.SearchResult.MLS_LOADED and "loaded" or "unknown", '"')
+
+prn('>')
+
+if search_context.save_optimized_query:
+   prn("\n<optimizedQuery>", 
+       search_util.xml_smart_encode(search_result.optimized_query),
+       "</optimizedQuery>")
+
+if calc_ttl:
+  prn("\n<ttl>", rc.channel_ttl(), "</ttl>")
+
+if prn_req_date:
+
+  req_time = rc.test_mode and el.TimeValue(1334831176) or request.time()
+  req_time.usec(0);
+
+  str_time = el.Moment(req_time).iso8601(False).split()
+  str_time = str_time[0] + "." + str_time[1]
+
+  prn('\n<reqDate since_epoch="', req_time.sec(), '">', str_time , 
+      '</reqDate>')
+ 
+if prn_total:
+  prn('\n<total>', search_result.total_matched_messages, "</total>")
+
+if search_context.sr_flags:
+  prn("\n<stat>")
+    
+  if search_context.sr_flags & newsgate.search.SearchContext.RF_LANG_STAT:
+    prn("\n  <language>")
+
+    for option in search_result.lang_filter_options:
+
+      prn('\n    <item count="', option.count, '"')
+
+      if option.selected: prn(' selected="true"')
+
+      prn("><id>", option.id, "</id><val>", 
+          search_util.xml_smart_encode(option.value), "</val></item>")
+
+    prn("\n  </language>")
+
+  if search_context.sr_flags & newsgate.search.SearchContext.RF_COUNTRY_STAT:
+    prn("\n  <country>")
+
+    for option in search_result.country_filter_options:
+
+      prn('\n    <item count="', option.count, '"')
+
+      if option.selected: prn(' selected="true"')
+
+      prn("><id>", option.id, "</id><val>", 
+          search_util.xml_smart_encode(option.value), "</val></item>")
+
+    prn("\n  </country>")
+
+  if search_context.sr_flags & newsgate.search.SearchContext.RF_FEED_STAT:
+    prn("\n  <feed>")
+
+    for option in search_result.feed_filter_options:
+
+      prn('\n    <item count="', option.count, '"')
+
+      if option.selected: prn(' selected="true"')
+
+      prn("><id>", search_util.xml_smart_encode(option.id), "</id><val>", 
+          search_util.xml_smart_encode(option.value), "</val></item>")
+
+    prn("\n  </feed>")
+
+  if search_context.sr_flags & newsgate.search.SearchContext.RF_CATEGORY_STAT:
+    prn("\n  <category>")
+    rc.prn_category(search_result.category_stat.find("/"), "", 0)
+    prn("\n  </category>")
+
+  prn("\n</stat>")
+
+if (search_context.gm_flags & newsgate.search.SearchContext.GM_ALL) and \
+  len(search_result.messages) > 0: 
+
+  prn("\n<items>")
+
+  for msg in search_result.messages:
+
+    prn("\n<item>")
+
+    if msg.title:
+      prn("\n  <title>", search_util.xml_smart_encode(msg.title), "</title>")
+
+    if msg.description:
+      prn("\n  <description>", search_util.xml_smart_encode(msg.description), 
+          "</description>")
+
+    if msg.keywords:
+      prn("\n  <keywords>", xml_smart_encode(msg.keywords), "</keywords>")
+
+    if msg.published and \
+       (search_context.gm_flags & newsgate.search.SearchContext.GM_PUB_DATE):
+
+      published = el.TimeValue(msg.published)
+      moment = el.Moment(published)
+
+      prn('\n  <pubDate since_epoch="', published.sec(), '">', 
+          moment.iso8601(False).replace(" ", "."), "</pubDate>")
+
+    if msg.visited and \
+       (search_context.gm_flags & newsgate.search.SearchContext.GM_VISIT_DATE):
+
+      visited = el.TimeValue(msg.visited)
+      moment = el.Moment(visited)
+
+      prn('\n  <visitDate since_epoch="', visited.sec(), '">', 
+          moment.iso8601(False).replace(" ", "."), "</visitDate>")
+
+    if msg.fetched and (search_context.gm_flags & \
+       newsgate.search.SearchContext.GM_FETCH_DATE):
+
+      fetched = el.TimeValue(msg.fetched)
+      moment = el.Moment(fetched)
+
+      prn('\n  <fetchDate since_epoch="', fetched.sec(), '">', 
+          moment.iso8601(False).replace(" ", "."), "</fetchDate>")
+
+    if msg.url: 
+      prn('\n  <link stat="', 
+          el.string.manip.xml_encode(rc.message_click_url(msg)),
+          '">', search_util.xml_smart_encode(msg.url), '</link>')
+
+    if msg.id: prn("\n  <id>", msg.id, "</id>")
+
+    if msg.lang != el.Lang.null:
+      prn("\n    <language>", 
+          search_util.xml_smart_encode(lang_l2 and msg.lang.l2_code() or \
+                                       msg.lang.l3_code()),
+          "</language>")
+
+    if msg.event_id:
+      prn(
+R'''
+  <event>
+    <id>''', msg.event_id, R'''</id>
+    <capacity>''', msg.event_capacity, R'''</capacity>
+  </event>''')
+
+    if len(msg.images) > 0:
+      prn("\n  <images>")
+
+      for img in msg.images:
+    
+        if img.width >= 0: width_attr = ' width="' + str(img.width) + '"'
+        else: width_attr = ''
+
+        if img.height >= 0: height_attr = ' height="' + str(img.height) + '"'
+        else: height_attr = ''
+
+        if img.alt != "": 
+          img_alt = ' alt="' + el.string.manip.xml_encode(img.alt) + '"'
+        else: img_alt = ""
+
+        if img.thumbs.size() > 0:
+
+          prn(R'''
+    <image src="''', img.src, '"', width_attr, height_attr, img_alt, ">")
+
+          for thumb in img.thumbs:
+            prn(R'''
+      <thumb src="''', thumb.src, '" width="', thumb.width, '" height="', 
+               thumb.height)
+
+            if version != "1.3":
+              prn('" cropped="', thumb.cropped and "true" or "false")
+
+            prn('"/>')
+
+          prn(R'''
+    </image>''')
+
+        else:
+
+          prn(R'''
+    <image src="''', img.src, '"', width_attr, height_attr, img_alt, '/>')
+
+      prn("\n  </images>")
+
+    if len(msg.categories) > 0:
+      prn("\n  <categories>")
+
+      for cat in msg.categories:
+        prn("\n    <category>", search_util.xml_smart_encode(cat),
+            "</category>")
+
+      prn("\n  </categories>")
+    
+    if msg.source_url:
+      prn(R'''
+  <source>
+    <title>''', search_util.xml_smart_encode(msg.source_title), R'''</title>
+    <link>''', search_util.xml_smart_encode(msg.source_url), R'''</link>''')
+
+      if version != "1.3":
+        prn(R'''
+    <htmlLink>''', search_util.xml_smart_encode(msg.source_html_link), 
+            R'''</htmlLink>''')
+
+      if msg.country != el.Country.null:
+        prn(
+R'''
+    <country>''', search_util.xml_smart_encode(country_l2 and \
+            msg.country.l2_code() or msg.country.l3_code()), '</country>')
+
+      prn("\n  </source>")
+
+    if msg.core_words != None and len(msg.core_words) > 0:
+      
+      prn("\n  <coreWords>")
+
+      for word in msg.core_words:
+        prn('\n  <w i="', word.id, '" w="', word.weight, '">', 
+            search_util.xml_smart_encode(word.text), "</w>")
+
+      prn("\n  </coreWords>")
+
+    if search_context.gm_flags & newsgate.search.SearchContext.GM_STAT:
+      prn("\n  <stat>\n    <impressions>", msg.impressions, 
+          "</impressions>\n    <clicks>", msg.clicks, 
+          "</clicks>\n  </stat>")
+
+    prn(
+R'''
+</item>''')
+
+  prn("\n</items>")
+
+prn("\n</result>\n")
+
+# Break circular references ...
+rc.exit()

@@ -1,0 +1,25 @@
+# @file   Makefile.in
+# @author Karen Aroutiounov
+# $Id: $
+
+include Common.pre.rules
+
+target_directory_list := Feeds \
+                         Message \
+                         Moderator \
+                         Dictionary \
+                         Commons \
+                         Event \
+                         Segmentation \
+                         Statistics \
+                         FraudPrevention \
+                         Ad \
+                         Mailing
+
+Mailing Message : Dictionary Segmentation
+Event : Dictionary
+
+Feeds Message Moderator Dictionary Event Statistics FraudPrevention Ad : Commons
+Mailing : Commons
+
+include $(osbe_builddir)/config/Direntry.post.rules

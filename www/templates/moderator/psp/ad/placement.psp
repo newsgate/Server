@@ -1,0 +1,279 @@
+from moderation_func import *
+
+request, conf = context.request, context.config.get
+message = context.forward_params
+prn, param = request.output.stream.prn, request.input.parameters().find
+
+moderator = connect_moderator(request, moderator_connector)
+advertiser_id = moderator.advertiser_id
+
+ad_manager = \
+  moderator.has_privilege(newsgate.moderation.moderator.PV_AD_MANAGER)
+
+if not advertiser_id:
+  el.exit(403) # Forbidden
+
+id = long(param("id", 0))
+gid = long(param("gid", 0))
+cl = long(param("cl", 0))
+
+svc = SetValueCtx()
+
+if param("u"):
+
+  grp = moderator.ad_manager.get_group(gid, advertiser_id)
+
+  plc = newsgate.moderation.ad.Placement()
+
+  plc.id = id
+  plc.group = gid
+  plc.group_name = grp.name
+  plc.campaign = grp.campaign
+  plc.campaign_name = grp.campaign_name
+  plc.advertiser = advertiser_id
+
+  try: plc.name = param("pn").strip()
+  except: svc.error = "Name can't be empty"
+
+  status = param("ps")
+  if status == "E": plc.status = newsgate.moderation.ad.TS_ENABLED
+  elif status == "D": plc.status = newsgate.moderation.ad.TS_DISABLED
+  else: plc.status = newsgate.moderation.ad.TS_DELETED
+
+  inject = param("in")
+  if inject == "D": plc.inject = newsgate.moderation.ad.PI_DIRECT
+  else: plc.inject = newsgate.moderation.ad.PI_FRAME
+
+  plc.cpm = \
+    set_float_value("pc",
+                    param("pc"), 
+                    0.0,
+                    1000000.0, 
+                    "CPM should be a float number from 0 to 1000000",
+                    svc)
+
+  slot_name = param("sn")
+  if slot_name: plc.slot.name = slot_name
+
+  plc.slot.id = long(param("sl"))
+  if not plc.slot.id and not svc.error: svc.error = "Select Slot"
+
+  plc.slot.min_width = long(param("wn"))
+  plc.slot.max_width = long(param("wx"))
+  plc.slot.min_height = long(param("hn"))
+  plc.slot.max_height = long(param("hx"))
+
+  ad_name = param("an")
+  if ad_name: plc.ad.name = ad_name
+
+  plc.ad.id = long(param("ad"))
+  if not plc.ad.id and not svc.error: svc.error = "Select Ad"
+
+  sz_name = param("zn").strip()
+  if sz_name: plc.ad.size_name = sz_name
+  plc.ad.width = long(param("zw"))
+  plc.ad.height = long(param("zh"))
+
+  if not svc.error:
+
+    if id:
+      update = newsgate.moderation.ad.PlacementUpdate()
+
+      update.id = id
+      update.advertiser = advertiser_id
+      update.status = plc.status
+      update.name = plc.name
+      update.cpm = plc.cpm
+      update.inject = plc.inject
+      update.slot = plc.slot.id
+      update.ad = plc.ad.id
+
+      try:
+        plc = moderator.ad_manager.update_placement(update)
+      except newsgate.moderation.ad.ObjectNotFound:
+        svc.error = "Placement not found"
+      except newsgate.moderation.ad.ObjectAlreadyExist:
+        svc.error = "Such placement name is already used"
+#      except newsgate.moderation.ad.InvalidObject:
+#        svc.error = "Slot does not match ad size"
+
+    else:
+
+      try:
+
+        plc = moderator.ad_manager.create_placement(plc)
+        id = plc.id
+      except newsgate.moderation.ad.ObjectAlreadyExist:
+        svc.error = "Such placement name is already used"
+#      except newsgate.moderation.ad.InvalidObject:
+#        svc.error = "Slot does not match ad size"
+
+elif id:
+    plc = moderator.ad_manager.get_placement(id, advertiser_id)
+elif cl:
+    plc = moderator.ad_manager.get_placement(cl, advertiser_id)
+    plc.id = 0
+    plc.name = plc.name + " (clone)"
+else:
+    grp = moderator.ad_manager.get_group(gid, advertiser_id)
+
+    plc = newsgate.moderation.ad.Placement()
+    plc.group = gid
+    plc.group_name = grp.name
+    plc.campaign = grp.campaign
+    plc.campaign_name = grp.campaign_name
+    plc.advertiser = advertiser_id
+
+prn(
+R'''<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>Management: ''', el.string.manip.xml_encode(plc.name), 
+R''' Ad Placement</title>
+<link rel="stylesheet" type="text/css" href="/fixed/css/common.css" media="all" />
+<link rel="stylesheet" type="text/css" href="/fixed/css/ad/placement.css" media="all" />
+<script src="/fixed/js/elements.js" type="text/javascript"></script>
+<script src="/fixed/js/commons.js" type="text/javascript"></script>
+<script src="/fixed/js/ad/placement.js" type="text/javascript"></script>
+</head>
+<body>
+<table id="skeleton" cellspacing="0">
+''')
+
+menus = []
+create_topbar_main_menus(context, moderator, "Ad", menus)
+
+prn(create_topbar(create_ad_menus(moderator, 
+                                  plc.id and "Placement" or "New Placement",
+                                  id),
+                  menus[0], 
+                  menus[1]))
+
+prn(R'''
+  <tr><td id="main_area" valign="top" align="center">
+    <form id="form" method="post" action="placement">
+    <table id="placement">''')
+
+if svc.error:
+  prn('\n    <tr><td colspan="2" class="error">', 
+      el.string.manip.xml_encode(svc.error), '</td></tr>')
+
+prn(R'''
+    <tr class="option_row"><td class="label">Campaign</td><td>
+      <a href="/psp/ad/campaign?id=''', plc.campaign, '">', 
+      el.string.manip.xml_encode(plc.campaign_name),
+    R'''</a></td></tr>
+    <tr class="option_row"><td class="label">Group</td><td>
+      <a href="/psp/ad/group?id=''', plc.group, '">', 
+      el.string.manip.xml_encode(plc.group_name),
+    R'''</a></td></tr>
+    <tr class="option_row"><td class="label">Name&nbsp;[<a href="javascript:set_name('an')">Ad</a>]&nbsp;[<a href="javascript:set_name('sn')">Slot</a>]&nbsp;[<a href="javascript:set_mix()">Mix</a>]</td><td>
+      <input type="text" value="''', el.string.manip.xml_encode(plc.name),
+    R'''" name="pn" id="pn" class="text_option"></td></tr>
+    <tr class="option_row"><td class="label">Status</td><td>
+    <select name="ps">''')
+
+statuses = [ (newsgate.moderation.ad.TS_ENABLED, "Enabled", "E"), 
+             (newsgate.moderation.ad.TS_DISABLED, "Disabled", "D"),
+             (newsgate.moderation.ad.TS_DELETED, "Deleted", "L")
+           ]
+
+for s in statuses:
+  prn('<option', plc.status == s[0] and ' selected="selected"' or '', 
+      ' value="', s[2], '">', s[1], '</option>')
+
+prn(R'''</select></td></tr>
+    <tr class="option_row"><td class="label">CPM</td><td>
+      <input type="text" value="''', 
+    float_value("pc", "%.3f" % plc.cpm, svc),
+    R'''" name="pc" class="text_option"></td></tr>
+    <tr class="option_row"><td>Ad</td><td>
+    <a href="javascript:set_ad()" id="cur_ad">''')
+
+if plc.ad.id:
+  prn(el.string.manip.xml_encode(plc.ad.name), ", ", 
+      el.string.manip.xml_encode(plc.ad.size_name), ", ", plc.ad.width, 'x',
+      plc.ad.height)
+else:
+  prn("Select Ad")
+
+prn(R'''</a></td></tr>
+    <tr class="option_row"><td>Slot</td><td>
+    <a href="javascript:set_slot()" id="cur_slot">''')
+
+if plc.slot.id:
+  prn(el.string.manip.xml_encode(plc.slot.name), ', [', plc.slot.min_width,
+      ' - ', plc.slot.max_width, '] x [', plc.slot.min_height,
+      ' - ', plc.slot.max_height, ']' )
+else:
+  prn("Select Slot")
+
+prn(R'''</a></td></tr>
+    <tr class="option_row"><td class="label">Inject</td><td>
+    <select name="in">''')
+
+inject = [ (newsgate.moderation.ad.PI_DIRECT, "Direct", "D"), 
+           (newsgate.moderation.ad.PI_FRAME, "Frame", "F")
+         ]
+
+for i in inject:
+  prn('<option', plc.inject == i[0] and ' selected="selected"' or '', 
+      ' value="', i[2], '">', i[1], '</option>')
+
+prn('</select></td></tr>')
+
+if plc.id:
+
+  url = el.string.manip.xml_encode(\
+    'http://' + conf("newsgate_link") + '/p/a?p=' + str(plc.id))
+
+  prn(R'''
+    <tr class="option_row"><td>Url</td><td>
+    <a href="''', url, '" target="_blank">', url, '</a>')
+
+if plc.id:
+  prn('\n    <tr class="option_row"><td', 
+      plc.display_status and ' class="error"' or '',
+      '>Display Status</td><td>', 
+      plc.display_status or "Active",
+      '</td></tr>')
+
+prn(R'''
+    <tr><td colspan="2">
+      <input type="submit" name="u" value="''', id and "Update" or "Create", 
+    R'''"/>
+    </td></tr>''')
+
+prn(R'''
+    </table>
+  <input type="hidden" name="id" value="''', plc.id, R'''">
+  <input type="hidden" name="gid" value="''', plc.group, R'''">
+  <input type="hidden" id="sl" name="sl" autocomplete="off" value="''', 
+    plc.slot.id, R'''">
+  <input type="hidden" id="sn" name="sn" autocomplete="off" value="''', 
+    el.string.manip.xml_encode(plc.slot.name), R'''">
+  <input type="hidden" id="wn" name="wn" autocomplete="off" value="''', 
+    plc.slot.min_width, R'''">
+  <input type="hidden" id="wx" name="wx"  autocomplete="off" value="''', 
+    plc.slot.max_width, R'''">
+  <input type="hidden" id="hn" name="hn" autocomplete="off" value="''', 
+    plc.slot.min_height, R'''">
+  <input type="hidden" id="hx" name="hx"  autocomplete="off" value="''', 
+    plc.slot.max_height, R'''">
+  <input type="hidden" id="ad" name="ad" autocomplete="off" value="''', 
+    plc.ad.id, R'''">
+  <input type="hidden" id="an" name="an" autocomplete="off" value="''', 
+    el.string.manip.xml_encode(plc.ad.name), R'''">
+  <input type="hidden" id="zn" name="zn" autocomplete="off" value="''', 
+    el.string.manip.xml_encode(plc.ad.size_name), R'''">
+  <input type="hidden" id="zw" name="zw" autocomplete="off" value="''', 
+    plc.ad.width, R'''">
+  <input type="hidden" id="zh" name="zh"  autocomplete="off" value="''', 
+    plc.ad.height, R'''">
+  </form>
+  </td></tr>
+''', create_copyright(context), R'''
+</table>
+</body>
+</html>
+''')

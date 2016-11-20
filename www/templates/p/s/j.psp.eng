@@ -1,0 +1,9 @@
+#include ../../py/search_util.eng
+#include ../../py/informer_util.eng
+
+IR_BIG_IMAGE Enlarge the image
+IR_SOURCE    Source
+IR_ON_SITE   at
+
+PUBLISHED_NOSRC  Published {{MSG_TIME_AGO}} ago{{MSG_COUNTRY}}
+FETCHED_NOSRC    Fetched {{MSG_TIME_AGO}} ago{{MSG_COUNTRY}}

@@ -1,0 +1,2731 @@
+Changes with NewsGate 1.7.21.0 (9 November 2015)
+
+  * MessageBank capacity room implemented
+  * Bugfix: categories not sorted properly on home page
+  * Code change required for enewsgate frontend crash research
+  * Even option row coloring in management UI
+
+Changes with NewsGate 1.7.20.0 (14 May 2015)
+
+  * Code change required for enewsgate frontend crash research
+
+Changes with NewsGate 1.7.19.0 (9 April 2015)
+
+  * Bugfix: improper default event bank settings
+
+Changes with NewsGate 1.7.18.0 (30 March 2015)
+
+  * Event words_overlap function changed
+  * More detailed baloon for email subscription button added
+  * Elements moved to github
+
+Changes with NewsGate 1.7.17.0 (25 February 2015)
+
+  * Bugfix: in iPhone long subscription emails shown incorrectly in dlg box
+  * Search Frontend C++ code cleanup
+
+Changes with NewsGate 1.7.16.0 (25 February 2015)
+
+  * Bugfix: search frontend crashed when null or unexistent event or message
+    ids encountered in stat request
+  * Bugfix: story subscription stall when event change for a message
+  * Blocked HTTP reqs (botnets...) will not result in search now
+  * Wording changed in subscription creation dlg box
+
+Changes with NewsGate 1.7.15.0 (20 February 2015)
+
+  * Bugfix: invalid behaviour on attempt to update deleted subscription
+
+Changes with NewsGate 1.7.14.0 (19 February 2015)
+
+  * Bugfix: uuid lib not linked to SearchMailer
+  * Extra logging added to SearchMailer
+
+Changes with NewsGate 1.7.13.0 (18 February 2015)
+
+  * Search mail subscription
+  * Bugfix: category trigger recommendation page error
+  * Category locale calculation changed
+  * Set search page focus right after top bar rendered
+  * Informer result sorting configuration
+  * Ad tag added for RSS and Informer initiated message page navigates
+
+Changes with NewsGate 1.7.12.0 (1 January 2015)
+
+  * Category trigger recomended phrase got tooltip with irrelevant 
+    occurances in title
+  * Sitemap.txt for newsfiber.com enriched with localized urls
+  * Category trigger recomended phrase max count decreased from 10K to 1K
+
+Changes with NewsGate 1.7.11.0 (28 December 2014)
+
+  * Category trigger Recomendation page make unusefull triggers gray
+  * Category triggers Recommendation page do not mark triggers as viewed 
+    when any dlg block opened
+  * Source link from Sources dlg opens in new tab in moderation mode
+  * Bugfix: Widget Footer Link Text field field not properly for categories 
+    with localized short title
+
+Changes with NewsGate 1.7.10.0 (23 December 2014)
+
+  * Bugfix: category localization fails for non-ascii names
+  * Copyright note updated
+
+Changes with NewsGate 1.7.9.0 (22 December 2014)
+
+  * Category localization extension
+
+Changes with NewsGate 1.7.8.0 (15 December 2014)
+
+  * Bugfix: MessageBank could exit leaving an outdated message cache
+  * Bugfix: MessageBank stat could be updated after data flush on exit
+  * Event remake after revision
+  * Category recomendation page improvement: relevant message count increase 
+    display
+
+Changes with NewsGate 1.7.7.0 (10 December 2014)
+
+  * Event remake algorithm
+  * Frequent core words pairs detection
+  * Country switchers implemented
+  * mysql monitoring user (NG-304)
+  * Copyright note changed
+
+Changes with NewsGate 1.7.6.0 (31 October 2014)
+
+  * Skip viewed phrases in category word recommendation tool
+  * hreflang supported
+  * renorm file comment invented
+  * WordPair counter info logging
+  * WordPair counter memory optimization
+  * Bastion template implemented
+
+Changes with NewsGate 1.7.5.0 (2 October 2014)
+
+  * Event overlap debugging switched off
+
+Changes with NewsGate 1.7.4.0 (22 September 2014)
+
+  * Adoption for CentOS 7 environment
+  * -std=c++0x CPP option added
+  * Category relevant phrases recommendation
+  * Bugfix: informer image style 'width:inherit' replace by proper
+    width, height styles
+
+Changes with NewsGate 1.7.3.0 (7 July 2014)
+
+  * Bugfix: in some cases RSSPuller failed to set image height, width properly
+  * Bufgix newsfiber.com: 'Suggest Link' page internal error
+  * newsfiber.com: message max age set to 3 years
+
+Changes with NewsGate 1.7.2.0 (2 July 2014)
+
+  * Bugfix: RSSPuller do not apply proper request period for dissallowed for 
+    indexing HTML feeds
+  * Bugfix: too many categories expanded in message page right bar
+
+Changes with NewsGate 1.7.1.0 (17 June 2014)
+
+  * Bugfix: ng-convert-1-7-0-0 didn't reset possible and redundant error code
+  * Default copyright note changed from Data Stream Navigations to DSN
+
+Changes with NewsGate 1.7.0.0 (16 June 2014)
+
+  * Bugfix: 500 error when save in bulk edit html feeds
+  * Bugfix: localization partially broken for search language help page
+  * Bugfix: when advertiser account disabled his ads still shown
+  * Bugfix: Ad::Condition::group_freq_cap, group_count_cap not serialized
+  * Bugfix: Number of deleted items should not be considered in display 
+    status views
+  * Bugfix: informer adds width:ingerit to image style to resist external 
+    definitions
+  * Copyright note made configurable
+  * Counters, blog and participation links removed for newsfiber.com
+
+Changes with NewsGate 1.6.99.0 (4 June 2014)
+
+  * El::Sync::AdaptiveMutex use for MessageManager
+  * Bugfix: full backup failed with message 
+    'tar: Message/Bank/ImgThumb/20140516: file changed as we read it'
+  * Ad support removed from search frontend plugin
+  * Using regexp for moderation UI tables filtering
+
+Changes with NewsGate 1.6.98.0 (23 May 2014)
+
+  * Configuration for RH6 (NG10)
+  * Bugfix: newsgate_log_cleaner were removing 
+    var/lib/Frontends/Thumbnail/ImgThumb directory under RHEL 6
+  * Bugfix: internal error on Contact page
+  * Bugfix: backup_sync didn't find latest full backup in case of single 
+    backup directory
+  * Ad Condition query types and content languages implemented
+  * Bugfix: Ad Condition language and language exclusions errors not 
+    properly processed
+  * Bugfix: Ad Placement [Mix] link added
+  * New Group link added to Ad Group page
+
+Changes with NewsGate 1.6.97.0 (30 April 2014)
+
+  * Porting to RHEL 6 (MALLOC_ARENA_MAX=4 for Puller and FeedManager)
+  * Bugfix: inline feed editing reset encoding field
+  * Bugfix: AdCounter, AdCounterPlacement tables were not saved in partial 
+    backup
+  * Setting placement name from ad, counter, slot and page names
+  * /Space category counter injection removed for newsfiber.com config
+
+Changes with NewsGate 1.6.96.0 (25 April 2014)
+
+  * Ad counters implementation
+  * Moderation UI: Filtering group ad, counter placements
+  * Thumb generation options made configurable in RSS puler
+
+Changes with NewsGate 1.6.95.0 (18 April 2014)
+
+ * Ported to RHEL 6
+ * Bugfix: Frontend syntax error leads to server internal error
+ * Bugfix: FeedManager could stay for some time alive after end of stop 
+   script execution
+ * Bugfix: ImageMagick crash RSSPuller on RHEL 6
+ * Bugfix: broken encoding in some message adjustments
+ * Bugfix: SearchTest assertion
+ * Sources copyright note updated
+ * Bugfix: create placement failed for advertiser with no ads restriction 
+   specified for placement page
+ * Bugfix: some rss feeds (http://www.astrogorizont.com/content/op-rss/ch-2) 
+   have inproper encoding specified; need to be able of overriding it
+ * Bugfix: some html feeds (http://www.rsbi.ru/news) have inproper encoding 
+   specified; need to be able of overriding it
+ * Ad creative weight strategy
+ * Bugfix: cloning ad should erase placement list
+ * Bugfix: fixing min height for mobile ad slots
+ * Ad Placement display status
+ * Advert choice dialog improvement
+ * AdCondition options collapsing
+ * Referer and tag added to AdCondition
+ * Bugfix: broken category breadcrump translation
+ * Bugfix: /p/a frontend 500 code
+ * Ad test extended
+ * Feed puller UA set to 
+   'Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Trident/5.0)'
+
+Changes with NewsGate 1.6.94.0 (24 March 2014)
+
+  * Event merge algorithm improvement
+  * Event separation by words invented
+  * Message core words extraction algorithm improvement
+  * AdServer implemented
+  * Tracing long lasting search requests
+  * Bugfix: image is not inserted by newsgate.MA_Context.set_images in 
+    some cases
+  * Bugfix: Customer balance precision managed improperly
+  * Bugfix: NLine mobile CSS update
+  * Bugfix: Contacts menu broken
+  * 'white-space: normal' added to informer style
+  * Hypenation implemented for message and search pages
+
+Changes with NewsGate 1.6.93.0 (24 December 2013)
+
+  * Bugfix: frontend page title unexpectedly translated
+  * Bugfix: on frontend settings restore view options visibility reset
+  * Bugdix: dict hash hash file not deleted under some circumstances
+  * Newsline frontend view implemented
+  * Settings dialog made page-dependent
+
+Changes with NewsGate 1.6.92.0 (20 December 2013)
+
+  * Bugfix: some XSearch client request didn't take into account 'r' 
+    parameter being considered as crawler
+  * Bugfix: newsgate.MA_Context.skip_image considered images with 
+    status != VALID for calculations
+  * Bugfix: 'backup fast' had errors when no message images exist
+  * xsearch.client_ips invented in Search Frontend configuration
+  * EventBank manager can't send message updates more frequent than once 
+    per second
+  * backup_sync usage text minor fix
+
+Changes with NewsGate 1.6.91.0 (11 December 2013)
+
+  * Bugfix: events word weights not recalculated on load when 
+    core_word_weight function changed
+  * Event Bank do not accept message delete notification until number of 
+    changed events go below 10000
+  * Event get splitted only if number of dissenters decreases
+  * Core words suppression intersection changed from 90% to 75%
+  * MessageBank::SHARING_INTERFACE_VERSION changed to 10 from 9 as 
+    FL_PROPER_NAME message flag invented
+  * CSS minor refactoring
+  * Newsline search view partially implemented
+  * Left bar partially implemented
+
+Changes with NewsGate 1.6.90.0 (6 December 2013)
+
+  * Bugfix: renormalized and changed messages dictionary hash were not 
+    always saved
+  * Proper name core word made the 1-st in the list
+  * FL_SENTENCE_PROPER_NAME word position flag invented
+  * Word pair based core words sorting attach more importance to previous 
+    core words sorting
+  * EventObjest::core_word_weight now equal cubic offset
+  * EventBank made tolerant to merge of events which resulted 
+    strain > max but dissenters = 1
+  * Left bar partially implemented
+  * Sort by capacity now also consider rctr
+
+Changes with NewsGate 1.6.89.0 (21 November 2013)
+
+  * Event merge forbiddent when resulted event strain > max strain
+  * Bugfix: newsgate.MA_Context.set_images didn't always work properly for 
+    max_count!=None
+  * PROPER_NAME message word flag invented
+  * Core words debug info on search page extended
+  * Message::WordMessages::capitalized invented
+  * EventBank made tolerant to MessageBank absense
+
+Changes with NewsGate 1.6.88.0 (15 November 2013)
+
+  * Bugfix: NewsGate crashes (race condition); NG-7
+  * Bugfix: event merge happend based not with the best overlap level but 
+    random appropriate
+  * Bugfix: moderation UI search broken for searches returning no messages
+  * LimitChecker implemented
+  * Making event overlap penalty quadratic
+  * StatLogger error logging improved
+  * Dissenters merge level calculation made bit less strict
+  * Logging browser prefered language in search frontend
+  * Default event max strain made 10 from 40
+
+Changes with NewsGate 1.6.87.0 (30 October 2013)
+
+  * Bugfix: proper Elements version linked
+
+Changes with NewsGate 1.6.86.0 (30 October 2013)
+
+  * Event EF_DISSENTERS_CLEANUP flag invented
+  * Bugfix: rsyslog config fix
+  * word_pair_short_period made 5 days
+  * Removing extra forms parameterized for WordInfoManager::normal_forms_ids
+
+Changes with NewsGate 1.6.85.0 (28 October 2013)
+
+  * ng-convert-1-6-85-0 added
+  * Bugfix: core words adjustment algorithm assertion failed
+  * NG-6 implementation (ZenOSS related stuff)
+  * Adult flag logging added
+  * Spam filter added
+
+Changes with NewsGate 1.6.84.0 (24 October 2013)
+
+  * Using word pairs freqs for core words detection
+  * Category selection dialog will treat radio button dbl click as ok pressing
+  * Bugfix: 'lock tables' queries get locked mysqldump during full backup
+  * Bugfix: message/event debug info for events of size 2 calculated not 
+    correctly
+  * Ad domain blacklisted
+  * For newsfiber.com:
+    * Search interceptor do not display ads for 
+      /Society/18+ category
+    * Message max age set to 24 months from 15
+    * server.behaviour.message.word_pair_counter.type = mem for pri
+
+Changes with NewsGate 1.6.83.0 (16 August 2013)
+
+  * Bugfix: core word detection procedure broken
+  * --feed argument supported in MessageExport utility
+
+Changes with NewsGate 1.6.82.0 (12 August 2013)
+
+  * Bugfix: message bank reference inside message bank manager considered 
+    inactive until first ping
+  * Bugfix: duplicates suppressions didn't work properly for events in 
+    case it's lang differs from the lang filter
+  * Using word pairs freqs for core words detection (partial)
+  * Cleaning duplicates from DB on load
+  * Informer wording fine tuned
+
+Changes with NewsGate 1.6.81.0 (29 July 2013)
+
+  * Message.dict_hash separated to MessageDict table to speedup words 
+    renormalization on MessageBank loading
+  * Bugfix: EventBank.msg.* files were not automatically deleted
+  * Bugfix: on server shutdown MessageBank Manager complaind it can't 
+    connect to MessageBank
+  * Bugfix: search translation broken in moderation UI
+  * Bugfix: informer page had redundant Translate menu
+  * Search optimization
+  * Using word pairs freqs for core words detection (partial)
+
+Changes with NewsGate 1.6.80.0 (23 July 2013)
+
+  * Bugfix: annotation length not properly managed for mobile version
+  * Bugfix: backup_sync procedure broken
+  * Remove some options from settings dialog opened in informer creation 
+    mode to avoid confusion
+
+Changes with NewsGate 1.6.79.0 (22 July 2013)
+
+  * Bugfix: XSearch protocol erroneously considered client Accept-Language 
+    header defining language filter if not specified explicitly
+  * Bugfix: Event Bank NotReady exception logged by Message Bank with a 
+    wrong error code
+  * Bugfix: informer translation broken while save settings
+  * Event Bank max traverse period increased to 60 seconds from 30 seconds
+  * More tracing added to backup_sync
+  * Server-side caching implemented for www/templates/p/l.psp
+
+Changes with NewsGate 1.6.78.0 (19 July 2013)
+
+  * Bugfix: home page language not present
+
+Changes with NewsGate 1.6.77.0 (19 July 2013)
+
+  * Search Frontend language switch improved
+  * Search optimization
+  * Bugfix: EventBank crashed if stop right after being started
+  * Bugfix: ANY 2 'A B' 'A C' D converted to ANY 2 'A B' D
+
+Changes with NewsGate 1.6.76.0 (17 July 2013)
+
+  * Message translation implemented
+  * Annotation length setting invented
+  * JSON format supported in informer
+  * Informer description dynamically adjusted
+  * Bugfix: sources search paging links broken if dlg opened multiple times
+  * Bugfix: when failed to save category with renamed word lists got a 
+    warning that newly named whord lists were deleted
+  * Bugfix: failed to save category with renamed wordlist
+  * Country and lang specification removed from search page title and desc
+
+Changes with NewsGate 1.6.75.0 (2 July 2013)
+
+  * Space stat and filtering removed
+  * Search performance optimization
+  * Bugfix: for old psp/rus/search informer lang filter should be set 
+    to rus unconditionally
+  * truncate SQL statament replace with 'delete from' to avoid blocking 
+    during mysqldump call
+  * Bugfix: saving feeds to DB broken
+  * Bugfix: db-patch-1-6-74-0 were not dropping databases before recreation
+  * Bugfix: wrong path in db-patch-1-6-74-0
+
+Changes with NewsGate 1.6.74.0 (13 June 2013)
+
+  * Bugfix: charset spec required for 'load data infile' for MySQL 5.5
+  * Bugfix: trailing endl saved as part of last record for 'load data infile' 
+    ops
+  * Bugfix: search frontend improper processing of filtering by expire 
+    event search
+  * Bugfix: backup_sync were downloading old full backups in some cases
+  * Bugfix: ElPoolProcess were crashed if msg adjustment script contained 
+    context.set_images(... img_xpath='//meta' ...
+  * server.behaviour.message.description.max_chars = 1024 (where 1536) for
+    newsfiber.com
+  * newsfiber backup cleanup and full backup operations time diff made 1 hour
+
+Changes with NewsGate 1.6.73.0 (5 June 2013)
+
+  * Bugfix: recategorization produce unjustified load on MessageBank DB 
+    in mirror-colo
+  * Bugfix: DB start script doing redundunt sleep operation
+  * backup_sync can now make dir with image links, not just tars
+  * Search Fronted story title enabled
+
+Changes with NewsGate 1.6.72.0 (30 May 2013)
+
+  * High level tracing of MessageManager operations invented
+  * render.no_follow_article variable invented in search frontend and 
+    message page
+  * PSP objects referencing and destruction refactored to avoid alerts and 
+    cyclic refs
+  * Bugfix: improper language selection when redirect on improper event or 
+    message link to root search page
+  * Bugfix: render and interceptor objects in Search Frontend have created 
+    references circle to each other which were not broken on psp script 
+    completion
+  * Bugfix: improper CRITICAL severity for log record on NotReady exception 
+    processing
+  * Obsolete python search lib removed
+  * Ad display removed on 18plus pages for newsfiber.com
+
+Changes with NewsGate 1.6.71.0 (24 May 2013)
+
+  * Bugfix: added DROP permission to nguser, passing empty --user param to 
+    mysql_install_db to make things working on MySQL 5.5
+  * Bugfix: word normalization window operations were unexpectedly 
+    scrolling edit box
+  * Feed item description max char length invented
+  * Language switcher appears on search page now
+  * "Main languages" frontend feature enabled by default (for testing)
+  * psp-ice=1 added to monitoring requests
+  * Monitoring of new message abcense now use 10 mins period
+
+Changes with NewsGate 1.6.70.0 (17 May 2013)
+
+  * Sharing failures now logged with more details
+  * EventCapacity factor considered in sort by relevance
+  * Search language & country filtering optimization
+
+Changes with NewsGate 1.6.69.0 (15 May 2013)
+
+  * Event Bank can_merge asserts removed
+  * Tracing accept language added to Search Frontend
+  * Bugfix: search query syntax error made by crawler resulted in code 500
+  * Expand NewsFiber with content in english (NG-298)
+  * Story link title invented
+  * Overlap calculation for events with 1 common word changed
+
+Changes with NewsGate 1.6.68.0 (30 April 2013)
+
+  * Bugfix: redundant link creation check in backup.sh for fast mode
+  * Bugfix: seting merge flag required in revise_event call
+  * Bugfix: 32-bit compilation failed
+  * Bugfix: my_thread_init,_end linking failed for MySQL 5.5
+  * Bugfix: frontend category load popup 'Loading ...' wrap text
+  * Bugfix: Category.message_count misused in search_page_util.py
+  * Categories with 0 messages for the language/country combination should not be 
+    listed in the right bar
+  * When navigate to event a user with a message language setting different from that 
+    of event can miss the content (NG-294)
+  * ensure_canonical=1 for flo-newsfiber,pri-newsfiber
+
+Changes with NewsGate 1.6.67.0 (26 April 2013)
+
+  * Bugfix: message cache not deleted when stopping Message Bank 
+    before load completed
+  * Bugfix: * is not encoded in backup_sync paths
+  * Bugfix: Category.message_count misused in home.psp, x.psp
+  * --img-method arg invented in backup.sh script
+  * strain and flags logging added in number of code points of Event Bank
+  * Event Bank can_merge asserts added
+  * flo-newsfiber,pri-newsfiber configs created
+
+Changes with NewsGate 1.6.66.0 (23 April 2013)
+
+  * Event Bank can_merge related assertions removed
+  * Managing Messages events time tracing added
+  * backup_sync better parameterized
+  * flo-newsfiber, pri-newsfiber configs created
+
+Changes with NewsGate 1.6.65.0 (22 April 2013)
+
+  * Bugfix: can_merge flag inconsistency created on events rotation operation
+  * Event Bank can_merge asserts added
+
+Changes with NewsGate 1.6.64.0 (20 April 2013)
+
+  * Event Bank can_merge asserts removed
+
+Changes with NewsGate 1.6.63.0 (19 April 2013)
+
+  * Bugfix: MessageBank report presence message enqueued to front to avoid 
+    unexpected sessions recreations
+  * Loading Message Bank from message cache file
+
+Changes with NewsGate 1.6.62.0 (18 April 2013)
+
+  * Bugfix: EventBank could keep MessageBank blocked for tens of seconds on 
+    delete_messages operation
+  * Bugfix: adjustment script editor transparent background
+  * Bugfix: moderation search page in Emi mode displayed word weights and 
+    other info
+  * EventBank find_best_overlap optimization
+  * Bugfix: backup sync script didn't process all errors properly
+  * rb_single_source variable invented in Search Frontend
+  * crawler_convert_empty_res variable invented
+  * description_message_len=150 for frontend message page
+  * EventBank load optimization
+  * MessageBank load optimization
+  * MessageStat table separated from Message
+  * Moderation help page Interface chapter updated
+  * Event Bank traverse period minimized on 0 changed events count
+
+Changes with NewsGate 1.6.61.0 (3 April 2013)
+
+  * Event Bank traverse period maximization strategy made configurable
+  * Moderation help page Interface chapter updated
+
+Changes with NewsGate 1.6.60.0 (2 April 2013)
+
+  * Moderation help page Interface chapter updated
+  * Bugfix: word normalization window of moderation interface were not 
+    scrolled properly in IE
+  * Bugfix: text area were not scrolled to selection in most browsers for
+    'find term' operation
+
+Changes with NewsGate 1.6.59.0 (1 April 2013)
+
+  * Moderation help updated
+  * Bugfix: redundant color set for adjustment script editor
+  * Bugfix: message page image preview scroll down button didn't appear on 
+    window resize
+  * Bugfix: compound search frontend resources not cached prperly
+  * Message page description optionally made from message.description
+  * Moderator Manager, Feed Moderator, Category Word List Editor renamed to 
+    Account Manager, Feed Manager and Category Editor respectively
+  * Moderation frontend page titles got Moderation renamed to Management
+  * Backup sync script decreased by 1 day full backup storage
+  * Event Bank traverse period increase slowed down
+  * Png images compressed
+  * Message link rel='nofollow' attr made configurable
+  * crawler_show_story search page variable invented
+  * Message page AP_MESSAGE_0_2 slot available even if no other messages in \
+    story
+  * SSL certificate updated for newsfiber.com
+  * Message max age increased to 1 year for newsfiber.com
+
+Changes with NewsGate 1.6.58.0 (22 March 2013)
+
+  * Bugfix: racing condition on MessageFetchFilter update/usage; lead to crash
+  * Bugfix: when message deleted from event REVISED flag is not reset
+  * Event bank changed event counter len increased from 10 to 20
+  * Event cant merge if published_min == 0
+
+Changes with NewsGate 1.6.57.0 (20 March 2013)
+
+  * Bugfix: EventBank were crashing on push_event operation
+
+Changes with NewsGate 1.6.56.0 (19 March 2013)
+
+  * Bugfix: EventBank assertion failure on event exchange operation
+  * Moderation help page made multylingval
+  * Snmp support added
+
+Changes with NewsGate 1.6.55.0 (18 March 2013)
+
+  * Bugfix: feed moderation view options get lost sometimes
+  * Bugfix: sometimes unexpectedly get 'Sever communication error, code 0' 
+    on Category update page
+  * Bugfix: help link from moderation search page were broken
+  * Bugfix: category word list selection dialog (moderation UI) has no 
+    separation for word list name rows
+  * Bugfix: on Moderation/Category/Search page IE9 asks if want to load 
+    security content
+  * Bugfix: home page broken when interceptor not provided
+  * Bugfix: home-mob and informer css files not placet to svn
+  * Bufix: backup sync script works on uncompleted backup (NG-284)
+  * Place Db On, Sg On links on Moderator Search manu bars (NG-288)
+  * Moderation help update - partial
+  * Counters added to informer page
+
+Changes with NewsGate 1.6.54.0 (14 March 2013)
+
+  * Bugfix: making configuration generation from server files have broken 
+    CMS plugin builder
+
+Changes with NewsGate 1.6.53.0 (14 March 2013)
+
+  * Bugfix: invalid request scheduling after HTML feed connection refused
+  * Bugfix: redundant impression stat request sent when frontend dlg opened
+  * Bugfix: informer impression not recorded when footer switched off
+  * DOCTYPE HTML 4.01 STRICT adoption
+  * Frontend scripts and CSS refactoring
+  * Frontend dialogs made full page
+  * Generalizing web-dialog API
+  * CSS made versionized and cached with 1 day expiration
+  * Expiration set to 1 day after last access for all png files
+  * Mobile site version
+  * Msg maxage for newsfiber increased from 270 to 300 days
+  * Event Bank traverse_period_max changed from 10 to 15
+
+Changes with NewsGate 1.6.52.0 (18 February 2013)
+
+  * Search optimization partially rolled back
+  * device_type and device added to statistics processing
+  * Mobile site version - partial
+  * Bugfix: StatLogging client type set to U by default
+
+Changes with NewsGate 1.6.51.0 (11 February 2013)
+
+  * Suppress redundant phrases in ANY oparator (NG-270)
+  * Bugfix: Feed Bulk Edit "Internal Server Error" when saving disabled feeds 
+    (NG-281)
+  * Bugfix: informer render accepts lowcase 'c' letter in image size spec to 
+    avoid redundant error logging for broken (lowrcased) informer script urls
+  * h1, h2 tags invented in frontend
+  * Moderation category search improvements
+  * Sharing style altered
+  * Search Frontend forms spam filtering implemented
+  * Recommend Link page informs about already registered feeds
+  * Search frontend redirects to /p/s/h if path is different
+  * GeoIP-devel added to build requires
+
+Changes with NewsGate 1.6.50.0 (28 January 2013)
+
+  * Bugfix: HTMLFeedParser were crashing on some feeds
+  * Bugfix: category word list editor improperly saved empty word list
+  * Suppress redundant phrases in ANY, ALL oparators (NG-270) - partial
+  * Frontend CSS message title related refactoring
+
+Changes with NewsGate 1.6.49.0 (25 January 2013)
+
+  * Bugfix: failed to compile with MICO on 32 bits
+  * Bugfix: moderation refresh_session called too often
+  * Bugfix: moderation Find box improper positioning
+  * Bugfix: word list item put function were complaining 
+    'No words selected' while trying to sort
+  * Bugfix: empty rss button image shown in moderation search page
+  * Object informer implemented
+  * Relaxed search support
+  * Redundant options removed in search frontend page render
+  * Bugfix: Moderation word normalization box worked improperly in some 
+    cases in IE
+  * Word box normalization menu
+  * Old frontend code removed
+  * Frontend logging customized on page level
+  * Word finding link in category moderation page implemented
+  * Category moderation Search menu item points to current category
+  * Category word list editor sorts and dedups words on save
+  * New Ip blacklisted in informers_page.py
+  * Max message age increased from 210 to 240 days for newsfiber.com
+
+Changes with NewsGate 1.6.48.0 (14 January 2013)
+
+  * Bugfix: When bulk edit HTML feeds get error (NG-274)
+  * Bugfix: broken moderation menu in search page
+  * Bugfix: search help page from moderation ui looks broken
+  * Bugfix: improper image selected on message page when click thumbnail 
+    on search page
+  * Review RSS feed generation (NG-265)
+  * Extent menu in word boxes (NG-269)
+  * Search in moderator UI (NG-272)
+  * Message page to list similar messages (NG-277)
+  * Small image directs to message page of event capacity > 1
+  * newsfiber.com ads changed
+  * Message page refactored to make more job done server side to 
+    decrease blinking
+  * Change context.skip_image defaults (NG-275)
+  * Bulk feed edit page minor reformatting
+  * mesage max age set to 7 months from 6 in newsfiber.com config
+  * NewsFiber 'Share Internet-resource' link and page wording updated
+
+Changes with NewsGate 1.6.47.0 (28 December 2012)
+
+  * search_util.resolve_event logic refactoring
+  * Bugfix: search language page had some examples unexpectedly 
+    splitted into severl lines
+  * Bugfix: broken encoding for sent feedback on Contacts page
+  * Search metrics weights made float from unsigned long
+  * Old search implementation obsoleted
+  * Search frontend event page canonization
+  * Recent categories selection (not just word lists) implemented
+  * Bugfix: change log exception when adding already added message to category
+  * Bugfix: filtering term search by source didn't work in search frontend
+  * Search menu invented for Feed moderation pages
+  * Bugfix: opening event for message having currently zero event id didn't 
+    use failover event id encoded into url
+  * Per-crawler results_per_page invented
+  * Bugfix: backup restoration didn't properly cleanup existing DBs
+  * Another Ip blacklisted in informers_page.py
+
+Changes with NewsGate 1.6.46.0 (17 December 2012)
+
+  * Frontends minor refactoring
+  * Res-per-page correction for informer page
+  * Frontend Copyright bar intercepting implemented
+
+Changes with NewsGate 1.6.45.0 (13 December 2012)
+
+  * Matched message weight feed RCTR component wight decreased twice
+  * Moderator activity (NG-248)
+  * EventBank merge_level_strain_based_increment_step invented
+  * EventBank traverse period calculation changed
+  * Frontend contacts form do not delete feedback files now
+  * EventBank now consider all events changed if no cache file found
+  * EventBank performance optimization
+  * Search language page title, description improved
+  * Search language introduction improved
+  * Moderator Feed View Url column link now always direct to instrumented 
+    search page
+  * Event debug info enriched
+  * Event time range constraints invented
+  * Bugfix: EventBank lost opportunity to remerge blaklisted request on 
+    timeout expire after process restart
+  * Color schema adjusted in Moderation Frontend
+  * Operator CATEGORY documented on search help page
+  * Bugfix: Search Frontend runtime error when event expired
+  * Bugfix: overlaped events merge blackist timeout detected improperly
+  * Bugfix: base64 encoding set for feedback email sending
+  * Bugfix: message page right bar advertising position calculated improperly
+  * Bugfix: CSS for option_row class missed for category moderation search page
+  * Message max age changed for newsfiber.com to 150 days from 120 days
+
+Changes with NewsGate 1.6.43.0 (21 November 2012)
+
+  * Bugfix: redundant Message Filter reset task in MessageBank lead to 
+    overloading task queue and blocking house keeping operations
+  * Bugfix: Category manager crashed on category delete operation
+  * Bugfix: setting improper change-flags on Category page on update error
+  * Bugfix: restriction on number of setiing message fetch filter and 
+    categorizer invented in MessageBank to avoid potential quiues overload
+  * Moderation pages error unification
+  * Color schema adjusted in moderator UI
+
+Changes with NewsGate 1.6.42.0 (19 November 2012)
+
+  * Bugfix: event debug info not shown when filtering by event
+  * Bugfix: detaching message from event was conducted on overlap value 
+    1 less that it should be
+  * Bugfix: feedback page layout were broken in IE
+  * Bugfix: improper localization for informer Image Sizes select control
+  * Bugfix: some events traverse passes not conducted revision even when 
+    revise_event_period=0
+  * Event split parts overlap, required merge level and time diff now logged
+  * Moderation Frontend color schems changed to 'more gray' one
+  * Search Frontend color schems changed to 'more gray' one
+  * Add emi (extra message info) parameter to Search Frontend
+  * Search results page number fix
+  * Problem with loading multiple images on message page (NG-258)
+  * Moderator activity (NG-248) - partial
+  * Search frontend time rounding print days till 60
+  * Serach frontend core words highligted better
+  * Time coverage added to event debug info
+  * Event merge denial timeout size based factor now applied against 
+    seconds not minutes
+  * Crawler language selection by message language enabled
+  * Event overlap debug info extended
+
+Changes with NewsGate 1.6.41.0 (2 November 2012)
+
+  * Invent maximum time interval between events to merge them (NG-262)
+  * Bugfix: Adjustment script skips all images (NG-260)
+  * Bugfix: Broken encoding for feed
+  * Bugfix: when html feed return NotModified code next request were 
+    scheduled immediatelly
+  * Bugfix: controls were improperly switched to visible/hidden states on 
+    feed editor moderation page
+  * Moderator activity (NG-248) - partial
+  * backup_sync implemented
+  * http://www.topic.lt/miru_mir/rss.xml added to 18+ group (newsfiber.com)
+  * max_allowed_packet = 128M
+
+Changes with NewsGate 1.6.40.0 (26 October 2012)
+
+  * Category versioning (NG-243)
+  * Bugfix: SearchFrontend st param value were not mime url encoded
+  * Describe the whole search language in online help (NG-233) - partial
+  * Legacy title var usage in contacts page render
+  * Python pid-files minor change
+  * legacy_title frontend render option set to False
+
+Changes with NewsGate 1.6.39.0 (18 October 2012)
+
+  * Bugfix: Category selection dialog on View Feeds page selects recently 
+    chosen word lists improperly (NG-256)
+  * Display 'visited' message filed in debug info mode (NG-257)
+  * Message lifetime increased to 90 days for newsfiber.com
+
+Changes with NewsGate 1.6.38.0 (16 October 2012)
+
+  * Bugfix: Unexpected valid message for HTML feed (NG-249)
+  * Bugfix: set_images works improperly with max_count=1 (NG-255)
+  * Bugfix: Old lastBuildDate resets proper items pubDate (NG-252)
+  * Bugfix: images_from_doc could unexpectedly timeout on urls with many images
+  * Bugfix: sending MessageStatRequest by failover frontend with data 
+    structure different from expected by master MessageBank to abort
+  * Setting source title helper for msg adjustment script (NG-253)
+  * No images for http://www.babyplan.ru/ (NG-251)
+  * Python sandbox frameworked extend for testing purpoces
+  * Instance name in frontend title need to move to the end (NG-246) - 
+    made configurable though render.legacy_title
+  * Research if MessageBank maps size optimization required (NG-247)
+  * auto_ptr misused instead of El::ArrayPtr in Message::LocalCodeArray
+  * Message::Transport::MessageStatRequestInfo, MessageStatInfo versionized now
+  * Message lifetime increased to 90 days for newsfiber.com
+  * 18+ button is not properly displayed in moderation mode (NG-250)
+  * Advertising experiment on Message Page changed
+  * /p/s/h path added to newsfiber.com/Sitemap.txt
+  * Make SearchFrontend delete unused cached images from disk by timeout 
+    (NG-245)
+
+Changes with NewsGate 1.6.37.0 (8 October 2012)
+
+  * Image weight for sorting by relevance decreased 2 times
+  * Create <description> tag for informer page (NG-232)
+  * 18+ marker implemented for newsfiber.com
+  * Implement ability to create additional configuration-level PSP pages 
+    (NG-244)
+  * Implement ability to create additional links on pages by means of 
+    interceptor (NG-242)
+  * Bugfix: collapsing and reopening current category in Search Page right 
+    bar produced script error
+
+Changes with NewsGate 1.6.36.0 (5 October 2012)
+
+  * Made an ability to hide invalid messages in html feed editor
+  * Bugfix: When DB is broken backup.sh restore fails (NG-239)
+  * Bugfix: NewsGate mysql log on newsfiber.com filled with error records 
+    (NG-235)
+  * Bugfix: [ADD CATEGORY] interface bug (NG-241)
+  * Bugfix: [ADD CATEGORY] interface doesn't work for IE8;9 (NG-240)
+  * Parameter drop_url_anchor added to newsgate.HF_Context.new_message method
+  * meta-description tag removed from p/s/m and / pages for backward 
+    compatibility
+  * Bugfix: data converter script ng-convert-1-6-35-0 was erroneously 
+    emptifying EventMessage table
+
+Changes with NewsGate 1.6.35.0 (2 October 2012)
+
+  * Pulling news form HTML
+  * CategoryWordListEditor privilege (NG-226)
+  * Category Message List and Category Message Exclude List (NG-228)
+  * VISITED filtering operator (NG-230)
+  * MA_Context.set_description() to have max_len param (NG-225)
+  * Bugfix: filling context for feed message adjustment could hang arbitrary 
+    long ignoring timeout
+  * Bugfix: crawler parser didn't retried to parse without invalidly named 
+    Content-Type specified encoding
+  * Bugfix: extra XML encoding for category edit url in moderation UI topbar
+  * Bugfix: Invalid item link taken for RSS feed (NG-237)
+  * Bugfix: MySQL launch option --defaults-extra-file replaced with 
+    --defaults-file
+  * crawler_redirect_canonical and lagacy_metas invented
+  * Customer table created
+  * Premature Customer & Client tables dropped
+  * CRC calculation for feed pulling functions made uint64_t based
+  * SearchFrontend: canonical url don't contain redundant query param now; 
+    gone_if_query set to False
+
+Changes with NewsGate 1.6.34.0 (25 June 2012)
+
+  * Pulling news form HTML - partial
+  * Bugfix: replacing '\r', '\n', '\t' required to make category expration 
+    search to work
+  * Bugfix: 503 code (Service Temporarily Unavailable) on broken event 
+    request syntax
+  * Bugfix: request for Contact page returns 500 error
+  * Bugfix: when /p/s/m service behave improperly form expired message
+  * Bugfix: dir.ac and *.in files were installed with config package
+  * Dynamic frontend language detection
+  * Fill meta description as part of core product for all pages.
+  * Meta keywords tag in search frontend
+  * Default value for param others in reset_image_alt changed from False 
+    to True
+  * Search frontend text shortened for crawlers
+  * For crawler number of results for search page not dispayed
+  * lang param added to url in og:url
+
+Changes with NewsGate 1.6.33.0 (18 June 2012)
+
+  * Bugfix: broken protocol detection in stat processing
+  * Bugfix: 500 error code on old url (NG-221)
+  * Bugfix: search hint calculating possibility where done based on resulted 
+    sorting but not just sorting
+  * Inventing Open Graph into search frontend
+  * crawler_request_per_page=50 from 20
+  * Canonical link usage (NG-222)
+  * When old interface if proxied to new access to feedback path is forbidden
+  * Sitemap.txt added to newsfiber.com config
+
+Changes with NewsGate 1.6.32.0 (13 June 2012)
+
+  * Feedback service sends message by email
+  * Search link added to message page
+  * Bullet removed for single resource in right bar
+  * Informer link and search-component-del button added in for-crawler mode
+
+Changes with NewsGate 1.6.31.0 (8 June 2012)
+
+  * Bugfix: Language interface and 'Display Results Per Page' parameter 
+    can't be switched (NG-220)
+
+Changes with NewsGate 1.6.30.0 (7 June 2012)
+
+  * Bugfix: when redirecting from old implementation to the new one param 
+    nh have been lost
+  * Bugfix: Messages Management interface chosed value doesn't save (NG-219)
+  * Bugfix: sometimes right bar category have hidden subcategories but looks 
+    expanded
+  * Bugfix: Categories and subcategories names without spaces. 
+    Layout word-box corrupted under IE9 (NG-218)
+  * Bugfix: addition words to word list can't be perform after list rename 
+    under IE (NG-217)
+  * Bugfix: Layout under IE browser (NG-216)
+  * Bugfix: static resources should be requested through proxy service for 
+    search in moderator frontend
+  * Bugfix: Addition words to categories interface corrupted under IE 
+    browser (NG-215)
+  * Bugfix: Interceptor usage broken in old frontend implementation
+  * Interceptor API refactored
+  * Redirect to canonical url made for old implementation by the new one
+  * Bugfix: Search string not saved in edit box when 'Exclude search by 
+    term' clicked
+  * 'Others' link now not displayed on home page for crawlers
+
+Changes with NewsGate 1.6.29.0 (31 May 2012)
+
+  * Character full decomposition consequences research
+  * Made robots.txt configurable
+  * utf-8 encoding declared for interceptor
+  * Cleaning interceptor ads
+  * Provided an ability to extend search frontend with extra static files
+  * Bugfix: LimitedFrontend not improperly configured to proxy stat requests
+    to new frontend implementation
+
+Changes with NewsGate 1.6.28.0 (18 May 2012)
+
+  * Search frontend is splitted in several services 1-per protocol
+  * Bugfix: Fail to bulk edit message adjustment script for hr-portal.ru 
+    (NG-214)
+  * GeoIP-Country package added to dependencies
+
+Changes with NewsGate 1.6.27.0 (12 May 2012)
+
+  * Bugfix: broken Settings, Sources dialogs in Moderator search interface
+
+Changes with NewsGate 1.6.26.0 (11 May 2012)
+
+  * Frontend splitting partially implemented
+  * Bugfix: Interface bug for user FeedModerator Privilege only (NG-213)
+  * Bugfix: Interface bug for attempt to load 'Sources' (NG-212)
+
+Changes with NewsGate 1.6.25.0 (28 April 2012)
+
+  * Bugfix: some hash tables bad performance due to improper Message::Id 
+    hash function
+  * Search performance optimization
+  * RSS Search service separated, JSearch - partially
+
+Changes with NewsGate 1.6.24.0 (19 April 2012)
+
+  * Bugfix: Sorting by event capacity works slow (NG-5)
+  * Bugfix: Message::BankClientSession::send_request returning OK code when 
+    no banks available
+  * XSearch frontend separated from /psp/search to /p/s/x
+  * Ad object enriched with 'enabled' field
+
+Changes with NewsGate 1.6.23.0 (11 April 2012)
+
+  * Decrease lock duration for message re-categorization (NG-210)
+  * Bugfix: in-message ad height counted in column height
+  * keywords, description metas presense, messages per page for crawler 
+    parameterized
+  * Right bar sources presence parametarized
+  * Reminder to provide email added to contact page
+  * Parameter 'req' not used anymore for search frontend message page
+
+Changes with NewsGate 1.6.22.0 (5 April 2012)
+
+  * Decrease lock duration for message insertion (NG-183)
+  * Footer position informer option invented
+  * set_crawler_language var invented in search frontend pages
+  * Bugfix: advertising could be shown for moderation search pages
+  * gone_if_query=True in search.psp
+  * Bugfix: single stat package processing failure blocks futher packets 
+    from being processed
+
+Changes with NewsGate 1.6.21.0 (25 March 2012)
+
+  * Timeout for start-db script increase
+  * Search expressions help updated
+  * Decrease lock duration for message insertion (NG-183) - 
+    partially implemented
+  * Similar link is always shown for crawlers
+  * Message page script slight refactoring
+  * append_crawler_search_suffix=False in search frontend
+
+Changes with NewsGate 1.6.20.0 (22 March 2012)
+
+  * Recommendations for all portals not return because wrong request to 
+    AdServer(correspondingly Newsgate) (BUG-968)
+  * Bugfix: WordBox were broken for feed view page
+  * Bugfix: DATE operator were not applied to auxiliary search_engine.search 
+    calls in Search Frontend PSP
+  * newsgate.MA_Context.set_description_from_article implemented
+  * Parameter 'reverse' added to newsgate.MA_Context.skip_image
+  * Search Frontend base interceptor invented
+  * Sources and Settings links removed when search requested by crawler
+  * Query param is not propagated to links on search results page by crawler
+  * Redundant query string emptified for crawler
+  * Processing of event filter and event modifier is unified
+  * Extra logging added to search frontend
+
+Changes with NewsGate 1.6.19.0 (11 March 2012)
+
+  * Advertising block supported in right bar
+  * Make search frontend configurable if to send 410 to crawler if s!=1
+  * Bugfix: textarea font-related style fix for latest Firefox
+  * Logging of redundant params removed from search frontend home page
+  * newsgate.MA_Context.set_meta_keywords replaced with set_keywords
+  * cr param invented for search frontend
+  * Copyright note updated
+  * newsgate.MA_Context.skip_image height/width params semantics extended
+  * Bugfix: moderating search were not reflecting user privileges
+  * Message Management reimplementation
+  * Feed View Filter accept multiple regexps and like operators per rule 
+    (1 per line)
+  * Bugfix: sorting of newly added feeds is broken
+  * Bugfix: MessageExport utility were not reported invalid agrument
+  * Bugfix: loaded message thumbs logging record were broken
+
+Changes with NewsGate 1.6.18.0 (1 March 2012)
+
+  * Bugfix: MessageExport utility were not supported new msg thumbs file format
+  * Bugfix: Redundant messages pushed by mirror to master cluster (NG-207)
+  * Bugfix: event filter of search frontend were not working properly if message gone but 
+    event still exist
+  * Bugfix: message images with new naming conventions were not deleted with messages
+  * Bugfix: backup cleanup deleted old images from fresh 'fast' backups
+  * Statistics protocol extension (NG-204)
+  * ClientManager privelege made independent from Customer one
+
+Changes with NewsGate 1.6.17.0 (24 February 2012)
+
+  * Bugfix: RSSPuller crashed due to bug in El::Python::SandboxService
+  * Bugfix: DB deadlock in StatProcessor (NG-203)
+  * Bugfix: redundant python interception commented out
+  * Allow restore from partial backup without full backup (NG-182)
+
+Changes with NewsGate 1.6.16.0 (22 February 2012)
+
+  * SearchFrontend caches now not all message images per thumbnail request 
+    but just one
+  * All thumbnails now stored in single message-related file
+  * backup.sh: fast mode implemented
+  * XSearch protocol: result/items/item/images/image/thumb/cropped attribute 
+    invented
+  * Implementing customer manager (step 1)
+  * Bugfix: Pressing Enter in search box in informer mode switched informer 
+    mode off
+
+Changes with NewsGate 1.6.15.0 (16 February 2012)
+
+  * Bugfix: feed request count were shown doubled in Feed Moderator UI
+  * Bugfix: feed heuristics counter were not incremented in case of 
+    interruption because lastBuildDate unchanged
+  * Bugfix: vew_filter page could reset results-per-page param
+  * Bugfix: Feed View page were loading extremelly slow on very big filter
+  * Bugfix: JS escaping missed on search page for some JS literals
+  * Bugfix: RSSPuller could be stopping very long because of slowly 
+    responding feed server (NG-202)
+  * Referer logging added to search home page
+  * Crawler default request period set to 1 sec
+  * Moderator UI reflects now presense of customer management options in 
+    dependance from configuration
+
+Changes with NewsGate 1.6.14.0 (13 February 2012)
+
+  * context.skip_image extended with max/min width/height params
+  * Bugfix: right marker for context.set_description search from rigt not 
+    left now
+  * 'Put' function implemented for moderation word boxes
+  * Bugfix: 'message invalid' notice on script compile error in Adjustment 
+    Script Editor
+  * Client manager privilege (NG-198) partial implementation
+
+Changes with NewsGate 1.6.13.0 (9 February 2012)
+
+  * Bugfix: RSSPuller requests feeds w/o messages too often (NG-200)
+  * Crawler gets 406, Not Acceptable response for a valid feed (NG-201)
+
+Changes with NewsGate 1.6.12.0 (7 February 2012)
+
+  * Feed View filter to provide Any Of choice for string fields (NG-170)
+  * Client manager privilege (NG-198) - partial implementation
+  * Bugfix: RSSPuller could not determine last message date for request 
+    scheduling purposes in case of single message in feed
+  * LastBuildDate problem (NG-184)
+  * Logging of 410 code added to home and search pages
+  * Bugfix: RSS parser takes wrong title (NG-195)
+  * Bugfix: Some item titles not displayed in Adjustment Script Editor (NG-196)
+  * RSSPuller ported to Sandbox Service
+  * FeedManager partially ported to Sandbox Service
+  * Bugfix: image extension list for RSS Puller were case sensitive
+  * Bugfix: NotReady thrown on message interfaces mismath
+  * Event merge level calculated according to max event size but not sizes sum
+  * Bugfix: there where path when mirror message manager could send messages 
+    to incompatible master
+  * Bugfix: message page parameters spread stopped
+  * Bugfix: some sentense present in eng version of search help missed in rus 
+    one
+
+Changes with NewsGate 1.6.11.0 (23 January 2012)
+
+  * Search page right bar style slight change
+  * Resources pane removed from informer mode
+  * Feed request period made configurable
+  * NewsFiber feed request period diapason set to 5min-6hours
+
+Changes with NewsGate 1.6.10.0 (20 January 2012)
+
+  * RSSPuller request scheduing refactoring
+  * RSSPuller reconfigured to apply 10 heuristics in request sequence (were 5)
+  * Bugfix: catagory path not mime-url-encoded in right bar
+
+Changes with NewsGate 1.6.9.0 (16 January 2012)
+
+  * Bugfix: StoredMessage::feed_type removed not propely; message updates 
+    break existing messages
+  * Bugfix: El::String::Manip::utf8_to_wchar: bad string exception not handled 
+    properly in Feed Crawler
+  * Bugfix: empty right bar resource name
+  * Event merge level now depends from event size
+  * For broken msg ids SearchFrontend now shows all messages
+
+Changes with NewsGate 1.6.8.0 (13 January 2012)
+
+  * Data migration with no backup (NG-193)
+  * Informer style related explanation not shown if feedback email not 
+    configured
+
+Changes with NewsGate 1.6.7.0 (12 January 2012)
+
+  * Support media:thumbnail tag from http://search.yahoo.com/mrss 
+    namespace (NG-27)
+  * Feed format change (NG-177)
+  * Bugfix: RSSPuller were scheduling frequent requests for feeds with no 
+    new messages but small ttl
+  * Redundant search operator FEED removed
+  * Sources displayed now in right bar
+  * Search online help extended
+  * Informer info improvement (NG-180)
+
+Changes with NewsGate 1.6.6.0 (29 December 2011)
+
+  * Bugfix: newsgate.MA_Context.set_images(OP_REPLACE, ...) could replace 
+    valid images with ones having status != IS_VALID
+  * Bugfix: on some feed download errors RSSPuller were recheduling download 
+    immediatelly instead of making reasonable delay
+  * Bugfix: there were redundant robots.txt check for feeds with no 
+    adjustment script
+
+Changes with NewsGate 1.6.5.0 (28 December 2011)
+
+  * Bugfix: feed request scheduling broken for some cases
+  * Bugfix: Echo effect in Mirror/Master thumbnails proxying (NG-191)
+  * MessageManager::load_msg_thumbnail now bailout immediatelly if 
+    zero-length message set passed
+
+Changes with NewsGate 1.6.4.0 (20 December 2011)
+
+  * Search frontend CSS minor change
+
+Changes with NewsGate 1.6.3.0 (19 December 2011)
+
+  * Bugfix: FeedManager considered wrong URL in case of 302 redirect 
+    (XPath, MsgAdjustment functionality)
+  * Bugfix: newsgate.MA_Context.find_in_article didn't check doc == Py_None
+  * Bugfix: message impression statistics were not counting properly when 
+    limited frontend is launched
+  * Bugfix: Category/Search page of moderation UI didn't show user name 
+    properly for Logout operation
+  * Bugfix: Improper reaction of search page for crawler in mode different 
+    from loaded
+  * context.reset_image_alt implemented
+  * message.source.description replaced with more usefull 
+    message.source.html_link
+  * Informer image made clickable
+  * Show images directs to message page now
+  * Thumbnail proxy request timeout made configurable (15 sec by default)
+
+Changes with NewsGate 1.6.2.0 (8 December 2011)
+
+  * Bugfix: test link commented out
+
+Changes with NewsGate 1.6.1.0 (7 December 2011)
+
+  * Bugfix: wrong http deps in spec file
+
+Changes with NewsGate 1.6.0.0 (7 December 2011)
+
+  * Bugfix: when message deleted from EventBank on message norm words change 
+    there were a probability that newly created event will inherit old words 
+    normal forms
+
+Changes with NewsGate 1.5.99.0 (6 December 2011)
+
+  * Image mirroring (NG-189)
+  * newsgate.MA_Context.find_in_article invented
+  * newsgate.MA_Context.set_description
+  * newsgate.MA_Context.set_images_ex (NG-188)
+  * Bugfix: translation category map made located in search page script
+
+Changes with NewsGate 1.5.98.0 (22 November 2011)
+
+  * Cluster mirroring (NG-185)
+  * Bugfix: threre were a possibility that categorizer being locally 
+    cached could stick forever being prefered over the 'right' one
+  * Bugfix: when feed download failed in Feed Script editor Reload Items 
+    button stayed disabled
+  * Allow to hide source feed in informer (NG-174)
+
+Changes with NewsGate 1.5.97.0 (16 November 2011)
+
+  * Bugfix: there were scenario where RSSPuller dropped invalidated new 
+    message without any notice in a log file
+  * Bugfix: there were a scenario when message adjustment script saved not 
+    being compiled previously
+  * Message page implementation started
+  * Thumbnails of size 300x300 set to be the biggest ones for newsfiber.com
+
+Changes with NewsGate 1.5.96.0 (11 November 2011)
+
+  * Feed item custom processing (NG-176)
+  * FeedManager refactoring - splitting into services
+  * Image blacklist updated
+  * Max image per message count invented
+
+Changes with NewsGate 1.5.95.0 (14 September 2011)
+
+  * Meta Keywords Extraction (NG-169)
+  * Spaces filter/stat supported
+  * If referer is a known search engine then parameters reset to defaults
+
+Changes with NewsGate 1.5.94.0 (15 August 2011)
+
+  * Sharing interface versioning (NG-159)
+
+Changes with NewsGate 1.5.93.0 (10 August 2011)
+
+  * Bugfix: COUNTRY operator were filtering out all messages
+  * TAO CORBA adapter implemented
+  * Implement feed CTR/RCTR counting (NG-160)
+  * CoreWords detection to rely on word frequency in message language (NG-153)
+  * Review applying fetch filter mechanism (NG-165)
+  * Bugfix: clicks and impressions not synchronized on message sharing offers
+  * Category/Search interface do not work in IE8 (NG-115)
+  * zip db dump while putting into achieve during backup (NG-164)
+  * Messages in mirror-cluster unexpectedly have event_id = 0 (NG-162)
+  * Show registered feeds on Validate Feeds page (NG-167)
+  * Sharing interface versioning (NG-159) - 1st step
+
+Changes with NewsGate 1.5.92.0 (16 June 2011)
+
+  * Bugfix: Feed View exception (NG-155)
+  * Bugfix: Search doesn't work under IE browsers family because cross 
+    domain security (NG-156)
+
+Changes with NewsGate 1.5.91.0 (14 June 2011)
+
+  * Bugfix: Request failed, status code 0 under FF (NG-154)
+
+Changes with NewsGate 1.5.90.0 (10 June 2011)
+
+  * Elements library bugfix
+
+Changes with NewsGate 1.5.89.0 (9 June 2011)
+
+  * Bugfix: EventBank assertion failure (NG-152)
+
+Changes with NewsGate 1.5.88.0 (9 June 2011)
+
+  * Bugfix: Messages from long ago registered IDNA feeds can't be searched 
+    by URL (NG-150)
+  * Bugfix: while inventing WEAK event flag have broken saving dirty 
+    events in some usecase
+  * Event merge by intersection weight ratio (NG-146)
+  * Event splitting (NG-151)
+  * Informer link on root page (NG-144)
+  * Invent space Prints (NG-147)
+
+Changes with NewsGate 1.5.87.0 (18 May 2011)
+
+  * Feed level stop words (NG-129)
+  * Bugfix: Messages with long url (>512) are not clickable (NG-143)
+  * Skip message with signature duplicating another one from same feed (NG-102)
+  * Bugfix: feed duplication in Message Fetch filter expression
+  * Bugfix: category bar functionality not concidered cases when category 
+    has multiple parents
+  * Do not load all right bar categories (NG-138)
+  * Feed returns 500 code to NewsGate (NG-141)
+
+Changes with NewsGate 1.5.86.0 (26 April 2011)
+
+  * Bugfix: Search and Moderator frontends were using same cookie name for 
+    preferences
+
+Changes with NewsGate 1.5.85.0 (25 April 2011)
+
+  * Bugfix: No re-categorization occurs when dictionary changes (NG-136)
+  * Read Also bar - add link on_mousover functionality (NG-108)
+  
+Changes with NewsGate 1.5.84.0 (22 April 2011)
+  
+  * Bugfix: memory leak in statistics processing
+  * Bugfix: MessageBank running in master mode crashes while sharing 
+    messages (NG-135)
+  * Bugfix: search hint don't work properly when sort type not by relevance
+  * MessageBank should cache Categorizer and Filters running in slave mode 
+    (NG-134)
+
+Changes with NewsGate 1.5.83.0 (19 April 2011)
+
+  * Bugfix: Search filter parameters (NG-132)
+
+Changes with NewsGate 1.5.82.0 (19 April 2011)
+
+  * rus.ext, eng.ext updated in Elements library
+
+Changes with NewsGate 1.5.81.0 (18 April 2011)
+
+  * No any error message after attempt to register rss (NG-120)
+  * Bugfix: MessageExport tool could put zombi-messages into exported 
+    message file (NG-122)
+  * Bugfix: some categories unavailable to addition keyword list (NG-118)
+  * Bugfix: backup restore do not process relative paths properly (NG-117)
+  * Bugfix: NotReady exception were logged with ALERT severity by MessageBank
+  * Bugfix: RSSPullerManager were performing relogin receiving NotReady 
+    exception from Puller
+  * Bugfix: /psp/stat disallowed in robots.txt
+  * Excessive "No text selected" JS message appears (NG-119)
+  * Select Category dialog should show on the right or bottom a list 
+    (up to 10) of recent categories chosen (NG-127)
+  * Allow to edit word in Word Normalization dialog box (NG-124)
+  * Made configurable if uid cookie to be set/used in stat requests
+  * Words not highlighted when come from informer
+  * Informer image can now be positioned against both title and annotation
+  * NoScript informer div searcheable now not just by name but by id also
+  * Informer footer link text editing
+  * Hiding More... link supported in informer
+
+Changes with NewsGate 1.5.80.0 (4 April 2011)
+
+  * Bugfix: RSSPuller could erroneously reset message pub time to 0
+  * Bugfix: on error with imported message pack MessageManaging state-class 
+    terminates worker thread
+ 
+Changes with NewsGate 1.5.79.0 (30 March 2011)
+
+  * Bugfix: there were a way to set message publish/update time to some 
+    insane value which could lead to MessageBank crash
+  * Bugfix: Categorizer is not propagated to remote colo (NG-107)
+  * Bugfix: When go to category, filter by source from Sources dialog and 
+    then remove category - source disappear as well (NG-103)
+  * Bugfix: Search results page looks broken (NG-104)
+  * Bugfix: Settings dialog opened from home page adds new params not 
+    removing old ones (NG-111)
+  * Bugfix: Message sharing threshold were chosen improperly for small 
+    numeber of messages in bank
+  * Bugfix: wrong app name used in MessageExport utility output
+  * Bugfix: DATE ...S suffix appears in newsfiber informer link title (NG-114)
+  * Categorizer and Message Filter handling optimized in MessageBank Manager
+  * 20 unrecognized feeds by default (RM-48)
+  * Feed View moderation page instrumented with category/mod.js
+  * Category/Search moderation page implemented
+  * Informer message clicks not counted as soon as impressions not counted 
+    as well
+  * Unite message category links with the same parent into single group 
+    with parent path shown just (NG-112)
+
+Changes with NewsGate 1.5.78.0 (23 March 2011)
+
+  * REQ-1364 (Using CTR in Discover) implemented
+  * Bugfix: Master MessageBank occasionally crashes on sending message stat 
+    to slave MB
+  * Bugfix: message lang not shown in frontend in debug mode
+  * Category word list implemented
+  * Bugfix: when search for term inside category Read Also block looks 
+    inadequately long (NG-105)
+  * Bugfix: lack of leading / in right bar category links
+
+Changes with NewsGate 1.5.77.0 (4 March 2011)
+
+  * Bugfix: NewsItemServer exception on receiving news for specific query 
+    in production (ADSC-4760)
+  * Bufix: SearchFrontend ETag do not consider messages dynamic properties 
+    (NG-95)
+  * Bugfix: error in search search expression syntax endup with server error
+  * Interrupting image read on rss puller exit
+  * Incapsulate search algo irrelevant message data into a separate 
+    structure (NG-98)
+  * Minor CSS adjustment
+  * Relevant subject threshold calculation changed a bit
+  * Search page title shortened, put into informer as well
+  * Informer width supported
+  * Bugfix: encoding of no-script informer footer were relying on utf-8 
+    page encoding
+  * Added script allowing to transparently redirect from production to 
+    development server
+
+Changes with NewsGate 1.5.76.0 (24 February 2011)
+
+  * Bugfix: Images can't be hidden (NG-92)
+  * Make EventBank high trace level less verbose or middle trace - 
+    verbose enought (NG-97)
+  * Impressionsand clicks get collected, made persistent on MessageBank level
+  * MessageBank dumps unsaved event id, capacity on exit (NG-90)
+  * Need to ignore impressions and clicks from crawlers (NG-96)
+  * Creating right bar on search page
+  * Added an ability to edit previously created informer (NG-94)
+  * Informer option management code refactoring
+  * Informer enriched with: versioning, divider color, zero-length title 
+    (NG-93)
+  * Metainfo columns count and source length implemented for informer
+  * Made informer links underlined on hover
+  * Copyright note updated
+
+Changes with NewsGate 1.5.75.0 (11 February 2011)
+
+  * Saving feed msg imp/click stat
+  * Decided to suppress DB post conversion check for now due to long server 
+    startup
+  * Bugfix: Feed TTL not saved to statistics (NG-88)
+  * Bugfix: MessageBank locks on event_bank->delete_messages calls (NG-86)
+  * Bugfix: MessageBank were sending empty id set to 
+    EventBank::delete_messages CORBA call
+  * Bugfix: broken title underline color in informer
+  * Need to provide time-stamps for backup, restore and data conversion 
+    operations (NG-89)
+  * ETag checked now for all non HTML & non cahed requests
+  * ServerLimit set to 2 for apache based services
+  * LiveInternet counter added
+
+Changes with NewsGate 1.5.74.0 (31 January 2011)
+
+  * noscript invented in informer code
+  * Footer link color invented for informer
+  * Search,Thumbnail frontends bank client session thread number adjustment
+  * Search,Limited frontends reconfigured in terms of process & thread number,
+    stack size
+  * Image thumbnail cache control improved
+  * Page view statistics implemented
+  * PSP cache entry python object invented
+  * Bugfix: informer metainfo, pub, more border styles set to none
+  * Bugfix: informer being put into div looked broken in IE7
+  * Bugfix: search hint disabled in informer creation mode
+
+Changes with NewsGate 1.5.73.0 (18 January 2011)
+
+  * Bugfix: long requests post method didn't work properly for MSIE
+  * When thumbnail requested by frontend image other thumbnails are not 
+    requested from MessageBank
+  * Informer link not created for crawlers
+  * Feedback notice added to Informer pane
+  * onorientationchange handled in home page script
+  * Better selection of thumbnails in Informer
+
+Changes with NewsGate 1.5.72.0 (14 January 2011)
+
+  * Commutativity of filters: the categories, sources and search by 
+    news content
+  * Informer scales images for thumb sizes not supported by RSSPuller
+
+Changes with NewsGate 1.5.71.0 (13 January 2011)
+
+  * Minor home page adjustment
+  * Full backup time made 5 hours earlier for newsfiber.com
+
+Changes with NewsGate 1.5.70.0 (12 January 2011)
+
+  * RSSPuller crashed in inflating deflated HTTP response (NG-84)
+  * Crawler failed to properly request http://news.yahoo.com/rss (NG-85)
+  * Make sub-cats displayed on home page depending from window size (NG-83)
+
+Changes with NewsGate 1.5.69.0 (08 January 2011)
+
+  * Make it possible for Webmasters import news with informer (NG-19)
+  * Make restriction of start+msg_per_page number (NG-81)
+  * Category circulate dependency info logged in MessageBank
+  * Configure www.newsfiber.com for proper thumbnails generation for 
+    Informer choice (NG-79)
+
+Changes with NewsGate 1.5.68.0 (22 December 2010)
+
+  * Bugfix: Unexpected 'El::Net::HTTP::URL::abs_url: path null or empty' 
+    exception (NG-78)
+  * Bugfix: RSSPuller can't always read encoding from Content-Type header 
+    (NG-77)
+  * Bugfix: categories were logged to raw statistics inconsistently
+  * EntityResolver reconfigured to production values
+
+Changes with NewsGate 1.5.67.0 (20 December 2010)
+
+  * Broken linkage
+
+Changes with NewsGate 1.5.66.0 (20 December 2010)
+
+  * Use xerces EntityResolver (NG-75)
+  * Bugfix: Second and later thumbnail generation failed
+  * Bugfix: CORBA linkage removed from RSSParser test
+
+Changes with NewsGate 1.5.65.0 (13 December 2010)
+
+ * Bugfix: statistics collection were completelly disabled if 
+   keep_raw_stat_days set to 0
+ * Location check made more strict in SearchFrontend
+
+Changes with NewsGate 1.5.64.0 (13 December 2010)
+
+  * Bugfix: Catagory methods dump and print didn't counted on space 
+    presense in category id; this affect optimized expression returned 
+    in XSearch response
+  * Search Help link replaced by question mark next to search button in 
+    Search Frontend
+
+Changes with NewsGate 1.5.63.0 (10 December 2010)
+
+  * Need to be able expose to external world just safe URLs (NG-74)
+  * Bugfix: SearchFrontend didn't log request info when raw stat were 
+    not logged
+  * Added stat logging of optimized queries
+  * Prompt link on home unavailable for public use
+  * Bugfix: dump method fixed for number of Condition derivatives
+
+Changes with NewsGate 1.5.62.0 (7 December 2010)
+
+  * Extend XSearch with optimization support (NG-73)
+
+Changes with NewsGate 1.5.61.0 (6 December 2010)
+
+  * Optimize search for false statements (NG-29)
+  * Logs cleanup happens improperly (NG-72)
+
+Changes with NewsGate 1.5.60.0 (29 November 2010)
+
+  * Bugfix: MessageBank could crash during load on DB restart (NG-70)
+  * Bugfix: Messages shown truncated in IE (NG-68)
+  * Optimize categories counters retrieval (NG-71)
+  * Do not rebuild all events on dictionary change (NG-57)
+  * Track per-message change during normalization (NG-69)
+
+Changes with NewsGate 1.5.59.0 (19 November 2010)
+
+  * Bugfix: messages sorted by event size do not looks sorted (NG-49)
+  * Bugfix: search for messages in specific event sorted by event size 
+    should be equivalent to sorting by publish time (NG-67)
+  * Bugfix: Event Bank could overcome event_max_size for event size (NG-66)
+
+Changes with NewsGate 1.5.58.0 (17 November 2010)
+
+  * Bugfix: long word in message can make the column width VERY big (NG-62)
+  * Bugfix: improper cookie setting (NG-64)
+  * Skip extra text from image alt - reopened (NG-50)
+
+Changes with NewsGate 1.5.57.0 (16 November 2010)
+
+  * Bugfix: MessageBank failed to load when met a broken message
+  * Avoid messages reload on MessageBank relogin (NG-54)
+  * Eliminate redundant write locks in 
+    Message::BankClientSessionImpl::post_messages_by_id_hash
+  * Eliminate redundant write locks in 
+    Message::BankClientSessionImpl::message_sharing_offer (NG-59)
+  * Triple maximum category expression and fetch filter length (NG-56)
+  * BankClientSession should use existing MessageBank disposition in case of 
+    MessageBankManager failure (NG-55)
+  * New version of httpd linked
+
+Changes with NewsGate 1.5.56.0 (11 November 2010)
+
+  * Bugfix: Message renormalization after dictionary upgrade broken (NG-53)
+  * Bugfix: Message order for 'São Paulo' and "São Paulo" very much 
+    differs (NG-48)
+  * For message import procedure checks for readiness invented in Message Bank
+  * Minor SearcheableMessageMap::calc_words_freq optimization
+
+Changes with NewsGate 1.5.55.0 (9 November 2010)
+
+  * Bugfix: there were path in Message Bank when filtered out messages 
+    were not removed from DB and Event Bank
+  * Bugfix: large print setting didn't work for Search Frontend
+  * Messages export/import for MessageBank implemented - 
+    MessageExport utility (NG-39)
+  * Some preparations for inventing category vertical panel made on search 
+    results page
+  * Open messages in new window (NG-15)
+
+Changes with NewsGate 1.5.54.0 (2 November 2010)
+
+  * MessageBank loads extremely slowly on big (10M messages) DB (NG-40)
+  * RSSPuller doubles traffic consumption (NG-45)
+  * Allow to start NewsGate without checking DB and making backup (NG-43)
+  * Bugfix: multiple (redundant) shared message set recreation for several 
+    sinks (NG-44)
+  * Skip extra text from image alt (NG-50)
+  
+Changes with NewsGate 1.5.53.0 (21 October 2010)
+
+  * Message sharing/push to owner optimization
+  * Remove redundant segmentor and word manager checks, normalization, 
+    categorization and filtering in MessageBank
+  * Sharing message options made more granular
+
+Changes with NewsGate 1.5.52.0 (19 October 2010)
+
+  * Bugfix: 2 EventBanks deadlock (NG-34)
+  * Bugfix: full backup failed if some image were removed (NG-33)
+  * Restrict number of foreign messages queried from DB on single traverse 
+    iteration (NG-35)
+  * Additional time tracing added to message load/sharing operations
+
+Changes with NewsGate 1.5.51.0 (18 October 2010)
+
+  * Split event managing by language-based baskets (NG-23)
+  * Add Video, Photo and Audio spaces (NG-26)
+  * Bugfix: Images not shown for feed feed://ruformator.ru/export/newsAtom.asp 
+    (NG-28)
+  * Bugfix: several messages can be pushed to owner bank and be inaccessible 
+    for a while (NG-32)
+  * RSSPuller recognizes now some additional referenced images from feed item
+  * Bugfix: while parsing atom feed entry rss puller could erroneously take 
+    item title from entry/source/title tag (NG-27)
+  * Bugfix: error in message insertion time tracing
+  * Message segmentation and break down time tracing added
+  * Do not recategorize messages received with push-out-foreign-message 
+    reason (NG-31)
+
+Changes with NewsGate 1.5.50.0 (4 October 2010)
+
+  * Bugfix: due to removing signature member from raw message MessageBank 
+    crashed on cache read leaft by previous version
+
+Changes with NewsGate 1.5.49.0 (4 October 2010)
+
+  * Bugfix: RSSPuller have crashed in xerces transcoding code (NG-12)
+  * Bugfix: Message image not displayed in multi MessageBank colo (NG-11)
+  * 307 http code supported in feed manager and rss puller
+  * RSSPuller follows 5 redirects when download image
+  * Make search related CORBA-requests executed most close to each other (NG-13)
+  * Truncate too long urls in header of search result page (NG-16)
+  * Optionaly save frontend cookies to company domain (NG-18)
+  * Search operator SIGNATURE implemented
+  * Shorten search request date range for crawlers (NG-17)
+
+Changes with NewsGate 1.5.48.0 (27 September 2010)
+
+  * Bugfix: during message load from DB message manager unexpectedly allows 
+    new message insertion (NG-6)
+  * Bugfix: not all found messages included into search results set (NG-5)
+  * Bugfix: RSSPuller failed to download messages with relative links
+  * Feed do not download as thinks that by default isPermaLink=false 
+    having something like <guid>12345</guid>. Still want to download such 
+    feeds.
+  * Sort change events queue to have smallest and newest events in top
+
+Changes with NewsGate 1.5.47.0 (20 September 2010)
+
+  * Event language implemented (NG-1)
+  * Event processing speed optimization
+  * Bugfix: backup fail being run manually from directory aduser have no 
+    access to
+  * Bugfix: message fetch filter were improperly set to 36 instead of 3600
+  * robots.txt added for Moderator UI
+  * Switch of duplicates enabling link for bots (NG-3)
+  * Made possible to set 'st' param to empty string which will override 
+    referer based search hint
+  * Keep raw stat timeframe increased to 2 weeks for newsfiber.com colo
+  * Max message age set to 1 month for newsfiber.com
+
+Changes with NewsGate 1.5.46.0 (16 September 2010)
+
+  * AND statement evaluation optimized for cases where 1 operand is an empty 
+    message set
+  * Categorization procedure optimized by speed pretty much (10 times for 
+    UK lab colo)
+  * Event Bank performance optimization; some redundant code removed
+  * Event max size invented; by default - 10000 messages
+  * Bugfix: with stat processing disabled frontend still places stat tags on 
+    search page
+  * Moderator UI login page sends parameters by POST method
+
+Changes with NewsGate 1.5.45.0 (2 September 2010)
+
+  * Bugfix: RSSPuller could lock on exit waiting for nonscheduled tasks to 
+    complete
+  * Bugfix: redundant msg date check leading to msg image not showing under 
+    some tricky conditions removed
+  * Checks for pending messages and message events queue size for the purpose 
+    of decline new incomings made separate in MessageBank
+  * RSSPuller ProcessPool task result size limited to 1 byte
+  * 10 'service' CORBA-threads added to MessageBank independently of 
+    Frontent count
+  * RSSPuller reconfigured to 50 threads and 15 sec message delivery max delay
+
+Changes with NewsGate 1.5.44.0 (29 August 2010)
+
+  * Bugfix: when message get deleted by management tools it were not 
+    excluded from corresponding event
+
+Changes with NewsGate 1.5.43.0 (27 August 2010)
+
+  * Bugfix: search hint sh param have clashed with search button name in 
+    home page; param have been renamed to st
+
+Changes with NewsGate 1.5.42.0 (25 August 2010)
+
+  * TODO list updated
+  * Redundand words normalization corba call excluded for search 
+    requests with no words involved
+  * Message fetch filter reapply period configuration
+  * Made message topicality be dependent of time in now - 2 weeks ago diapason
+  * Message images get deleted simultaneously with messages
+  * Made category columns and subcategory count configurable
+  * Bugfix: Feed View filter by channel title, description didn't work
+  * Search hint feature implemented in search engine frontend
+  * 'Similar posts' link now contain event_id in addition to message_id 
+    for fault tolerance; redirect to 'all messages' if no message nor event 
+    exist
+  
+Changes with NewsGate 1.5.41.0 (12 August 2010)
+  
+  * Image loadable check is made through ProcessPool in RSSPuller
+  * Bugfix: with push stat disabled StatProcessor still collected data 
+    which were never cleaned up
+
+Changes with NewsGate 1.5.40.0 (9 August 2010)
+  
+  * Bugfix: ImageMagic::read in forked process could wait forever on
+    inherited locked mutex
+
+Changes with NewsGate 1.5.39.0 (7 August 2010)
+ 
+  * TokyoCabinet linked to StatProcessor
+  * Implemented checking that ImageMaging not crashes on image in a 
+    separate process
+
+Changes with NewsGate 1.5.38.0 (30 July 2010)
+ 
+  * StatProcessor save on exit strategy implemented
+  * StatProcessor/FeedModerator stat exchange implemented
+  * Stat processing monitoring implemented
+
+Changes with NewsGate 1.5.37.0 (22 July 2010)
+
+  * Saving statistics to DB optimized
+
+Changes with NewsGate 1.5.36.0 (21 July 2010)
+
+  * Save click data to DB implemented
+  * Save impression data to DB implemented
+  * StatLogger python object implemented
+
+Changes with NewsGate 1.5.35.0 (19 July 2010)
+
+  * StatProcessor service invented with request stat save/cleanup implemented
+  * Bugfix: RSSPuller were crashing when couldn't push whole stat package in 
+    one request
+  * Bugfix: feed sorting were broken in Moderator UI
+
+Changes with NewsGate 1.5.34.0 (2 July 2010)
+
+  * Bugfix: cat.psp file were not added to SVN, as a result home page were 
+    broken
+
+Changes with NewsGate 1.5.33.0 (2 July 2010)
+
+  * Bugfix: images with highligted words in alt text were not counted 
+    properly when splitting search result in 2 columns
+
+Changes with NewsGate 1.5.32.0 (1 July 2010)
+
+  * Word coreness detection ammended so words in first 100 positions get 
+    higher chances to become core word
+  * Messages searched by event and url get sorted by pub time when asked to 
+    sort by relevance
+  * Word position is displayed now in UI debug mode
+  * Image number restriction now consider front image as well
+  * Hide image bar is now present below shown images if there count > 1
+  * Skip image list implemented in RSSPuller
+  * Bugix: in some links on search results page category id were not mime 
+    url encoded
+  * Bugix: counter were not applied to subcategory
+  * Bugix: absence of image url in feed item enclosire blocked feed 
+    successful pulling
+
+Changes with NewsGate 1.5.31.0 (25 June 2010)
+
+  * Bugfix: image with alternate text containing searched words could be 
+    not shown
+  * Referer logging added to search page
+
+Changes with NewsGate 1.5.30.0 (24 June 2010)
+
+  * Bugfix: updating big tables sometimes failed with mysql error 
+    'ERROR 1206 (HY000): The total number of locks exceeds the lock table size'.
+    To fix that innodb_buffer_pool_size were set to 512M in mysql config file.
+  * If rss item have guid tag with isPermaLink attribute set to true the 
+    its value is used as message link
+  * Image alternate text is now discarded if repeat message title
+  * Number of dispayed message images is restricted now on search results page
+  * Front image notion impelemted
+  * Bugfix: some extra HTML code were generated in search results page
+  * Bugfix: visited, hover, active in-message links were dispayed not properly
+  * TODO updated
+
+Changes with NewsGate 1.5.29.0 (18 June 2010)
+
+  * Bugfix: word ids were erroneously treated as 64-bit integers on 
+    64-bit platform
+
+Changes with NewsGate 1.5.28.0 (17 June 2010)
+
+  * default.config.t template CPP processing invented
+
+Changes with NewsGate 1.5.27.0 (15 June 2010)
+
+  * Bugfix: MessageBank were crashing due to broken search sorting 
+    strategy classes
+
+Changes with NewsGate 1.5.26.0 (15 June 2010)
+
+  * Now 64 bits app can be build
+  * Bugfix: message filter were applied on message chunk load even if it 
+    were empty
+  * Bugfix: reading categories on message load were accidentally commented out
+  * Memory state extra logging
+
+Changes with NewsGate 1.5.25.0 (28 May 2010)
+
+  * Bugfix: MessageBank were crashing due to improper bugfix regarding
+    search result sorting procedure made in previous version
+
+Changes with NewsGate 1.5.24.0 (28 May 2010)
+
+  * Bugfix: moved to newer version of ImageMagick-6.6.2-0 which fixed crash
+    on some corrupted PNG file
+  * Bugfix: when trying to filter Feeds by url containing non ascii character 
+    Moderator Frontenf have shown a 500 server error code
+  * Bugfix: search result sorting procedure didn't use current time passed
+  * Moving to fixed size types where required completed
+
+Changes with NewsGate 1.5.23.0 (24 May 2010)
+
+  * Moving to fixed size types where required - step 2
+
+Changes with NewsGate 1.5.22.0 (19 May 2010)
+
+  * Moving to fixed size types where required - step 1
+
+Changes with NewsGate 1.5.21.0 (14 May 2010)
+
+  * Bugfix: message breakdown procedure were added unneded segmentation 
+    marker in case it segmentor added additional space next to whitespace 
+    character
+  * Search filtering operator WITH implemented
+  * Adopted default.config for MICO
+  * Sorting procedure uses fetch date instead of pub date in weight 
+    calculation except for pub date sorting
+  * Search path disallowed in robots.txt
+  * Redundant prints to cerr commented out
+  * If source length exeeds 60 characters it get truncated in Sources 
+    window of Web UI
+
+Changes with NewsGate 1.5.20.0 (28 Apr 2010)
+
+  * Bugfix in Elements (corba calls bottleneck related)
+
+Changes with NewsGate 1.5.19.0 (27 Apr 2010)
+
+  * Bugfix: search functionality on search results page were not always 
+    work for long expressions
+  * content:encoded tag supported in RSS parser
+
+Changes with NewsGate 1.5.18.0 (26 Apr 2010)
+
+  * ORB is not destroyed explicitly now in main function as corba adapter 
+    destroy ORB in destructor
+
+Changes with NewsGate 1.5.17.0 (23 Apr 2010)
+
+  * ORB usage unification implemented
+  * Locale logging added to search frontend
+
+Changes with NewsGate 1.5.16.0 (19 Apr 2010)
+
+  * Bugfix: applying feed reading heuristics in RSSPuller it were possible 
+    that some old item could reappear as a new one
+  * ORB usage unification partially implemented
+
+Changes with NewsGate 1.5.15.0 (9 Apr 2010)
+
+  * Bugfix: default.config had wrong corba path set
+
+Changes with NewsGate 1.5.14.0 (9 Apr 2010)
+  
+  * Bugfix: when new config installed with db running new password settings 
+    didn't take effect
+  * Bugfix: some portions of help page were not displayed properly in Opera
+  * /psp/message disallowed in robots.txt
+  * Search page logs crawler and user-agent now
+  * ORB usage unification - step 1
+
+Changes with NewsGate 1.5.13.0 (5 Apr 2010)
+  
+  * Bugfix: MessageBank crashed due to bug in message count in pack calculation
+
+Changes with NewsGate 1.5.12.0 (5 Apr 2010)
+  
+  * Links for crawler made in bigger font
+  * Settings link removed from search bottom bar
+  * Bugfix: improper message item height calculation
+  * Search result page font styles change
+  * Made search edit box single line
+
+Changes with NewsGate 1.5.11.0 (1 Apr 2010)
+  
+  * Close, Cancel buttons added to drop-down menus
+  * Search Help link added to Prompt on home page
+  * Disallow directives removed from robots.txt
+  * Remade production of meta-description and meta-keywords for home and 
+    search pages
+  * Home page now have links switching to other languages for crawlers
+  * Made server instance name and email configurable
+  * Smart subcat to show calculation
+  * Home page: most valuable subcategories shown
+  * Bufix: default.config were not reflected latest OSBE changes
+
+Changes with NewsGate 1.5.10.0 (26 Mar 2010)
+  
+  * Migration to latest xerces, xsd and osbe
+  * Logging user-agent on home page, 
+  * Remove space-narrow space replacement in category names
+  * Message Bank capacity threshold implemented: when reached no new 
+    messages will be added to bank until room appear; set to 950000 by default.
+  * ng-mysqld is now using ps command instead of kill to detect if DB running
+  * Puller will try to connect to host of item link. If failed then item 
+    will be skipped.
+  * Bugfix: category calculation order were calculated not too well for 
+    dependent categories
+  * Bugfix: when many feeds deleted it MessageManager could be relogged in 
+    to MessageBankManager due to presense ping timeout
+  * Bugfix: Feed View were not showing properly feed URL in full length mode
+
+Changes with NewsGate 1.5.9.0 (12 Mar 2010)
+  
+  * Bugfix: SearchFrontend could crash under some rare condition because 
+    search strategy valuetype serialization racing conditions
+  * Bugfix: when it was impossible to save new messages to DB it could lead 
+    to having them dangling in the system in inconsistent state
+  * Message cache made more robust in get_message request to the situation 
+    when preemped information is broken - it will just skip broken messages 
+    logging emergency text
+  * Ability to manipulate deleted feeds implemented
+  * Now it is impossible to enforce feed country and language escaping usual
+    feed language, country calculation order
+  * Search logging slightly modified
+
+Changes with NewsGate 1.5.8.0 (2 Mar 2010)
+  
+  * Lang detection options changed in configuration template: much more relies
+    on feed language during message language detection. This can poduce an
+    issue that some non-english feeds being hosted in uk/us or erroneously 
+    having eng lang set in <language> tag will have their messages to be 
+    detected as english ones just because of using couple english words 
+    (which is verry common). Some solution required.
+
+  * Country/Language settings reflect current request message number
+  * Bugfix: just fetched messages could be improperly sorted in fetched 
+    date ascending
+  * Word position lang, freq, norm form, ... selection logic changes
+  * -pthread -fPIC -DPIC compilation flags added
+
+Changes with NewsGate 1.5.7.0 (24 Feb 2010)
+
+  * Bug in Elements lib
+
+Changes with NewsGate 1.5.6.0 (24 Feb 2010)
+
+  * Small change in home page CSS
+  * Event words unification weight invented
+  * Moderator category search link now uses v=C param insted of q=
+
+Changes with NewsGate 1.5.5.0 (17 Feb 2010)
+
+  * Bugfix: resetting to default language for interface-unsupported 
+    language didn't work properly
+  * Bugfix: sorting by localized category name implemented in UI
+  * Bugfix: CategoryLocale table were not created by ng-db-prepare script
+  * Bugfix: CategoryLocale table were not backuped
+  * Bugfix: anchor (string followed after #) in message url were trimmed
+
+Changes with NewsGate 1.5.4.0 (15 Feb 2010)
+
+  * Category localization implemented
+  * Bugfix: consequitive disable/enable feed could resulted in doubling 
+    number of requests for feed
+  * Dumping malloc info in MessageBank imlemented
+  * Exclude lang, country links added to search results page
+
+Changes with NewsGate 1.5.3.0 (10 Feb 2010)
+
+  * Bugfix: serach page were broken for NG running on port 80
+  * Leading / removed from message box category name
+  * Message will be stored with store_duplicate_messages enable only if 
+    duplicated differs by source url or signature
+
+Changes with NewsGate 1.5.2.0 (9 Feb 2010)
+
+  * Buxfix: sources on home pages were shown for the word in edit box
+  * Buxfix: proper endpoint detection implemented in search and home pages
+  * Bugfix: debug link enabled
+  * store_duplicate_messages option invented for MessageManager
+  * Words lemmas link added
+  * XSearch 1.3 result/status attribute implemented
+  * "-duplicates" link implemented on search results page
+
+Changes with NewsGate 1.5.1.0 (8 Feb 2010)
+
+  * Bugfix: saving language prefs were broken
+
+Changes with NewsGate 1.5.0.0 (8 Feb 2010)
+
+  * Category-centric approach implemented in the WEB interface
+  * XSearch support of 1.0, 1.1 version removed
+  * RSSPuller dependency from ModerationFrontend removed
+  * -m32 build option added to compiler and ld flags
+
+Changes with NewsGate 1.4.56.0 (27 Jan 2010)
+
+  * Bugfix: SQL request forming Message Fetch Filter expression from Former 
+    Feed URLs were broken
+
+Changes with NewsGate 1.4.55.0 (27 Jan 2010)
+
+  * Bugfix: SearchFrontend were rarely crashing in distributed MessageBank 
+    environment
+
+Changes with NewsGate 1.4.54.0 (26 Jan 2010)
+
+  * Bugfix: RSSPuller still were crashing when processing 2 images 
+    simultaneously
+  * Bugfix: language preference were broking p-cookie format; 
+    moved to lp-cookie
+  * Bugfix: feed filter were not supported in search result RSS format
+
+Changes with NewsGate 1.4.53.0 (20 Jan 2010)
+
+  * Bugfix: RSSPuller were crashing when processing 2 images simultaneously
+
+Changes with NewsGate 1.4.52.0 (20 Jan 2010)
+
+  * Bugfix: message deletion were broken
+  * Bugfix: message management UI formatting were broken
+
+Changes with NewsGate 1.4.51.0 (14 Jan 2010)
+
+  * Frontends made more robust when required CORBA-services not available 
+    on module initialization
+
+Changes with NewsGate 1.4.50.0 (13 Jan 2010)
+
+  * Access for services to remote DB implemented
+  * Bugfix: View asterick marker added indicated that View is not a default one
+
+Changes with NewsGate 1.4.49.0 (11 Jan 2010)
+
+  * Now if feed language is not specified it is assigned to country official 
+    language
+  * Copyright notices updated
+  * XML-feed parser now tries 2 charsets - one taken from Content-Type 
+    header and the one from XML declaration
+  * Filtering by feeds implemented
+  * New design for sort/view/filter options implemented
+  * Bugfix: number of threads sync issues in EventBank; relates to event
+    push-out mechanism
+
+Changes with NewsGate 1.4.48.0 (28 Dec 2009)
+
+  * EventBank scalable architecture implemented
+
+Changes with NewsGate 1.4.47.0 (25 Dec 2009)
+
+  * Bugfix: memory leak in EventIntersectionMap manipulation
+  * Push-out event list generation implemented
+  * Event::BankClientSessionImpl fully implemented
+
+Changes with NewsGate 1.4.46.0 (21 Dec 2009)
+
+  * EventBankManager invented as a first step of EventBank scaling mechanism
+  * Now event do not merge untill do not detach all weak-linked messages
+  * Notion of decisive words removed from EventBank, max number of event 
+    core words increased to 13 from 10
+  * revise_events remade to calculate events words from message core words
+  * Bugfix: redundant lock removed in MessageBank load messages method
+  * Singleton services presence check invented in SiteConfig configure
+  * Moderator Frontend apache server count increased
+
+Changes with NewsGate 1.4.44.0 (11 Dec 2009)
+
+  * Minor refactoring of message banks push-message-out mechanism
+  * Event messages are stored in local DB now
+  * EventBank optimization and refactoring
+
+Changes with NewsGate 1.4.43.0 (30 Nov 2009)
+
+  * Surrogate morphological token type supported
+  * Minor bugfix in WordInfo gathering
+  * Funky quotes list extended
+  * Message word weight adjusted based on token type; core word min weight 
+    invented
+  * Bugfix: message content cache object didn't edvance timestamp on 
+    read operations
+
+Changes with NewsGate 1.4.42.0 (25 Nov 2009)
+
+  * Bugfix: it were possible for core word containing ']]>' to make output 
+    XSearch xml not well formed
+  * Bugfix: message filter ref counting were not thread safe which could 
+    result in MessageBank crash
+  * Bugfix: Moderator frontend service made dependant from search frontend
+  * Word (token) type flags added to Message::WordPositions::flags
+  * word_manager option default_lang_validation_level set to 90 (from 20) 
+    to make lang detection less dependant from default language
+  * Category expression editor translation links are lemma language dependent 
+    now
+
+Changes with NewsGate 1.4.41.0 (19 Nov 2009)
+
+  * OMP_THREAD_LIMIT=1 added to environment.sh to make libgomp.so no to 
+    create unlimited number of threads in RSSPuller process
+  * Sorting by capacity changed, now weight includes update time now
+  * Thumbnail operations protected by lock now for safety
+  * event_capacity added to debug info
+
+Changes with NewsGate 1.4.40.0 (16 Nov 2009)
+
+  * Bugfix: long search requests could block execution of other 
+    (even simple) requests
+  * Search::take_top optimization
+
+Changes with NewsGate 1.4.39.0 (13 Nov 2009)
+
+  * Bugfix: broken utf8 strings could be passed in segmentor calls which 
+    blocked new feed items stream into message bank
+  * Bugfix: Segmentor::InvalidArg and ImplementationException exceptions 
+    were not always handled properly
+  
+Changes with NewsGate 1.4.38.0 (11 Nov 2009)
+
+  * Implemented support of 2-letter language, country codes in XSearch and 
+    XWord
+  * Search words match weight calculation algorithm modified
+  * SearcheableMessageMap moved to use of sparse map as much as possible; 
+    memory optimization procedures implemented
+  * Word forms guess implementation in XWord protocol
+  * Word forms guess integrated into category expression word normalization 
+    dialog
+  * New category is enabled by default
+  * Category expression editor ergomomics improvements
+  * 'Discard crawling task result' button invented on 'Moderation: 
+    Validate Feeds' page
+  * MessageBank, Puller cache-files management code made more tollerant to 
+    file read/write errors
+
+Changes with NewsGate 1.4.37.0 (26 Oct 2009)
+
+  * Bugfix: ng-backup didn't saved UpdateFeedNum, FormerURL as well as 
+    category and message filter tables in partial backup mode.
+
+  * Bugfix: google search didn't work in category expression editor
+  * Bugfix: search through post didn't work in category expression editor
+  * /psp/eng/language checks now host:port and schema in value of 
+    parameter 'r' as a security measure
+
+Changes with NewsGate 1.4.36.0 (23 Oct 2009)
+
+  * Category expression word normalization dialog: drop radio added
+  * Category expression editor: google, translate, capitalize links added
+  * Bugfix: category expression normalization didn't selected non-normalized 
+    word form properly
+  * Bugfix: search requests were posted improperly if contained quote character
+
+Changes with NewsGate 1.4.35.0 (20 Oct 2009)
+  
+  * Category expression editor update: dedup link added.
+  * When editing category expression session get updated by timer.
+  * Moderator proxy server performs authorization now.
+  * Category expression editor update: pressing search ling with words 
+    selected in text area will search for that specific words.
+  * Bugfix: category expression normalization didn't selected non-normalized 
+    word form properly.
+  * Bugfix: in category expression editor cursor were not positioned properly 
+    when error occured.
+
+Changes with NewsGate 1.4.34.0 (19 Oct 2009)
+
+  * CollapsedEvents search suppression strategy is now can be parameterized 
+    with message-per-event value
+  * Category expression editor update: text areas sizes adjusted
+  * Sort operation in moderator UI expression editor now is case insensetive
+  * Word normalization dialog in moderator UI makes radios selected more 
+    intellectually
+  * Bugfix: newsgate_internal_link invented to differentiate ways of 
+    requesting search frontend from browser and from moderator frontend
+  * Bugfix: in normalize category expression dialog normal form radio button 
+    was not selected for quoted words
+
+Changes with NewsGate 1.4.33.0 (16 Oct 2009)
+
+  * normalize, sort, to lower links added to category expression editor
+  * Edit link added to child/parent category manipulation menu
+  * Characters ' and " are forbidden in category names
+  * Bugfix: RSSPuller was crashing on broken gif file; project moved to 
+    ImageMagick-6.5.6-10
+
+Changes with NewsGate 1.4.32.0 (12 Oct 2009)
+
+  * Search link added to children in category view page
+  * Category dependencies implementation. Now CATEGORY operator can be used
+    in category expressions and rely on proper categorization order.
+  * Skipping images duplicated in message.
+  * Bugfix: 'ANY CORE 2 ...' was erroneously highlightes matched non core words.
+
+Changes with NewsGate 1.4.31.0 (7 Oct 2009)
+
+  * CORE modifier implemented for operators ALL and ANY.
+  * Different highlighting implemented for matched words and core words.
+  * Search link added to Edit Category page next to add expression link.
+  * Refactoring: moderation frontend objects refactored, 
+    separated to different files.
+  * Bugfix: CategoryManager noted in moderator help.
+  * Bugfix: expression error processing was broken for search-by-post requests.
+  * Bugfix: core words being part of qoted phrase were not taken into 
+    account while match weight calculation.
+  * Bugfix: StoredMessage::break_down function incorrectly calculated 
+    signature for messages with single word inside (could crash)
+  * Bugfix: dependency of ModeratorFrontend from CatagoryManager is set 
+    in Cluster.xml
+
+Changes with NewsGate 1.4.30.0 (1 Oct 2009)
+
+  * Sorting by event capacity and relevance ascending implemented
+  * Search link put into category expression editor
+  * Search for long long queries implemented
+  * content:encoded RDF tag supported
+  * Images from http://search.yahoo.com/mrss namespace supported 
+    (media:content tags)
+  * RSS image enclosures supported
+  * Bugfix: some IE java-script incompatibilities fixed in moderation Ui
+  * Bugfix: moderator singleton services hostnames could be set in 
+    configuration even when moderation is disabled
+
+Changes with NewsGate 1.4.29.0 (28 Sep 2009)
+
+  * Categories implemented.
+  * Bugfix: message management page were producing server error 
+    when not logged in
+
+Changes with NewsGate 1.4.28.0 (2 Sep 2009)
+
+  * Message Management interface implemented
+  * Feed stat now kept in DB restricted number of day (183 days configured)
+  * Bugfix: NewsGate DBs should be fully recreated on restore from backup 
+    instead of just recreating tables to get rid of tables created latelly
+
+Changes with NewsGate 1.4.27.1 (14 Aug 2009)
+
+  * Bugfix: feed space change was not propageted to RSSPuller service
+
+Changes with NewsGate 1.4.27.0 (29 Jul 2009)
+
+  * Cleared message language filter for all configs
+
+Changes with NewsGate 1.4.26.0 (29 Jul 2009)
+
+  * Made feeds-per-page parameter settable through Feed View Options page in 
+    Moderator Frontend
+  * Logging implemented when backup by cron
+  * Feed former urls now recorded to delete messages from that URL when feed
+    disable or deleted
+  * Bugfix: image thumbnail frontent cache file name now includes hash value 
+    to be steady to original image change
+  * Bugfix: moderator session cookie set in secure session were visible in 
+    ordinary search request
+  * Bugfix: ng-backup were removing archive even if backup were successfull 
+    except copy to remote server
+
+Changes with NewsGate 1.4.25.1 (10 Jul 2009)
+
+  * Bugfix: %BACKUP% stemm replaced by =BACKUP= to fit cron command syntax
+
+Changes with NewsGate 1.4.25.0 (10 Jul 2009)
+
+  * Message signature calculation changed
+  * Set non-empty default time for maintanance operations
+  * Backup operations cron time changed to make full and partial backup
+    never overlapping
+  * Bugfix: --copy options were not specified for ng-backup command 
+    in cron.d/newsgate-backup file
+  * Bugfix: backup script ware not properly named in newsgate_backup cron-file
+  * Bugfix: cron.d/newsgate_backup added to install target of Makefile
+
+Changes with NewsGate 1.4.24.0 (9 Jul 2009)
+
+  * Backup functionality implemented
+  * Configuration options restructured, logging is now configurable
+
+Changes with NewsGate 1.4.23.0 (1 Jul 2009)
+
+  * Added mysqld configuration file to NewsGate server configuration
+  * Moved existing DB tables to InnoDB engine and set ascii charset for 
+    some columns
+  * Bugfix: absense of image thumbnail for message sharing lead to skipping 
+    all cache house-keeping activity
+  * Bugfix: MessageBank continue declining messages sent by puller even after 
+    WordManager recovery
+
+Changes with NewsGate 1.4.22.0 (24 Jun 2009)
+
+  * Cache traversion refactore to fix obsoleted cache items possible 
+    "overtiming"
+  * Message Bank clusters syncronization elaborated including event info 
+    sharing
+  * Configuration procedure refactored so single cluster.xml is produced,
+    groups of services can be disabled.
+  * Moderation frontend can be configured to work through SSL
+  * Security bugfix: it were possible to ammend cookie in newsgate server 
+    domain by third party site putting %0D in some newsgate urls
+  * XSearch proto change: attribute "stat" added to result/items/item/link tag
+  * Bugfix: Apache SSL certificate installation were broken
+
+Changes with NewsGate 1.4.20.0 (8 Jun 2009)
+
+  * Messages from disabled, deleted feeds deletion implemented
+
+Changes with NewsGate 1.4.19.0 (1 Jun 2009)
+
+  * Thumbnail generating implementation
+  * Bugfix: in some cases message content could be requested BEFORE saved to 
+    DB or AFTER have been removed as outdated
+  * Now MessageBank will not accept new messages until old one not loaded
+    completelly.
+  * Periodic dump of SharedStringManager and SearcheableMessageMap info 
+    implemented in MessageBank
+
+Changes with NewsGate 1.4.18.0 (18 May 2009)
+
+  * Quotes and stops handling simplified in message and search words parsing
+  * to_lower replaced by to_uniform in message and search expression parsing
+  * Showing segmentation marks for non-HTML output search frontend uses 
+    space now instead of <div>_</div>
+
+Changes with NewsGate 1.4.17.0 (14 May 2009)
+
+  * There were a bug when occasionally query string were parsed incorrectly - 
+    utf8 sequence were spoiled. Bug fixed.
+  * XSearch schema name should have a / character at the end for protocol 
+    versions prior to 1.2 like that: http://www.newsgate.com/XSearch1.1/
+  * Now when segmentor is not ready (still load dictionaries or smth) 
+    search frontend will return 503 code; 
+    same about word manager and word frontend.
+
+Changes with NewsGate 1.4.16.0 (13 May 2009)
+
+  * Message words and normal forms language detection implemented
+  * Word-frontend (XWord 1.0 protocol) implemented
+
+Changes with NewsGate 1.4.15.0 (29 Apr 2009)
+
+  * Accending and decsending sorting by pub and fetch dates implemented
+  * fetchDate invented, pubDate format changed in XSearch 1.2
+  * Made EventBank quitting when there are some issues with making 
+    data persistent on exit
+  * Conversion script (ng-convert-...) bugfix
+
+Changes with NewsGate 1.4.14.0 (28 Apr 2009)
+
+  * Need to rebuild with Elements 1.4.9.0 (new asian dictionaries)
+
+Changes with NewsGate 1.4.13.0 (28 Apr 2009)
+
+  * FRESH and OUTDATED search operators replaced with DATE
+  * Search online prompt and help updated - FETCHED and DATE oprators supported
+  * Inventing XSearch 1.2, providing backward compatibility for 1.0, 1.1.
+    With 1.2:
+    * Parameter u (suppress/provide similar results) is not supported anymore
+    * b parameter invented
+    * result/server attribute invented
+  * MessageInfo::updated field invented to allow TTL calculation 
+    with no get_messages call
+  * Search::search_result optimized by speed
+  * RSS and XSearch protocol implementations do not operate with 
+    cookies now    
+  * Search::MessageInfo::core_words not collected if no similar messages 
+    removal and event collapsing required
+
+Changes with NewsGate 1.4.12.0 (22 Apr 2009)
+
+  * Inventing XSearch 1.1, providing backward compatibility for 1.0.
+    With 1.1:
+    * Parameters w and e are not supported anymore for XSearch
+    * element result/items/item/channel renamed to result/items/item/source
+    * element result/items/item/guid renamed to result/items/item/id
+    * element result/items/item/event/guid renamed to 
+      result/items/item/event/id
+    * all sub elements of result/items/item becomes optional
+    * all sub elements of result becomes optional
+    * z parameter invented for XSearch
+    * sub-elements of coreWords "shortened":
+      were <word weight="30" id="648274625">4G</word>, 
+      now <w w="30" i="648274625">4G</w>
+  * Bugfix: when message expired the 'Show similar' request have shown 
+    some strange message regarding broken EVENT operator
+  * Bugfix: when sorting by time matched core words information were still 
+    collected
+  * Large-scale optimization:
+    * StoredMessage is not gzipped now by transport
+    * Search case with start+results=0 is optimized
+    * xml_encode replaced by <[CDATA[ closure on critical path in frontend
+    * dense mode disabled on frontend side for message shared string storage 
+    * only explicitly requested response items provided to client
+
+Changes with NewsGate 1.4.11.0 (14 Apr 2009)
+
+  * Relinked with Elements 1.4.6.0
+
+Changes with NewsGate 1.4.10.0 (14 Apr 2009)
+
+  * Query language is extended with FETCHED operation
+  * XSearch response is extended with <reqDate> and <coreWords> tags
+
+Changes with NewsGate 1.4.9.0 (10 Apr 2009)
+  
+  * Memory usage statistics added to MessageBank logging
+
+Changes with NewsGate 1.4.8.0 (9 Apr 2009)
+  
+  * MessageBank on exit now caches not processed messages
+  * Message words re-normalization on dictionary change implemented
+
+Changes with NewsGate 1.4.7.0 (1 Apr 2009)
+  
+  * Minor search speed optimization
+  * Fixed '<NUMBER>' token XML/HTML enoding in Frontend resources
+  * Fixed newsfiber.com configuration
+
+Changes with NewsGate 1.4.6.0 (30 Mar 2009)
+  
+  * Now whenever ElNet is linked, ElPython linked as well
+
+Changes with NewsGate 1.4.5.0 (30 Mar 2009)
+
+  * FeedManager bug fix: tasks stayed in the list after their results being 
+    submitted
+  * Match weignt component diapason set to [0,10000]
+  * EVERY search operator invented, online help updated
+  * For all pulled messages it is now checked that url is compliant with 
+    El::Net::HTTP::URL
+  * AnyWords::evaluate optimized by speed for match_threshold > 1
+
+Changes with NewsGate 1.4.4.0 (25 Mar 2009)
+
+  * Feed View Filter blocker bugfix
+  * moscow-test reconfigured to store messages for 2 weeks 
+    (4 weeks before that)
+
+Changes with NewsGate 1.4.3.0 (25 Mar 2009)
+
+  * Now message content timestamp is updated on get_messages call in 
+    message manager
+  * Now trimming message urls in XML parsers
+  * Made numeric feed view filters in Feed Moderation interface to accept 
+    values ranges (like 1-3 5-8 9) to avoid too-long-url issue in feed 
+    bulk-edit function
+  * Saving moderator privileges bug fix
+
+Changes with NewsGate 1.4.2.0 (23 Mar 2009)
+
+  * XSearch protocol implementation
+  * Single rss SeachEngine.search parameters replaced with 
+    suppress_images, adjust_images, highlight and fill_filter_options
+  * Search param i supported for RSS, d is dropped for RSS
+  * Removed obsoleted prefixes for n and y params for search frontent
+  * Merge blacklist invented in Event Service to avoid repeated 
+    merges which endup with detachments of the same messages
+
+Changes with NewsGate 1.4.1.0 (19 Mar 2009)
+
+  * ng-convert invented
+  * Event hash value implemented
+  * Title provided in crawler task info
+  * On iteration event can loose only one message
+  * FL_CORE_WORD is set to word independently from the fact of normal 
+    forms existence
+  * Replaced word Validation with Crawling in feed moderation UI
+  * Now by default moderator with name:password admin:admin is created in 
+    NewsGateModeration schema
+
+Changes with NewsGate 1.2.0.1 (5 May 2008)
+  * Built with -O1 to debug situation when not all found messages displayed on
+    a page.
+  * Event revision period set to 40 min from 20 min.
+
+Changes with NewsGate 1.2.0.0 (24 Jan 2008)
+  * Implementing space field for feeds and messages.
+  * Bugfix EventObject: due to unsigned char type of words size member there 
+    were overflow in set_word_counters method.
+
+Changes with NewsGate 1.1.7.5 (17 Jan 2008)
+  * max_flush_pack_size implemented for MessageBank cache.
+
+Changes with NewsGate 1.1.7.4 (16 Jan 2008)
+  * Optimized saving events state to DB: made it on traverse cycle.
+
+Changes with NewsGate 1.1.7.3 (15 Jan 2008)
+  * Optimized saving event updates into message DB: made it on traverse cycle.
+
+Changes with NewsGate 1.1.7.2 (15 Jan 2008)
+  * Optimized posting message event updates (no duplicates posted now).
+
+Changes with NewsGate 1.1.7.1 (13 Jan 2008)
+  * RSSPuller download image headers with and without referer. If sizes 
+    differes than image is dropped.
+  * Measing time of potentially lenghty event related operations.
+  * TITLE_WORD_FACTOR changed to 2 from 1.7
+
+Changes with NewsGate 1.1.7.0 (12 Jan 2008)
+  * ANY threshold implemented.
+
+Changes with NewsGate 1.1.6.1 (7 Jan 2008)
+  * EventManager::find_best_intersection bugfix
+
+Changes with NewsGate 1.1.6.0 (7 Jan 2008)
+  * Single quoting invented.
+
+Changes with NewsGate 1.1.5.0 (5 Jan 2008)
+  * Message-level menu removed.
+  * Clicking on source feed in message bring all messages from feed.
+  * Implemented Language and Country selection.
+
+Changes with NewsGate 1.1.4.3 (30 Dec 2007)
+  * find_best_intersection made to rely on common words count in the first turn
+    (on word weight before).
+
+Changes with NewsGate 1.1.4.2 (28 Dec 2007)
+  * "alteranate only word" status invented to decrease weight of such words 
+    when core words set determined.
+  * duplicated on page images/alt text are hidden.
+
+Changes with NewsGate 1.1.4.1 (23 Dec 2007)
+  * EventManager: find_best_intersection improved.
+
+Changes with NewsGate 1.1.4.0 (20 Dec 2007)
+  * Events revision: messages having a weak connection with event (<=4) are
+    detached.
+  * When message removed from event word weights recalculated.
+  * Messages with small number of core words are event-supported now.
+  * Event now have not only max_words_count restriction (set to 20) but also 
+    max_decisive_words_count restriction (set to 10).
+  * Fixed bug denying messages from com domain.
+  * Message bank poseted messages pack queue is restricted to size 2 now. When
+    tying to insert extra pack bank responds with NotReady exception.
+
+Changes with NewsGate 1.1.3.1 (7 Dec 2007)
+  * Implemented restriction message packes number queued for processing
+  * Changed word in-message-weight calculation: capital factor word weight 
+    increased to 2.3 from 2, word frequency countd with pow(1.3) factor.
+  * Number words in event decreased from 12 to 10, but intersection requirement
+    descreased from 7 to 6 words.
+
+Changes with NewsGate 1.1.3.0 (3 Dec 2007)
+  * 1-level domain of feed url considered in the first turn while determining
+    country code.
+  * CAPACITY operator implemented.
+  * Event words max count decreased to 12 from 15 to increase number of cases
+    when too different messages get mixed in same event.
+
+Changes with NewsGate 1.1.2.1 (25 Nov 2007)
+  * Search frontend prints more event related info in Debug Mode
+
+Changes with NewsGate 1.1.2.0 (23 Nov 2007)
+  * "Similar posts" link implemented
+  * Image presense amend message match weight with a small factor.
+
+Changes with NewsGate 1.1.1.0 (15 Nov 2007)
+  * Message::Id made to be unsigned long long, calculated as a CRC of 
+    message url.
+  * Events persistence completed.
+  * StoredMessage::event_id now updated on message merge.
+
+Changes with NewsGate 1.1.0.3 (8 Nov 2007)
+  * Bug fixed.
+  * Events merging algorithm changed again to increase performance futher.
+
+Changes with NewsGate 1.1.0.2 (4 Nov 2007)
+  * Events persistence implemented.
+  * Events merging algorithm changed to increase performance.
+
+Changes with NewsGate 1.1.0.1 (31 Oct 2007)
+  * EventBank modified: on insert always new event is created for each new 
+    message; merge can happen only in merge_events function.
+  * event_id added into StoredMessage structure.
+
+Changes with NewsGate 1.1.0.0 (28 Oct 2007)
+  * First version of EventBank created, partly functional but need to evaluate
+    quality and performance.
+  * In WEB interface msg.content->published replaced with msg.updated to avoid
+    situation when sorted by date messages appears to be unsorted.
+  * Debug version with (-ggdb -no-inline -O3) to catch issue with RSSPuller.
+    Sometimes hangs.
+
+Changes with NewsGate 1.0.4.4 (12 Oct 2007)
+  * Debug version with (-ggdb -no-inline -O1) to catch issue with RSSPuller.
+    Sometimes hangs.
+
+Changes with NewsGate 1.0.4.3 (5 Oct 2007)
+
+  * Weight components now are in range [0-1000] ( [0-100] before ) to increase 
+    resolution.
+
+  * TOPICALITY_WEIGHT changed to 5 from 2
+
+  * Change word-in-message weight calculation in 
+    SearcheableMessageMap::calc_words_freq:
+
+    // position_weight * position_weight is to accent on words with
+    // positions close to message top
+    wi.weight = word_occurance * pow(position_weight, 1.3) / frequency;
+    
+    from
+
+    wi.weight = word_occurance * position_weight / frequency;
+
+Changes with NewsGate 1.0.4.2 (4 Oct 2007)
+
+  * Add weightening by topicality
+     // Calculating topicality component. Stronger than date-based but
+     // weaker then match level. Allows to emphasize on fresh news.
+     wmi.wid.weight += freshness * freshness * freshness / 10000 *
+       TOPICALITY_WEIGHT;
+
+Changes with NewsGate 1.0.4.1 (3 Oct 2007)
+
+  * Changing weightening by coreness from
+
+    (1.0 + msg.core_words.size() - index) / msg.core_words.size()
+    to
+    (float)(msg.core_words.size() - index) / sort_by_relevance->max_core_words
+
+    So now to be first from 20 is much better than first from 5.
+
+Changes with NewsGate 1.0.4.0 (1 Oct 2007)
+
+  * Sorting search results by relevance implemented. 
+    Relevance is a function of message core words match factor and 
+    message pulishing time.
+
+Changes with NewsGate 1.0.3.1 (18 Sep 2007)
+
+  * SearcheableMessageMap::insert suppress duplicates based on message 
+    signatures
+
+Changes with NewsGate 1.0.3.0 (16 Sep 2007)
+
+  * Suppression duplicates implemented.
+
+Changes with NewsGate 1.0.2.1 (6 Aug 2007)
+
+  * Moved from word hash to message numbers mapping to word to message number 
+    mapping.
+
+Changes with NewsGate 1.0.2.0 (31 Jul 2007)
+
+  * NewsGate::Message::StoredMessage and NewsGate::Message::StoredContent 
+    classes moved to usage of El::String::SharedStringConstPtr for memory 
+    consumption decrease.
+
+Changes with NewsGate 1.0.1.2 (5 Jul 2007)
+
+  * Bugfix: error in parsing separators at the end of word
+
+Changes with NewsGate 1.0.1.1 (30 Jun 2007)
+
+  * Bugfix: word frequency was calculated improperly
+  * Bugfix: improper handling multiple quotes at the beginning of same word, 
+            like "'ABC' xyz"
+  * Bugfix: RSSPuller stops very slowly as some feeds download too long because
+            of small TCP window size set.
+
+Changes with NewsGate 1.0.1.0 (17 Jun 2007)
+
+   * Word-length statistics in MessageBank (dumped on load).
+   * Debug Info: display word frequencies (local/gloal). 
+     Use d=1 parameter in search request.
+   * Deal with round, square brackets and parenthesis(make them separators).

@@ -1,0 +1,18 @@
+#!/bin/sh
+
+# product   : NewsGate - news search WEB server
+# copyright : Copyright (c) 2005-2016 Karen Arutyunov
+# licenses  : CC BY-NC-SA 3.0; see accompanying LICENSE file
+#             Commercial; contact karen.arutyunov@gmail.com
+
+source "$1/lib.sh"
+
+echo_date "Adding annotation_len, translate_lang, translate_def_lang to StatSearchRequest table ..."
+
+echo "alter table StatSearchRequest \
+add column annotation_len INTEGER NOT NULL DEFAULT -1 after item_count, \
+add column translate_lang CHAR(3) character set ascii NOT NULL DEFAULT '' after optimized_query, \
+add column translate_def_lang CHAR(3) character set ascii NOT NULL DEFAULT '' after optimized_query;" | \
+ng-mysql --user root NewsGate
+
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi

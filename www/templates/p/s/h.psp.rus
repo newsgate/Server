@@ -1,0 +1,11 @@
+#include ../../py/parse_error.rus
+#include ../../py/search_util.rus
+#include ../../py/search_page_util.rus
+
+MSG_IMAGES_HEADING Дополнительно {{MSG_IMAGES_COUNT}} ( <a href="{{MSG_PAGE_REF}}" target="_blank"{{ATTRS}}>показать</a> )
+SUBSCRIBE Подписаться :&nbsp;
+SUBSCRIBE_MAIL Бесплатно получать новости на адрес электронной почты по теме 
+
+TOP_STORIES_TODAY Главное за сегодня
+TOP_STORIES_WEEK  Главное за неделю
+TOP_PUBLISHED {{MSG_TIME_AGO}} назад

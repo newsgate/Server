@@ -1,0 +1,116 @@
+.dialog
+{
+  margin: 0.5em;
+  padding: 0.7em;
+  background: rgb(230, 230, 235);
+  position:absolute;
+  z-index: 20;
+  border-width: 2px;
+  border-color: rgb(145, 145, 150);
+  border-style: solid;
+
+/*  font-size:12.8px;*/
+}
+
+#mod_topbar
+{
+  font-size: 100%;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+}
+
+#mod_topbar_left_menu
+{
+  text-align: left;
+  width: 35%;
+  padding: 0.3em 0 0.5em 1em;
+}
+
+#mod_topbar_middle_menu
+{
+  text-align: center;
+  width: 35%;
+  padding: 0.3em 1em 0.5em 0;
+}
+
+#mod_topbar_right_menu
+{
+  text-align: right;
+  width: 30%;
+  padding: 0.3em 1em 0.5em 0;
+}
+
+.mod_topbar_current_page_name
+{
+  font-weight: bold;
+}
+
+.mod_dlg_inner
+{
+  padding: 0 0 0.7em 0;
+}
+
+.option_row
+{
+  background-color: rgb(253, 253, 253);
+  vertical-align: top;
+}
+
+.mod_find_edit
+{
+  width: 25em;
+}
+
+.mod_find_cat
+{
+  padding: 0.3em 0 0 0;
+}
+
+.mod_find_wl
+{
+  padding: 0.3em 0 0 1em;
+}
+
+.mod_find_word
+{
+  padding: 0 0 0 2em;
+}
+
+.mod_find_word_sel
+{
+  background-color: #FFFFDC;
+}
+
+textarea 
+{
+  font-family: Verdana,Tahoma,Geneva,Helvetica,Arial,Sans-serif;
+  font-size: 95%;
+}
+
+.word_forms
+{
+  width: 100%;
+  font-size: 100%;
+  padding: 0.3em 0.5em;
+  margin: 0;
+  border-collapse: separate;
+}
+
+.lemma_forms
+{
+  font-size: 100%;
+  padding: 0;
+  margin: 0;
+}
+
+.norm_form
+{
+  font-weight:bold;
+}
+
+.dict_lemma_row
+{
+  padding: 0.3em 0.5em;
+  margin: 0.2em 0;
+}

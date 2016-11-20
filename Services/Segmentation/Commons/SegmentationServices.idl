@@ -1,0 +1,72 @@
+/*
+ * product   : NewsGate - news search WEB server
+ * copyright : Copyright (c) 2005-2016 Karen Arutyunov
+ * licenses  : CC BY-NC-SA 3.0; see accompanying LICENSE file
+ *             Commercial; contact karen.arutyunov@gmail.com
+ */
+
+/**
+ * @file NewsGate/Server/Services/Segmentation/Commons/SegmentationServices.idl
+ * @author Karen Arutyunov
+ * $Id:$
+ */
+
+#ifndef _NEWSGATE_SERVER_SERVICES_SEGMENTATION_COMMONS_SEGMENTATIONSERVICES_IDL_
+#define _NEWSGATE_SERVER_SERVICES_SEGMENTATION_COMMONS_SEGMENTATIONSERVICES_IDL_
+
+module NewsGate
+{ 
+  module Segmentation
+  {
+    exception NotReady
+    {
+      string reason;
+    };
+      
+    exception ImplementationException
+    {
+      string description;
+    };
+
+    exception InvalidArgument
+    {
+      string description;
+    };
+      
+    module Transport
+    {
+      custom valuetype MessagePack
+      {
+      };
+    
+      custom valuetype SegmentedMessagePack
+      {
+      };
+    };
+
+    typedef sequence<unsigned long> PositionSeq;
+
+    //
+    // Segmentor interface
+    //    
+    interface Segmentor
+    {
+      boolean is_ready() raises(ImplementationException);
+
+      Transport::SegmentedMessagePack segment_message_components(
+        in Transport::MessagePack messages)
+        raises(NotReady, InvalidArgument, ImplementationException);
+
+      string segment_text(in string text,
+                          out PositionSeq segmentation_positions)
+        raises(NotReady, InvalidArgument, ImplementationException);
+
+      string segment_query(in string text)
+        raises(NotReady, InvalidArgument, ImplementationException);
+    };
+
+  };
+  
+};
+
+#endif // _NEWSGATE_SERVER_SERVICES_SEGMENTATION_COMMONS_SEGMENTATIONSERVICES_IDL_

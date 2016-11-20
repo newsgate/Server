@@ -1,0 +1,138 @@
+/*
+ * product   : NewsGate - news search WEB server
+ * copyright : Copyright (c) 2005-2016 Karen Arutyunov
+ * licenses  : CC BY-NC-SA 3.0; see accompanying LICENSE file
+ *             Commercial; contact karen.arutyunov@gmail.com
+ */
+
+/**
+ * @file NewsGate/Server/Commons/Message/MessageTransport.idl
+ * @author Karen Arutyunov
+ * $Id:$
+ */
+
+#ifndef _NEWSGATE_SERVER_COMMONS_MESSAGE_MESSAGETRANSPORT_IDL_
+#define _NEWSGATE_SERVER_COMMONS_MESSAGE_MESSAGETRANSPORT_IDL_
+ 
+module NewsGate
+{ 
+  module Message
+  {
+    module Transport
+    {
+      //
+      // Requests for send_request method.
+      // Implementations are in Commons/Message/TransportImpl.hpp
+      //
+      
+      abstract valuetype Request
+      {
+      };
+      
+      custom valuetype EmptyRequest : Request
+      {
+      };
+
+      abstract valuetype Response
+      {
+        exception ImplementationException
+        {
+          string description;
+        };
+
+        void absorb(in Response src) raises(ImplementationException);
+      };
+
+      custom valuetype EmptyResponse : Response
+      {
+      };
+
+      custom valuetype MessageDigestRequest : Request
+      {
+      };
+
+      custom valuetype MessageDigestResponse : Response
+      {
+      };
+
+      custom valuetype SetMessageFetchFilterRequest : Request
+      {
+      };
+      
+      custom valuetype SetMessageCategorizerRequest : Request
+      {
+      };
+      
+      custom valuetype MessageStatRequest : Request
+      {
+      };
+      
+      custom valuetype MessageStatResponse : Response
+      {
+      };
+
+      custom valuetype SetMessageSharingSourcesRequest : Request
+      {
+      };
+
+      custom valuetype CheckMirroredMessagesRequest : Request
+      {
+      };
+      
+      custom valuetype CheckMirroredMessagesResponse : Response
+      {
+      };
+      
+      //
+      // Entity packs.
+      // Implementations are in Commons/Message/TransportImpl.hpp
+      //
+      
+      custom valuetype LocalCodePack
+      {
+      };
+
+      custom valuetype IdPack
+      {
+      };
+
+      abstract valuetype MessagePack
+      {
+      };
+      
+      custom valuetype RawMessagePack : MessagePack
+      {
+      };
+      
+      custom valuetype StoredMessagePack : MessagePack
+      {
+      };
+      
+      custom valuetype MessageEventPack : MessagePack
+      {
+      };
+
+      custom valuetype MessageSharingInfoPack : MessagePack
+      {
+      };
+
+      custom valuetype ColoFrontendPack
+      {
+      };      
+
+      custom valuetype Id
+      {
+      };
+
+      custom valuetype StoredMessage
+      {
+      };      
+
+      custom valuetype CategoryLocale
+      {
+      };      
+    };
+  };
+};
+
+#endif // _NEWSGATE_SERVER_COMMONS_MESSAGE_MESSAGETRANSPORT_IDL_

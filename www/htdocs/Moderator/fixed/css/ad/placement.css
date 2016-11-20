@@ -1,0 +1,62 @@
+#placement
+{
+  width: 60em;
+  font-size: 100%;
+  padding: 0 0 0 0;
+  margin: 0 0 0 0;
+}
+
+.option_row td
+{
+  padding: 0.3em;
+  vertical-align: top;
+}
+
+#header td
+{
+  border-bottom: 1px solid rgb(0,0,80);
+  padding: 0 0.3em 0.3em 0.3em;
+  vertical-align: top;
+}
+
+.label
+{
+  width: 8em;
+}
+
+#slots
+{
+  margin: 0 0 1em 0;
+}
+
+#slt
+{
+  width: 55em;
+  font-size: 100%;
+  padding: 0 0 0 0;
+  margin: 0 0 0 0;
+}
+
+.radio_cell 
+{
+  width: 1em;
+}
+
+#ads
+{
+  margin: 0 0 1em 0;
+}
+
+#adt
+{
+  width: 60em;
+  font-size: 100%;
+  padding: 0 0 0 0;
+  margin: 0 0 0 0;
+}
+
+.page_name
+{
+  text-align: center;
+  padding: 0.7em 0 0;
+}

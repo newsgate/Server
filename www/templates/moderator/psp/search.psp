@@ -1,0 +1,196 @@
+from httplib import *
+from moderation_func import *
+
+def create_management_topbar(left_menu, middle_menu, right_menu):
+
+  xml_encode_flags = el.string.manip.XE_TEXT_ENCODING | \
+                     el.string.manip.XE_ATTRIBUTE_ENCODING | \
+                     el.string.manip.XE_PRESERVE_UTF8
+
+  topbar = \
+'<table id="mod_topbar" cellspacing="0"><tr><td id="mod_topbar_left_menu">'
+
+  add_separator = False
+  current_left_menu = ""
+
+  for mi in left_menu:
+
+    name = \
+      el.string.manip.xml_encode(mi[0], xml_encode_flags).replace(' ', "&nbsp")
+
+    url = el.string.manip.xml_encode(mi[1], xml_encode_flags)
+    
+    if add_separator: topbar += " | "
+    else: add_separator = True
+
+    if url == "":
+      topbar += '<span class="mod_topbar_current_page_name">' + name + '</span>'
+      current_left_menu = name
+    else:
+      topbar += '<a href="' + url + '">' + name + '</a>'
+
+  topbar += '</td><td id="mod_topbar_middle_menu">'
+
+  add_separator = False
+  current_mid_menu = ""
+
+  for mi in middle_menu:
+
+    name = \
+      el.string.manip.xml_encode(mi[0], xml_encode_flags).replace(' ', "&nbsp")
+
+    url = el.string.manip.xml_encode(mi[1], xml_encode_flags)
+    
+    if add_separator: topbar += " | "
+    else: add_separator = True
+
+    if url == "":
+      topbar += '<span class="mod_topbar_current_page_name">' + name +\
+                '</span>'
+      current_mid_menu = name
+    else:
+      topbar += '<a href="' + url + '">' + name + '</a>'
+
+  topbar += '</td><td id="mod_topbar_right_menu">'
+
+  add_separator = False
+  for mi in right_menu:
+
+    name = \
+      el.string.manip.xml_encode(mi[0], xml_encode_flags).replace(' ', "&nbsp")
+
+    menu_url = mi[1]
+
+    if menu_url == "/psp/help":
+      anchor = ""
+      if current_mid_menu: anchor += current_mid_menu
+      
+      if current_left_menu:
+        if anchor: anchor += "_"
+        anchor += current_left_menu
+
+      if anchor:
+        menu_url = menu_url + "#" + anchor
+
+    url = el.string.manip.xml_encode(menu_url, xml_encode_flags)
+    
+    if add_separator: topbar += " | "
+    else: add_separator = True
+
+    if url == "":
+      topbar += '<span class="mod_topbar_current_page_name">' + name + '</span>'
+    else:
+      topbar += '<a href="' + url + '">' + name + '</a>'
+
+  topbar += '</td></tr></table>'
+  return topbar
+
+request, conf = context.request, context.config.get
+prn = request.output.stream.prn
+
+schema = (request.secure() and "https://" or "http://")
+site = schema + request.endpoint()
+encoded_site = el.string.manip.mime_url_encode(site)
+
+body = ""
+
+left_menu = []
+cur_page = ""
+mode_menu_param = ""
+
+for p in request.input.parameters():
+
+  if p.name == "mod_menu":
+
+    mode_menu_param = "mod_menu=" + el.string.manip.mime_url_encode(p.value)
+    mparams = p.value.split('|')
+
+    if len(mparams): cur_page = mparams.pop(0)
+
+    while len(mparams):
+      left_menu.append((mparams.pop(0), mparams.pop(0)))      
+
+    continue
+
+  body += el.string.manip.mime_url_encode(p.name) + "="
+
+  if (p.name == "mod_script" or p.name == "mod_css") and \
+     p.value[0:len(schema)] != schema:
+    body += encoded_site
+
+  body += el.string.manip.mime_url_encode(p.value) + "&"
+
+moderator = connect_moderator(request, moderator_connector)
+
+menus = []
+create_topbar_main_menus(context, moderator, cur_page, menus)
+
+topbar = create_management_topbar(left_menu, menus[0], menus[1])
+
+privileges = ""
+
+# TODO: put here all privileges
+
+if moderator.has_privilege(\
+  newsgate.moderation.moderator.PV_FEED_MANAGER):
+  privileges += "F"
+
+body += "mod_url=" + encoded_site + \
+        el.string.manip.mime_url_encode("/psp/search") +\
+        "&mod_proxy_url=" + encoded_site + \
+        el.string.manip.mime_url_encode("/psp/proxy") +\
+        "&mod_base_script=" + encoded_site + \
+        el.string.manip.mime_url_encode("/fixed/js/mod_script.js") +\
+        "&mod_base_css=" + encoded_site + \
+        el.string.manip.mime_url_encode("/fixed/css/mod_css.css") + \
+        "&mod_params=" + \
+        "priv-" + str(len(privileges)) + "-" + \
+        el.string.manip.mime_url_encode(privileges) + \
+        "topbar-" + str(len(topbar)) + "-" + \
+        el.string.manip.mime_url_encode(topbar)      
+
+if mode_menu_param: body += "&" + mode_menu_param
+
+link = conf("newsgate_internal_link")
+
+pos = link.find('/')
+
+if pos >= 0:
+  path = link[pos:]
+  link = link[0:pos]
+else:
+  path = "/psp/search"
+
+endpoint = link.split(":", 1)
+
+host = endpoint[0]
+
+try: port = int(endpoint[1])
+except: port = 80
+
+headers = { "Content-type" : "application/x-www-form-urlencoded",
+            "User-Agent" : "NGModUI"
+          }
+
+for h in request.input.headers():
+  hn = h.name.lower()
+  if hn == "accept-encoding" or hn == "cookie" or hn == "host":
+    headers[h.name] = h.value
+
+conn = HTTPConnection(host, port)
+
+conn.request("POST", path, body, headers)
+response = conn.getresponse()
+
+for h in response.getheaders():
+  hn = h[0].lower()
+
+  if hn == "content-type" or hn == "content-encoding":
+    request.output.send_header(h[0], h[1])
+  elif hn[0:10] == "search-sc-":
+    request.output.send_header("Set-Cookie", h[1])
+
+request.output.send_header("X-XSS-Protection", "0")
+
+prn(response.read())
+#if response.status != 200: el.exit(response.status)

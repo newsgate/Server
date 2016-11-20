@@ -1,0 +1,106 @@
+from moderation_func import *
+
+request, conf = context.request, context.config.get
+message = context.forward_params
+prn, param = request.output.stream.prn, request.input.parameters().find
+
+moderator = connect_moderator(request, moderator_connector)
+
+ad_manager = \
+  moderator.has_privilege(newsgate.moderation.moderator.PV_AD_MANAGER)
+
+advertiser_id = moderator.advertiser_id
+
+if not ad_manager and not advertiser_id:
+  el.exit(403) # Forbidden
+
+sizes = moderator.ad_manager.get_sizes()
+
+if param("u") and ad_manager:
+
+  size_updates = el.Sequence()
+
+  for p in request.input.parameters():
+
+    pos = p.name.find('_')
+
+    if pos > 0 and p.name[0:pos] == 's':
+
+      update = newsgate.moderation.ad.SizeUpdate()
+      update.id = long(p.name[pos + 1:])
+
+      if p.value == "E": update.status = newsgate.moderation.ad.ZS_ENABLED
+      else: update.status = newsgate.moderation.ad.ZS_DISABLED
+
+      size_updates.append(update)
+
+  sizes = moderator.ad_manager.update_sizes(size_updates)
+
+prn(
+R'''<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>Management: Ad Sizes</title>
+<link rel="stylesheet" type="text/css" href="/fixed/css/common.css" media="all" />
+<link rel="stylesheet" type="text/css" href="/fixed/css/ad/sizes.css" media="all" />
+</head>
+
+<body>
+<table id="skeleton" cellspacing="0">
+''')
+
+menus = []
+create_topbar_main_menus(context, moderator, "Ad", menus)
+prn(create_topbar(create_ad_menus(moderator, "Sizes"), menus[0], menus[1]))
+
+prn(
+R'''
+  <tr><td id="main_area" valign="top" align="center">
+    <form id="form" method="post" action="sizes">
+    <table id="sizes">
+    <tr align="center" id="header"><td>Name</td><td>Width</td>
+                                   <td>Height</td><td>Status</td></tr>
+''')
+
+statuses = [ (newsgate.moderation.ad.ZS_ENABLED, "Enabled", "E"), 
+             (newsgate.moderation.ad.ZS_DISABLED, "Disabled", "D")
+           ]
+
+for sz in sizes:
+  prn('\n    <tr class="option_row"><td>', 
+      el.string.manip.xml_encode(sz.name), '</td><td class="number_option">', 
+      sz.width, '</td><td class="number_option">', sz.height, 
+      '</td><td>')
+
+  if ad_manager:
+    prn('<select name="s_', sz.id, '">')
+
+    for s in statuses:
+      prn('<option', sz.status == s[0] and ' selected="selected"' or '', 
+          ' value="', s[2], '">', s[1], '</option>')
+
+    prn('</select>')
+
+  else:
+
+    for s in statuses:
+      if sz.status == s[0]: prn(s[1])
+  
+  prn('</td></tr>')
+
+if ad_manager:
+  prn(R'''
+    <tr><td colspan="4">
+      <input type="submit" name="u" value="Update"/>
+    </td></tr>''')
+
+prn(R'''
+    </table>
+  <input type="hidden" name="id" value="''', id, R'''">
+  </form>
+  </td></tr>
+''', create_copyright(context), R'''
+</table>
+</body>
+</html>
+''')

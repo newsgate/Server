@@ -1,0 +1,20 @@
+# @file   Makefile.in
+# @author Karen Aroutiounov
+# $Id: $
+
+include Common.pre.rules
+
+target_directory_list := Commons \
+                         ChangeLog \
+                         ModeratorManager \
+                         FeedManager \
+                         CategoryManager \
+                         CustomerManager \
+                         AdManager
+
+ChangeLog : Commons
+
+ModeratorManager FeedManager CategoryManager CustomerManager AdManager : \
+  ChangeLog Commons
+
+include $(osbe_builddir)/config/Direntry.post.rules

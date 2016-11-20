@@ -1,0 +1,12 @@
+# @file   dir.ac
+# @author Karen Aroutiounov
+# $Id:$
+
+OSBE_CONFIG_FILE([Makefile])
+
+OSBE_CONFIG_SUBDIR([Feed])
+OSBE_CONFIG_SUBDIR([Message])
+OSBE_CONFIG_SUBDIR([Search])
+OSBE_CONFIG_SUBDIR([Event])
+OSBE_CONFIG_SUBDIR([Python])
+OSBE_CONFIG_SUBDIR([Ad])

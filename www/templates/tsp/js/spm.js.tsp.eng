@@ -1,0 +1,34 @@
+MSG_SRC_COUNTRY_CODES       or message source country code(s).
+PLS_MSG_SRC_COUNTRY_CODES   Please type message source contry code(s).
+
+MSG_SRC_DOMAIN_NAMES        or message source domain names(s).
+PLS_MSG_SRC_DOMAIN_NAMES    Please type message source domain names(s).
+
+MSG_SRC_KINDS               or message source kind(s).
+PLS_MSG_SRC_KINDS           Please type message source kind(s).
+
+MSG_SRC_LANG_CODES          or message language code(s).
+PLS_MSG_SRC_LANG_CODES      Please type message language code(s).
+
+MSG_WORDS                   or message word(s).
+PLS_MSG_WORDS               Please type message word(s).
+
+MSG_SRC_SITES               or message source site name(s).
+PLS_MSG_SRC_SITES           Please type message source site name(s).
+
+MSG_SRC_URLS                or message source url(s).
+PLS_MSG_SRC_URLS            Please type message source url(s).
+
+MSG_FETCH_TIME              or message fetch time in one of the following forms:<p><li>YYYY-MM-DD.hh:mm:ss. UTC time is assumed.<br><i>Example: FETCHED 2009-03-25.17:45:07</i></li><li>&lt;number>&lt;unit>, where unit takes one of the following values:<br>D (days), H (hours), M (minutes), S (seconds).<br>This form points to a moment in the past distant from now by specified number of time units.<br><i>Example: FETCHED 23H (23 hours ago)</i></li><li>number of seconds since Epoch (00:00:00 UTC, January 1, 1970).<br><i>Example: FETCHED 1239693207</i></li>
+PLS_MSG_FETCH_TIME          Please type message fetch time in one of the following forms:<p><li>YYYY-MM-DD.hh:mm:ss. UTC time is assumed.<br><i>Example: FETCHED 2009-03-25.17:45:07</i></li><li>&lt;number>&lt;unit>, where unit takes one of the following values:<br>D (days), H (hours), M (minutes), S (seconds).<br>This form points to a moment in the past distant from now by specified number of time units.<br><i>Example: FETCHED 23H (23 hours ago)</i></li><li>number of seconds since Epoch (00:00:00 UTC, January 1, 1970).<br><i>Example: FETCHED 1239693207</i></li>
+
+MSG_DATE_TIME               or message publication time in one of the following forms:<p><li>YYYY-MM-DD.hh:mm:ss. UTC time is assumed.<br><i>Example: DATE 2009-03-25.17:45:07</i></li><li>&lt;number>&lt;unit>, where unit takes one of the following values:<br>D (days), H (hours), M (minutes), S (seconds).<br>This form points to a moment in the past distant from now by specified number of time units.<br><i>Example: DATE 23H (23 hours ago)</i></li><li>number of seconds since Epoch (00:00:00 UTC, January 1, 1970).<br><i>Example: DATE 1239693207</i></li>
+PLS_MSG_DATE_TIME           Please type message publication time in one of the following forms:<p><li>YYYY-MM-DD.hh:mm:ss. UTC time is assumed.<br><i>Example: DATE 2009-03-25.17:45:07</i></li><li>&lt;number>&lt;unit>, where unit takes one of the following values:<br>D (days), H (hours), M (minutes), S (seconds).<br>This form points to a moment in the past distant from now by specified number of time units.<br><i>Example: DATE 23H (23 hours ago)</i></li><li>number of seconds since Epoch (00:00:00 UTC, January 1, 1970).<br><i>Example: DATE 1239693207</i></li>
+
+PLS_TYPE_SPEC_WORDS         Please type one of special words 
+PLS_TYPE_ONE_SPEC_WORD      Please type special word 
+
+APPROP_VALS                 Appropriate values:
+APPROP_VALS_BEGIN_WITH      Appropriate values beginning with '%%PREFIX%%':
+LOADING                     loading ...
+HELP                        Search Help

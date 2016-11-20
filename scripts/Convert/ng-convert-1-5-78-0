@@ -1,0 +1,20 @@
+#!/bin/sh
+
+# product   : NewsGate - news search WEB server
+# copyright : Copyright (c) 2005-2016 Karen Arutyunov
+# licenses  : CC BY-NC-SA 3.0; see accompanying LICENSE file
+#             Commercial; contact karen.arutyunov@gmail.com
+
+source "$1/lib.sh"
+
+echo_date "Creating CategoryWordList table ..."
+
+echo "create table CategoryWordList ( \
+      category_id BIGINT UNSIGNED NOT NULL REFERENCES Category ( id ),
+      name VARCHAR(128) BINARY NOT NULL, \
+      words MEDIUMTEXT, \
+      description TEXT(1024), \
+      PRIMARY KEY (category_id, name) \
+) engine=InnoDB;" | ng-mysql --user=root NewsGate
+
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi

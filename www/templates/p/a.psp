@@ -1,0 +1,22 @@
+request = context.request
+prn = request.output.stream.prn
+param = request.input.parameters().find
+
+placement_id = param("p")
+ad = param("a")
+
+if placement_id:
+
+  try:
+    ad = ad_server.selection(long(placement_id))
+    ad_text = ad.text
+  except:
+    ad_text = ""
+
+  prn('<html><head></head><body style="padding:0;margin:0">', ad_text, 
+      '</body></html>')
+
+elif ad:
+
+  prn("<html><head><title>", param("n"), " Ad Preview</title></head><body>",
+      ad, "</body></html>")

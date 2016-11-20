@@ -1,0 +1,135 @@
+#!/bin/sh
+
+# product   : NewsGate - news search WEB server
+# copyright : Copyright (c) 2005-2016 Karen Arutyunov
+# licenses  : CC BY-NC-SA 3.0; see accompanying LICENSE file
+#             Commercial; contact karen.arutyunov@gmail.com
+
+source "$1/lib.sh"
+
+indexes="url url_1 url_2 url_3 url_4 url_5 url_6 url_7 url_8 url_9"
+
+echo_date "Dropping FeedSource table indexes ..."
+
+for ind in $indexes; do
+  echo "drop index $ind on FeedSource;" | ng-mysql --user=root NewsGate 2>/dev/null
+done
+
+echo_date "Altering FeedSource table ..."
+
+echo "alter table FeedSource change url url VARCHAR(512) character set utf8 BINARY NOT NULL, add UNIQUE (url(255));" \
+| ng-mysql --user=root NewsGate
+
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+echo_date "Dropping Feed table indexes ..."
+
+for ind in $indexes; do
+  echo "drop index $ind on Feed;" | ng-mysql --user=root NewsGate 2>/dev/null
+done
+
+echo_date "Altering Feed table ..."
+
+echo "alter table Feed change url url VARCHAR(512) character set utf8 BINARY NOT NULL, add UNIQUE (url(255));" \
+| ng-mysql --user=root NewsGate
+
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+echo_date "Dropping FeedFormerUrl table primary key ..."
+
+echo "alter table FeedFormerUrl drop PRIMARY KEY;" | ng-mysql --user=root NewsGate
+
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+echo_date "Altering FeedFormerUrl table ..."
+
+echo "alter table FeedFormerUrl change url url VARCHAR(512) character set utf8 BINARY NOT NULL, add PRIMARY KEY (feed_id, url(255));" \
+| ng-mysql --user=root NewsGate
+
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+echo_date "Altering FeedUpdateBuff table ..."
+
+echo "alter table FeedUpdateBuff change url_ url_ VARCHAR(512) character set utf8 BINARY;" \
+| ng-mysql --user=root NewsGate
+
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+echo_date "Altering Message table ..."
+
+echo "alter table Message change url url VARCHAR(512) character set utf8;" \
+| ng-mysql --user=root NewsGate
+
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+echo_date "Altering MessageBuff table ..."
+
+echo "alter table MessageBuff change url url VARCHAR(512) character set utf8;" \
+| ng-mysql --user=root NewsGate
+
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+echo_date "Dropping FeedBuff table indexes ..."
+
+for ind in $indexes; do
+  echo "drop index $ind on FeedBuff;" | ng-mysql --user=root NewsGate 2>/dev/null
+done
+
+echo_date "Altering FeedBuff table ..."
+
+echo "alter table FeedBuff change url url VARCHAR(512) character set utf8 BINARY NOT NULL, add UNIQUE (url(255));" \
+| ng-mysql --user=root NewsGate
+
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+echo_date "Dropping FeedSourceBuff table indexes ..."
+
+for ind in $indexes; do
+  echo "drop index $ind on FeedSourceBuff;" | ng-mysql --user=root NewsGate 2>/dev/null
+done
+
+echo_date "Altering FeedSourceBuff table ..."
+
+echo "alter table FeedSourceBuff change url url VARCHAR(512) character set utf8 BINARY NOT NULL, add UNIQUE (url(255));" \
+| ng-mysql --user=root NewsGate
+
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+echo_date "Altering StatSearchRequest table ..."
+
+echo "alter table StatSearchRequest change host host VARCHAR(256) character set utf8 NOT NULL, \
+change ref_site ref_site VARCHAR(256) character set utf8 NOT NULL, \
+change ref_company_domain ref_company_domain VARCHAR(256) character set utf8 NOT NULL, \
+change ref_page ref_page VARCHAR(1024) character set utf8 NOT NULL, \
+change ref_url ref_url VARCHAR(1024) character set utf8 NOT NULL, \
+change filter_feed filter_feed VARCHAR(512) character set utf8 NOT NULL;" \
+| ng-mysql --user=root NewsGate
+
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+echo_date "Dropping StatPageImpression table primary key ..."
+
+echo "alter table StatPageImpression drop PRIMARY KEY;" | ng-mysql --user=root NewsGate
+
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+echo_date "Altering StatPageImpression table ..."
+
+echo "alter table StatPageImpression change ref_url ref_url VARCHAR(1024) character set utf8 NOT NULL, \
+change ref_site ref_site VARCHAR(256) character set utf8 NOT NULL, \
+change ref_company_domain ref_company_domain VARCHAR(256) character set utf8 NOT NULL, \
+change ref_page ref_page VARCHAR(1024) character set utf8 NOT NULL, \
+add PRIMARY KEY (id, ref_url(255));" \
+| ng-mysql --user=root NewsGate
+
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+echo_date "Altering StatPageImpressionBuff table ..."
+
+echo "alter table StatPageImpressionBuff change ref_url ref_url VARCHAR(1024) character set utf8 NOT NULL, \
+change ref_site ref_site VARCHAR(256) character set utf8 NOT NULL, \
+change ref_company_domain ref_company_domain VARCHAR(256) character set utf8 NOT NULL, \
+change ref_page ref_page VARCHAR(1024) character set utf8 NOT NULL;" \
+| ng-mysql --user=root NewsGate
+
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi

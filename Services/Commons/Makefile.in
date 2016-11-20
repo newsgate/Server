@@ -1,0 +1,17 @@
+# @file   Makefile.in
+# @author Karen Aroutiounov
+# $Id: $
+
+include Common.pre.rules
+
+target_directory_list := Message Event \
+                         Statistics \
+                         Category \
+                         FraudPrevention \
+                         Ad \
+                         SearchMailing
+
+Statistics : Message FraudPrevention Ad
+SearchMailing : Message FraudPrevention
+
+include $(osbe_builddir)/config/Direntry.post.rules

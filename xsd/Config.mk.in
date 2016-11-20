@@ -1,0 +1,28 @@
+# @file   Config.mk.in
+# @author Karen Arutyunov
+# $Id: $
+
+include Common.pre.rules
+include $(osbe_builddir)/config/CXX/CXX.pre.rules
+include $(osbe_builddir)/config/CXX/XML/XSD.pre.rules
+
+include $(osbe_builddir)/config/CXX/External/ACE.pre.rules
+include $(osbe_builddir)/config/CXX/External/Xerces.pre.rules
+include $(osbe_builddir)/config/CXX/External/Python.pre.rules
+include $(osbe_builddir)/config/CXX/External/MySQL.pre.rules
+
+include $(osbe_builddir)/config/CXX/External/ElBasic.pre.rules
+include $(osbe_builddir)/config/CXX/External/ElMySQL.pre.rules
+include $(osbe_builddir)/config/CXX/External/ElPython.pre.rules
+include $(osbe_builddir)/config/CXX/External/ElNet.pre.rules
+include $(osbe_builddir)/config/CXX/External/ElXML.pre.rules
+
+sources := 
+includes := .
+target := Config
+
+xsd_files := Config.xsd
+xsd_includes := .
+
+include $(osbe_builddir)/config/CXX/XML/XSDTree.post.rules
+include $(osbe_builddir)/config/CXX/So.post.rules

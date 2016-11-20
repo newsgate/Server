@@ -1,0 +1,28 @@
+#search_form
+{
+  width: 50em;
+  font-size: 100%;
+  padding: 2em 0 0 0;
+  margin: 0;
+}
+
+.edit_ctl
+{
+  width: 50em;
+}
+
+.comment
+{
+  font-size: 80%;  
+}
+
+.nowrap
+{
+  white-space: nowrap;
+}
+
+.result
+{
+  font-size: 120%;
+  margin: 1em 0 0 0;
+}

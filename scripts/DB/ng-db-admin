@@ -1,0 +1,100 @@
+#!/bin/sh
+
+# product   : NewsGate - news search WEB server
+# copyright : Copyright (c) 2005-2016 Karen Arutyunov
+# licenses  : CC BY-NC-SA 3.0; see accompanying LICENSE file
+#             Commercial; contact karen.arutyunov@gmail.com
+
+DB_NAME="NewsGate"
+USAGE="Usage: ng-db-admin <aspect> <command> (<argument>)*
+Synopsis 1:
+ng-db-admin help
+Synopsis 1:
+ng-db-admin add (rss|atom|rdf) (undefined|articles|discussions|ads) (<rss urls>)+
+Synopsis 2:
+ng-db-admin clear xml ( (<feed_id>)+ | all )
+"
+# Functions:
+#UNIX_TIMESTAMP(NOW()),
+add_feeds()
+{
+  feed_type=$1 
+  shift
+
+  feed_space=$1 
+  shift
+
+  case $feed_type in
+    rss) feed_type="1" ;;
+    atom) feed_type="2" ;;
+    rdf) feed_type="3" ;;
+    *) echo "Unknown feed type $feed_type
+  $USAGE"; exit 1;;
+  esac
+
+  case $feed_space in
+    undefined) Feed_space="0" ;;
+    articles) feed_space="1" ;;
+    discussions) feed_space="2" ;;
+    ads) feed_space="3" ;;
+    *) echo "Unknown feed space $feed_space
+  $USAGE"; exit 1;;
+  esac
+
+  add_rss_feeds__request="lock tables FeedUpdateNum write, Feed write;\
+set @update_num:=(select update_num from FeedUpdateNum)+1;"
+
+  for url in $@; do
+    add_rss_feeds__request=\
+"${add_rss_feeds__request} insert ignore into Feed \
+set type=$feed_type, url='$url', space=$feed_space, created=NOW(), \
+update_num=@update_num;"
+  done
+
+add_rss_feeds__request="${add_rss_feeds__request}; \
+update FeedUpdateNum set update_num=@update_num; unlock tables"
+
+  echo "$add_rss_feeds__request" | ng-mysql --user=root $DB_NAME
+}
+
+clear_feeds()
+{
+  feed_class=$1 
+  shift
+
+  case $feed_class in
+    xml) : ;;
+    *) echo "Unknown feed class $feed_class
+  $USAGE"; exit 1;;
+  esac
+
+  if test "$@" = "all"; then
+    echo "delete from Message; \
+          delete from Event; \
+          delete from RSSFeedMessageCodes; \
+          delete from RSSFeedState; \
+          delete from RSSFeedStat" | \
+          ng-mysql --user=root $DB_NAME
+  else
+    for feed_id in $@; do
+      echo "delete from Message where feed_id=$feed_id; \
+            delete from RSSFeedMessageCodes where feed_id=$feed_id; \
+            delete from RSSFeedState where feed_id=$feed_id; \
+            delete from RSSFeedStat where feed_id=$feed_id" | \
+            ng-mysql --user=root $DB_NAME
+    done
+  fi
+}
+
+# Main:
+
+command=$1 
+shift
+
+case $command in
+  help)  echo "$USAGE";;
+  add)   add_feeds $@ ;;
+  clear) clear_feeds $@ ;;
+  *) echo "Unknown command '$command'
+$USAGE"; exit 1;;
+esac

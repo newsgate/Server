@@ -1,0 +1,31 @@
+# @file   Makefile.in
+# @author Karen Aroutiounov
+# $Id:$
+
+include Common.pre.rules
+include $(osbe_builddir)/config/CXX/CXX.pre.rules
+include $(osbe_builddir)/config/CXX/Corba.pre.rules
+
+include $(osbe_builddir)/config/CXX/External/Python.pre.rules
+include $(osbe_builddir)/config/CXX/External/ACE.pre.rules
+include $(osbe_builddir)/config/CXX/External/Google.pre.rules
+include $(osbe_builddir)/config/CXX/External/Apache.pre.rules
+
+include $(osbe_builddir)/config/CXX/External/ElBasic.pre.rules
+include $(osbe_builddir)/config/CXX/External/ElPython.pre.rules
+include $(osbe_builddir)/config/CXX/External/ElNet.pre.rules
+include $(osbe_builddir)/config/CXX/External/ElApache.pre.rules
+include $(osbe_builddir)/config/CXX/External/ElLocalization.pre.rules
+include $(osbe_builddir)/config/CXX/External/ElGeography.pre.rules
+include $(osbe_builddir)/config/CXX/External/ElPSP.pre.rules
+
+include $(top_builddir)/config/Commons/Python/PythonCommons.so.pre.rules
+include $(top_builddir)/config/Commons/Ad/AdCommons.so.pre.rules
+
+include $(top_builddir)/config/Services/Commons/Ad/AdServiceCommons.so.pre.rules
+
+sources := AdModule.cpp
+target := AdModule
+
+include $(osbe_builddir)/config/CXX/Corba.post.rules
+include $(osbe_builddir)/config/CXX/So.post.rules

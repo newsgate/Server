@@ -1,0 +1,67 @@
+from moderation_func import *
+
+request = context.request
+prn = request.output.stream.prn
+message = context.forward_params
+
+moderator = connect_moderator(request, moderator_connector)
+
+if moderator.has_privilege(newsgate.moderation.moderator.PV_FEED_CREATOR) == False and \
+   moderator.has_privilege(newsgate.moderation.moderator.PV_FEED_MANAGER) == False:
+  el.exit(403) # Forbidden
+
+prn(
+R'''
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>Management: Feeds</title>
+<link rel="stylesheet" type="text/css" href="/fixed/css/common.css" media="all" />
+</head>
+
+<body>
+<table id="skeleton" cellspacing="0">
+''')
+
+left_menu = []
+
+feed_moderator =\
+  moderator.has_privilege(newsgate.moderation.moderator.PV_FEED_MANAGER)
+
+if feed_moderator:
+  left_menu.append( ("View", "/psp/feed/view") )
+
+feed_creator =\
+  moderator.has_privilege(newsgate.moderation.moderator.PV_FEED_CREATOR)
+
+if feed_creator:
+  left_menu.append( ("New", "/psp/feed/register") )
+  left_menu.append( ("Crawling Tasks", "/psp/feed/validations") )
+
+if feed_moderator:
+  left_menu.append( ("XPath", "/psp/feed/xpath") )
+
+left_menu.append( ("Search", 
+                   feed_search_link(feed_creator, feed_moderator, None)) )
+
+menus = []
+create_topbar_main_menus(context, moderator, "Feeds", menus)
+
+prn(create_topbar(left_menu, menus[0], menus[1]))
+
+prn(
+R'''
+  <tr><td id="main_area" valign="top">
+''')
+
+if message != None:
+  prn('<div id="op_error">', el.string.manip.xml_encode(message), '</div>')
+
+prn(
+R'''
+  </td></tr>
+''', create_copyright(context), R'''
+</table>
+</body>
+</html>
+''')

@@ -1,0 +1,685 @@
+from moderation_func import *
+
+request, conf = context.request, context.config.get
+prn, param = request.output.stream.prn, request.input.parameters().find
+
+moderator = connect_moderator(request, moderator_connector)
+
+cat_manager = \
+  moderator.has_privilege(newsgate.moderation.moderator.PV_CATEGORY_MANAGER)
+
+wl_editor = cat_manager == False and \
+  moderator.has_privilege(\
+    newsgate.moderation.moderator.PV_CATEGORY_EDITOR)
+
+if cat_manager == False and wl_editor == False:
+  el.exit(403) # Forbidden
+
+cat_id = long(param("c", "0"))
+if cat_id == 1: el.exit(400) # Bad request
+
+update = param("u") != ""
+category_changed = param("ch") == "1"
+wl_changed = param("wh") == "1"
+
+parent_id = long(param("p", "1"))
+version = long(param("v", "0"))
+open_word_list = param("wl", "")
+sel_start = param("ss", "0")
+sel_end = param("se", "0")
+
+wl_add = param("wl_add", "")
+
+if cat_id:
+  try: 
+
+    category = moderator.category_manager.get_category(cat_id)
+    if not update: version = category.version
+
+  except newsgate.moderation.category.CategoryNotFound:
+    el.exit(el.psp.Forward("/psp/categories.psp", 
+                           "Category " + str(cat_id) + " Not Found."))
+else:
+
+  if cat_manager == False: el.exit(403) # Forbidden
+
+  category = newsgate.moderation.category.CategoryDescriptor()
+
+  try:
+    parent = moderator.category_manager.get_category(parent_id)
+    category.parents.append(parent)
+  except newsgate.moderation.category.CategoryNotFound:
+    pass
+
+ed_word_lists = editable_word_lists(moderator, category, context)
+
+message = None
+error = None
+
+if open_word_list and open_word_list not in ed_word_lists and wl_add:
+  message = "Word list '" + open_word_list + "' can't be edited"
+  error = True
+
+focus_id = open_word_list == "" and "n" or ""
+
+if update:
+
+  locales = {}
+  expressions = {}
+  word_lists = {}
+  parents = el.Sequence()
+  children = el.Sequence()
+
+  for p in request.input.parameters():
+    
+    units = p.name.split("_")
+
+    p1 = units[0]
+
+    try: p2 = units[1]
+    except: continue
+
+    if p1[0:3] == "loc":
+
+      k = int(p2)
+
+      try: loc = locales[k]
+      except:
+        loc = newsgate.moderation.category.LocaleDescriptor()
+        locales[k] = loc
+
+      if p1 == "locl": loc.lang = el.Lang(int(p.value))
+      elif p1 == "locc": loc.country = el.Country(int(p.value))
+      elif p1 == "locn": loc.name = p.value
+      elif p1 == "loct": loc.title = p.value
+      elif p1 == "locs": loc.short_title = p.value
+      elif p1 == "locd": loc.description = p.value
+      elif p1 == "lock": loc.keywords = p.value
+    elif p1[0:3] == "exp":
+
+      k = int(p2)
+
+      try: exp = expressions[k]
+      except:
+        exp = newsgate.moderation.category.ExpressionDescriptor()
+        expressions[k] = exp
+
+      if p1 == "expv": exp.expression = p.value
+      else: exp.description = p.value
+    elif p1[0:3] == "wls":
+
+      k = int(p2)
+
+      try: wl = word_lists[k]
+      except:
+        wl = newsgate.moderation.category.WordListDescriptor()
+        word_lists[k] = wl
+
+      if p1 == "wlsn":
+        wl.name = p.value
+        pos = wl.name.find("}")
+        if pos < 0: pos = wl.name.find(".")
+
+        if pos >= 0:
+          message = "Word List name should not contain " + wl.name[pos] + \
+                   " character"
+          focus_id = ""
+
+          error = newsgate.moderation.category.WordListNameError()
+          error.name = wl.name
+          error.position = pos + 1
+          error.description = message
+
+      elif p1 == "wlsv": wl.words = p.value
+      elif p1 == "wlsr": wl.version = long(p.value)
+      elif p1 == "wlsu": wl.updated = long(p.value) != 0
+      elif p1 == "wlsi": wl.id = p.value
+      else: wl.description = p.value
+    elif p1 == "parn":
+
+      par = newsgate.moderation.category.CategoryDescriptor()
+      par.id = long(p2)
+
+      cpath = newsgate.moderation.category.CategoryPath()
+      cpath.path = p.value
+      par.paths.append(cpath)
+
+      parents.append(par)
+
+    elif p1 == "chln":
+      chl = newsgate.moderation.category.CategoryDescriptor()
+      chl.id = long(p2)
+      chl.name = p.value
+      children.append(chl)
+
+  category.word_lists = el.Sequence()
+
+  for k in word_lists.keys():
+    category.word_lists.append(word_lists[k])
+
+  if cat_manager:
+    category.version = version
+    category.parents = parents
+    category.children = children
+
+    category.locales = el.Sequence()
+
+    for k in locales.keys():
+      category.locales.append(locales[k])
+
+    category.expressions = el.Sequence()
+
+    for k in expressions.keys():
+      category.expressions.append(expressions[k])
+
+    category.name = param("n")
+    category.description = param("d")
+
+    if param("s") == "Enabled":
+      category.status = newsgate.moderation.category.CS_ENABLED
+    else:
+      category.status = newsgate.moderation.category.CS_DISABLED
+
+    if param("r") == "Yes":
+      category.searcheable = newsgate.moderation.category.CR_YES
+    else:
+      category.searcheable = newsgate.moderation.category.CR_NO
+
+    cat_name = category.name
+
+    if cat_name == "":
+      message = "Name should be specified"
+      focus_id = "n"
+      error = True
+    elif cat_name.find("/") >= 0 or cat_name.find("\"") >= 0 or \
+         cat_name.find("'") >= 0 or cat_name.find("?") >= 0:
+      message = "Name should not contain / ' \"? characters"
+      focus_id = "n"
+      error = True
+
+  if error == None:
+
+    exit = None
+    update_type = ""
+
+    try: 
+      if cat_id:
+        try:
+
+          wls = el.Sequence()
+
+          for wl in category.word_lists:
+            if wl.updated:
+              if wl.name in ed_word_lists: wls.append(wl)
+              elif not category_changed:
+                error = True
+                message = "Word List '" + wl.name + "' is not available"
+                break
+
+          if not error:
+
+            if cat_manager and category_changed:
+
+              category = \
+                moderator.category_manager.update_category(category,
+                                                           moderator.id,
+                                                           moderator.name,
+                                                           request.remote_ip())
+
+              update_type = "Category"
+
+            elif wl_changed:            
+
+              if len(wls):
+                category = \
+                  moderator.category_manager.update_word_lists(\
+                    cat_id, 
+                    wls,
+                    cat_manager,
+                    moderator.id,
+                    moderator.name,
+                    request.remote_ip())
+              
+                update_type = "Word Lists for"
+
+              else:
+                category = moderator.category_manager.get_category(cat_id)
+
+            else:
+              category = moderator.category_manager.get_category(cat_id)
+
+            version = category.version
+
+        except newsgate.moderation.category.CategoryNotFound:
+
+          exit = el.psp.Forward("/psp/categories.psp", 
+                                "Category " + str(cat_id) + " Not Found.")
+      else:
+        category.creator_id = moderator.id
+
+        category = \
+          moderator.category_manager.create_category(category, 
+                                                     moderator.id, 
+                                                     moderator.name,
+                                                     request.remote_ip())
+        version = category.version
+        update_type = "Category"
+
+    except newsgate.moderation.category.NoPath, e:
+      error = e.args[0]
+      focus_id = ""
+      message = "Category " + error.name + "/ (id " + str(error.id) + \
+                ") has no path to root"
+
+    except newsgate.moderation.category.Cycle, e:
+      error = e.args[0]
+      focus_id = ""
+      message = "Category " + error.name + "/ (id " + str(error.id) + \
+                ") can't be decendant to itself"
+
+    except newsgate.moderation.category.ForbiddenOperation, e:
+      error = e.args[0]
+      focus_id = ""
+      message = error.description
+
+    except newsgate.moderation.category.VersionMismatch, e:
+      error = e.args[0]
+      focus_id = ""
+      message = "Can't save: " + error.description
+
+    except newsgate.moderation.category.ExpressionParseError, e:
+      error = e.args[0]
+      focus_id = ""
+      message = error.description
+
+    except newsgate.moderation.category.WordListNotFound, e:
+      error = e.args[0]
+      focus_id = ""
+      message = error.description
+
+    except newsgate.moderation.category.ExpressionError, e:
+      error = e.args[0]
+      focus_id = ""
+      message = error.description
+
+    except newsgate.moderation.category.WordListNameError, e:
+      error = e.args[0]
+      focus_id = ""
+      message = error.description
+
+    except newsgate.moderation.category.WordListError, e:
+      error = e.args[0]
+      focus_id = ""
+      message = error.description
+
+    if exit != None: el.exit(exit)  
+  
+  if error == None:
+
+    category_changed = False
+    wl_changed = False
+
+    if update_type:
+      message = update_type + " '" + category.name + "' successfully " + \
+        (cat_id and "updated" or "created")
+    else:
+      message = "No changes to be saved"
+
+    if cat_id == 0:
+      category = newsgate.moderation.category.CategoryDescriptor()
+      category.parents.append(parent)
+
+  # Updated category editable word lists
+  ed_word_lists = editable_word_lists(moderator, category, context)
+
+title = "Management: "
+
+if cat_id: title += "Edit Category " + category.paths[0].path
+else: title += "Create Category"
+
+prn(
+R'''<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>''', title, R'''</title>
+<link rel="stylesheet" type="text/css" href="/fixed/css/common.css" media="all" />
+<link rel="stylesheet" type="text/css" href="/fixed/css/category/update.css" media="all" />
+<link rel="stylesheet" type="text/css" href="/fixed/css/mod_css.css" media="all" />
+<link rel="stylesheet" type="text/css" href="/fixed/css/category/mod_css.css" media="all" />
+<script src="/fixed/js/elements.js" type="text/javascript"></script>
+<script src="/fixed/js/mod_script.js" type="text/javascript"></script>
+<script src="/fixed/js/category/mod_script.js" type="text/javascript"></script>
+<script src="/fixed/js/category/update.js" type="text/javascript"></script>
+<script type="text/javascript">
+
+var word_path = "''', el.string.manip.js_escape(conf("word_path")), R'''";
+search_menu = "''', 
+el.string.manip.js_escape(category_search_menu_param(cat_manager)), R'''";
+
+function init()
+{
+  init_category();
+
+  var focus_id = "''', focus_id, R'''";
+
+  if(focus_id)
+  {
+    document.getElementById(focus_id).focus();
+  }
+
+//  document.onkeydown = keyPressHandler;
+//  document.onmousedown = mousePressHandler;
+  el_attach_event(document, "mousedown", mod_base_mouse_pressed);
+  el_attach_event(document, "keydown", keyPressHandler);
+
+  category_changed("''', category_changed and '1' or '0', R'''");
+  setTimeout('check_versions();', 5000);
+}
+
+function init_category()
+{''')
+
+for exp in category.expressions:
+  prn('\n  add_expression("', 
+      el.string.manip.js_escape(exp.expression), '", "', 
+      el.string.manip.js_escape(exp.description), '", ',
+      wl_editor and 'false' or 'true',
+      ');')
+
+for wl in category.word_lists:
+
+  prn('\n  add_word_list("', 
+      el.string.manip.js_escape(wl.id), '", "',
+      el.string.manip.js_escape(wl.name), '", "',
+      el.string.manip.js_escape(wl.words), '", ', wl.version, ', ',
+      wl.updated and "1" or "0", ', "', 
+      el.string.manip.js_escape(wl.description), '", ',
+      wl_editor and 'false' or 'true', ", ",
+      wl.name in ed_word_lists and 'true' or 'false',
+      ');')
+
+if error == None:
+
+  if open_word_list != "":
+
+    number = 1
+    found = False
+
+    for wl in category.word_lists:
+      if wl.name == open_word_list:
+        prn('\n  update_word_list_dialog(', 
+            number, ', ', wl_editor and 'false' or 'true', 
+            ', ', wl.name in ed_word_lists and 'true' or 'false', 
+            ', undefined, 0, false, { start:', sel_start, ', end:', sel_end,
+            '}, "', el.string.manip.js_escape(wl_add), '", "',
+            el.string.manip.js_escape(param("wl_cs", "")), '", ',
+            (param("wl_save", "") == "1" and "true" or "false"), ');')
+        found = True
+        break
+
+      number += 1
+
+    if found == False:
+      message = "Word List named '" + open_word_list + "' not found"
+      error = True
+
+else:
+
+  error_type = type(error).__name__
+  if error_type == 'instance': error_type = error.__class__.__name__
+
+  if error_type == "ExpressionError" or \
+     error_type == "WordListNotFound" and cat_manager or \
+     error_type == "ExpressionParseError" and error.name == "":
+    prn('\n  update_expression_dialog(', error.number + 1, ', ', 
+        wl_editor and 'false' or 'true', ', "', 
+        error.description, '"', ', ', error.position, ');')
+  elif error_type == "WordListNameError" or error_type == "WordListError" or \
+       error_type == "ExpressionParseError":
+    number = 1
+
+    for wl in category.word_lists:
+      if wl.name == error.name:
+        prn('\n  update_word_list_dialog(', number, ', ',
+            wl_editor and 'false' or 'true', 
+            ', ', wl.name in ed_word_lists and 'true' or 'false', ', "', 
+            error.description, '"', ', ', error.position, ', ', 
+            error_type == "WordListNameError" and 'true' or 'false', 
+            ');')
+        break
+
+      number += 1
+
+for par in category.parents:
+  if len(par.paths):
+    prn('\n  add_category("', el.string.manip.js_escape(par.paths[0].path), 
+        '", ', par.id, ', "par", ', cat_id, ', ',
+      wl_editor and 'false' or 'true', ');')
+
+for ch in category.children:
+  prn('\n  add_category("', el.string.manip.js_escape(ch.name), '", ',
+      ch.id, ', "chl", ', cat_id, ', ',
+      wl_editor and 'false' or 'true', ');')
+
+prn('\n\n  included_messages = new Array();')
+
+for msg in category.included_messages:
+  prn('\n  included_messages.push("', el.string.manip.js_escape(msg), '");')
+
+prn('\n\n  excluded_messages = new Array();')
+
+for msg in category.excluded_messages:
+  prn('\n  excluded_messages.push("', el.string.manip.js_escape(msg), '");')
+
+prn('\n\n  languages = new Array();')
+
+prn('\n  languages.push( { id:0, name:"-Any-" } );')
+
+for l in el.Lang.all:
+  prn('\n  languages.push( { id:', l.el_code(), ', name:"',
+      el.string.manip.js_escape(l.name()), '" } );')
+
+prn('\n\n  countries = new Array();')
+
+prn('\n  countries.push( { id:0, name:"-Any-" } );')
+
+for c in el.Country.all:
+  prn('\n  countries.push( { id:', c.el_code(), ', name:"',
+      el.string.manip.js_escape(c.name()), '" } );')
+
+for loc in category.locales:
+  prn('\n\n  add_locale(', loc.lang.el_code(), ', ', 
+      loc.country.el_code(), ', "', el.string.manip.js_escape(loc.name), 
+      '", "', el.string.manip.js_escape(loc.title), 
+      '", "', el.string.manip.js_escape(loc.short_title), 
+      '", "', el.string.manip.js_escape(loc.description), 
+      '", "', el.string.manip.js_escape(loc.keywords), 
+      '", ', wl_editor and 'false' or 'true', ');')
+
+prn(
+R'''
+  languages.sort(name_cmp);
+  countries.sort(name_cmp);
+}
+''')
+
+prn(
+R'''
+</script>
+</head>
+
+<body onload='init();'>
+<form id="post" style="display:none;" method="post" target="_blank"></form>
+<table id="skeleton" cellspacing="0">
+''')
+
+menus = []
+create_topbar_main_menus(context, moderator, "Categories", menus)
+
+left_menu = [ ("View", 
+               "view?c=" + (cat_id and str(cat_id) or str(parent_id)))
+            ]
+
+if cat_id: 
+  left_menu.append(("Edit", ""))
+
+  if cat_manager:
+    left_menu.append(("New", "update?p=" + str(parent_id)))
+
+  lang = el.Lang.null
+
+  try:
+    lang = el.Lang(\
+      el.NameValueMap(\
+        request.input.cookies().most_specific("pf"), ':', '-')["n"])
+  except:
+    pass
+
+  rec_menu = "Recommend"
+  if lang != el.Lang.null: rec_menu += " (" + lang.l3_code() + ")"
+
+  left_menu.append((rec_menu, "recommend?c=" + str(cat_id)))
+
+else:
+  left_menu.append(("New", ""))
+
+left_menu.append(("Search", 
+                  category_search_link(cat_manager, 
+                                       cat_id and category.paths[0].path or \
+                                         None)))
+
+prn(create_topbar(left_menu,
+                  menus[0], 
+                  menus[1]))
+
+xml_encode_flags = el.string.manip.XE_TEXT_ENCODING | \
+                   el.string.manip.XE_ATTRIBUTE_ENCODING | \
+                   el.string.manip.XE_PRESERVE_UTF8
+
+readonly_attr = wl_editor and ' readonly="readonly"' or ''
+disabled_attr = wl_editor and ' disabled="disabled"' or ''
+
+prn(R'''
+  <tr><td id="main_area" align="center" valign="top">
+
+  <form action="update" method="post" id="edit_form_el">
+    <table id="edit_form" cellspacing="0">
+    <tr><td class="option_label">Name:</td><td><input type="text" name="n" id="n" value="''',
+    el.string.manip.xml_encode(category.name, xml_encode_flags), 
+    R'''" onchange="category_changed('1')"''',
+    readonly_attr, R'''/></td></tr>
+   <tr><td class="option_label">Status:</td><td><select id="s" name="s" onchange="category_changed('1')"''',
+    disabled_attr, R'''>
+      <option''',
+str(category.status == newsgate.moderation.category.CS_ENABLED and ' selected="selected"' or ' '),
+R'''>Enabled</option>
+      <option''',
+str(category.status == newsgate.moderation.category.CS_DISABLED and ' selected="selected"' or ' '),
+R'''>Disabled</option></select>
+    </td></tr>
+    <tr><td class="option_label">Searcheable:</td><td><select id="r" name="r" onchange="category_changed('1')"''',
+    disabled_attr, R'''>
+      <option''',
+str(category.searcheable == newsgate.moderation.category.CR_YES and ' selected="selected"' or ' '),
+R'''>Yes</option>
+      <option''',
+str(category.searcheable == newsgate.moderation.category.CR_NO and ' selected="selected"' or ' '),
+R'''>No</option></select>
+    </td></tr>
+    <tr><td colspan="2" class="''', 
+    str(error == None and "success" or "error"),
+    '">')
+
+if message != None:
+  prn(el.string.manip.xml_encode(message, xml_encode_flags))
+
+if error != None and cat_id:
+  prn('; <a href="/psp/category/update?c=', cat_id, '&p=', parent_id,
+      '">reload&nbsp;category</a>')
+    
+prn(R'''</td></tr>
+    <tr><td colspan="2" class="error" id="version_check"></td></tr>
+    <tr><td class="option_label">Word Lists:</td>
+        <td>''', 
+    wl_editor == False and \
+    '<a id="add_word_list_link" href="javascript:update_word_list_dialog(0, true, true);">add</a>' \
+    or '',
+R'''    <span id="uwlp_0"></span>
+    <table class="option_group" id="word_lists"></table>
+    </td></tr>
+    <tr><td class="option_label">Expressions:</td>
+        <td>''', 
+    wl_editor == False and \
+'<a id="add_expression_link" href="javascript:update_expression_dialog(0, true);">add</a>&nbsp;&nbsp;' or '',
+R'''       search: <a href="javascript:search_category_expression(0);">exact</a>
+        <a href="javascript:search_category_expression(1);">broadened</a>
+        <a href="javascript:search_category_expression(-1);">relevant</a>
+    <span id="uep_0"></span>
+    <table class="option_group" id="expressions"></table>
+    </td></tr>
+    <tr><td class="option_label">Parents:</td><td>''')
+
+#        <a href="javascript:search_category_expression(-2);">irrelevant</a>
+
+
+if wl_editor == False:
+  prn(R'''<a href="javascript:select_category_dialog(0, 'par', ''', cat_id, R''', 'parp_0', true, false, 'category_selected');">add</a>''')
+
+prn(R'''
+    <span id="parp_0"></span>
+    <table class="option_group" id="par_table"></table>
+    </td></tr>
+    <tr><td class="option_label">Children:</td><td>''')
+
+if wl_editor == False:
+  prn(R'''<a href="javascript:select_category_dialog(0, 'chl', ''', cat_id, R''', 'chlp_0', true, false, 'category_selected');">add</a>''')
+
+prn(R'''
+    <span id="chlp_0"></span>
+    <table class="option_group" id="chl_table"></table>
+    </td></tr>
+    <tr><td class="option_label">Locales:</td>
+        <td>''')
+
+if wl_editor == False:
+  prn(R'''<a id="add_locale_link" href="javascript:update_locale_dialog(0);">add</a>''')
+
+prn(R'''
+    <span id="ulp_0"></span>
+    <table class="option_group" id="locales"></table>
+    </td></tr>
+    <tr><td class="option_label">Description:</td><td><textarea name="d" id="d" rows="5" onchange="category_changed('1')"''',
+
+    readonly_attr, '>',
+    el.string.manip.xml_encode(category.description, xml_encode_flags), R'''</textarea></td></tr>
+    <tr><td colspan="2">''')
+
+if cat_manager or len(ed_word_lists):
+  prn('<input type="submit" value="', cat_id and "Update" or "Create",
+      '" name="u" id="u" onclick="last_key_press = new Date();"/>')
+
+prn('</td></tr>')
+
+prn(R'''
+    </table>''')
+
+if cat_id:
+  prn('\n    <input type="hidden" value="', str(cat_id), '" name="c" id="c"/>')
+
+prn(R'''
+    <input type="hidden" value="''', str(parent_id), R'''" name="p" id="p"/>
+    <input type="hidden" value="''', version, R'''" name="v" id="v"/>
+    <input type="hidden" value="''', category_changed and '1' or '0', 
+    R'''" name="ch" id="ch"/>
+    <input type="hidden" value="''', wl_changed and '1' or '0', 
+    R'''" name="wh" id="wh"/>
+  </form>
+  </td></tr>
+''')
+
+prn(create_copyright(context), R'''
+</table>
+</body>
+</html>
+''')

@@ -1,0 +1,134 @@
+from moderation_func import *
+
+def prn_category(category, ident):
+  ident_str = "".ljust(ident * 4, " ")
+
+  prn("\n", ident_str, "<category>\n  ", ident_str, "<id>", category.id, 
+      "</id>\n  ", ident_str, "<name>", 
+      el.string.manip.xml_encode(category.name), "</name>\n  ", ident_str, 
+      "<status>",
+      category.status == newsgate.moderation.category.CS_ENABLED and "E" or "D",
+      "</status>\n  ", ident_str, "<searcheable>",
+      category.searcheable == newsgate.moderation.category.CR_YES and "Y" or "N",
+      "</searcheable>")
+
+  prn("\n  ", ident_str, "<expressions>")
+
+  for exp in category.expressions:
+    prn("\n    ", ident_str, "<expression>\n      ", ident_str, 
+        "<expression>")
+
+    if expressions: prn("<![CDATA[", exp.expression, "]]>")
+
+    prn("</expression>\n      ", ident_str, "<description><![CDATA[",
+        exp.description, "]]></description>\n    ", 
+        ident_str, "</expression>")
+
+  prn("\n  ", ident_str, "</expressions>")
+
+  prn("\n  ", ident_str, "<word_lists>")
+
+  ed_word_lists = editable_word_lists(moderator, category, context)
+
+  word_lst = []
+  for wl in category.word_lists:
+    if wl.name in ed_word_lists: word_lst.insert(0, wl)
+
+  for wl in word_lst:
+    prn("\n    ", ident_str, "<word_list>\n      ", ident_str, 
+        "<name><![CDATA[", wl.name, "]]></name>\n      ", ident_str, "<words>")
+    
+    if word_lists: prn("<![CDATA[", wl.words, "]]>")
+    
+    prn("</words>\n      ", ident_str, "<description><![CDATA[",
+        wl.description, "]]></description>\n    ", 
+        ident_str, "</word_list>")
+
+  prn("\n  ", ident_str, "</word_lists>")
+
+
+  wl = newsgate.moderation.category.WordListDescriptor()
+  wl.name = ".MSG"
+
+  category.word_lists = el.Sequence()
+  category.word_lists.append(wl)
+
+  ed_word_lists = editable_word_lists(moderator, category, context)
+
+  prn("\n  ", ident_str, "<ed_msg>", 
+      (advertiser or wl.name in ed_word_lists) and "1" or "0",
+      "</ed_msg>")
+
+  prn("\n  ", ident_str, "<parents>")
+
+  for parent in category.parents:
+    prn_category(parent, ident + 1)
+
+  prn("\n  ", ident_str, "</parents>\n  ", ident_str, "<children>")
+
+  for child in category.children:
+    prn_category(child, ident + 1)
+
+  prn("\n  ", ident_str, "</children>\n  ", ident_str, 
+      "<description><![CDATA[", category.description, 
+      "]]></description>\n  ", ident_str, "<creator>\n    ", ident_str, "<id>",
+      category.creator_id, "</id>\n  ", ident_str, "</creator>\n  ", 
+      ident_str, "<paths>")
+
+  for path in category.paths:
+    prn("\n    ", ident_str, "<path>\n      ", ident_str, "<path>", 
+        el.string.manip.xml_encode(path.path), "</path>\n      ", ident_str, 
+        "<elems>")
+
+    for elem in path.elems:
+      prn("\n        ", ident_str, "<elem>\n          ", ident_str, "<id>",
+          elem.id, "</id>\n          ", ident_str, "<name>",
+          el.string.manip.xml_encode(elem.name), "</name>\n        ",
+          ident_str, "</elem>")
+    
+    prn("\n      ", ident_str, "</elems>\n    ", ident_str, "</path>")
+  
+  prn("\n  ", ident_str, "</paths>")
+
+  prn("\n", ident_str, "</category>")
+
+request = context.request
+prn, param = request.output.stream.prn, request.input.parameters().find
+
+error = None
+
+try:
+  moderator = moderator_connector.connect(request, False)
+except: 
+  el.exit(403) # Forbidden
+  
+cat_manager = \
+  moderator.has_privilege(newsgate.moderation.moderator.PV_CATEGORY_MANAGER)
+
+advertiser = \
+  moderator.has_privilege(newsgate.moderation.moderator.PV_ADVERTISER)
+
+wl_editor = cat_manager == False and \
+  moderator.has_privilege(\
+    newsgate.moderation.moderator.PV_CATEGORY_EDITOR)
+
+if not cat_manager and not wl_editor and not advertiser:
+  el.exit(403) # Forbidden
+
+cat_ids = param("c", "1")
+expressions = int(param("e", "0")) != 0
+word_lists = int(param("w", "0")) != 0
+
+request.output.send_header("Cache-Control", "no-cache, must-revalidate")
+
+prn('<?xml version="1.0" encoding="UTF-8"?>\n<result>')
+
+for cat_id in cat_ids.split():
+
+  try:
+    category = moderator.category_manager.get_category(long(cat_id))
+    prn_category(category, 0)
+  except newsgate.moderation.category.CategoryNotFound:
+    pass
+
+prn("\n</result>")

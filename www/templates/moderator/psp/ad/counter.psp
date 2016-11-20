@@ -1,0 +1,166 @@
+from moderation_func import *
+
+request, conf = context.request, context.config.get
+message = context.forward_params
+prn, param = request.output.stream.prn, request.input.parameters().find
+
+moderator = connect_moderator(request, moderator_connector)
+advertiser_id = moderator.advertiser_id
+
+ad_manager = \
+  moderator.has_privilege(newsgate.moderation.moderator.PV_AD_MANAGER)
+
+if not advertiser_id:
+  el.exit(403) # Forbidden
+
+id = long(param("id", 0))
+cl = long(param("cl", 0))
+error = ""
+
+if param("u"):
+
+  cr = newsgate.moderation.ad.Counter()
+  cr.id = id
+  cr.advertiser = advertiser_id
+
+  try:
+    cr.name = param("cn").strip()
+  except:
+    error = "Name can't be empty"
+
+  cr.text = param("tx").strip()
+  status = param("cs")
+
+  if status == "E": cr.status = newsgate.moderation.ad.US_ENABLED
+  elif status == "D": cr.status = newsgate.moderation.ad.US_DISABLED
+  else: cr.status = newsgate.moderation.ad.US_DELETED
+
+  if not error:
+
+    if id:
+      update = newsgate.moderation.ad.CounterUpdate()
+
+      update.id = id
+      update.advertiser = advertiser_id
+      update.status = cr.status
+      update.name = cr.name
+      update.text = cr.text
+
+      try:
+        cr = moderator.ad_manager.update_counter(update)
+      except newsgate.moderation.ad.ObjectNotFound:
+        error = "Advert or Ad Size not found"
+      except newsgate.moderation.ad.ObjectAlreadyExist:
+        error = "Such advert name is already used"
+
+    else:
+
+      try:
+        cr = moderator.ad_manager.create_counter(cr)
+        id = cr.id
+      except newsgate.moderation.ad.ObjectAlreadyExist:
+        error = "Such advert name is already used"
+
+elif id:
+    cr = moderator.ad_manager.get_counter(id, advertiser_id)
+
+elif cl:
+    cr = moderator.ad_manager.get_counter(cl, advertiser_id)
+    cr.id = 0
+    cr.name = cr.name + " (clone)"
+    cr.placements = el.Sequence()
+else:
+    cr = newsgate.moderation.ad.Counter()
+    cr.advertiser = advertiser_id
+
+prn(
+R'''<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>Management: ''', el.string.manip.xml_encode(cr.name), 
+R''' Counter</title>
+<link rel="stylesheet" type="text/css" href="/fixed/css/common.css" media="all" />
+<link rel="stylesheet" type="text/css" href="/fixed/css/ad/counter.css" media="all" />
+</head>
+<body>
+<table id="skeleton" cellspacing="0">
+''')
+
+menus = []
+create_topbar_main_menus(context, moderator, "Ad", menus)
+
+prn(create_topbar(create_ad_menus(moderator, 
+                                  cr.id and "Counter" or "New Counter", id), 
+                  menus[0], 
+                  menus[1]))
+
+prn(R'''
+  <tr><td id="main_area" valign="top" align="center">
+    <form id="form" method="post" action="counter">
+    <table id="counter">''')
+
+if error:
+  prn('\n    <tr><td colspan="2" class="error">', 
+      el.string.manip.xml_encode(error), '</td></tr>')
+
+prn(R'''
+    <tr class="option_row"><td>Name</td><td>
+      <input type="text" value="''', el.string.manip.xml_encode(cr.name),
+    R'''" name="cn" id="cn" class="text_option"></td></tr>
+    <tr class="option_row"><td>Status</td><td><select name="cs">''')
+
+statuses = [ (newsgate.moderation.ad.US_ENABLED, "Enabled", "E"), 
+             (newsgate.moderation.ad.US_DISABLED, "Disabled", "D"),
+             (newsgate.moderation.ad.US_DELETED, "Deleted", "L")
+           ]
+
+for s in statuses:
+  prn('<option', cr.status == s[0] and ' selected="selected"' or '', 
+      ' value="', s[2], '">', s[1], '</option>')
+
+prn(R'''</select></td></tr>
+    <tr class="option_row"><td colspan="2">
+    <textarea rows="5" id="tx" name="tx">''', 
+    el.string.manip.xml_encode(cr.text),
+    R'''</textarea>
+    <tr><td colspan="2">
+      <input type="submit" name="u" value="''', id and "Update" or "Create", 
+    R'''"/>
+    </td></tr>
+    </table>''')
+
+prn(R'''
+    <table id="plc">
+    <tr align="center" id="header"><td>Placement Name</td><td>Status</td>
+    <td>Display</td>
+    </tr>
+''')
+
+for plc in cr.placements:
+
+  if not moderator.show_deleted and \
+     plc.status == newsgate.moderation.ad.OS_DELETED:
+    continue
+
+  prn('\n    <tr class="option_row"><td>\
+<a href="/psp/ad/counter_placement?id=',
+      plc.id, '" target="_blank">', el.string.manip.xml_encode(plc.name), 
+      '</a></td><td>')
+
+  for s in statuses:
+    if s[0] == plc.status:
+      prn(s[1])
+      break
+
+  prn('</td><td>', plc.display_status and 'Inactive' or 'Active', '</td></tr>')
+
+prn(R'''
+    </table>
+  <input type="hidden" name="id" value="''', cr.id, R'''">
+  </form>
+  </td></tr>
+''', create_copyright(context), R'''
+</table>
+</body>
+</html>
+''')

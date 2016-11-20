@@ -1,0 +1,4489 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+            targetNamespace="http://www.newsgate.com/Server/Config" 
+            xmlns="http://www.newsgate.com/Server/Config" 
+            elementFormDefault="qualified" 
+            xml:lang="en" 
+            version="1.0">
+  
+  <xsd:annotation>
+    <xsd:documentation>NewsGate Server Configuration File XML Schema</xsd:documentation>
+  </xsd:annotation>
+
+  <xsd:element name="config" type="ConfigType"/>
+
+  <xsd:complexType name="ConfigType">
+    <xsd:annotation>
+      <xsd:documentation>Element that contains runtime parameters for NewsGate 
+                         Services.</xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:all>
+      <xsd:element name="rss_feed" type="RSSFeedType"/>
+      <xsd:element name="message_service" type="MessageServiceType"/>
+      <xsd:element name="event_service" type="EventServiceType"/>
+      <xsd:element name="dictionary" type="DictionaryType"/>
+      <xsd:element name="segmentation" type="SegmentationType"/>
+      <xsd:element name="statistics" type="StatisticsType"/>
+      <xsd:element name="mailing" type="MailingType"/>
+      <xsd:element name="fraud_prevention" type="FraudPreventionType"/>
+      <xsd:element name="ad" type="AdType"/>
+      <xsd:element name="moderation" type="ModerationType"/>
+    </xsd:all>
+  </xsd:complexType> 
+  <!-- end of ConfigType -->
+
+  <xsd:complexType name="RSSFeedType">
+    <xsd:annotation>
+      <xsd:documentation>Element that contains parameters for RSS Feed related 
+                         services.</xsd:documentation>
+    </xsd:annotation>
+      
+    <xsd:all>
+      <xsd:element name="puller" type="RSSFeedPullerType"/>
+      <xsd:element name="puller_manager" type="RSSFeedPullerManagerType"/>
+    </xsd:all>
+
+  </xsd:complexType>
+  <!-- end of RSSFeedType -->
+
+  <xsd:complexType name="MessageServiceType">
+    <xsd:annotation>
+      <xsd:documentation>Element that contains parameters for message 
+                         related services.</xsd:documentation>
+    </xsd:annotation>
+      
+    <xsd:all>
+      <xsd:element name="bank" type="MessageBankType"/>
+      <xsd:element name="bank_manager" type="MessageBankManagerType"/>
+    </xsd:all>
+
+  </xsd:complexType>
+  <!-- end of MessageServiceType -->
+
+  <xsd:complexType name="StatisticsType">
+    <xsd:annotation>
+      <xsd:documentation>Element that contains parameters for statistics 
+                         related services.</xsd:documentation>
+    </xsd:annotation>
+      
+    <xsd:all>
+      <xsd:element name="stat_processor" type="StatProcessorType"/>
+    </xsd:all>
+
+  </xsd:complexType>
+  <!-- end of StatisticsType -->
+
+  <xsd:complexType name="MailingType">
+    <xsd:annotation>
+      <xsd:documentation>Element that contains parameters for mailing 
+                         related services.</xsd:documentation>
+    </xsd:annotation>
+      
+    <xsd:all>
+      <xsd:element name="search_mailer" type="SearchMailerType"/>
+    </xsd:all>
+
+  </xsd:complexType>
+  <!-- end of MailingType -->
+
+  <xsd:complexType name="FraudPreventionType">
+    <xsd:annotation>
+      <xsd:documentation>Element that contains parameters for fraud prevention 
+                         related services.</xsd:documentation>
+    </xsd:annotation>
+      
+    <xsd:all>
+      <xsd:element name="limit_checker" type="LimitCheckerType"/>
+    </xsd:all>
+
+  </xsd:complexType>
+  <!-- end of StatisticsType -->
+
+  <xsd:complexType name="AdType">
+    <xsd:annotation>
+      <xsd:documentation>Element that contains parameters for ad
+                         related services.</xsd:documentation>
+    </xsd:annotation>
+      
+    <xsd:all>
+      <xsd:element name="ad_server" type="AdServerType"/>
+    </xsd:all>
+
+  </xsd:complexType>
+  <!-- end of AdType -->
+
+  <xsd:complexType name="EventServiceType">
+    <xsd:annotation>
+      <xsd:documentation>Element that contains parameters for event 
+                         related services.</xsd:documentation>
+    </xsd:annotation>
+      
+    <xsd:all>
+      <xsd:element name="bank" type="EventBankType"/>
+      <xsd:element name="bank_manager" type="EventBankManagerType"/>
+    </xsd:all>
+
+  </xsd:complexType>
+  <!-- end of EventServiceType -->
+
+  <xsd:complexType name="DictionaryType">
+    <xsd:annotation>
+      <xsd:documentation>Element that contains parameters for dictionary 
+                         related services.</xsd:documentation>
+    </xsd:annotation>
+      
+    <xsd:all>
+      <xsd:element name="word_manager" type="WordManagerType"/>
+    </xsd:all>
+
+  </xsd:complexType>
+  <!-- end of DictionaryType -->
+
+  <xsd:complexType name="SegmentationType">
+    <xsd:annotation>
+      <xsd:documentation>Element that contains parameters for segmentation 
+                         related services.</xsd:documentation>
+    </xsd:annotation>
+      
+    <xsd:all>
+      <xsd:element name="segmentor" type="SegmentorType"/>
+    </xsd:all>
+
+  </xsd:complexType>
+  <!-- end of DictionaryType -->
+
+  <xsd:complexType name="ModerationType">
+    <xsd:annotation>
+      <xsd:documentation>Element that contains parameters for message 
+                         services related services.</xsd:documentation>
+    </xsd:annotation>
+      
+    <xsd:all>
+      <xsd:element name="moderator_manager" type="ModeratorManagerType"/>
+      <xsd:element name="customer_manager" type="CustomerManagerType"/>
+      <xsd:element name="ad_manager" type="AdManagerType"/>
+      <xsd:element name="feed_manager" type="FeedManagerType"/>
+      <xsd:element name="category_manager" type="CategoryManagerType"/>
+    </xsd:all>
+
+  </xsd:complexType>
+  <!-- end of ModerationType -->
+
+  <xsd:complexType name="WordManagerType">      
+    <xsd:annotation>
+      <xsd:documentation>Element that contains parameters for 
+                         Word Manager.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:all>
+
+      <xsd:element name="logger" type="LoggerType">
+        <xsd:annotation>
+          <xsd:documentation>Element that specifies logger options.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+
+      <xsd:element name="dictionaries" type="WordManagerDictionariesType">
+        <xsd:annotation>
+          <xsd:documentation>Element that specifies dictionary set.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+
+    </xsd:all>
+
+    <xsd:attribute name="default_lang_validation_level" type="xsd:nonNegativeInteger" use="required">
+      <xsd:annotation>
+        <xsd:documentation>Specifies which percentage of message words is 
+                           sufficiant to confirm default message language 
+                           while using known words only.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="guessing_default_lang_validation_level" type="xsd:nonNegativeInteger" use="required">
+      <xsd:annotation>
+        <xsd:documentation>Specifies which percentage of message words is 
+                           sufficiant to confirm default message language 
+                           while words language guessing.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="lang_validation_level" type="xsd:nonNegativeInteger" use="required">
+      <xsd:annotation>
+        <xsd:documentation>Specifies which percentage of message words should 
+                           belong to specific language to set that language 
+                           for a message.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+  </xsd:complexType>
+  <!-- end of WordManagerType -->
+
+  <xsd:complexType name="SegmentorType">      
+    <xsd:annotation>
+      <xsd:documentation>Element that contains parameters for Segmentor.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:all>
+
+      <xsd:element name="logger" type="LoggerType">
+        <xsd:annotation>
+          <xsd:documentation>Element that specifies logger options.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+
+      <xsd:element name="implementations" type="SegmentorImplementationsType">
+        <xsd:annotation>
+          <xsd:documentation>Element that specifies segmentor implementation 
+                             set.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+
+    </xsd:all>
+
+  </xsd:complexType>
+  <!-- end of SegmentorType -->
+
+  <xsd:complexType name="WordManagerDictionariesType">      
+    <xsd:annotation>
+      <xsd:documentation>Element that contains sequence of ditionaries for 
+                         Word Manager.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:sequence>
+      <xsd:element name="dict" minOccurs="0" maxOccurs="unbounded">
+      <xsd:complexType>
+        <xsd:annotation>
+          <xsd:documentation>Contains information regarding word 
+                             manager language dictionary.
+          </xsd:documentation>
+        </xsd:annotation>
+
+        <xsd:attribute name="filename" type="xsd:string" use="required">
+          <xsd:annotation>
+            <xsd:documentation>Specifies dictionary filename.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+      </xsd:complexType>
+      </xsd:element>
+      <!-- end of WordManagerDictionariesType::word_manager::dict -->
+
+    </xsd:sequence>
+
+  </xsd:complexType>
+  <!-- end of WordManagerDictionariesType -->
+
+  <xsd:complexType name="SegmentorImplementationsType">      
+    <xsd:annotation>
+      <xsd:documentation>Element that contains sequence of segmentor 
+                         implementation factories for Segmentor.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:sequence>
+      <xsd:element name="factory" minOccurs="0" maxOccurs="unbounded">
+      <xsd:complexType>
+        <xsd:annotation>
+          <xsd:documentation>Contains information regarding segmentor factory.
+          </xsd:documentation>
+        </xsd:annotation>
+
+        <xsd:attribute name="filename" type="xsd:string" use="required">
+          <xsd:annotation>
+            <xsd:documentation>Specifies segmentor factory shared library 
+                               file name.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="create_func_name" type="xsd:string" use="required">
+          <xsd:annotation>
+            <xsd:documentation>Specifies segmentor factory function name.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="create_func_args" type="xsd:string" use="required">
+          <xsd:annotation>
+            <xsd:documentation>Specifies segmentor factory function arguments.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+      </xsd:complexType>
+      </xsd:element>
+      <!-- end of SegmentorImplementationsType::factory -->
+
+    </xsd:sequence>
+
+  </xsd:complexType>
+  <!-- end of SegmentorImplementationsType -->
+
+  <xsd:complexType name="MessageManagementType">
+
+    <xsd:annotation>
+      <xsd:documentation>Element that contains message management options.</xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:all>
+
+      <xsd:element name="data_base" type="DataBaseType">
+        <xsd:annotation>
+          <xsd:documentation>Element that specifies data base connection 
+                             options.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+
+      <xsd:element name="filter" type="MessageFilterType" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation>Element that specifies message filter 
+                             distribution options.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+
+      <xsd:element name="categories" type="MessageCategoriesType" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation>Element that specifies message categories 
+                             distribution options.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+
+    </xsd:all>
+
+  </xsd:complexType>
+  <!-- end of MessageManagementType -->
+
+  <xsd:complexType name="MessageFilterType">
+
+    <xsd:annotation>
+      <xsd:documentation>Element that contains message filter 
+                         distribution options.</xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:attribute name="check_period" type="xsd:positiveInteger" use="required">
+      <xsd:annotation>
+        <xsd:documentation>Sets check message fetch filter period, in seconds.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="resend_period" type="xsd:positiveInteger" use="required">
+      <xsd:annotation>
+        <xsd:documentation>Sets period of resending message fetch 
+                           filter to interested parties, in seconds.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="disabled_feeds_timeout" type="xsd:positiveInteger" use="required">
+      <xsd:annotation>
+        <xsd:documentation>Sets timeout after which disabled feed 
+                           information will not be included into filter.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="deleted_messages_timeout" type="xsd:positiveInteger" use="required">
+      <xsd:annotation>
+        <xsd:documentation>Sets timeout after which deleted message ids
+                           will not be included into filter.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+  </xsd:complexType>
+  <!-- end of MessageFilterType -->
+
+  <xsd:complexType name="MessageCategoriesType">
+
+    <xsd:annotation>
+      <xsd:documentation>Element that contains message categories 
+                         distribution options.</xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:attribute name="check_period" type="xsd:positiveInteger" use="required">
+      <xsd:annotation>
+        <xsd:documentation>Sets check message categories period, in seconds.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="resend_period" type="xsd:positiveInteger" use="required">
+      <xsd:annotation>
+        <xsd:documentation>Sets period of resending message category 
+                           definitions to message banks, in seconds.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+  </xsd:complexType>
+  <!-- end of MessageCategoriesType -->
+
+  <xsd:complexType name="StatProcessorType">      
+    <xsd:annotation>
+      <xsd:documentation>Element that contains parameters for 
+                         Statistics Processor.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:all>
+
+      <xsd:element name="logger" type="LoggerType">
+        <xsd:annotation>
+          <xsd:documentation>Element that specifies logger options.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+
+      <xsd:element name="data_base" type="DataBaseType">
+        <xsd:annotation>
+          <xsd:documentation>Element that specifies data base connection 
+                             options.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+
+      <xsd:element name="dbm" minOccurs="0" maxOccurs="1">
+      <xsd:complexType>
+        <xsd:annotation>
+          <xsd:documentation>Element that specifies data base manager
+                             options.
+          </xsd:documentation>
+        </xsd:annotation>
+
+        <xsd:attribute name="dir" type="xsd:string" use="required">
+          <xsd:annotation>
+            <xsd:documentation>Specifies directory for DBM files.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+      </xsd:complexType>
+      </xsd:element>
+      <!-- end of StatProcessorType::dbm -->
+
+      <xsd:element name="push_stat" minOccurs="0" maxOccurs="1">
+      <xsd:complexType>
+        <xsd:annotation>
+          <xsd:documentation>Element that specifies which statistics and 
+                             how often should be pushed out.
+          </xsd:documentation>
+        </xsd:annotation>
+
+        <xsd:attribute name="feed_stat_sink_ref" type="xsd:string" use="required">
+          <xsd:annotation>
+            <xsd:documentation>Specifies feed stat sink reference.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="period" 
+                       type="xsd:nonNegativeInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets number of days raw statistics will be kept.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+      </xsd:complexType>
+      </xsd:element>
+      <!-- end of StatProcessorType::feed_stat_sink_ref -->
+
+    </xsd:all>
+
+    <xsd:attribute name="cache_file" type="xsd:string" use="required">
+      <xsd:annotation>
+        <xsd:documentation>Sets statistics processor cache file name.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="raw_stat_keep_days" 
+                   type="xsd:nonNegativeInteger" 
+                   use="required">
+      <xsd:annotation>
+        <xsd:documentation>Sets number of days raw statistics will be kept.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="save_records_at_once" 
+                   type="xsd:positiveInteger" 
+                   use="required">
+      <xsd:annotation>
+        <xsd:documentation>Recomends number of raw stat DB records to be 
+                           inserted at once.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="threads" 
+                   type="xsd:positiveInteger" 
+                   use="required">
+      <xsd:annotation>
+        <xsd:documentation>Number of threads to be used for stat processing.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="bank_manager" type="xsd:string" use="required">
+      <xsd:annotation>
+        <xsd:documentation>Bank manager CORBA-reference to be used for 
+                           statistics related requests.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+  </xsd:complexType>
+  <!-- end of StatProcessorType -->
+
+  <xsd:complexType name="SearchMailerType">      
+    <xsd:annotation>
+      <xsd:documentation>Element that contains parameters for 
+                         Search Mailer.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:all>
+
+      <xsd:element name="logger" type="LoggerType">
+        <xsd:annotation>
+          <xsd:documentation>Element that specifies logger options.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+
+      <xsd:element name="data_base" type="DataBaseType">
+        <xsd:annotation>
+          <xsd:documentation>Element that specifies data base connection 
+                             options.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+
+      <xsd:element name="smtp" minOccurs="1" maxOccurs="1">
+      <xsd:complexType>
+        <xsd:annotation>
+          <xsd:documentation>Element that specifies SMTP server
+          connection attributes.
+          </xsd:documentation>
+        </xsd:annotation>
+
+        <xsd:attribute name="host" type="xsd:string" use="required">
+          <xsd:annotation>
+            <xsd:documentation>Specifies SMTP server host.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="port" 
+                       type="xsd:positiveInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Specifies SMTP server port.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="timeout" 
+                       type="xsd:nonNegativeInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Specifies SMTP server timeout.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+      </xsd:complexType>
+      </xsd:element>
+      <!-- end of SearchMailerType::smtp -->
+
+      <xsd:element name="recipient_blacklist" type="xsd:string">
+        <xsd:annotation>
+          <xsd:documentation>Contain space-separated list of email 
+                             recipients to be skipped.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>    
+
+      <xsd:element name="search">
+      <xsd:complexType>
+
+        <xsd:annotation>
+          <xsd:documentation>Element describing search policy.</xsd:documentation>
+        </xsd:annotation>
+
+        <xsd:all>
+
+          <xsd:element name="sorting">
+          <xsd:complexType>
+
+            <xsd:annotation>
+              <xsd:documentation>Sorting policy.</xsd:documentation>
+            </xsd:annotation>
+
+            <xsd:attribute name="message_max_age" 
+                           type="xsd:nonNegativeInteger" 
+                           use="required">
+              <xsd:annotation>
+                <xsd:documentation>Message max age.</xsd:documentation>
+              </xsd:annotation>
+            </xsd:attribute>
+
+            <xsd:attribute name="max_core_words" 
+                           type="xsd:nonNegativeInteger" 
+                           use="required">
+              <xsd:annotation>
+                <xsd:documentation>Max core words count.</xsd:documentation>
+              </xsd:annotation>
+            </xsd:attribute>
+
+            <xsd:attribute name="impression_respected_level" 
+                           type="xsd:nonNegativeInteger" 
+                           use="required">
+              <xsd:annotation>
+                <xsd:documentation>Impression respected level.</xsd:documentation>
+              </xsd:annotation>
+            </xsd:attribute>
+
+          </xsd:complexType>
+          </xsd:element>
+          <!-- end of SearchMailerType::search::sorting -->
+
+          <xsd:element name="supress_cw">
+          <xsd:complexType>
+
+            <xsd:annotation>
+              <xsd:documentation>Core words supression policy.</xsd:documentation>
+            </xsd:annotation>
+
+            <xsd:attribute name="min_count" 
+                           type="xsd:nonNegativeInteger" 
+                           use="required">
+              <xsd:annotation>
+                <xsd:documentation>Min number of cw to apply suppression.</xsd:documentation>
+              </xsd:annotation>
+            </xsd:attribute>
+
+            <xsd:attribute name="intersection" 
+                           type="xsd:nonNegativeInteger" 
+                           use="required">
+              <xsd:annotation>
+                <xsd:documentation>Cw min intersection to apply suppression.</xsd:documentation>
+              </xsd:annotation>
+            </xsd:attribute>
+
+            <xsd:attribute name="containment_level" 
+                           type="xsd:nonNegativeInteger" 
+                           use="required">
+              <xsd:annotation>
+                <xsd:documentation>Cw min containment to apply suppression.</xsd:documentation>
+              </xsd:annotation>
+            </xsd:attribute>
+
+          </xsd:complexType>
+          </xsd:element>
+          <!-- end of SearchMailerType::search::supress_cw -->
+
+        </xsd:all>
+
+        <xsd:attribute name="search_results"
+                       type="xsd:positiveInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets search result count for message search.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+      </xsd:complexType>
+      </xsd:element>
+      <!-- end of SearchMailerType::search -->
+
+    </xsd:all>
+
+    <xsd:attribute name="cache_file" type="xsd:string" use="required">
+      <xsd:annotation>
+        <xsd:documentation>Sets search mailer cache file name.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="threads"
+                   type="xsd:positiveInteger" 
+                   use="required">
+      <xsd:annotation>
+        <xsd:documentation>Number of threads to be used for search mailing.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="search_workers"
+                   type="xsd:positiveInteger" 
+                   use="required">
+      <xsd:annotation>
+        <xsd:documentation>Number of simultaneous search worker tasks.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="task_period"
+                   type="xsd:nonNegativeInteger" 
+                   use="required">
+      <xsd:annotation>
+        <xsd:documentation>Period in seconds of arbitrary
+        task execution.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="task_increased_period"
+                   type="xsd:nonNegativeInteger" 
+                   use="required">
+      <xsd:annotation>
+        <xsd:documentation>Increased period in seconds of arbitrary
+        task execution.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="trust_timeout"
+                   type="xsd:nonNegativeInteger" 
+                   use="required">
+      <xsd:annotation>
+        <xsd:documentation>uid+ip+ua trust timeout in seconds.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="cleanup_period"
+                   type="xsd:positiveInteger" 
+                   use="required">
+      <xsd:annotation>
+        <xsd:documentation>DB cleanup period in seconds.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="update_timeout"
+                   type="xsd:positiveInteger" 
+                   use="required">
+      <xsd:annotation>
+        <xsd:documentation>Update expiration timeout in seconds.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="subscription_timeout"
+                   type="xsd:nonNegativeInteger" 
+                   use="required">
+      <xsd:annotation>
+        <xsd:documentation>Deleted subscriptions and expired updates
+          deletion timeout in seconds.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="frontend_hostname" type="xsd:string" use="required">
+      <xsd:annotation>
+        <xsd:documentation>Search frontend host name.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="email" type="xsd:string" use="required">
+      <xsd:annotation>
+        <xsd:documentation>Search Mailer email set to From header of
+          outgoing emails.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="debug_email" type="xsd:string" use="required">
+      <xsd:annotation>
+        <xsd:documentation>Search Mailer email where outgoing emails
+          will be copied.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="sender_name" type="xsd:string" use="required">
+      <xsd:annotation>
+        <xsd:documentation>Search Mailer name set to From header of 
+          outgoing emails.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="config_dir" type="xsd:string" use="required">
+      <xsd:annotation>
+        <xsd:documentation>Configuration files dir path.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="localization_dir" type="xsd:string" use="required">
+      <xsd:annotation>
+        <xsd:documentation>Path to localization files dir.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="mailer_id" type="xsd:string" use="required">
+      <xsd:annotation>
+        <xsd:documentation>Mailer colo-host id.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="message_bank_manager_ref" type="xsd:string" use="required">
+      <xsd:annotation>
+        <xsd:documentation>Bank manager CORBA-reference to be used for 
+                           search requests.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="reserve_message_bank_manager_ref" type="xsd:string" use="required">
+      <xsd:annotation>
+        <xsd:documentation>Reserve bank manager CORBA-reference to be used for
+                           search requests.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="segmentor_ref" type="xsd:string" use="required">
+      <xsd:annotation>
+        <xsd:documentation>Segmentor CORBA-reference to be used for 
+                           search requests segmentation.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="word_manager_ref" type="xsd:string" use="required">
+      <xsd:annotation>
+        <xsd:documentation>Word Manager CORBA-reference to be used for 
+                           search requests normalization.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+  </xsd:complexType>
+  <!-- end of SearchMailerType -->
+
+  <xsd:complexType name="LimitCheckerType">
+    <xsd:annotation>
+      <xsd:documentation>Element that contains parameters for 
+                         Limit Checker.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:all>
+
+      <xsd:element name="logger" type="LoggerType">
+        <xsd:annotation>
+          <xsd:documentation>Element that specifies logger options.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+
+    </xsd:all>
+
+    <xsd:attribute name="cache_file" type="xsd:string" use="required">
+      <xsd:annotation>
+        <xsd:documentation>Sets service cache file name.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="traverse_period" 
+                   type="xsd:positiveInteger" 
+                   use="required">
+      <xsd:annotation>
+        <xsd:documentation>Sets time period (in seconds) between 
+                           event map traversed for deletion of
+                           expired events.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="traverse_records" 
+                   type="xsd:positiveInteger" 
+                   use="required">
+      <xsd:annotation>
+        <xsd:documentation>Sets number of records examined during single 
+                           traverse.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+  </xsd:complexType>
+  <!-- end of LimitCheckerType -->
+
+  <xsd:complexType name="AdServerType">      
+    <xsd:annotation>
+      <xsd:documentation>Element that contains parameters for 
+                         Ad Server.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:all>
+
+      <xsd:element name="logger" type="LoggerType">
+        <xsd:annotation>
+          <xsd:documentation>Element that specifies logger options.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+
+      <xsd:element name="data_base" type="DataBaseType">
+        <xsd:annotation>
+          <xsd:documentation>Element that specifies data base connection 
+                             options.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+
+    </xsd:all>
+
+    <xsd:attribute name="cache_file" type="xsd:string" use="required">
+      <xsd:annotation>
+        <xsd:documentation>Sets ad server cache file name.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="external_ref" type="xsd:string" use="required">
+      <xsd:annotation>
+        <xsd:documentation>Sets external ad server CORBA reference.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="check_period" 
+                   type="xsd:positiveInteger" 
+                   use="required">
+      <xsd:annotation>
+        <xsd:documentation>Sets period in seconds ads update is checked for.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="group_cap_max_count" 
+                   type="xsd:positiveInteger" 
+                   use="required">
+      <xsd:annotation>
+        <xsd:documentation>Ad Group cap max count for a single cookie.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="group_cap_timeout" 
+                   type="xsd:positiveInteger" 
+                   use="required">
+      <xsd:annotation>
+        <xsd:documentation>Ad Group cap item timeout.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="counter_cap_max_count" 
+                   type="xsd:positiveInteger" 
+                   use="required">
+      <xsd:annotation>
+        <xsd:documentation>Counter cap max count for a single cookie.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="counter_cap_timeout" 
+                   type="xsd:positiveInteger" 
+                   use="required">
+      <xsd:annotation>
+        <xsd:documentation>Counter cap item timeout.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+  </xsd:complexType>
+  <!-- end of AdServerType -->
+
+  <xsd:complexType name="MessageBankManagerType">      
+    <xsd:annotation>
+      <xsd:documentation>Element that contains parameters for 
+                         Message Bank Manager.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:all>
+
+      <xsd:element name="logger" type="LoggerType">
+        <xsd:annotation>
+          <xsd:documentation>Element that specifies logger options.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+
+      <xsd:element name="data_base" type="DataBaseType">
+        <xsd:annotation>
+          <xsd:documentation>Element that specifies data base connection 
+                             options.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+
+      <xsd:element name="message_management" type="MessageManagementType">
+        <xsd:annotation>
+          <xsd:documentation>Element that specifies message management options.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+
+      <xsd:element name="bank_management">
+      <xsd:complexType>
+        <xsd:annotation>
+          <xsd:documentation>Element that contains bank management options.</xsd:documentation>
+        </xsd:annotation>
+
+        <xsd:attribute name="registration_timeout" type="xsd:positiveInteger" use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets bank registration timeout, in seconds.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="presence_check_period" type="xsd:positiveInteger" use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets bank presence check period in seconds.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="presence_poll_timeout" 
+                       type="xsd:positiveInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets bank presence poll timeout, in seconds.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="reset_timeout" type="xsd:positiveInteger" use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets bank session reset timeout, in seconds.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+      </xsd:complexType>
+      </xsd:element>
+      <!-- end of MessageBankManagerType::bank_management -->
+
+      <xsd:element name="bank_client_management">
+      <xsd:complexType>
+        <xsd:annotation>
+          <xsd:documentation>Element that contains bank client management 
+                             options.</xsd:documentation>
+        </xsd:annotation>
+
+        <xsd:sequence>
+
+          <xsd:element name="frontend" minOccurs="0" maxOccurs="unbounded">
+          <xsd:complexType>
+            <xsd:annotation>
+              <xsd:documentation>Contains information frontend endpoint.
+              </xsd:documentation>
+            </xsd:annotation>
+
+            <xsd:attribute name="endpoint" type="xsd:string" use="required">
+              <xsd:annotation>
+                <xsd:documentation>Specifies endpoint.</xsd:documentation>
+              </xsd:annotation>
+            </xsd:attribute>
+
+            <xsd:attribute name="type" 
+                           type="FrontendType" 
+                           use="required">
+              <xsd:annotation>
+                <xsd:documentation>Specify type of frontend.</xsd:documentation>
+              </xsd:annotation>
+            </xsd:attribute>
+
+          </xsd:complexType>
+          </xsd:element>
+          <!-- end of MessageBankManagerType::bank_client_management::frontend -->
+
+        </xsd:sequence>
+
+        <xsd:attribute name="session_refresh_period" 
+                       type="xsd:positiveInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets period of time (in seconds) bank client 
+                               session should refresh itself.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="bank_invalidate_timeout" 
+                       type="xsd:positiveInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets period of time (in seconds) bank 
+                               stays invalidated after failure to serve 
+                               request.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="message_post_retries" 
+                       type="xsd:nonNegativeInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets number of message post retries after 
+                               failure.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="request_threads" 
+                       type="xsd:positiveInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets number of threads to be used for 
+                               concurrent search for messages.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+      </xsd:complexType>
+      </xsd:element>
+      <!-- end of MessageBankManagerType::bank_client_management -->
+
+      <xsd:element name="message_sharing">
+      <xsd:complexType>
+        <xsd:annotation>
+          <xsd:documentation>Element that contains information required for
+                             sharing messages between message bank clusters for
+                             fault tolerance and scaling purposes.
+          </xsd:documentation>
+        </xsd:annotation>
+
+        <xsd:sequence>
+
+          <xsd:element name="bank_manager" minOccurs="0" maxOccurs="unbounded">
+          <xsd:complexType>
+            <xsd:annotation>
+              <xsd:documentation>Contains information regarding message 
+                                 bank manager participating in coordinating 
+                                 message sharing.
+              </xsd:documentation>
+            </xsd:annotation>
+
+            <xsd:attribute name="ref" type="xsd:string" use="required">
+              <xsd:annotation>
+                <xsd:documentation>Specifies CORBA reference to bank manager.</xsd:documentation>
+              </xsd:annotation>
+            </xsd:attribute>
+
+            <xsd:attribute name="new_messages" 
+                           type="xsd:boolean" 
+                           default="true">
+              <xsd:annotation>
+                <xsd:documentation>If true then new messages expected to be 
+                                   received from banks running under bank 
+                                   manager specified.</xsd:documentation>
+              </xsd:annotation>
+            </xsd:attribute>
+
+            <xsd:attribute name="shared_messages" 
+                           type="xsd:boolean" 
+                           default="false">
+              <xsd:annotation>
+                <xsd:documentation>If true then shared messages expected to be 
+                                   received from banks running under bank 
+                                   manager specified.</xsd:documentation>
+              </xsd:annotation>
+            </xsd:attribute>
+
+            <xsd:attribute name="old_messages" 
+                           type="xsd:boolean" 
+                           default="true">
+              <xsd:annotation>
+                <xsd:documentation>If true then old message ids expected to be 
+                                   received from banks running under bank 
+                                   manager specified.</xsd:documentation>
+              </xsd:annotation>
+            </xsd:attribute>
+
+            <xsd:attribute name="own_events" 
+                           type="xsd:boolean" 
+                           default="true">
+              <xsd:annotation>
+                <xsd:documentation>If true and no own Event Bank specified 
+                                   then own event information expected to be 
+                                   received from banks running under bank 
+                                   manager specified.</xsd:documentation>
+              </xsd:annotation>
+            </xsd:attribute>
+
+            <xsd:attribute name="shared_events" 
+                           type="xsd:boolean" 
+                           default="true">
+              <xsd:annotation>
+                <xsd:documentation>If true and no own Event Bank specified 
+                                   then shared event information expected 
+                                   to be received from banks running under bank
+                                   manager specified.</xsd:documentation>
+              </xsd:annotation>
+            </xsd:attribute>
+
+            <xsd:attribute name="own_message_filter" 
+                           type="xsd:boolean" 
+                           default="true">
+              <xsd:annotation>
+                <xsd:documentation>If true then own message filter 
+                                   expected to be received from message 
+                                   manager specified.</xsd:documentation>
+              </xsd:annotation>
+            </xsd:attribute>
+
+            <xsd:attribute name="shared_message_filter" 
+                           type="xsd:boolean" 
+                           default="true">
+              <xsd:annotation>
+                <xsd:documentation>If true then shared message filter 
+                                   expected to be received from message 
+                                   manager specified.</xsd:documentation>
+              </xsd:annotation>
+            </xsd:attribute>
+
+            <xsd:attribute name="message_categorizer" 
+                           type="xsd:boolean" 
+                           default="true">
+              <xsd:annotation>
+                <xsd:documentation>If true then message categorizer expected 
+                                   to be received from message manager 
+                                   specified.</xsd:documentation>
+              </xsd:annotation>
+            </xsd:attribute>
+
+            <xsd:attribute name="own_message_stat" 
+                           type="xsd:boolean" 
+                           default="true">
+              <xsd:annotation>
+                <xsd:documentation>If true then own message statistics 
+                                   expected to be received from message 
+                                   manager specified.</xsd:documentation>
+              </xsd:annotation>
+            </xsd:attribute>
+
+            <xsd:attribute name="shared_message_stat" 
+                           type="xsd:boolean" 
+                           default="true">
+              <xsd:annotation>
+                <xsd:documentation>If true then shared message statistics 
+                                   expected to be received from message 
+                                   manager specified.</xsd:documentation>
+              </xsd:annotation>
+            </xsd:attribute>
+
+          </xsd:complexType>
+          </xsd:element>
+          <!-- end of MessageBankManagerType::message_sharing::bank_manager -->
+
+        </xsd:sequence>
+
+        <xsd:attribute name="registration_timeout" 
+                       type="xsd:positiveInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets timeout for message sharing 
+                               registration. Client needs to register 
+                               periodically (more frequent than 
+                               expiration timeout) advancing expiration time
+                               to ensure notification stream is continious.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="registration_period" 
+                       type="xsd:positiveInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets period of message sharing re-registration.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="mirror" type="MirrorType" use="required">
+          <xsd:annotation>
+            <xsd:documentation>If 'none' no messages will be pulled. 
+If 'sync' then messages will be pulled from the master cluster with some 
+aspects inherited while others made specific for the current cluster: 
+core words, word normal forms, categories, event clustering ... 
+If 'absolute' then cluster will behave as an absolute mirror of the master 
+cluster (used to create a  secondary NewsGate cluster to improve system 
+overall performance and fault tolerance capabilities).</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="proxy" 
+                       type="xsd:boolean" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>If false then no message requests will be 
+proxied. If true then requests for unexistent message thumbnails will be 
+symmetrically proxied</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+      </xsd:complexType>
+      </xsd:element>
+      <!-- end of MessageBankManagerType::message_sharing -->
+
+    </xsd:all>
+
+  </xsd:complexType>
+  <!-- end of MessageBankManagerType -->
+
+  <xsd:complexType name="EventBankManagerType">      
+    <xsd:annotation>
+      <xsd:documentation>Element that contains parameters for 
+                         Event Bank Manager.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:all>
+
+      <xsd:element name="logger" type="LoggerType">
+        <xsd:annotation>
+          <xsd:documentation>Element that specifies logger options.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+
+      <xsd:element name="bank_management">
+      <xsd:complexType>
+        <xsd:annotation>
+          <xsd:documentation>Element that contains bank management options.</xsd:documentation>
+        </xsd:annotation>
+
+        <xsd:attribute name="registration_timeout" type="xsd:positiveInteger" use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets bank registration timeout, in seconds.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="presence_check_period" type="xsd:positiveInteger" use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets bank presence check period in seconds.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="presence_poll_timeout" 
+                       type="xsd:positiveInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets bank presence poll timeout, in seconds.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="reset_timeout" type="xsd:positiveInteger" use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets bank session reset timeout, in seconds.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+      </xsd:complexType>
+      </xsd:element>
+      <!-- end of EventBankManagerType::bank_management -->
+
+      <xsd:element name="bank_client_management">
+      <xsd:complexType>
+        <xsd:annotation>
+          <xsd:documentation>Element that contains bank client management 
+                             options.</xsd:documentation>
+        </xsd:annotation>
+
+        <xsd:attribute name="session_refresh_period" 
+                       type="xsd:positiveInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets period of time (in seconds) bank client 
+                               session should refresh itself.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="bank_invalidate_timeout" 
+                       type="xsd:positiveInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets period of time (in seconds) bank 
+                               stays invalidated after failure to serve 
+                               request.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="request_threads" 
+                       type="xsd:positiveInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets number of threads to be used for 
+                               concurrent calls to event banks.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+      </xsd:complexType>
+      </xsd:element>
+      <!-- end of EventBankManagerType::bank_client_management -->
+
+    </xsd:all>
+
+  </xsd:complexType>
+  <!-- end of EventBankManagerType -->
+
+  <xsd:complexType name="ModeratorManagerType">
+    <xsd:annotation>
+      <xsd:documentation>Element that contains parameters for 
+                         Moderator Manager.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:all>
+
+      <xsd:element name="logger" type="LoggerType">
+        <xsd:annotation>
+          <xsd:documentation>Element that specifies logger options.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+
+      <xsd:element name="data_base" type="DataBaseType">
+        <xsd:annotation>
+          <xsd:documentation>Element that specifies data base connection 
+                             options.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+
+      <xsd:element name="client_management">
+      <xsd:complexType>
+        <xsd:annotation>
+          <xsd:documentation>Element that specifies options of client 
+                             management.
+          </xsd:documentation>
+        </xsd:annotation>
+
+        <xsd:all>
+            <xsd:element name="data_base" type="DataBaseType">
+            <xsd:annotation>
+              <xsd:documentation>Element that specifies data base connection 
+                                 options.
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+        </xsd:all>
+
+      </xsd:complexType>
+      </xsd:element>
+
+    </xsd:all>
+
+    <xsd:attribute name="session_timeout" 
+                   type="xsd:positiveInteger" 
+                   use="required">
+      <xsd:annotation>
+        <xsd:documentation>Sets moderation session timeout, in seconds.
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="timeout_sessions_period" 
+                   type="xsd:positiveInteger" 
+                   use="required">
+      <xsd:annotation>
+        <xsd:documentation>How often to traverse sessions trying to 
+                           timeout them, in seconds.
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+  </xsd:complexType>
+  <!-- end of ModeratorManagerType -->
+
+  <xsd:complexType name="CustomerManagerType">
+    <xsd:annotation>
+      <xsd:documentation>Element that contains parameters for 
+                         Customer Manager.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:all>
+
+      <xsd:element name="logger" type="LoggerType">
+        <xsd:annotation>
+          <xsd:documentation>Element that specifies logger options.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+
+      <xsd:element name="data_base" type="DataBaseType">
+        <xsd:annotation>
+          <xsd:documentation>Element that specifies data base connection 
+                             options.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+
+    </xsd:all>
+
+  </xsd:complexType>
+  <!-- end of CustomerManagerType -->
+
+  <xsd:complexType name="AdManagerType">
+    <xsd:annotation>
+      <xsd:documentation>Element that contains parameters for 
+                         Ad Manager.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:all>
+
+      <xsd:element name="logger" type="LoggerType">
+        <xsd:annotation>
+          <xsd:documentation>Element that specifies logger options.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+
+      <xsd:element name="data_base" type="DataBaseType">
+        <xsd:annotation>
+          <xsd:documentation>Element that specifies data base connection 
+                             options.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+
+    </xsd:all>
+
+  </xsd:complexType>
+  <!-- end of AdManagerType -->
+
+  <xsd:complexType name="FeedManagerType">
+    <xsd:annotation>
+      <xsd:documentation>Element that contains parameters for 
+                         Feed Manager.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:all>
+
+      <xsd:element name="logger" type="LoggerType">
+        <xsd:annotation>
+          <xsd:documentation>Element that specifies logger options.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+
+      <xsd:element name="data_base" type="DataBaseType">
+        <xsd:annotation>
+          <xsd:documentation>Element that specifies data base connection 
+                             options.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+
+      <xsd:element name="robots_checker" type="RobotsCheckerType">
+        <xsd:annotation>
+          <xsd:documentation>Element that specifies robots.txt checker 
+                             options.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+
+      <xsd:element name="save_stat">
+      <xsd:complexType>
+        <xsd:annotation>
+          <xsd:documentation>Element that specifies statistics saving options.
+          </xsd:documentation>
+        </xsd:annotation>
+
+        <xsd:attribute name="period" type="xsd:nonNegativeInteger" use="required">
+          <xsd:annotation>
+            <xsd:documentation>Specifies feed stat save period.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="chunk_size" 
+                       type="xsd:nonNegativeInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets max number of items can be saved in one 
+                               DB operation.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="keep_days" 
+                       type="xsd:positiveInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets number of days stat records to be stored.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+      </xsd:complexType>
+      </xsd:element>
+
+      <xsd:element name="full_article" type="FullArticleRequestType">
+        <xsd:annotation>
+          <xsd:documentation>Element that specifies full article (used in 
+                             Feed Message Adjustment Script) some 
+                             request properties.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+
+      <xsd:element name="html_cache" type="HtmlCacheType">
+        <xsd:annotation>
+          <xsd:documentation>Element that specifies HTML feed cache properties.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+
+      <xsd:element name="xpath">
+      <xsd:complexType>
+        <xsd:annotation>
+          <xsd:documentation>Element that specifies options of 
+                             fetching operations for xpath.
+          </xsd:documentation>
+        </xsd:annotation>
+
+        <xsd:attribute name="max_size" 
+                       type="xsd:nonNegativeInteger"
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Max bytes to read.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+      </xsd:complexType>
+      </xsd:element>
+
+      <xsd:element name="image">
+      <xsd:complexType>
+        <xsd:annotation>
+          <xsd:documentation>Element that specifies  images handling.</xsd:documentation>
+        </xsd:annotation>
+
+        <xsd:all>
+
+        <xsd:element name="prefix_blacklist" type="xsd:string">
+          <xsd:annotation>
+            <xsd:documentation>Contain space-separated list of image 
+                               prefixes to be skipped.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>    
+
+        <xsd:element name="extension_whitelist" type="xsd:string">
+          <xsd:annotation>
+            <xsd:documentation>Contain space-separated list of extensions; 
+                               Message linked files with such extensions 
+                               will be treated as images.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+
+        </xsd:all>
+
+        <xsd:attribute name="min_width" type="xsd:positiveInteger" use="required">
+          <xsd:annotation>
+            <xsd:documentation>Minimum width (in pixels) an image should have
+                               to appear "Accompanied with images" section".</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="min_height" type="xsd:positiveInteger" use="required">
+          <xsd:annotation>
+            <xsd:documentation>Minimum height (in pixels) an image should have
+                               to appear "Accompanied with images" section".</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="referer" type="xsd:string" use="required">
+          <xsd:annotation>
+            <xsd:documentation>Referer HTTP header to be sent when requesting
+                               image information.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="socket_recv_buf_size" type="xsd:nonNegativeInteger" use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets size of socket receive buffer before 
+                               sending feed request, in bytes. Smaller - 
+                               slower but less unneeded traffic.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+      </xsd:complexType>
+      </xsd:element>
+
+      <xsd:element name="python" type="PythonOptionsType">
+        <xsd:annotation>
+          <xsd:documentation>Element that specifies python embedded engine 
+                             options.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+
+      <xsd:element name="parsing" type="FeedManagerParsingType">
+        <xsd:annotation>
+          <xsd:documentation>Element that specifies feed parsing options.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+
+    </xsd:all>
+
+    <xsd:attribute name="threads" 
+                   type="xsd:positiveInteger" 
+                   use="required">
+      <xsd:annotation>
+        <xsd:documentation>Number of worker threads.
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="url_fetch_period"
+                   type="xsd:nonNegativeInteger" 
+                   use="required">
+      <xsd:annotation>
+        <xsd:documentation>Min time (ms) between 2 url requests inside single 
+                           feeds validation task.
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="user_agent" type="xsd:string" use="required">
+      <xsd:annotation>
+        <xsd:documentation>User-Agent header value.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="request_timeout" 
+                   type="xsd:positiveInteger" 
+                   use="required">
+      <xsd:annotation>
+        <xsd:documentation>Request timeout.
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="redirects_to_follow" 
+                   type="xsd:nonNegativeInteger" 
+                   use="required">
+      <xsd:annotation>
+        <xsd:documentation>Redirects to follow.
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="temp_dir" type="xsd:string" use="required">
+      <xsd:annotation>
+        <xsd:documentation>Temporary file path.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+  </xsd:complexType>
+  <!-- end of FeedManagerType -->
+
+  <xsd:complexType name="CategoryManagerType">
+    <xsd:annotation>
+      <xsd:documentation>Element that contains parameters for 
+                         Category Manager.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:all>
+
+      <xsd:element name="logger" type="LoggerType">
+        <xsd:annotation>
+          <xsd:documentation>Element that specifies logger options.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+
+      <xsd:element name="data_base" type="DataBaseType">
+        <xsd:annotation>
+          <xsd:documentation>Element that specifies data base connection 
+                             options.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+
+      <xsd:element name="relevant_phrases">
+      <xsd:complexType>
+
+        <xsd:annotation>
+          <xsd:documentation>Element describing relevant phrases search 
+                             policy.</xsd:documentation>
+        </xsd:annotation>
+
+        <xsd:all>
+
+          <xsd:element name="supress_cw">
+          <xsd:complexType>
+
+            <xsd:annotation>
+              <xsd:documentation>Core words supression policy.</xsd:documentation>
+            </xsd:annotation>
+
+            <xsd:attribute name="min_count" 
+                           type="xsd:nonNegativeInteger" 
+                           use="required">
+              <xsd:annotation>
+                <xsd:documentation>Min number of cw to apply suppression.</xsd:documentation>
+              </xsd:annotation>
+            </xsd:attribute>
+
+            <xsd:attribute name="intersection" 
+                           type="xsd:nonNegativeInteger" 
+                           use="required">
+              <xsd:annotation>
+                <xsd:documentation>Cw min intersection to apply suppression.</xsd:documentation>
+              </xsd:annotation>
+            </xsd:attribute>
+
+            <xsd:attribute name="containment_level" 
+                           type="xsd:nonNegativeInteger" 
+                           use="required">
+              <xsd:annotation>
+                <xsd:documentation>Cw min containment to apply suppression.</xsd:documentation>
+              </xsd:annotation>
+            </xsd:attribute>
+
+          </xsd:complexType>
+          </xsd:element>
+          <!-- end of CategoryManagerType::relevant_phrases::supress_cw -->
+
+        </xsd:all>
+
+        <xsd:attribute name="search_results" 
+                       type="xsd:positiveInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets search result count for message search.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="search_count" 
+                       type="xsd:positiveInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Number of message searches to be performed.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="max_phrase_count" 
+                       type="xsd:positiveInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Max number of phrases to return.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="message_per_event" 
+                       type="xsd:positiveInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets message per event param for event
+              suppression strategy of message search.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="message_max_age" 
+                       type="xsd:nonNegativeInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Message max age.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="message_phrases_timeout" 
+                       type="xsd:positiveInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Cached message phrases timeout in seconds.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+      </xsd:complexType>
+      </xsd:element>
+      <!-- end of CategoryManagerType::relevant_phrases -->
+
+    </xsd:all>
+
+    <xsd:attribute name="temp_file" type="xsd:string" use="required">
+      <xsd:annotation>
+        <xsd:documentation>Temporary file path.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="message_bank_manager_ref" type="xsd:string" use="required">
+      <xsd:annotation>
+        <xsd:documentation>Message Bank Manager CORBA reference.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="word_manager_ref" type="xsd:string" use="required">
+      <xsd:annotation>
+        <xsd:documentation>Sets CORBA reference to word manager.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="segmentor_ref" type="xsd:string" use="required">
+      <xsd:annotation>
+        <xsd:documentation>Sets CORBA reference to segmentor.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+  </xsd:complexType>
+  <!-- end of CategoryManagerType -->
+
+  <xsd:complexType name="PythonOptionsType">
+    <xsd:annotation>
+      <xsd:documentation>Element that contains parameters python embedded 
+                         engine.</xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:all>
+
+      <xsd:element name="sandbox" type="PythonSandboxOptionsType">
+        <xsd:annotation>
+          <xsd:documentation>Element that specifies python embedded 
+                             engine sandbox options.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+
+    </xsd:all>
+  </xsd:complexType>
+  <!-- end of PythonOptionsType -->
+
+  <xsd:complexType name="PythonSandboxOptionsType">
+    <xsd:annotation>
+      <xsd:documentation>Element that specifies python embedded 
+                         engine sandbox options.</xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:all>
+
+      <xsd:element name="safe_modules" type="xsd:string" minOccurs="0" maxOccurs="1">
+        <xsd:annotation>
+          <xsd:documentation>Contain space-separated list of safe module names.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+
+      <xsd:element name="safe_builtins" type="xsd:string" minOccurs="0" maxOccurs="1">
+        <xsd:annotation>
+          <xsd:documentation>Contain space-separated list of safe builtin 
+                             function and class names.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+
+    </xsd:all>
+
+    <xsd:attribute name="max_ticks" type="xsd:nonNegativeInteger" use="required">
+      <xsd:annotation>
+        <xsd:documentation>Maximum number of script elementary operations allowed.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="timeout" type="xsd:nonNegativeInteger" use="required">
+      <xsd:annotation>
+        <xsd:documentation>Maximum time in seconds script allowed to execute.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="call_max_depth" type="xsd:nonNegativeInteger" use="required">
+      <xsd:annotation>
+        <xsd:documentation>Maximum depth of nested function calls allowd.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="max_memory" type="xsd:nonNegativeInteger" use="required">
+      <xsd:annotation>
+        <xsd:documentation>Maximum allowed allocated memory.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="processes" type="xsd:positiveInteger" use="required">
+      <xsd:annotation>
+        <xsd:documentation>Sandbox Service processes.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+  </xsd:complexType>
+  <!-- end of PythonSandboxOptionsType -->
+
+  <xsd:complexType name="FeedManagerParsingType">
+    <xsd:annotation>
+      <xsd:documentation>Element that contains parameters for 
+                         Feed Manager Parser.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:all>
+
+      <xsd:element name="limits" type="ChannelParseLimitsType">
+        <xsd:annotation>
+          <xsd:documentation>Element that specifies channel parsing limits.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+
+      <xsd:element name="skip_extensions" type="xsd:string">
+        <xsd:annotation>
+          <xsd:documentation>Contain space-separated list of extensions; urls
+          to files with these extensions will not be requested.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+
+      <xsd:element name="entity_resolver" type="EntityResolverType" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation>Element that specifies XML Entity Resolver 
+                             options.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+
+    </xsd:all>
+
+  </xsd:complexType>
+  <!-- end of FeedManagerParsingType -->
+
+  <xsd:complexType name="MessageBankType">      
+    <xsd:annotation>
+      <xsd:documentation>Element that contains parameters for Message Bank.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:all>
+
+      <xsd:element name="logger" type="LoggerType">
+        <xsd:annotation>
+          <xsd:documentation>Element that specifies logger options.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+
+      <xsd:element name="data_base" type="DataBaseType">
+        <xsd:annotation>
+          <xsd:documentation>Element that specifies data base connection 
+                             options.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+
+      <xsd:element name="word_management">
+      <xsd:complexType>
+        <xsd:annotation>
+          <xsd:documentation>Element that contains word management options.</xsd:documentation>
+        </xsd:annotation>
+
+        <xsd:attribute name="word_manager_ref" type="xsd:string" use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets CORBA reference to word manager.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="retry_period" type="xsd:positiveInteger" use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets period for repeating Word Manager related 
+                               operation in case it fails, in seconds.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+      </xsd:complexType>
+      </xsd:element>
+      <!-- end of MessageBankType::word_management -->
+
+      <xsd:element name="segmentation_management">
+      <xsd:complexType>
+        <xsd:annotation>
+          <xsd:documentation>Element that contains segmentation management 
+                             options.</xsd:documentation>
+        </xsd:annotation>
+
+        <xsd:attribute name="segmentor_ref" type="xsd:string" use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets CORBA reference to segmentor.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="retry_period" type="xsd:positiveInteger" use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets period for repeating Segmentor related 
+                               operation in case it fails, in seconds.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+      </xsd:complexType>
+      </xsd:element>
+      <!-- end of MessageBankType::segmentation_management -->
+
+      <xsd:element name="event_management">
+      <xsd:complexType>
+        <xsd:annotation>
+          <xsd:documentation>Element that contains event management options.</xsd:documentation>
+        </xsd:annotation>
+
+        <xsd:attribute name="event_bank_manager_ref" type="xsd:string" use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets CORBA reference to event bank manager.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="message_delete_retry_period" type="xsd:positiveInteger" use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets period for repeating message deletion 
+                               notification in case it fails, in seconds.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="message_delete_pack_size" type="xsd:positiveInteger" use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets max number of message ids in single pack.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+      </xsd:complexType>
+      </xsd:element>
+      <!-- end of MessageBankType::event_management -->
+
+      <xsd:element name="bank_management">
+      <xsd:complexType>
+        <xsd:annotation>
+          <xsd:documentation>Element that contains bank management options.</xsd:documentation>
+        </xsd:annotation>
+
+        <xsd:attribute name="bank_manager_ref" type="xsd:string" use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets CORBA reference to bank manager.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="login_retry_period" type="xsd:positiveInteger" use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets bank login retry period, in seconds.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="report_presence_period" type="xsd:positiveInteger" use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets bank report presence period, in seconds.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+      </xsd:complexType>
+      </xsd:element>
+      <!-- end of MessageBankType::bank_management -->
+
+      <xsd:element name="message_manager" type="BankMessageManagerType">
+        <xsd:annotation>
+          <xsd:documentation>Element that specifies messages manager 
+                             options.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+
+    </xsd:all>
+
+  </xsd:complexType>
+  <!-- end of MessageBankType -->
+
+  <xsd:complexType name="EventBankType">      
+    <xsd:annotation>
+      <xsd:documentation>Element that contains parameters for Event Bank.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:all>
+
+      <xsd:element name="logger" type="LoggerType">
+        <xsd:annotation>
+          <xsd:documentation>Element that specifies logger options.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+
+      <xsd:element name="data_base" type="DataBaseType">
+        <xsd:annotation>
+          <xsd:documentation>Element that specifies data base connection 
+                             options.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+
+      <xsd:element name="bank_management">
+      <xsd:complexType>
+        <xsd:annotation>
+          <xsd:documentation>Element that contains bank management options.</xsd:documentation>
+        </xsd:annotation>
+
+        <xsd:attribute name="bank_manager_ref" type="xsd:string" use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets CORBA reference to bank manager.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="login_retry_period" type="xsd:positiveInteger" use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets bank login retry period, in seconds.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="report_presence_period" type="xsd:positiveInteger" use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets bank report presence period, in seconds.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+      </xsd:complexType>
+      </xsd:element>
+      <!-- end of EventBankType::bank_management -->
+
+      <xsd:element name="recreate_managers">
+      <xsd:complexType>
+
+        <xsd:annotation>
+          <xsd:documentation>Element describing event message banks recreation 
+                             policy.</xsd:documentation>
+        </xsd:annotation>
+
+        <xsd:attribute name="event_count_min" 
+                       type="xsd:positiveInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets minimum number of events for recreation 
+                               take place.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="event_count_rescale" 
+                       type="xsd:positiveInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets event count multiplier for next 
+                               recreation threshold calculation.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="check_period" 
+                       type="xsd:positiveInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets recreation condition check period 
+                               (in seconds).</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+      </xsd:complexType>
+      </xsd:element>
+      <!-- end of BankEventManagerType::recreate_managers -->
+
+      <xsd:element name="event_manager" type="BankEventManagerType">
+        <xsd:annotation>
+          <xsd:documentation>Element that specifies events manager 
+                             options.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+
+    </xsd:all>
+
+    <xsd:attribute name="backets" 
+                   type="xsd:positiveInteger" 
+                   use="required">
+      <xsd:annotation>
+        <xsd:documentation>Sets max number of event backets can be used by
+                           Event Bank instance.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="dump_state_period" 
+                   type="xsd:positiveInteger" 
+                   use="required">
+      <xsd:annotation>
+        <xsd:documentation>Sets period (in seconds) for bank state dump.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+  </xsd:complexType>
+  <!-- end of EventBankType -->
+
+  <xsd:complexType name="RSSFeedPullerType">      
+    <xsd:annotation>
+      <xsd:documentation>Element that contains parameters for RSS Feed Puller.
+      </xsd:documentation>
+    </xsd:annotation>
+      
+    <xsd:all>
+
+      <xsd:element name="logger" type="LoggerType">
+        <xsd:annotation>
+          <xsd:documentation>Element that specifies logger options.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+
+      <xsd:element name="puller_management">
+      <xsd:complexType>
+        <xsd:annotation>
+          <xsd:documentation>Element that contains puller management options.</xsd:documentation>
+        </xsd:annotation>
+
+        <xsd:attribute name="puller_manager_ref" type="xsd:string" use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets CORBA reference to puller manager.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="login_retry_period" type="xsd:positiveInteger" use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets puller login retry period, in seconds.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="poll_period" type="xsd:positiveInteger" use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets puller poll period, in seconds.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+      </xsd:complexType>
+      </xsd:element>
+      <!-- end of RSSFeedPullerType::puller_management -->
+
+      <xsd:element name="feed_request">
+      <xsd:complexType>
+        <xsd:annotation>
+          <xsd:documentation>Element that specifies feed request options.</xsd:documentation>
+        </xsd:annotation>
+    
+        <xsd:all>
+    
+        <xsd:element name="thumb_gen">
+        <xsd:complexType>
+          <xsd:annotation>
+            <xsd:documentation>Element that specifies thumbnails generation 
+                               options.
+            </xsd:documentation>
+          </xsd:annotation>
+
+          <xsd:attribute name="processes" type="xsd:positiveInteger" use="required">
+            <xsd:annotation>
+              <xsd:documentation>Specifies number of precesses to use.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:attribute>
+
+          <xsd:attribute name="timeout" type="xsd:positiveInteger" use="required">
+            <xsd:annotation>
+              <xsd:documentation>Specifies timeout in sec.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:attribute>
+
+        </xsd:complexType>
+        </xsd:element>
+
+        <xsd:element name="robots_checker" type="RobotsCheckerType">
+          <xsd:annotation>
+            <xsd:documentation>Element that specifies robots.txt checker 
+                               options.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+
+        <xsd:element name="entity_resolver" type="EntityResolverType" minOccurs="0">
+          <xsd:annotation>
+            <xsd:documentation>Element that specifies XML Entity Resolver 
+                               options.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+
+        <xsd:element name="full_article" type="FullArticleRequestType">
+          <xsd:annotation>
+            <xsd:documentation>Element that specifies full article some 
+                               request properties.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+
+        <xsd:element name="html_cache" type="HtmlCacheType">
+          <xsd:annotation>
+            <xsd:documentation>Element that specifies HTML feed cache properties.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+
+        <xsd:element name="python" type="PythonOptionsType">
+          <xsd:annotation>
+            <xsd:documentation>Element that specifies python embedded engine 
+                               options.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+
+        <xsd:element name="limits" type="ChannelParseLimitsType">
+          <xsd:annotation>
+            <xsd:documentation>Element that specifies feed request result
+                               processing limits.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+
+        <xsd:element name="image">
+        <xsd:complexType>
+          <xsd:annotation>
+            <xsd:documentation>Element that specifies message images handling.</xsd:documentation>
+          </xsd:annotation>
+
+          <xsd:all>
+
+          <xsd:element name="prefix_blacklist" type="xsd:string">
+            <xsd:annotation>
+              <xsd:documentation>Contain space-separated list of image 
+                                 prefixes to be skipped.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>    
+
+          <xsd:element name="extension_whitelist" type="xsd:string">
+            <xsd:annotation>
+              <xsd:documentation>Contain space-separated list of extensions; 
+                                 Message linked files with such extensions 
+                                 will be treated as images.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+
+          <xsd:element name="thumbnail">
+          <xsd:complexType>      
+            <xsd:annotation>
+              <xsd:documentation>Element that specifies thumbnails creation.</xsd:documentation>
+            </xsd:annotation>
+
+            <xsd:sequence>
+
+              <xsd:element name="size" minOccurs="0" maxOccurs="1000">
+              <xsd:complexType>
+                <xsd:annotation>
+                  <xsd:documentation>Describes thumbnail size.
+                  </xsd:documentation>
+                </xsd:annotation>
+
+                <xsd:attribute name="width" type="xsd:positiveInteger" use="required">
+                  <xsd:annotation>
+                    <xsd:documentation>Specifies thumbnail width.</xsd:documentation>
+                  </xsd:annotation>
+                </xsd:attribute>
+
+                <xsd:attribute name="height" type="xsd:positiveInteger" use="required">
+                  <xsd:annotation>
+                    <xsd:documentation>Specifies thumbnail height.</xsd:documentation>
+                  </xsd:annotation>
+                </xsd:attribute>
+
+                <xsd:attribute name="crop" 
+                               type="xsd:boolean" 
+                               default="false">
+                  <xsd:annotation>
+                    <xsd:documentation>If true then image will be cropped to 
+                                       fill thumbnail, otherwise image will 
+                                       be just scaled to fit into thumbnail 
+                                       area.</xsd:documentation>
+                  </xsd:annotation>
+                </xsd:attribute>
+
+              </xsd:complexType>
+              </xsd:element>
+              <!-- end of RSSFeedPullerType::feed_request::image::thumbnail::size -->
+
+            </xsd:sequence>
+
+            <xsd:attribute name="max_image_size" type="xsd:positiveInteger" use="required">
+              <xsd:annotation>
+                <xsd:documentation>Thumbnails will not be generated for images 
+                                   of larger size.</xsd:documentation>
+              </xsd:annotation>
+            </xsd:attribute>
+
+            <xsd:attribute name="cache_dir" type="xsd:string" use="required">
+              <xsd:annotation>
+                <xsd:documentation>Working directory for thumbnails creation.</xsd:documentation>
+              </xsd:annotation>
+            </xsd:attribute>
+
+            <xsd:attribute name="mime_types_path" type="xsd:string" use="required">
+              <xsd:annotation>
+                <xsd:documentation>Images of format not specified in mime-types
+                                   file will be converted to JPEG.</xsd:documentation>
+              </xsd:annotation>
+            </xsd:attribute>
+
+          </xsd:complexType>
+          </xsd:element>
+          <!-- end of RSSFeedPullerType::feed_request::image::thumbnail -->
+
+          </xsd:all>
+
+          <xsd:attribute name="min_width" type="xsd:positiveInteger" use="required">
+            <xsd:annotation>
+              <xsd:documentation>Minimum width (in pixels) an image should have
+                                 to appear "Accompanied with images" section".</xsd:documentation>
+            </xsd:annotation>
+          </xsd:attribute>
+
+          <xsd:attribute name="min_height" type="xsd:positiveInteger" use="required">
+            <xsd:annotation>
+              <xsd:documentation>Minimum height (in pixels) an image should have
+                                 to appear "Accompanied with images" section".</xsd:documentation>
+            </xsd:annotation>
+          </xsd:attribute>
+
+          <xsd:attribute name="referer" type="xsd:string" use="required">
+            <xsd:annotation>
+              <xsd:documentation>Referer HTTP header to be sent when requesting
+                                 image information.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:attribute>
+
+        </xsd:complexType>
+        </xsd:element>
+        <!-- end of RSSFeedPullerType::feed_request::image -->
+
+        </xsd:all>
+
+        <xsd:attribute name="default_period" type="xsd:positiveInteger" use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets default data feeds pull period, in seconds.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="min_period" 
+                       type="xsd:positiveInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets minimum data feeds pull period, in seconds.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="max_period" 
+                       type="xsd:positiveInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets maximum data feeds pull period, in seconds.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="approximate_msg_intervals" 
+                       type="xsd:positiveInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets number of intervals between last 
+                               messages to use for next message time
+                               approximation.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="message_period_factor"
+                       type="xsd:float" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets a factor message_period calculated for 
+                               request scheduling is multipied by.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="xml_feed_timeout" 
+                       type="xsd:positiveInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets xml data feeds request timeout, in seconds.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="html_feed_timeout" 
+                       type="xsd:positiveInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets html data feeds request timeout, in seconds.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="user_agent" type="xsd:string" use="required">
+          <xsd:annotation>
+            <xsd:documentation>User-Agent header value.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="redirects_to_follow" 
+                       type="xsd:nonNegativeInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Redirects to follow.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="threads" 
+                       type="xsd:positiveInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets number of working threads requesting data feeds, in seconds.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="stream_recv_buf_size" 
+                       type="xsd:positiveInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets size of stream buffer receiving feed 
+                               response, in bytes. Smaller - more granular 
+                               will be able to stop reading feed response when
+                               understand feed is unchanged.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="socket_recv_buf_size" 
+                       type="xsd:nonNegativeInteger" 
+                       default="0">
+          <xsd:annotation>
+            <xsd:documentation>Sets size of socket receive buffer before 
+                               sending feed request, in bytes. Smaller - 
+                               less incoming traffic when feed is unchanged.
+                               Receive buffer size is automatically restored 
+                               when first feed item read. If 0, then default
+                               deault socket receive buffer size will not be
+                               changed.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="cache_dir" type="xsd:string" use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets cache directory file name.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+      </xsd:complexType>
+      </xsd:element>
+      <!-- end of RSSFeedPullerType::feed_request -->
+
+      <xsd:element name="saving_traffic">
+      <xsd:complexType>      
+        <xsd:annotation>
+          <xsd:documentation>Element that specifies parameters of saving 
+                             inbound traffic logic.
+          </xsd:documentation>
+        </xsd:annotation>
+
+        <xsd:all>
+          <xsd:element name="heuristics">
+          <xsd:complexType>      
+            <xsd:annotation>
+              <xsd:documentation>Element that specifies parameters of feed 
+                                 response processing heuristics which tries to 
+                                 decrease inbound traffic.
+              </xsd:documentation>
+            </xsd:annotation>
+    
+            <xsd:attribute name="content_length_based" 
+                           type="xsd:boolean" 
+                           use="required">
+              <xsd:annotation>
+                <xsd:documentation>Specifies if Content-Length header based 
+                                   heuristics to be applied.
+                </xsd:documentation>
+              </xsd:annotation>
+            </xsd:attribute>
+
+            <xsd:attribute name="single_chunk_based" 
+                           type="xsd:boolean" 
+                           use="required">
+              <xsd:annotation>
+                <xsd:documentation>Specifies if chunked transfer encoding based
+                                   heuristics to be applied.
+                </xsd:documentation>
+              </xsd:annotation>
+            </xsd:attribute>
+
+            <xsd:attribute name="ordering_based" 
+                           type="xsd:boolean" 
+                           use="required">
+              <xsd:annotation>
+                <xsd:documentation>Specifies if message ordering based 
+                                   heuristics to be applied.
+                </xsd:documentation>
+              </xsd:annotation>
+            </xsd:attribute>
+
+            <xsd:attribute name="sequence_len"
+                           type="xsd:nonNegativeInteger" 
+                           use="required">
+              <xsd:annotation>
+                <xsd:documentation>Sets maximum number of consecutive requests 
+                                   heuristics can be applied.
+                </xsd:documentation>
+              </xsd:annotation>
+            </xsd:attribute>
+
+            <xsd:attribute name="calc_entropy_after"
+                           type="xsd:nonNegativeInteger" 
+                           use="required">
+              <xsd:annotation>
+                <xsd:documentation>Sets number of first requests to be skipped
+                                   after feed entropy start to be calculated.
+                                   Required to avoid a situation often appeared 
+                                   at the beginning of pulling new feed, when
+                                   an old message have left the feed for a 
+                                   while and reappeared again right after we 
+                                   started to pull a feed.
+                </xsd:documentation>
+              </xsd:annotation>
+            </xsd:attribute>
+
+            <xsd:attribute name="apply_after"
+                           type="xsd:nonNegativeInteger" 
+                           use="required">
+              <xsd:annotation>
+                <xsd:documentation>After calc_entropy_after requests were 
+                                   skipped entropy start to be calculated.
+                                   But during apply_after requests after that 
+                                   heuristics is not applied to allow entropy 
+                                   to reach some feed-specific level.
+                </xsd:documentation>
+              </xsd:annotation>
+            </xsd:attribute>
+
+            <xsd:attribute name="force_down_entropy_after"
+                           type="xsd:nonNegativeInteger" 
+                           use="required">
+              <xsd:annotation>
+                <xsd:documentation>Sets number of seconds after entropy have
+                                   reached maximum after which it can be 
+                                   decreased by 1. This will allow to avoid
+                                   situations when messages appeared in
+                                   feed in wrong order by mistake and then
+                                   entropy would stay high forever. If 0, then
+                                   no entropy force down applied.
+                </xsd:documentation>
+              </xsd:annotation>
+            </xsd:attribute>
+
+          </xsd:complexType>
+          </xsd:element>
+          <!-- end of RSSFeedPullerType::saving_traffic::heuristics -->
+        </xsd:all>
+
+        <xsd:attribute name="last_build_based"
+                       type="xsd:nonNegativeInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Specifies if lastBuildDate to be used to 
+                               interrupt parsing of a response containg 
+                               same lastBuildDate.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+      </xsd:complexType>
+      </xsd:element>
+      <!-- end of RSSFeedPullerType::saving_traffic -->
+
+      <xsd:element name="saving_feed_state">
+      <xsd:complexType>      
+        <xsd:annotation>
+          <xsd:documentation>Element that specifies feed state processing 
+                             options.
+          </xsd:documentation>
+        </xsd:annotation>
+    
+        <xsd:attribute name="packet_size" 
+                       type="xsd:positiveInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets maximum number of feed state items to be 
+                               sent to puller manager in a single request.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="max_delay" 
+                       type="xsd:positiveInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets feed state change delivery maximum delay, 
+                               in seconds.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="state_messages_factor"
+                       type="xsd:positiveInteger"
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets number which being multiplied by channel 
+                               size produces number of message codes that 
+                               can be stored in feed state.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="min_state_messages"
+                       type="xsd:positiveInteger"
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets minimum number of message codes that 
+                               can be stored in feed state.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="message_timeout" 
+                       type="xsd:positiveInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets time a messages should present
+                               in feed state, in seconds.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="delay_feed_requests_on_failure" 
+                       type="xsd:positiveInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets time period (in seconds) feed request 
+                               should be delayed if puller is unable to push
+                               feed states and messages to destinations.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+
+      </xsd:complexType>
+      </xsd:element>
+      <!-- end of RSSFeedPullerType::saving_feed_state -->
+
+      <xsd:element name="saving_feed_stat">
+      <xsd:complexType>      
+        <xsd:annotation>
+          <xsd:documentation>Element that specifies feed state processing 
+                             options.</xsd:documentation>
+        </xsd:annotation>
+    
+        <xsd:attribute name="packet_size" 
+                       type="xsd:positiveInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets maximum number of feed state items to be 
+                               sent to puller manager in a single request.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="period" type="xsd:positiveInteger" use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets feed stat saving period, in seconds.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="retry_timeout" 
+                       type="xsd:positiveInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Stat saving retry timeout, in seconds.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="flash_prev_day" 
+                       type="MinuteOfDay" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets time of day when stat for previous day 
+                               to be saved.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="cache_file" type="xsd:string" use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets statistics cache file name.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+      </xsd:complexType>
+      </xsd:element>
+      <!-- end of RSSFeedPullerType::saving_feed_stat -->
+
+      <xsd:element name="message_post">
+      <xsd:complexType>
+        <xsd:annotation>
+          <xsd:documentation>Element that specifies posting messages options.</xsd:documentation>
+        </xsd:annotation>
+
+        <xsd:sequence>
+
+          <xsd:element name="bank_manager" minOccurs="1" maxOccurs="unbounded">
+          <xsd:complexType>
+            <xsd:annotation>
+              <xsd:documentation>Contains information regarding message 
+                                 bank manager providing means to post messages.
+              </xsd:documentation>
+            </xsd:annotation>
+
+            <xsd:attribute name="ref" type="xsd:string" use="required">
+              <xsd:annotation>
+                <xsd:documentation>Specifies CORBA reference to bank manager.</xsd:documentation>
+              </xsd:annotation>
+            </xsd:attribute>
+
+          </xsd:complexType>
+          </xsd:element>
+          <!-- end of RSSFeedPullerType::message_post::bank_manager -->
+
+        </xsd:sequence>
+
+        <xsd:attribute name="message_max_age" 
+                       type="xsd:nonNegativeInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets maximum age in seconds for posted messages.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+      </xsd:complexType>
+      </xsd:element>
+      <!-- end of RSSFeedPullerType::message_post -->
+
+    </xsd:all>
+
+  </xsd:complexType>
+  <!-- end of RSSFeedPullerType -->
+
+  <xsd:complexType name="RSSFeedPullerManagerType">
+    <xsd:annotation>
+      <xsd:documentation>Element that contains parameters for RSS Feed Puller Manager.</xsd:documentation>
+    </xsd:annotation>
+      
+    <xsd:all>
+
+      <xsd:element name="logger" type="LoggerType">
+        <xsd:annotation>
+          <xsd:documentation>Element that specifies logger options.</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+
+      <xsd:element name="puller_management">
+      <xsd:complexType>
+        <xsd:annotation>
+          <xsd:documentation>Element that contains puller management options.</xsd:documentation>
+        </xsd:annotation>
+
+        <xsd:attribute name="registration_timeout" type="xsd:positiveInteger" use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets puller registration timeout, in seconds.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="presence_poll_timeout" type="xsd:positiveInteger" use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets puller presence poll timeout, in seconds.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="reset_timeout" type="xsd:positiveInteger" use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets puller session reset timeout, in seconds.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+      </xsd:complexType>
+      </xsd:element>
+      <!-- end of RSSFeedPullerManagerType::puller_management -->
+
+      <xsd:element name="data_base" type="DataBaseType">
+        <xsd:annotation>
+          <xsd:documentation>Element that specifies data base connection 
+                             options.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+
+      <xsd:element name="fetching_feeds">
+      <xsd:complexType>
+        <xsd:annotation>
+          <xsd:documentation>Element that contains fetching feeds options.</xsd:documentation>
+        </xsd:annotation>
+
+        <xsd:attribute name="check_feeds_period" type="xsd:positiveInteger" use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets check feeds period, in seconds.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="feeds_per_query" type="xsd:positiveInteger" use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets maximum number of feeds to be requested per 
+                               single query.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+      </xsd:complexType>
+      </xsd:element>
+      <!-- end of RSSFeedPullerManagerType::fetching_feeds -->
+
+      <xsd:element name="saving_feed_state">
+      <xsd:complexType>      
+        <xsd:annotation>
+          <xsd:documentation>Element that specifies feed state processing 
+                             options.
+          </xsd:documentation>
+        </xsd:annotation>
+    
+        <xsd:attribute name="packet_size" 
+                       type="xsd:positiveInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets maximum number of feed state items 
+                               to be written into DB in a single query.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="max_delay" 
+                       type="xsd:positiveInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets feed state update maximum delay to 
+                               be allowed before writing into DB, in seconds.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="cache_file" type="xsd:string" use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets state cache file name.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+      </xsd:complexType>
+      </xsd:element>
+      <!-- end of RSSFeedPullerManagerType::saving_feed_state -->
+
+      <xsd:element name="saving_feed_stat">
+      <xsd:complexType>      
+        <xsd:annotation>
+          <xsd:documentation>Element that specifies feed request statistics 
+                             processing options.
+          </xsd:documentation>
+        </xsd:annotation>
+    
+        <xsd:attribute name="files_at_once" 
+                       type="xsd:positiveInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets maximum number of feed statistics files 
+                               to be written into DB in a single query.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="period" 
+                       type="xsd:positiveInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets period for writing feed statistics 
+                               into DB, in seconds.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="keep_days" 
+                       type="xsd:positiveInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets number of days stat records to be stored.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="cache_file" type="xsd:string" use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets statistics cache file name.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+      </xsd:complexType>
+      </xsd:element>
+      <!-- end of RSSFeedPullerManagerType::saving_feed_stat -->
+
+    </xsd:all>
+
+  </xsd:complexType>
+  <!-- end of RSSFeedPullerManagerType -->
+
+  <xsd:complexType name="DataBaseType">
+
+    <xsd:annotation>
+      <xsd:documentation>Element that contains data base connection options.</xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:all>
+      <xsd:element name="connection_pool" minOccurs="0">
+      <xsd:complexType>
+
+        <xsd:attribute name="min_connections" 
+                       type="xsd:nonNegativeInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets minimum number of connections to be 
+                               maintained in pool.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="max_connections" 
+                       type="xsd:nonNegativeInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets maximum number of connections can be 
+                               created in pool.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+      </xsd:complexType>
+      </xsd:element>
+      <!-- end of DataBaseType::connection_pool -->
+    </xsd:all>
+
+    <xsd:attribute name="user" type="xsd:string" default="">
+      <xsd:annotation>
+        <xsd:documentation>Sets user name for DB connection.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="passwd" type="xsd:string" default="">
+      <xsd:annotation>
+        <xsd:documentation>Sets user password for DB connection.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="dbname" type="xsd:string" default="">
+      <xsd:annotation>
+        <xsd:documentation>Sets DB name to use.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="host" type="xsd:string" default="">
+      <xsd:annotation>
+        <xsd:documentation>Sets DB server host.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="port" type="xsd:unsignedShort" default="0">
+      <xsd:annotation>
+        <xsd:documentation>Sets DB server port.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="unix_socket" type="xsd:string" default="">
+      <xsd:annotation>
+        <xsd:documentation>Sets DB server unix socket.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="client_flags" type="xsd:unsignedLong" default="0">
+      <xsd:annotation>
+        <xsd:documentation>Sets DB connection flags.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+  </xsd:complexType>
+  <!-- end of DataBaseType -->
+
+  <xsd:complexType name="LoggerType">
+
+    <xsd:all>
+
+      <xsd:element name="time_span_policy" minOccurs="0">
+      <xsd:complexType>
+        <xsd:attribute name="time" type="xsd:positiveInteger" use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets time interval for log rotation, in seconds.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+      </xsd:complexType>
+      </xsd:element>
+      <!-- end of LoggerType::time_span_policy -->
+	
+      <xsd:element name="size_span_policy" minOccurs="0">
+      <xsd:complexType>
+        <xsd:attribute name="size" type="xsd:positiveInteger" use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets size limit for log rotation, in bytes.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+      </xsd:complexType>
+      </xsd:element>
+      <!-- end of LoggerType::size_span_policy -->
+
+    </xsd:all>
+
+    <xsd:attribute name="filename" type="xsd:string" use="required">
+      <xsd:annotation>
+        <xsd:documentation>Sets the log file name.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+	
+    <xsd:attribute name="log_level" type="xsd:positiveInteger" use="required">
+      <xsd:annotation>
+        <xsd:documentation>Sets logging level.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="aspects" type="xsd:string" default="*">
+      <xsd:annotation>
+        <xsd:documentation>Sets logging aspects (comma-separated list).</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+  </xsd:complexType>
+  <!-- end of LoggerType -->
+
+  <xsd:complexType name="ChannelParseLimitsType">
+
+    <xsd:annotation>
+      <xsd:documentation>Element that specifies feed parsing limits.</xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:attribute name="channel_title" type="xsd:positiveInteger" use="required">
+      <xsd:annotation>
+        <xsd:documentation>Maximum length of channel title, in bytes.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="channel_description" type="xsd:positiveInteger" use="required">
+      <xsd:annotation>
+        <xsd:documentation>Maximum length of channel description, in bytes.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="message_title" type="xsd:positiveInteger" use="required">
+      <xsd:annotation>
+        <xsd:documentation>Maximum length of message title, in bytes.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="message_description" type="xsd:positiveInteger" use="required">
+      <xsd:annotation>
+        <xsd:documentation>Maximum length of message description, in bytes.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="message_description_chars" type="xsd:positiveInteger" use="required">
+      <xsd:annotation>
+        <xsd:documentation>Maximum length of message description, in chars.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="image_alt_text" type="xsd:positiveInteger" use="required">
+      <xsd:annotation>
+        <xsd:documentation>Maximum cumulative length of images alternate text and url, in bytes.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="max_image_count" type="xsd:nonNegativeInteger" use="required">
+      <xsd:annotation>
+        <xsd:documentation>Maximum image count for a message.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+  </xsd:complexType>
+  <!-- end of ChannelParseLimitsType -->
+
+  <xsd:complexType name="RobotsCheckerType">
+
+    <xsd:attribute name="timeout" type="xsd:nonNegativeInteger" use="required">
+      <xsd:annotation>
+        <xsd:documentation>Request timeout, in seconds.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="redirects_to_follow" 
+                   type="xsd:nonNegativeInteger" 
+                   use="required">
+      <xsd:annotation>
+        <xsd:documentation>Sets number of HTTP redirects to follow.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="entry_timeout" type="xsd:nonNegativeInteger" use="required">
+      <xsd:annotation>
+        <xsd:documentation>Cached per-site entry timeout, in seconds.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="cleanup_period" type="xsd:nonNegativeInteger" use="required">
+      <xsd:annotation>
+        <xsd:documentation>Cached cleanup period, in seconds.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+  </xsd:complexType>
+  <!-- end of RobotsCheckerType -->
+
+  <xsd:complexType name="FullArticleRequestType">
+
+    <xsd:annotation>
+      <xsd:documentation>Element that specifies options of 
+                         full article request.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:attribute name="max_size" 
+                   type="xsd:nonNegativeInteger"
+                   use="required">
+      <xsd:annotation>
+        <xsd:documentation>Max bytes to read.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="obey_robots_txt" 
+                   type="xsd:boolean"
+                   use="required">
+      <xsd:annotation>
+        <xsd:documentation>Specify if to obey site robots.txt rules.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+  </xsd:complexType>
+  <!-- end of FullArticleRequestType -->
+
+  <xsd:complexType name="HtmlCacheType">
+
+    <xsd:annotation>
+      <xsd:documentation>Element that specifies options of 
+                         HTML feed cache.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:attribute name="max_size"
+                   type="xsd:nonNegativeInteger"
+                   use="required">
+      <xsd:annotation>
+        <xsd:documentation>Max size to store.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="timeout"
+                   type="xsd:nonNegativeInteger"
+                   use="required">
+      <xsd:annotation>
+        <xsd:documentation>Max time in seconds to wait before removing unused
+                           item.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+  </xsd:complexType>
+  <!-- end of HtmlCacheType -->
+
+  <xsd:complexType name="EntityResolverType">
+
+    <xsd:all>
+
+      <xsd:element name="net_strategy" minOccurs="0">
+      <xsd:complexType>
+        <xsd:attribute name="connect_timeout" 
+                       type="xsd:nonNegativeInteger"
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets connection timeout, in seconds.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="send_timeout" 
+                       type="xsd:nonNegativeInteger"
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets send data timeout, in seconds.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="recv_timeout" 
+                       type="xsd:nonNegativeInteger"
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets receive data timeout, in seconds.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="redirects_to_follow" 
+                       type="xsd:nonNegativeInteger"
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets number of HTTP redirects to follow.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+      </xsd:complexType>
+      </xsd:element>
+      <!-- end of EntityResolverType::net_strategy -->	
+
+      <xsd:element name="file_strategy" minOccurs="0">
+      <xsd:complexType>
+        <xsd:attribute name="cache_dir" type="xsd:string" use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets cache directory file name.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+	
+        <xsd:attribute name="cache_timeout" 
+                       type="xsd:nonNegativeInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets cache entry timeout, in seconds.
+                               Entry get redownloaded when expired.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="cache_retry_period" 
+                       type="xsd:nonNegativeInteger"
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets cache entry request retry period, in seconds.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="max_file_size" 
+                       type="xsd:nonNegativeInteger"
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets max cache file size.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="cache_clean_period" 
+                       type="xsd:nonNegativeInteger"
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets cache cleanup period, in seconds.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="cache_file_expire" 
+                       type="xsd:nonNegativeInteger"
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets cache clean timeout, in seconds. Entry 
+                               get deleted if not being used longer tnan 
+                               time specified.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+      </xsd:complexType>
+      </xsd:element>
+      <!-- end of EntityResolverType::file_strategy -->	
+
+    </xsd:all>
+
+  </xsd:complexType>
+  <!-- end of EntityResolverType -->
+
+  <xsd:simpleType name="FrontendType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="search"/>
+      <xsd:enumeration value="limited"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="PeriodMaximization">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="max"/>
+      <xsd:enumeration value="inc"/>
+      <xsd:enumeration value="dbl"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="MirrorType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="none"/>
+      <xsd:enumeration value="sync"/>
+      <xsd:enumeration value="absolute"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="WordPairCounterType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value=""/>
+      <xsd:enumeration value="btree"/>
+      <xsd:enumeration value="hash"/>
+      <xsd:enumeration value="mem"/>
+      <xsd:enumeration value="db"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="MinuteOfDay">
+    <xsd:restriction base="xsd:string">
+      <xsd:pattern value="([0-1][0-9]|2[0-3]):[0-5][0-9]"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:complexType name="BankMessageManagerType">
+
+    <xsd:annotation>
+      <xsd:documentation>Element that specifies message manager options.</xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:all>
+
+      <xsd:element name="message_import">
+      <xsd:complexType>
+
+        <xsd:annotation>
+          <xsd:documentation>Element uniting message importing options.</xsd:documentation>
+        </xsd:annotation>
+
+        <xsd:attribute name="check_period" 
+                       type="xsd:positiveInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets period (in seconds) of scanning import dir
+                               for files available.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="on_error_retry_period" 
+                       type="xsd:positiveInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets period (in seconds) of import retires
+                               when some error occured during import.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="on_notready_retry_period" 
+                       type="xsd:positiveInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets period (in seconds) of import retires
+                               when MessageBank is not ready to accept an 
+                               imported message pack.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="import_local_directory" type="xsd:string" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets import directory path for files exported 
+                               from the same cluster.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="import_directory" type="xsd:string" use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets import directory path for files exported 
+                               from an external cluster.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="pack_size" 
+                       type="xsd:positiveInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets size of message packs to be produced.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+      </xsd:complexType>
+      </xsd:element>
+      <!-- end of BankMessageManagerType::message_import -->
+
+      <xsd:element name="message_cache">
+      <xsd:complexType>
+
+        <xsd:annotation>
+          <xsd:documentation>Element uniting message caching options.</xsd:documentation>
+        </xsd:annotation>
+
+        <xsd:attribute name="loaded_msg_insert_retry_delay" 
+                       type="xsd:positiveInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets delay (in seconds) to be made if message
+                               bank can not insert message by any reason
+                               (like WordManager not readiness).</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="changed_msg_insert_chunk_size" 
+                       type="xsd:positiveInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Number of changed messages to be inserted at a 
+                               time</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="timeout" 
+                       type="xsd:positiveInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets time period (in seconds) while message 
+                               content stays in memory.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="traverse_period" 
+                       type="xsd:positiveInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets time period (in seconds) between 
+                               cache traverses for preemtion of content of
+                               messages not used for too long ago, deletion of
+                               expired messages and sharing messages. 
+                               During single traverse only subset of messages 
+                               in cache is examined.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="traverse_records" 
+                       type="xsd:positiveInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets number of records examined during single 
+                               traverse.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="delete_message_pack" 
+                       type="xsd:positiveInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets number of messages to delete in single
+                               fetch filter application.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="foreign_msg_db_query_max_count" 
+                       type="xsd:positiveInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets max count of foreign messages to be queried
+                               from DB during single traverse.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="shared_msg_max_count" 
+                       type="xsd:positiveInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets max count of shared messages can be offered
+                               during single traverse.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="share_messages_period" 
+                       type="xsd:nonNegativeInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets time period (in seconds) between 
+                               sequences of message sharing requests.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="optimize_mem_period" 
+                       type="xsd:nonNegativeInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets time period (in seconds) between 
+                               memory usage optimization procedures.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="keep_recently_deleted" 
+                       type="xsd:nonNegativeInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets time to store ids of deleted message;
+                               this set will allow MessageBank to refuse from 
+                               offered shared or lost messages if recently 
+                               deleted.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="max_flush_pack_size" 
+                       type="xsd:nonNegativeInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets max number of message updates to be 
+                               saved into DB simultaneously.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="capacity" 
+                       type="xsd:nonNegativeInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets max number of message could be stored 
+                               in bank. When exceeded no new messages will be
+                               accepted until some old ones expires. 
+                               Unlimited if 0.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="room"
+                       type="xsd:float" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Percentage of capacity to be kept free
+            for new messages. Oldest ones get removed.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="use_cache_message_file" 
+                       type="xsd:boolean"
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Specify if write/read messages to cache file on exit.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+      </xsd:complexType>
+      </xsd:element>
+      <!-- end of BankMessageManagerType::message_cache -->
+
+      <xsd:element name="word_pair_counter">
+      <xsd:complexType>
+
+        <xsd:annotation>
+          <xsd:documentation>Element uniting word pair counter options.</xsd:documentation>
+        </xsd:annotation>
+
+        <xsd:attribute name="type"
+                       type="WordPairCounterType" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Word pair counter storage type.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="filename" 
+                       type="xsd:string" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>DB file path.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="interval_groups" 
+                       type="xsd:nonNegativeInteger"
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Number of word pair counter time interval groups.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="ammend_core_words" 
+                       type="xsd:boolean" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Specify if to ammend core words order based on
+                               word pairs frequency.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="main_languages" 
+                       type="xsd:string" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Contant main language codes.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="bucket_factor" 
+                       type="xsd:float" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Default bucket count get multiplied by this 
+                               number. Bigger - faster but more memory used.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="cache_size" 
+                       type="xsd:nonNegativeInteger"
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Max number for word pair counter cache records.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+      </xsd:complexType>
+      </xsd:element>
+      <!-- end of BankMessageManagerType::word_pair_counter -->
+
+      <xsd:element name="message_loader">
+      <xsd:complexType>
+
+        <xsd:annotation>
+          <xsd:documentation>Element uniting message loader options.</xsd:documentation>
+        </xsd:annotation>
+
+        <xsd:attribute name="retry_period" 
+                       type="xsd:nonNegativeInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets time period (in seconds) between 
+                               DB query retries on failure.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="read_chunk_size" 
+                       type="xsd:positiveInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Number of records to be read on single query.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="max_queue_size" 
+                       type="xsd:positiveInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Maximum number of read messages in queue.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+      </xsd:complexType>
+      </xsd:element>
+      <!-- end of BankMessageManagerType::message_loader -->
+
+      <xsd:element name="message_categorizer">
+      <xsd:complexType>
+
+        <xsd:annotation>
+          <xsd:documentation>Element uniting message categorization options.</xsd:documentation>
+        </xsd:annotation>
+
+        <xsd:attribute name="category_name_as_last_resort"
+                       type="xsd:boolean"
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>If true, then category name will be used if 
+                               localized name not found.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="set_retry_period"
+                       type="xsd:nonNegativeInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Period in seconds of setting categorizer attempt.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="set_retry_max_count"
+                       type="xsd:nonNegativeInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Max number of setting categorizer attempts.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+      </xsd:complexType>
+      </xsd:element>
+      <!-- end of BankMessageManagerType::message_categorizer -->
+
+      <xsd:element name="message_filter">
+      <xsd:complexType>
+
+        <xsd:annotation>
+          <xsd:documentation>Element message fetch filter options.</xsd:documentation>
+        </xsd:annotation>
+
+        <xsd:attribute name="reapply_period" 
+                       type="xsd:nonNegativeInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets time period (in seconds) between 
+                               message filter reapplies (0 - disables feature).</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="set_retry_period"
+                       type="xsd:nonNegativeInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Period in seconds of setting filter attempt.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="set_retry_max_count"
+                       type="xsd:nonNegativeInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Max number of setting filter attempts.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+      </xsd:complexType>
+      </xsd:element>
+      <!-- end of BankMessageManagerType::message_filter -->
+
+      <xsd:element name="adapting_mutex">
+      <xsd:complexType>
+
+        <xsd:annotation>
+          <xsd:documentation>Adapting Mutex options.</xsd:documentation>
+        </xsd:annotation>
+
+        <xsd:attribute name="check_period" 
+                       type="xsd:nonNegativeInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets period of queued writers check 
+                               (0 - behave as regular RW Mutex).</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="tries"
+                       type="xsd:nonNegativeInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Number of tries made by reader to skip ahead 
+                               queued writer.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="wait_time"
+                       type="xsd:nonNegativeInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Time (usec) reader sleep between tries to 
+                               skip ahead queued writer.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+      </xsd:complexType>
+      </xsd:element>
+      <!-- end of BankMessageManagerType::adapting_mutex -->
+
+      <xsd:element name="core_words">
+      <xsd:complexType>
+
+        <xsd:annotation>
+          <xsd:documentation>Element uniting core words detection options.</xsd:documentation>
+        </xsd:annotation>
+
+        <xsd:attribute name="prc" 
+                       type="xsd:positiveInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets percentage of message words included 
+                               into core words set.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="max" use="required">
+
+          <xsd:annotation>
+            <xsd:documentation>Specifies maximum size of core words set.</xsd:documentation>
+          </xsd:annotation>
+
+          <xsd:simpleType>
+            <xsd:restriction base="xsd:integer">
+              <xsd:minInclusive value="0"/>
+              <xsd:maxInclusive value="32"/>
+            </xsd:restriction>
+          </xsd:simpleType>
+
+        </xsd:attribute>
+
+      </xsd:complexType>
+      </xsd:element>
+      <!-- end of BankMessageManagerType::core_words -->
+
+    </xsd:all>
+
+    <xsd:attribute name="message_expiration_time" 
+                   type="xsd:positiveInteger" 
+                   use="required">
+      <xsd:annotation>
+        <xsd:documentation>Sets time period (in seconds) while message 
+                           is kept in the system.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="store_duplicate_messages"
+                   type="xsd:boolean" 
+                   use="required">
+      <xsd:annotation>
+        <xsd:documentation>Specifies if duplicate messages should be stored.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="impression_respected_level" 
+                   type="xsd:nonNegativeInteger" 
+                   use="required">
+      <xsd:annotation>
+        <xsd:documentation>Sets impression respected level.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="trace_search_duration" 
+                   type="xsd:positiveInteger"
+                   use="required">
+      <xsd:annotation>
+        <xsd:documentation>Specifies execution time (seconds) threshold when 
+                           search requests will be logged.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="pushed_message_pack_processing_queue_size" 
+                   type="xsd:positiveInteger" 
+                   use="required">
+      <xsd:annotation>
+        <xsd:documentation>Sets maximum number of pushed foreign
+                           message packs for processing queue. If message 
+                           manager is overwhelmed it will refuse to accept new 
+                           message packs.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="shared_message_pack_processing_queue_size" 
+                   type="xsd:positiveInteger" 
+                   use="required">
+      <xsd:annotation>
+        <xsd:documentation>Sets maximum number of shared
+                           message packs for processing queue. If message 
+                           manager is overwhelmed it will refuse to accept new 
+                           message packs.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="new_message_pack_processing_queue_size" 
+                   type="xsd:positiveInteger" 
+                   use="required">
+      <xsd:annotation>
+        <xsd:documentation>Sets maximum number of new
+                           message packs for processing queue. If message 
+                           manager is overwhelmed it will refuse to accept new 
+                           message packs.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="message_event_pack_processing_queue_size" 
+                   type="xsd:positiveInteger" 
+                   use="required">
+      <xsd:annotation>
+        <xsd:documentation>Sets maximum number of message event packs for 
+                           processing queue. If message manager is overwhelmed 
+                           it will refuse to accept new message event packs.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="cache_file_dir" type="xsd:string" use="required">
+      <xsd:annotation>
+        <xsd:documentation>Sets cache file directory name.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="thumbnail_dir" type="xsd:string" use="required">
+      <xsd:annotation>
+        <xsd:documentation>Sets image thumbnail dir path.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+  </xsd:complexType>
+  <!-- end of BankMessageManagerType -->
+
+  <xsd:complexType name="BankEventManagerType">
+
+    <xsd:annotation>
+      <xsd:documentation>Element that specifies event manager options.</xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:all>
+
+      <xsd:element name="event_remake">
+      <xsd:complexType>
+
+        <xsd:annotation>
+          <xsd:documentation>Element uniting event remaking options.</xsd:documentation>
+        </xsd:annotation>
+
+        <xsd:attribute name="traverse_period" 
+                       type="xsd:nonNegativeInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets time period (in seconds) between 
+                               cache traverses for event remake
+                               possibilities review.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="traverse_records" 
+                       type="xsd:nonNegativeInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Numver of events to review on traverse iteration.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="traverse_pause" 
+                       type="xsd:positiveInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets time pause (in seconds) between 
+                               cache traverse for event remake
+                               runs.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="min_improve"
+                       type="xsd:positiveInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets a minimum relative overlap improve
+                               factor in percents to conduct event 
+                               separation for consecutive merge.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="min_size_remake"
+                       type="xsd:positiveInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets a minimum event size for check
+            during event remake traverse.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="min_size_revise"
+                       type="xsd:positiveInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets a minimum event size for check
+            during event revision traverse.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="min_part"
+                       type="xsd:positiveInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets a minimum size for event
+            part to detach and merge candidate event.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="dry_run" 
+                       type="xsd:boolean" 
+                       default="false">
+          <xsd:annotation>
+            <xsd:documentation>If true then no event remake will be
+            done but just corresponding logging conducted.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+      </xsd:complexType>
+      </xsd:element>
+      <!-- end of BankEventManagerType::event_cache -->
+
+      <xsd:element name="event_cache">
+      <xsd:complexType>
+
+        <xsd:annotation>
+          <xsd:documentation>Element uniting event caching options.</xsd:documentation>
+        </xsd:annotation>
+
+        <xsd:attribute name="traverse_period_min" 
+                       type="xsd:positiveInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets minimum time period (in seconds) between 
+                               cache traverses for deletion of
+                               expired messages and events. 
+                               During single traverse only subset of events 
+                               in cache is examined.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="traverse_period_max" 
+                       type="xsd:positiveInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets maximum time period (in seconds) between 
+                               cache traverses for deletion of
+                               expired messages and events. 
+                               During single traverse only subset of events 
+                               in cache is examined.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="traverse_period_maximization" 
+                       type="PeriodMaximization" use="required">
+          <xsd:annotation>
+            <xsd:documentation>If 'max' traverse_period set to max.
+                               if 'inc' - increased by 1,
+                               if 'dbl' - doubled</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="traverse_records" 
+                       type="xsd:positiveInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets number of records examined during single 
+                               traverse.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="recompose_timeout" 
+                       type="xsd:nonNegativeInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets timeout (in seconds) for event to
+            be a subject of split, separation or remake check.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="revise_events_period" 
+                       type="xsd:nonNegativeInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets time period (in seconds) between 
+                               sequences of event revisions.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="load_messages" 
+                       type="xsd:positiveInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets maximum number of messages that can be 
+                               loaded in a single DB query.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="cleanup_allowed_change_events_count" 
+                       type="xsd:nonNegativeInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets maximum size of changed events queue 
+                               allowing events cleanup.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="merge_check_period" 
+                       type="xsd:positiveInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets period in seconds of availability of 
+                               events for merge.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="merge_blacklist_cleanup_period" 
+                       type="xsd:nonNegativeInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets period in seconds of merge blacklist 
+                               cleanup procedure.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="push_out_prc_per_hour" 
+                       type="xsd:nonNegativeInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets percentage of events to be pushed out to 
+                               neighbour banks per hour.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="event_load_retry_delay" 
+                       type="xsd:positiveInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets retry delay in seconds if load events 
+                               failed due to word manager inavailability.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="msg_core_words_timeout" 
+                       type="xsd:positiveInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets message core words timeout in seconds.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="msg_core_words_preemt_period" 
+                       type="xsd:positiveInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets message core words preemtion period in 
+                               seconds.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="find_best_overlap_timeout" 
+                       type="xsd:positiveInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets timeout for consequitive searches 
+                               for changed events best intersects.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+      </xsd:complexType>
+      </xsd:element>
+      <!-- end of BankEventManagerType::event_cache -->
+
+      <xsd:element name="event">
+      <xsd:complexType>
+
+        <xsd:annotation>
+          <xsd:documentation>Element uniting event manipulation options.</xsd:documentation>
+        </xsd:annotation>
+
+        <xsd:attribute name="max_size"
+                       type="xsd:nonNegativeInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets event maximum size.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="max_time_range"
+                       type="xsd:nonNegativeInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets event maximum time range.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="max_core_words" use="required">
+
+          <xsd:annotation>
+            <xsd:documentation>Specifies maximum size of core words set.</xsd:documentation>
+          </xsd:annotation>
+
+          <xsd:simpleType>
+            <xsd:restriction base="xsd:integer">
+              <xsd:minInclusive value="0"/>
+              <xsd:maxInclusive value="128"/>
+            </xsd:restriction>
+          </xsd:simpleType>
+
+        </xsd:attribute>
+
+        <xsd:attribute name="max_message_core_words" use="required">
+
+          <xsd:annotation>
+            <xsd:documentation>Specifies maximum size of message core words set.</xsd:documentation>
+          </xsd:annotation>
+
+          <xsd:simpleType>
+            <xsd:restriction base="xsd:integer">
+              <xsd:minInclusive value="0"/>
+              <xsd:maxInclusive value="32"/>
+            </xsd:restriction>
+          </xsd:simpleType>
+
+        </xsd:attribute>
+
+        <xsd:attribute name="merge_level_base"
+                       type="xsd:positiveInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets events required base overlap level to merge.
+                               Applied to not big events with not big time diff.
+                               Increase of mentioned factors change merge level 
+                               in opposite directions
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="merge_level_min"
+                       type="xsd:positiveInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets events required max overlap level to merge.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="merge_level_size_based_decrement_step"
+                       type="xsd:double" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets events merge level decrement per each
+                               message of event size.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="merge_deny_size_factor"
+                       type="xsd:nonNegativeInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets size-based factor for calculating events 
+                               merge deny timeout.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="merge_deny_max_time"
+                       type="xsd:nonNegativeInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets maximum events merge deny timeout.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="merge_max_time_diff"
+                       type="xsd:nonNegativeInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets maximum time difference between events to 
+                               be merged.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="min_rift_time"
+                       type="xsd:positiveInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets minimum time difference between event 2 
+                               parts which can be considered as a place to 
+                               split event.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="merge_level_time_based_increment_step"
+                       type="xsd:double" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets events merge level increment per 1 day
+                               of time difference.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="merge_level_strain_based_increment_step"
+                       type="xsd:double" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets events merge level increment per 1% of 
+                               strain.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="merge_level_range_based_increment_step"
+                       type="xsd:double" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Sets events merge level increment per 1 day
+                               of time range.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="merge_max_strain"
+                       type="xsd:nonNegativeInteger" 
+                       use="required">
+          <xsd:annotation>
+            <xsd:documentation>Maximum strain event can have to be merged 
+                               with other event.</xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+      </xsd:complexType>
+      </xsd:element>
+      <!-- end of BankEventManagerType::event -->
+
+    </xsd:all>
+
+    <xsd:attribute name="read_chunk_size" 
+                   type="xsd:positiveInteger" 
+                   use="required">
+      <xsd:annotation>
+        <xsd:documentation>Sets number of events to be loaded at once from DB.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="message_expiration_time" 
+                   type="xsd:positiveInteger" 
+                   use="required">
+      <xsd:annotation>
+        <xsd:documentation>Sets time period (in seconds) while message 
+                           is kept in the system.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="message_update_chunk_size" 
+                   type="xsd:positiveInteger" 
+                   use="required">
+      <xsd:annotation>
+        <xsd:documentation>Sets max number of messages in update chunk.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="message_update_chunk_min_period" 
+                   type="xsd:nonNegativeInteger" 
+                   use="required">
+      <xsd:annotation>
+        <xsd:documentation>Sets min number of seconds between message update
+                           calls.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="cache_file" type="xsd:string" use="required">
+      <xsd:annotation>
+        <xsd:documentation>Sets statistics cache file name.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="message_bank_manager_ref" type="xsd:string" use="required">
+      <xsd:annotation>
+        <xsd:documentation>Sets CORBA reference to message bank manager.</xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+  </xsd:complexType>
+  <!-- end of BankEventManagerType -->
+
+</xsd:schema>

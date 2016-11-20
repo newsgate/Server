@@ -1,0 +1,7 @@
+ON_SITE      at
+
+IR_REQUEST_TOO_LARGE Widget request URI is too large. Try to simplify search criteria.
+IR_BAD_CODE Invalid widget code
+IR_VISUAL_DESC Copy widget code below into a WEB page markup where you want news block to appear.
+IR_OBJECT_DESC <span style='background-color:#FFF7EC'>Code for a widget of an object type creates a non-visual JavaScript element containing news information. Copy the widget code below into a WEB page markup where you want the object to be created. Clear the 'Widget/Variable Name' field to obtain news information in the <a href='http://en.wikipedia.org/wiki/JSON' target='_blank'>JSON format</a>.</span>
+IR_JSON_DESC <span style='background-color:#FFE0E0'>Use the URL below to obtain news information in the <a href='http://en.wikipedia.org/wiki/JSON' target='_blank'>JSON format</a>.</span>

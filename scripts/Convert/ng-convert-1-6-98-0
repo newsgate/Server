@@ -1,0 +1,22 @@
+#!/bin/sh
+
+# product   : NewsGate - news search WEB server
+# copyright : Copyright (c) 2005-2016 Karen Arutyunov
+# licenses  : CC BY-NC-SA 3.0; see accompanying LICENSE file
+#             Commercial; contact karen.arutyunov@gmail.com
+
+source "$1/lib.sh"
+
+echo_date "Cleaning AdServer cache ..."
+rm $3/Ad/* 2>/dev/null
+
+echo_date "Altering AdCondition table ..."
+
+echo "alter table AdCondition \
+add query_type_exclusions BIGINT UNSIGNED NOT NULL DEFAULT 0 after group_count_cap, \
+add query_types BIGINT UNSIGNED NOT NULL DEFAULT 0 after group_count_cap, \
+add content_language_exclusions VARCHAR(512) character set ascii NOT NULL DEFAULT '' after referer_exclusions, \
+add content_languages VARCHAR(512) character set ascii NOT NULL DEFAULT '' after referer_exclusions;" | \
+ng-mysql --user root NewsGate
+
+if test $? -eq 0; then echo_date "Done"; else echo_date "Failed"; exit 1; fi

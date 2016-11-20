@@ -1,0 +1,11 @@
+# Makefile.in
+# @author Karen Arutyunov
+# $Id:$
+
+include Common.pre.rules
+
+target_makefile_list := RSSPuller.cpp.mk ThumbGen.cpp.mk
+
+RSSPuller.cpp.mk : ThumbGen.cpp.mk
+
+include $(osbe_builddir)/config/Makentry.post.rules

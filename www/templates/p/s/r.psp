@@ -1,0 +1,268 @@
+import search_util
+
+#
+# Initialization
+#
+
+request, loc = context.request, context.localization.get
+header = request.input.headers().find
+
+no_follow_msg = True
+
+render = search_util.SearchPageContext(context, search_engine, "r", False)
+
+if render.interceptor: render.block = render.interceptor.bastion("rss")
+
+render.start_from = 0
+render.version = int(render.raw_param("rv", "1"))
+
+search_context = render.search_context()
+
+if render.max_image_count: 
+  search_context.adjust_images = True
+
+search_context.optimize_query = True
+search_context.title_format = 0
+search_context.keywords_format = 0
+search_context.img_alt_format = 0
+
+if render.version > 1: search_context.max_desc_len = 400
+
+search_context.sr_flags = newsgate.search.SearchContext.RF_CATEGORY_STAT
+
+search_context.gm_flags = newsgate.search.SearchContext.GM_LINK | \
+                          newsgate.search.SearchContext.GM_ID | \
+                          newsgate.search.SearchContext.GM_PUB_DATE | \
+                          newsgate.search.SearchContext.GM_TITLE | \
+                          newsgate.search.SearchContext.GM_CATEGORIES | \
+                          newsgate.search.SearchContext.GM_EVENT |\
+                          newsgate.search.SearchContext.GM_SOURCE
+
+if render.desc_length:
+  search_context.gm_flags |= newsgate.search.SearchContext.GM_DESC
+
+if render.desc_length > 0:
+  search_context.max_desc_len = \
+    min(search_context.max_desc_len, render.desc_length)
+
+if search_context.max_image_count:
+  search_context.max_image_count = 0xFFFFFFFF
+  search_context.gm_flags |= newsgate.search.SearchContext.GM_IMG
+
+search_context.category_locale = render.modifier.category
+
+try: search_result = render.search(search_context)
+except SyntaxError, e:
+  render.exit(400) #bad request
+
+request.output.send_header("ETag", str(search_result.etag))
+
+if search_result.nochanges:
+  render.exit(304) # not modified
+
+request.output.content_type("text/xml; charset=UTF-8")
+
+render.set_uid()
+
+description = ""
+
+if render.modifier.all: title = render.loc("NEWS_TITLE")
+else:
+
+  title = ""
+
+  if render.search_result != None and render.modifier.category:
+
+    title = \
+      el.string.manip.xml_encode(render.search_result.category_locale.title)
+
+    description = \
+      el.string.manip.xml_encode(\
+        render.search_result.category_locale.description)
+
+  if not title: title = render.query_title()
+
+render.prn(
+R'''<?xml version="1.0" encoding="utf-8" ?>
+<rss version="2.0">
+<channel>
+<title>''', title, ' - ',
+    el.string.manip.xml_encode(render.static.server_instance_name), 
+R'''</title>
+<link>''', 
+search_util.xml_smart_encode(render.search_link(export = True, path = '/p/s/h')),
+'</link>')
+
+if description: render.prn('\n<description>', description, '</description>')
+
+render.prn(R'''
+<lastBuildDate>''', el.Moment(request.time()).rfc0822(), R'''</lastBuildDate>
+<ttl>''', render.channel_ttl(), '</ttl>')
+
+for msg in search_result.messages:
+
+  msg_click_url = render.message_click_url(msg)
+  msg_page_url = render.message_url(msg, last_resort = msg.url, ad_tag = "rs")
+  msg_url = render.version > 1 and msg_page_url or msg_click_url
+
+  render.prn(
+R'''
+<item>
+  <title>''', search_util.xml_smart_encode(msg.title), R'''</title>
+  <description>''')
+
+  description = ""
+  image_count = len(msg.images)
+
+  if render.max_image_count and msg.front_image == None and image_count:
+
+    image_count -= 1
+    new_images = el.Sequence()
+
+    for img in msg.images:
+      if msg.front_image == None: msg.front_image = img
+      else: new_images.append(img)
+    
+    msg.images = new_images
+
+  if render.max_image_count and msg.front_image != None:
+
+    img_desc = render.create_image_desc(msg.front_image)
+
+    description += '<a href="' + \
+      el.string.manip.xml_encode(\
+        render.message_url(msg, msg.front_image, msg.url, ad_tag = "rs")) + \
+      '" target="_blank"' + (no_follow_msg and ' rel="nofollow"' or '') + \
+      '><img class="msg_front_img" src="' + \
+      el.string.manip.xml_encode(img_desc.url) + '" ' + \
+      img_desc.width_attr + ' ' + img_desc.height_attr + \
+      ' style="border-style:none;'
+
+    if msg.description:
+      description += ' margin:0.2em 0 0.5em 1em; float:right;'
+    else:
+      description += ' margin:0.2em 0 0.5em 0;'
+
+    description += '"/></a>'
+
+  description += msg.description
+
+  if description: description += '\n'
+  description += '<div style="font-size:90%; padding:1em 0 0 0;">'
+
+  if image_count:
+
+    msg_images_heading = render.get_template("MSG_IMAGES_HEADING")
+
+    vars = { "MSG_IMAGES_COUNT" : render.localizer.plural("image", 
+                                                          image_count,
+                                                          render.language),
+             "MSG_PAGE_REF" : el.string.manip.xml_encode(msg_page_url)
+           }
+
+    description += '\n' + msg_images_heading.instantiate(vars) + '<br>'
+
+  fl = render.filter.sticky()
+
+  if msg.event_capacity > 1 and \
+     render.modifier.similar.message_id == "" and \
+     render.filter.event.message_id == "":
+
+    mod = search_util.Modifier()
+    mod.similar.message_id = msg.encoded_id
+    mod.similar.event_id = msg.encoded_event_id
+
+    link = render.search_link(export = True,
+                              modifier = mod,
+                              filter = fl,
+                              path = '/p/s/h')
+
+    description += '\n<a href="' + \
+      el.string.manip.xml_encode(link) + '" target="_blank">' + \
+      render.loc("SIMILAR_POSTS") + '&nbsp;(' + str(msg.event_capacity) + \
+      ')</a><br>'
+
+  mod = search_util.Modifier()
+  mod.source = msg.source_url
+
+  link = render.search_link(export = True,
+                            modifier = mod,
+                            filter = fl,
+                            path = '/p/s/h')
+
+  description += '\n' + render.loc("MSG_SOURCE") + ' <a href="' + \
+    el.string.manip.xml_encode(link) + '" target="_blank">' + \
+    el.string.manip.xml_encode(\
+      search_util.truncate_text(msg.source_title or msg.source_url)) + \
+    '</a>'
+
+  first = True
+  prev_parent_cat = ""
+  mod = search_util.Modifier()
+
+  for cat in msg.categories:
+
+    localized_cat = render.translate_category_name(cat)
+    if localized_cat == "": continue
+
+    cat_parts = localized_cat.rsplit('/', 1)
+    short_cat_name = False
+
+    if len(cat_parts) == 2:
+      parent_cat = cat_parts[0]
+      short_cat_name = parent_cat == prev_parent_cat
+      if short_cat_name: localized_cat = cat_parts[1]
+    else:
+      parent_cat = ""
+
+    prev_parent_cat = parent_cat
+
+    if first:
+      description += '<br>\n' + render.loc("CATEGORIES") + ' '
+      first = False
+    else:
+      description += short_cat_name and ", " or "&#xA0;&#xB7; "
+
+    mod.category = cat
+
+    link = render.search_link(export = True,
+                              modifier = mod,
+                              filter = fl,
+                              path = '/p/s/h')
+
+    description += '<a href="' + el.string.manip.xml_encode(link) + \
+                   '" target="_blank">' + \
+                   el.string.manip.xml_encode(localized_cat) + '</a>'
+
+  description += '</div>'
+
+  render.prn(search_util.xml_smart_encode(description))
+
+  render.prn('\n  </description>')
+
+  for cat in msg.categories:
+
+    tcat = render.translate_category_name(cat)
+
+    if tcat:
+
+      mod = search_util.Modifier()
+      mod.category = cat
+
+      cat_url = render.search_link(\
+        export = True,
+        modifier = mod,
+        filter = render.crawler == None and fl or False,
+        path = '/p/s/h')
+
+      render.prn('\n  <category domain="', el.string.manip.xml_encode(cat_url),
+                 '">', search_util.xml_smart_encode(tcat), '</category>')
+
+  render.prn('\n  <pubDate>', el.Moment(el.TimeValue(msg.published)).rfc0822(),
+             '</pubDate>\n  <link>', search_util.xml_smart_encode(msg_url),
+             '</link>\n</item>')
+
+render.prn('\n</channel>\n</rss>')
+
+# Break circular references ...
+render.exit()

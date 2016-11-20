@@ -1,0 +1,104 @@
+body
+{
+  font-family: Verdana, Tahoma, Geneva, Helvetica, Arial, Sans-serif;
+  background: rgb(250, 250, 250);
+  padding: 0;
+  border: 0;
+  margin: 0;
+  text-align: center; /* hack for IE */
+}
+
+a
+{
+  text-decoration: none;
+}
+
+a:hover
+{
+  text-decoration: underline;
+}
+
+a:active
+{
+  text-decoration: underline;
+  color: red;
+}
+
+a:focus
+{
+  text-decoration: underline;
+  color: red;
+}
+
+#topbar
+{
+  background: rgb(230, 230, 235);
+  width: 100%;
+  height: 2em;
+  border-bottom: 1px solid rgb(80, 80, 80);
+  padding: 0;
+  margin: 0;
+}
+
+#topbar table
+{
+  font-size: 80%;
+  width: 100%;
+}
+
+#page_name
+{
+  text-align: left;
+  padding: 0.25em 0 0.2em 1em;
+}
+
+#right_menu
+{
+  text-align: right;
+  width: 50%;
+  padding: 0.3em 1em 0.5em 0;
+}
+
+#main_area
+{
+  font: 90%/125% Georgia, Palatino, Times, Times New Roman, serif;
+  text-align: justify;
+  margin: 0 auto;
+  width: 45em;
+}
+
+#email_info
+{
+  padding: 1em 0 0;
+}
+
+#feed_back
+{
+  padding: 1em 0 0.3em;
+}
+
+#error
+{
+  padding: 0 0 0 1em;
+  color: red;
+}
+
+#f
+{
+  margin: 0;
+  padding: 0;
+}
+
+#b
+{
+  width: 10em;
+}
+
+#copyright
+{
+  font-size: 60%;
+  text-align: center;
+  height: 2em;
+  padding: 2em 0;
+}
+

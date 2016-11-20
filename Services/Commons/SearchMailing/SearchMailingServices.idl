@@ -1,0 +1,129 @@
+/*
+ * product   : NewsGate - news search WEB server
+ * copyright : Copyright (c) 2005-2016 Karen Arutyunov
+ * licenses  : CC BY-NC-SA 3.0; see accompanying LICENSE file
+ *             Commercial; contact karen.arutyunov@gmail.com
+ */
+
+/**
+ * @file NewsGate/Server/Services/Commons/SearchMailing/SearchMailingServices.idl
+ * @author Karen Arutyunov
+ * $Id:$
+ */
+
+#ifndef _NEWSGATE_SERVER_SERVICES_COMMONS_SEARCHMAILING_SEARCHMAILINGSERVICES_IDL_
+#define _NEWSGATE_SERVER_SERVICES_COMMONS_SEARCHMAILING_SEARCHMAILINGSERVICES_IDL_
+
+module NewsGate
+{ 
+  module SearchMailing
+  {
+    module Transport
+    {
+      //
+      // Implementation in Services/Commons/SearchMailing/TransportImpl.hpp
+      //
+      
+      custom valuetype Subscription
+      {
+      };
+      
+      custom valuetype SubscriptionPack
+      {
+      };
+    };
+    
+    exception IncompatibleVersion
+    {
+      unsigned long current_version;
+    };
+
+    exception NotFound
+    {
+      string description;
+    };
+
+    exception NoOp
+    {
+      string description;
+    };
+
+    exception NeedConfirmation
+    {
+      string session;
+    };
+
+    exception CheckHuman
+    {
+    };
+
+    exception EmailChange
+    {
+      string session;
+      string email;
+    };
+
+    exception ImplementationException
+    {
+      string description;
+    };
+
+    interface Mailer
+    {
+      // Increment whenever structures defined in
+      // Services/Commons/SearchMailing/SearchMailing.hpp change
+      const unsigned long INTERFACE_VERSION = 1;
+
+      Transport::Subscription
+      get_subscription(in unsigned long interface_version,
+                       in string id)
+        raises(IncompatibleVersion,
+               NotFound,
+               ImplementationException);
+
+      Transport::SubscriptionPack
+      get_subscriptions(in unsigned long interface_version,
+                        in string email,
+                        in string lang,
+                        in string token,
+                        in string user,
+                        in string ip,
+                        in string agent,
+                        inout string session,
+                        in boolean is_human)
+        raises(CheckHuman,
+               NeedConfirmation,
+               NotFound,
+               IncompatibleVersion,
+               ImplementationException);
+
+      string update_subscription(in unsigned long interface_version,
+                                 in Transport::Subscription subs,
+                                 in boolean is_human)
+        raises(EmailChange,
+               CheckHuman,
+               NotFound,
+               IncompatibleVersion,
+               ImplementationException);
+
+      boolean enable_subscription(in string email,
+                                  in string id,
+                                  in unsigned long status,
+                                  in string user,
+                                  in string ip,
+                                  in string agent,
+                                  inout string session,
+                                  in boolean is_human)
+        raises(CheckHuman, NoOp, NotFound, ImplementationException);
+      
+      string confirm_operation(in string token,
+                               in string user,
+                               in string ip,
+                               in string agent,
+                               out string email)
+        raises(EmailChange, ImplementationException);
+    };
+  };  
+};
+
+#endif // _NEWSGATE_SERVER_SERVICES_COMMONS_SEARCHMAILING_SEARCHMAILINGSERVICES_IDL_

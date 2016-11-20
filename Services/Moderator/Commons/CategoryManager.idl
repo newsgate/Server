@@ -1,0 +1,295 @@
+/*
+ * product   : NewsGate - news search WEB server
+ * copyright : Copyright (c) 2005-2016 Karen Arutyunov
+ * licenses  : CC BY-NC-SA 3.0; see accompanying LICENSE file
+ *             Commercial; contact karen.arutyunov@gmail.com
+ */
+
+/**
+ * @file NewsGate/Server/Services/Moderator/Commons/CategoryManager.idl
+ * @author Karen Arutyunov
+ * $Id:$
+ */
+
+#ifndef _NEWSGATE_SERVER_SERVICES_MODERATOR_COMMONS_CATEGORYMANAGER_IDL_
+#define _NEWSGATE_SERVER_SERVICES_MODERATOR_COMMONS_CATEGORYMANAGER_IDL_
+
+#include <Services/Moderator/Commons/ModerationCommons.idl>
+
+module NewsGate
+{ 
+  module Moderation
+  {
+    module Category
+    {
+      typedef unsigned long long CategoryId;
+      typedef unsigned long long CreatorId;
+      typedef unsigned long long CategoryVersion;
+      typedef unsigned long long WordListVersion;
+      typedef unsigned long long ModeratorId;
+
+      typedef sequence<CategoryId> CategoryIdSeq;
+
+      struct LocaleDescriptor
+      {
+        unsigned short lang;
+        unsigned short country;
+        string name;
+        string title;
+        string short_title;
+        string description;
+        string keywords;
+      };
+      
+      typedef sequence<LocaleDescriptor> LocaleDescriptorSeq;
+
+      struct WordListDescriptor
+      {
+        string name;
+        string words;
+        WordListVersion version;
+        boolean updated;
+        string description;
+      };
+      
+      typedef sequence<WordListDescriptor> WordListDescriptorSeq;
+      
+      struct ExpressionDescriptor
+      {
+        string expression;
+        string description;
+      };
+      
+      typedef sequence<ExpressionDescriptor> ExpressionDescriptorSeq;
+      
+      enum CategoryStatus
+      {
+        CS_ENABLED,
+        CS_DISABLED,
+        CS_COUNT
+      };
+
+      enum CategorySearcheable
+      {
+        CR_YES,
+        CR_NO,
+        CR_COUNT
+      };
+
+      struct CategoryPathElem
+      {
+        string name;
+        CategoryId id;
+      };
+      
+      typedef sequence<CategoryPathElem> CategoryPathElemSeq;
+
+      struct CategoryPath
+      {
+        CategoryPathElemSeq elems;
+        string path;
+      };
+
+      typedef sequence<CategoryPath> CategoryPathSeq;
+
+      struct CategoryDescriptor;
+      typedef sequence<CategoryDescriptor> CategoryDescriptorSeq;
+      typedef sequence<unsigned long long> MessageIdSeq;
+      
+      struct CategoryDescriptor
+      {
+        CategoryId id;
+        string name;
+        CategoryStatus status;
+        CategorySearcheable searcheable;
+        LocaleDescriptorSeq locales;
+        WordListDescriptorSeq word_lists;
+        ExpressionDescriptorSeq expressions;
+        MessageIdSeq included_messages;
+        MessageIdSeq excluded_messages;
+        CategoryDescriptorSeq parents;
+        CategoryDescriptorSeq children;
+        string description;
+        CreatorId creator_id;
+        CategoryVersion version;
+        CategoryPathSeq paths;
+      };
+
+      struct WordFinding
+      {
+        string text;
+        unsigned long from;
+        unsigned long to;
+        unsigned long start;
+        unsigned long end;
+      };
+
+      typedef sequence<WordFinding> WordFindingSeq;
+
+      struct WordListFinding
+      {
+        string name;
+        WordFindingSeq words;
+      };
+
+      typedef sequence<WordListFinding> WordListFindingSeq;
+      
+      struct CategoryFinding
+      {
+        CategoryId id;
+        string path;
+        WordListFindingSeq word_lists;
+      };
+
+      typedef sequence<CategoryFinding> CategoryFindingSeq;
+
+      typedef sequence<unsigned long long> PhraseIdSeq;
+      
+      struct PhraseOccurance
+      {
+        string phrase;
+        unsigned long long id;
+        unsigned long occurances;
+        unsigned long occurances_irrelevant;
+        unsigned long total_irrelevant_occurances;
+        double occurances_freq;
+        double occurances_irrelevant_freq;
+        double occurances_freq_excess;
+      };
+
+      typedef sequence<PhraseOccurance> PhraseOccuranceSeq;
+
+      struct RelevantPhrases
+      {
+        PhraseOccuranceSeq phrases;
+        unsigned long relevant_message_count;
+        unsigned long irrelevant_message_count;
+        string query;
+        unsigned long search_time;
+        unsigned long total_time;
+        unsigned long phrase_counting_time;
+        unsigned long phrase_sorting_time;
+        unsigned long category_parsing_time;
+        unsigned long usefulness_calc_time;
+      };
+      
+      exception CategoryNotFound
+      {
+      };
+      
+      exception NoPath
+      {
+        CategoryId id;
+        string name;
+      };
+      
+      exception Cycle
+      {
+        CategoryId id;
+        string name;
+      };
+      
+      exception ForbiddenOperation
+      {
+        string description;
+      };
+
+      exception VersionMismatch
+      {
+        string description;
+      };      
+      
+      exception WordListNotFound
+      {
+        string name;
+        unsigned long expression_index;
+        unsigned long position;
+      };
+      
+      exception ExpressionParseError
+      {
+        unsigned long expression_index;
+        string word_list_name;
+        unsigned long position;
+        string description;
+      };
+      
+      interface Manager
+      {
+//        RelevantPhrases relevant_phrases(in string query, in string lang)
+//          raises(ExpressionParseError, ImplementationException);
+        
+        RelevantPhrases category_relevant_phrases(in CategoryId id,
+                                                  in string lang,
+                                                  in PhraseIdSeq skip_phrases)
+          raises(CategoryNotFound, ImplementationException);
+        
+        CategoryDescriptor create_category(in CategoryDescriptor category,
+                                           in ModeratorId moderator_id,
+                                           in string moderator_name,
+                                           in string ip)
+          raises(NoPath,
+                 Cycle,
+                 ForbiddenOperation,
+                 WordListNotFound,
+                 ExpressionParseError,
+                 ImplementationException);
+
+        CategoryDescriptor update_category(in CategoryDescriptor category,
+                                           in ModeratorId moderator_id,
+                                           in string moderator_name,
+                                           in string ip)
+          raises(CategoryNotFound,
+                 NoPath,
+                 Cycle,
+                 ForbiddenOperation,
+                 WordListNotFound,
+                 ExpressionParseError,
+                 VersionMismatch,
+                 ImplementationException);
+
+        CategoryDescriptor update_word_lists(
+          in CategoryId category_id,
+          in WordListDescriptorSeq word_lists,
+          in boolean category_manager,
+          in ModeratorId moderator_id,
+          in string moderator_name,
+          in string ip)
+          raises(ForbiddenOperation,
+                 WordListNotFound,
+                 ExpressionParseError,
+                 VersionMismatch,
+                 ImplementationException);
+
+        CategoryDescriptor get_category(in CategoryId id)
+          raises(CategoryNotFound, ImplementationException);
+
+        CategoryDescriptor get_category_version(in CategoryId id)
+          raises(CategoryNotFound, ImplementationException);
+
+        CategoryDescriptor find_category(in string path)
+          raises(CategoryNotFound, ImplementationException);
+
+        void add_category_message(in CategoryId category_id,
+                                  in unsigned long long message_id,
+                                  in char relation,
+                                  in ModeratorId moderator_id,
+                                  in string moderator_name,
+                                  in string ip)
+          raises(CategoryNotFound, ImplementationException);
+
+        void delete_categories(in CategoryIdSeq ids,
+                               in ModeratorId moderator_id,
+                               in string moderator_name,
+                               in string ip)
+          raises(ForbiddenOperation, ImplementationException);
+
+        CategoryFindingSeq find_text(in string text)
+          raises(ImplementationException);
+      };
+
+    };
+  };
+};
+
+#endif // _NEWSGATE_SERVER_SERVICES_MODERATOR_COMMONS_CATEGORYMANAGER_IDL_

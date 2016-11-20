@@ -1,0 +1,716 @@
+from moderation_func import *
+
+def validate_ip_masks(masks, error_prefix):
+
+  for m in masks.split('\n'):
+    m = m.strip()
+
+    if m:
+      try:
+        m = el.net.IpMask(m)
+      except ValueError, e:
+        err = str(e)
+        return error_prefix + \
+          err[0:err.find("(El::Net::Python::IpMask::IpMask)")]
+
+  return ""
+
+def validate_languages(langs, anynone, error_prefix):
+
+  for l in langs.split('\n'):
+    l = l.strip()
+
+    if l:
+
+      if anynone and (l == "[any]" or l == "[none]"):
+        continue
+
+      try:
+        l = el.Lang(l)
+      except:
+        return error_prefix + "invalid language " + l
+
+  return ""
+
+def validate_query_types(prm, error_prefix, svc):
+
+  type_names = param(prm).strip()
+  types = 0
+
+  for t in type_names.split('\n'):
+    t = t.strip()
+    if not t: continue
+
+    if t == "[none]": types |= newsgate.ad.QT_NONE
+    elif t == "[any]": types |= newsgate.ad.QT_ANY
+    elif t == "search": types |= newsgate.ad.QT_SEARCH
+    elif t == "event": types |= newsgate.ad.QT_EVENT
+    elif t == "category": types |= newsgate.ad.QT_CATEGORY
+    elif t == "source": types |= newsgate.ad.QT_SOURCE
+    elif t == "message": types |= newsgate.ad.QT_MESSAGE
+    else:
+      svc.bad_values[prm] = type_names
+      svc.error = error_prefix + "invalid value " + t
+      return 0
+  
+  return types
+
+def query_type_names(types, svc, prm):
+
+  if prm in svc.bad_values: return svc.bad_values[prm]
+
+  text = ""
+
+  if types & newsgate.ad.QT_NONE:
+    if text: text += "\n"
+    text += "[none]"
+
+  if types & newsgate.ad.QT_ANY:
+    if text: text += "\n"
+    text += "[any]"
+
+  if types & newsgate.ad.QT_SEARCH:
+    if text: text += "\n"
+    text += "search"
+
+  if types & newsgate.ad.QT_EVENT:
+    if text: text += "\n"
+    text += "event"
+
+  if types & newsgate.ad.QT_CATEGORY:
+    if text: text += "\n"
+    text += "category"
+
+  if types & newsgate.ad.QT_SOURCE:
+    if text: text += "\n"
+    text += "source"
+
+  if types & newsgate.ad.QT_MESSAGE:
+    if text: text += "\n"
+    text += "message"
+
+  return text
+
+request, conf = context.request, context.config.get
+message = context.forward_params
+prn, param = request.output.stream.prn, request.input.parameters().find
+
+moderator = connect_moderator(request, moderator_connector)
+advertiser_id = moderator.advertiser_id
+
+ad_manager = \
+  moderator.has_privilege(newsgate.moderation.moderator.PV_AD_MANAGER)
+
+if not advertiser_id:
+  el.exit(403) # Forbidden
+
+id = long(param("id", 0))
+cl = long(param("cl", 0))
+
+svc = SetValueCtx()
+
+if param("u"):
+
+  cond = newsgate.moderation.ad.Condition()
+  cond.id = id
+  cond.advertiser = advertiser_id
+
+  try: cond.name = param("cn").strip()
+  except: svc.error = "Name can't be empty"
+
+  cond.rnd_mod = \
+    set_ulong_value("cm",
+                    param("cm"), 
+                    0, 
+                    100, 
+                    "Random should be a number from 0 to 100",
+                    svc)
+
+  rnd_from = cond.rnd_mod and (cond.rnd_mod - 1) or 0
+
+  cond.rnd_mod_from = \
+    set_ulong_value("ci", 
+                    param("ci"),
+                    0, 
+                    rnd_from, 
+                    "Random Min should be a number from 0 to " + str(rnd_from),
+                    svc)
+
+  rnd_to = cond.rnd_mod and (cond.rnd_mod - 1) or 0
+
+  cond.rnd_mod_to = \
+    set_ulong_value("ca", 
+                    param("ca"), 
+                    cond.rnd_mod_from, 
+                    rnd_to, 
+                    "Random Max should be a number from " + \
+                      str(cond.rnd_mod_from) + " to " + str(rnd_to),
+                    svc)
+
+  cond.group_freq_cap = \
+    set_ulong_value("fc",
+                    param("fc"),
+                    0,
+                    31536000,
+                    "Group Frequency Cap should be a number from 0 to 31536000",
+                    svc)
+
+  cond.group_count_cap = \
+    set_ulong_value("cc", 
+                    param("cc"), 
+                    0,
+                    1000000,
+                    "Group Count Cap should be a number from 0 to 1000000",
+                    svc)
+
+  cond.page_sources = param("ps").strip()
+  cond.page_source_exclusions = param("pse").strip()
+  cond.message_sources = param("ms").strip()
+  cond.message_source_exclusions = param("mse").strip()
+  cond.page_categories = param("pc").strip()
+  cond.page_category_exclusions = param("pce").strip()
+  cond.message_categories = param("mc").strip()
+  cond.message_category_exclusions = param("mce").strip()
+  cond.search_engines = param("se").strip()
+  cond.search_engine_exclusions = param("see").strip()
+  cond.crawlers = param("cr").strip()
+  cond.crawler_exclusions = param("cre").strip()
+  cond.languages = param("ln").strip()
+  cond.language_exclusions = param("lne").strip()
+  cond.countries = param("cy").strip()
+  cond.country_exclusions = param("cye").strip()
+  cond.ip_masks = param("ip").strip()
+  cond.ip_mask_exclusions = param("ipe").strip()
+  cond.tags = param("tg").strip()
+  cond.tag_exclusions = param("tge").strip()
+  cond.referers = param("rf").strip()
+  cond.referer_exclusions = param("rfe").strip()
+  cond.content_languages = param("cln").strip()
+  cond.content_language_exclusions = param("clne").strip()
+
+  if not svc.error:
+    cond.query_types = validate_query_types("qt", "Query Types error: ", svc)
+
+  if not svc.error:
+    cond.query_type_exclusions = \
+      validate_query_types("qte", "Query Type Exclusions error: ", svc)
+
+  if not svc.error:
+    svc.error = validate_languages(cond.content_languages,
+                                   True,
+                                   "Content Languages error: ")
+
+  if not svc.error:
+    svc.error = validate_languages(cond.content_language_exclusions, 
+                                   True,
+                                   "Content Language Exclusions error: ")
+
+  if not svc.error:
+    svc.error = validate_languages(cond.languages, False, "Languages error: ")
+
+  if not svc.error:
+    svc.error = validate_languages(cond.language_exclusions, 
+                                   False,
+                                   "Language Exclusions error: ")
+
+  if not svc.error:
+    svc.error = validate_ip_masks(cond.ip_masks, "IP Masks error: ")
+
+  if not svc.error:
+    svc.error = validate_ip_masks(cond.ip_mask_exclusions, 
+                                  "IP Mask Exclusions error: ")
+
+  status = param("cs")
+
+  if status == "E": cond.status = newsgate.moderation.ad.CS_ENABLED
+  elif status == "D": cond.status = newsgate.moderation.ad.CS_DISABLED
+  else: cond.status = newsgate.moderation.ad.CS_DELETED
+
+  if not svc.error:
+
+    if id:
+      update = newsgate.moderation.ad.ConditionUpdate()
+
+      update.id = id
+      update.advertiser = advertiser_id
+      update.status = cond.status
+      update.name = cond.name
+      update.rnd_mod = cond.rnd_mod
+      update.rnd_mod_from = cond.rnd_mod_from
+      update.rnd_mod_to = cond.rnd_mod_to
+      update.group_freq_cap = cond.group_freq_cap
+      update.group_count_cap = cond.group_count_cap
+      update.page_sources = cond.page_sources
+      update.page_source_exclusions = cond.page_source_exclusions
+      update.message_sources = cond.message_sources
+      update.message_source_exclusions = cond.message_source_exclusions
+      update.page_categories = cond.page_categories
+      update.page_category_exclusions = cond.page_category_exclusions
+      update.message_categories = cond.message_categories
+      update.message_category_exclusions = cond.message_category_exclusions
+      update.search_engines = cond.search_engines
+      update.search_engine_exclusions = cond.search_engine_exclusions
+      update.crawlers = cond.crawlers
+      update.crawler_exclusions = cond.crawler_exclusions
+      update.languages = cond.languages
+      update.language_exclusions = cond.language_exclusions
+      update.countries = cond.countries
+      update.country_exclusions = cond.country_exclusions
+      update.ip_masks = cond.ip_masks
+      update.ip_mask_exclusions = cond.ip_mask_exclusions
+      update.tags = cond.tags
+      update.tag_exclusions = cond.tag_exclusions
+      update.referers = cond.referers
+      update.referer_exclusions = cond.referer_exclusions
+      update.content_languages = cond.content_languages
+      update.content_language_exclusions = cond.content_language_exclusions
+      update.query_types = cond.query_types
+      update.query_type_exclusions = cond.query_type_exclusions
+
+      try:
+        cond = moderator.ad_manager.update_condition(update)
+      except newsgate.moderation.ad.ObjectNotFound:
+        svc.error = "Condition not found"
+      except newsgate.moderation.ad.ObjectAlreadyExist:
+        svc.error = "Such condition name is already used"
+
+    else:
+
+      try:
+        cond = moderator.ad_manager.create_condition(cond)
+        id = cond.id
+      except newsgate.moderation.ad.ObjectAlreadyExist:
+        svc.error = "Such condition name is already used"
+
+elif id:
+    cond = moderator.ad_manager.get_condition(id, advertiser_id)
+elif cl:
+    cond = moderator.ad_manager.get_condition(cl, advertiser_id)
+    cond.id = 0
+    cond.name = cond.name + " (clone)"
+else:
+    cond = newsgate.moderation.ad.Condition()
+    cond.advertiser = advertiser_id
+
+prn(
+R'''<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>Management: ''', el.string.manip.xml_encode(cond.name), 
+R''' Condition</title>
+<link rel="stylesheet" type="text/css" href="/fixed/css/common.css" media="all" />
+<link rel="stylesheet" type="text/css" href="/fixed/css/ad/condition.css" media="all" />
+<link rel="stylesheet" type="text/css" href="/fixed/css/mod_css.css" media="all"/>
+<link rel="stylesheet" type="text/css" href="/fixed/css/category/mod_css.css" media="all"/>
+<script src="/fixed/js/elements.js" type="text/javascript"></script>
+<script src="/fixed/js/commons.js" type="text/javascript"></script>
+<script src="/fixed/js/mod_script.js" type="text/javascript"></script>
+<script src="/fixed/js/category/mod_script.js" type="text/javascript"></script>
+<script src="/fixed/js/ad/condition.js" type="text/javascript"></script>
+</head>
+
+<body onload="el_attach_event(document, 'keydown', modKeyPressHandler);">
+<table id="skeleton" cellspacing="0">
+''')
+
+menus = []
+create_topbar_main_menus(context, moderator, "Ad", menus)
+
+prn(create_topbar(create_ad_menus(moderator, 
+                                  cond.id and "Condition" or "New Condition", 
+                                  id), 
+                  menus[0], 
+                  menus[1]))
+
+prn(R'''
+  <tr><td id="main_area" valign="top" align="center">
+    <form id="form" method="post" action="condition">
+    <table id="condition">''')
+
+if svc.error:
+  prn('\n    <tr><td colspan="2" class="error">', 
+      el.string.manip.xml_encode(svc.error), '</td></tr>')
+
+prn(R'''
+    <tr class="option_row"><td class="label">Name</td><td>
+      <input type="text" value="''', el.string.manip.xml_encode(cond.name),
+    R'''" name="cn" class="text_option"></td></tr>
+    <tr class="option_row"><td class="label">Status</td><td><select name="cs">''')
+
+statuses = [ (newsgate.moderation.ad.CS_ENABLED, "Enabled", "E"), 
+             (newsgate.moderation.ad.CS_DISABLED, "Disabled", "D"),
+             (newsgate.moderation.ad.CS_DELETED, "Deleted", "L")
+           ]
+
+for s in statuses:
+  prn('<option', cond.status == s[0] and ' selected="selected"' or '', 
+      ' value="', s[2], '">', s[1], '</option>')
+
+prn('</select></td></tr>')
+
+hidden = not cond.page_categories and not cond.page_category_exclusions
+style = ""
+
+if hidden:
+  prn(R'''
+    <tr class="option_row" id="erpc"><td class="label">Page Categories</td>
+    <td><a href="javascript:expand_options('rpc')">expand</a></td></tr>''')
+
+  style = ' style="display:none"'
+
+prn(R'''
+    <tr class="option_row" name="rpc"''', style, R'''><td class="label">
+    <a href="javascript:select_category_dialog(0, '', 1, 'pc_ph', false, false, 'add_page_category')">Page Categories</a><span id="pc_ph"></span></td><td>
+    <textarea rows="3" name="pc" id="pc">''', 
+    el.string.manip.xml_encode(cond.page_categories),
+    R'''</textarea></td></tr>
+    <tr class="option_row" name="rpc"''', style, R'''><td class="label">
+    <a href="javascript:select_category_dialog(0, '', 1, 'pce_ph', false, false, 'add_page_category_exclusion')">
+    Page Category Exclusions</a><span id="pce_ph"></span></td><td>
+    <textarea rows="3" name="pce" id="pce">''', 
+    el.string.manip.xml_encode(cond.page_category_exclusions),
+    '</textarea></td></tr>')
+
+hidden = not cond.message_categories and not cond.message_category_exclusions
+style = ""
+
+if hidden:
+  prn(R'''
+    <tr class="option_row" id="ermc"><td class="label">Message Categories</td>
+    <td><a href="javascript:expand_options('rmc')">expand</a></td></tr>''')
+
+  style = ' style="display:none"'
+
+prn(R'''
+    <tr class="option_row" name="rmc"''', style, R'''><td class="label">
+    <a href="javascript:select_category_dialog(0, '', 1, 'ac_ph', false, false, 'add_category')">Message Categories</a><span id="ac_ph"></span></td><td>
+    <textarea rows="3" name="mc" id="mc">''', 
+    el.string.manip.xml_encode(cond.message_categories),
+    R'''</textarea></td></tr>
+    <tr class="option_row" name="rmc"''', style, R'''><td class="label">
+    <a href="javascript:select_category_dialog(0, '', 1, 'ace_ph', false, false, 'add_category_exclusion')">
+    Message Category Exclusions</a><span id="ace_ph"></span></td><td>
+    <textarea rows="3" name="mce" id="mce">''', 
+    el.string.manip.xml_encode(cond.message_category_exclusions),
+    R'''</textarea></td></tr>''')
+
+hidden = not cond.page_sources and not cond.page_source_exclusions
+style = ""
+
+if hidden:
+  prn(R'''
+    <tr class="option_row" id="erps"><td class="label">Page Sources</td>
+    <td><a href="javascript:expand_options('rps')">expand</a></td></tr>''')
+
+  style = ' style="display:none"'
+
+prn(R'''
+    <tr class="option_row" name="rps"''', style, 
+    R'''><td class="label">Page Sources</td><td>
+    <textarea rows="3" name="ps" id="ps">''', 
+    el.string.manip.xml_encode(cond.page_sources),
+    R'''</textarea></td></tr>
+    <tr class="option_row" name="rps"''', style, 
+    R'''><td class="label">Page Source Exclusions</td><td>
+    <textarea rows="3" name="pse" id="pse">''', 
+    el.string.manip.xml_encode(cond.page_source_exclusions),
+    R'''</textarea></td></tr>''')
+
+hidden = not cond.message_sources and not cond.message_source_exclusions
+style = ""
+
+if hidden:
+  prn(R'''
+    <tr class="option_row" id="erms"><td class="label">Message Sources</td>
+    <td><a href="javascript:expand_options('rms')">expand</a></td></tr>''')
+
+  style = ' style="display:none"'
+
+prn(R'''
+    <tr class="option_row" name="rms"''', style, 
+    R'''><td class="label">Message Sources</td><td>
+    <textarea rows="3" name="ms" id="ms">''', 
+    el.string.manip.xml_encode(cond.message_sources),
+    R'''</textarea></td></tr>
+    <tr class="option_row" name="rms"''', style, 
+    R'''><td class="label">Message Source Exclusions</td><td>
+    <textarea rows="3" name="mse" id="mse">''', 
+    el.string.manip.xml_encode(cond.message_source_exclusions),
+    R'''</textarea></td></tr>''')
+
+hidden = not cond.search_engines and not cond.search_engine_exclusions
+style = ""
+
+if hidden:
+  prn(R'''
+    <tr class="option_row" id="erse"><td class="label">Search Engines</td>
+    <td><a href="javascript:expand_options('rse')">expand</a></td></tr>''')
+
+  style = ' style="display:none"'
+
+prn(R'''
+    <tr class="option_row" name="rse"''', style, 
+    R'''><td class="label">
+    <a href="javascript:add_search_engine('se')">Search Engines</a></td><td>
+    <textarea rows="3" name="se" id="se">''', 
+    el.string.manip.xml_encode(cond.search_engines),
+    R'''</textarea></td></tr>
+    <tr class="option_row" name="rse"''', style, 
+    R'''><td class="label">
+    <a href="javascript:add_search_engine('see')">Search Engine Exclusions</a></td><td>
+    <textarea rows="3" name="see" id="see">''',
+    el.string.manip.xml_encode(cond.search_engine_exclusions),
+    R'''</textarea></td></tr>''')
+
+hidden = not cond.crawlers and not cond.crawler_exclusions
+style = ""
+
+if hidden:
+  prn(R'''
+    <tr class="option_row" id="ercr"><td class="label">Crawlers</td>
+    <td><a href="javascript:expand_options('rcr')">expand</a></td></tr>''')
+
+  style = ' style="display:none"'
+
+prn(R'''
+    <tr class="option_row" name="rcr"''', style, 
+    R'''><td class="label">
+    <a href="javascript:add_crawler('cr')">Crawlers</a></td><td>
+    <textarea rows="3" name="cr" id="cr">''', 
+    el.string.manip.xml_encode(cond.crawlers),
+    R'''</textarea></td></tr>
+    <tr class="option_row" name="rcr"''', style, 
+    R'''><td class="label">
+    <a href="javascript:add_crawler('cre')">Crawler Exclusions</a></td><td>
+    <textarea rows="3" name="cre" id="cre">''', 
+    el.string.manip.xml_encode(cond.crawler_exclusions),
+    R'''</textarea></td></tr>''')
+
+hidden = not cond.query_types and not cond.query_type_exclusions
+style = ""
+
+if hidden:
+  prn(R'''
+    <tr class="option_row" id="erqt"><td class="label">Query Types</td>
+    <td><a href="javascript:expand_options('rqt')">expand</a></td></tr>''')
+
+  style = ' style="display:none"'
+
+prn(R'''
+    <tr class="option_row" name="rqt"''', style, 
+    R'''><td class="label">
+    <a href="javascript:add_query_type('qt')">Query Types</a></td><td>
+    <textarea rows="3" name="qt" id="qt">''', 
+    query_type_names(cond.query_types, svc, "qt"), R'''</textarea></td></tr>
+    <tr class="option_row" name="rqt"''', style, 
+    R'''><td class="label">
+    <a href="javascript:add_query_type('qte')">Query Type Exclusions</a></td><td>
+    <textarea rows="3" name="qte" id="qte">''', 
+    query_type_names(cond.query_type_exclusions, svc, "qte"), 
+    '</textarea></td></tr>')
+
+hidden = not cond.content_languages and not cond.content_language_exclusions
+style = ""
+
+if hidden:
+  prn(R'''
+    <tr class="option_row" id="ecrln"><td class="label">Content Languages</td>
+    <td><a href="javascript:expand_options('crln')">expand</a></td></tr>''')
+
+  style = ' style="display:none"'
+
+prn(R'''
+    <tr class="option_row" name="crln"''', style, 
+    R'''><td class="label">
+    <a href="javascript:add_language('cln')">Content Languages</a></td><td>
+    <textarea rows="3" name="cln" id="cln">''', 
+    el.string.manip.xml_encode(cond.content_languages),
+    R'''</textarea></td></tr>
+    <tr class="option_row" name="crln"''', style, 
+    R'''><td class="label">
+    <a href="javascript:add_language('clne')">Content Language Exclusions</a></td><td>
+    <textarea rows="3" name="clne" id="clne">''', 
+    el.string.manip.xml_encode(cond.content_language_exclusions),
+    R'''</textarea></td></tr>''')
+
+hidden = not cond.languages and not cond.language_exclusions
+style = ""
+
+if hidden:
+  prn(R'''
+    <tr class="option_row" id="erln"><td class="label">Languages</td>
+    <td><a href="javascript:expand_options('rln')">expand</a></td></tr>''')
+
+  style = ' style="display:none"'
+
+prn(R'''
+    <tr class="option_row" name="rln"''', style, 
+    R'''><td class="label">
+    <a href="javascript:add_language('ln')">Languages</a></td><td>
+    <textarea rows="3" name="ln" id="ln">''', 
+    el.string.manip.xml_encode(cond.languages),
+    R'''</textarea></td></tr>
+    <tr class="option_row" name="rln"''', style, 
+    R'''><td class="label">
+    <a href="javascript:add_language('lne')">Language Exclusions</a></td><td>
+    <textarea rows="3" name="lne" id="lne">''', 
+    el.string.manip.xml_encode(cond.language_exclusions),
+    R'''</textarea></td></tr>''')
+
+hidden = not cond.countries and not cond.country_exclusions
+style = ""
+
+if hidden:
+  prn(R'''
+    <tr class="option_row" id="ercy"><td class="label">Countries</td>
+    <td><a href="javascript:expand_options('rcy')">expand</a></td></tr>''')
+
+  style = ' style="display:none"'
+
+prn(R'''
+    <tr class="option_row" name="rcy"''', style, 
+    R'''><td class="label">
+    <a href="javascript:add_country('cy')">Countries</a></td><td>
+    <textarea rows="3" name="cy" id="cy">''', 
+    el.string.manip.xml_encode(cond.countries),
+    R'''</textarea></td></tr>
+    <tr class="option_row" name="rcy"''', style, 
+    R'''><td class="label">
+    <a href="javascript:add_country('cye')">Country Exclusions</a></td><td>
+    <textarea rows="3" name="cye" id="cye">''', 
+    el.string.manip.xml_encode(cond.country_exclusions),
+    R'''</textarea></td></tr>''')
+
+hidden = not cond.ip_masks and not cond.ip_mask_exclusions
+style = ""
+
+if hidden:
+  prn(R'''
+    <tr class="option_row" id="erip"><td class="label">IP Masks</td>
+    <td><a href="javascript:expand_options('rip')">expand</a></td></tr>''')
+
+  style = ' style="display:none"'
+
+prn(R'''
+    <tr class="option_row" name="rip"''', style, 
+    R'''><td class="label">IP Masks</td><td>
+    <textarea rows="3" name="ip" id="ip">''', 
+    el.string.manip.xml_encode(cond.ip_masks),
+    R'''</textarea></td></tr>
+    <tr class="option_row" name="rip"''', style, 
+    R'''><td class="label">IP Mask Exclusions</td><td>
+    <textarea rows="3" name="ipe" id="ipe">''', 
+    el.string.manip.xml_encode(cond.ip_mask_exclusions),
+    R'''</textarea></td></tr>''')
+
+hidden = not cond.tags and not cond.tag_exclusions
+style = ""
+
+if hidden:
+  prn(R'''
+    <tr class="option_row" id="ertg"><td class="label">Tags</td>
+    <td><a href="javascript:expand_options('rtg')">expand</a></td></tr>''')
+
+  style = ' style="display:none"'
+
+prn(R'''
+    <tr class="option_row" name="rtg"''', style, 
+    R'''><td class="label">Tags</td><td>
+    <textarea rows="3" name="tg" id="tg">''', 
+    el.string.manip.xml_encode(cond.tags),
+    R'''</textarea></td></tr>
+    <tr class="option_row" name="rtg"''', style, 
+    R'''><td class="label">Tag Exclusions</td><td>
+    <textarea rows="3" name="tge" id="tge">''', 
+    el.string.manip.xml_encode(cond.tag_exclusions),
+    R'''</textarea></td></tr>''')
+
+hidden = not cond.referers and not cond.referer_exclusions
+style = ""
+
+if hidden:
+  prn(R'''
+    <tr class="option_row" id="errf"><td class="label">Referers</td>
+    <td><a href="javascript:expand_options('rrf')">expand</a></td></tr>''')
+
+  style = ' style="display:none"'
+
+prn(R'''
+    <tr class="option_row" name="rrf"''', style, 
+    R'''><td class="label">Referers</td><td>
+    <textarea rows="3" name="rf" id="rf">''', 
+    el.string.manip.xml_encode(cond.referers),
+    R'''</textarea></td></tr>
+    <tr class="option_row" name="rrf"''', style, 
+    R'''><td class="label">Referer Exclusions</td><td>
+    <textarea rows="3" name="rfe" id="rfe">''', 
+    el.string.manip.xml_encode(cond.referer_exclusions),
+    R'''</textarea></td></tr>''')
+
+gfc = ulong_value("fc", cond.group_freq_cap, svc)
+gcc = ulong_value("cc", cond.group_count_cap, svc)
+
+hidden = not gfc and not gcc
+style = ""
+
+if hidden:
+  prn(R'''
+    <tr class="option_row" id="erfc"><td class="label">Group Caps</td>
+    <td><a href="javascript:expand_options('rfc')">expand</a></td></tr>''')
+
+  style = ' style="display:none"'
+
+prn(R'''
+    <tr class="option_row" name="rfc"''', style, 
+    R'''><td class="label">Group Frequency Cap</td><td>
+      <input type="text" value="''', gfc,
+    R'''" name="fc" class="text_option"></td></tr>
+    <tr class="option_row" name="rfc"''', style, 
+    R'''><td class="label">Group Count Cap</td><td>
+      <input type="text" value="''', gcc,
+    R'''" name="cc" class="text_option"></td></tr>''')
+
+rm = ulong_value("cm", cond.rnd_mod, svc)
+rmf = ulong_value("ci", cond.rnd_mod_from, svc)
+rmt = ulong_value("ca", cond.rnd_mod_to, svc)
+
+hidden = not rm and not rmf and not rmt
+style = ""
+
+if hidden:
+  prn(R'''
+    <tr class="option_row" id="errm"><td class="label">Random</td>
+    <td><a href="javascript:expand_options('rrm')">expand</a></td></tr>''')
+
+  style = ' style="display:none"'
+
+prn(R'''
+    <tr class="option_row" name="rrm"''', style, 
+    R'''><td class="label">Random</td><td>
+      <input type="text" value="''', rm,
+    R'''" name="cm" class="text_option"></td></tr>
+    <tr class="option_row" name="rrm"''', style, 
+    R'''><td class="label">Random Min</td><td>
+      <input type="text" value="''', rmf,
+    R'''" name="ci" class="text_option"></td></tr>
+    <tr class="option_row" name="rrm"''', style, 
+    R'''><td class="label">Random Max</td><td>
+      <input type="text" value="''', rmt,
+    R'''" name="ca" class="text_option"></td></tr>''')
+
+prn(R'''
+    <tr><td colspan="2">
+      <input type="submit" name="u" value="''', id and "Update" or "Create", 
+    R'''"/>
+    </td></tr>''')
+
+prn(R'''
+    </table>
+  <input type="hidden" name="id" value="''', cond.id, R'''">
+  </form>
+  </td></tr>
+''', create_copyright(context), R'''
+</table>
+</body>
+</html>
+''')

@@ -1,0 +1,33 @@
+# @file   Makefile.in
+# @author Karen Aroutiounov
+# $Id:$
+
+include Common.pre.rules
+include $(osbe_builddir)/config/CXX/CXX.pre.rules
+include $(osbe_builddir)/config/CXX/Corba.pre.rules
+
+include $(osbe_builddir)/config/CXX/External/Python.pre.rules
+include $(osbe_builddir)/config/CXX/External/ACE.pre.rules
+include $(osbe_builddir)/config/CXX/External/Google.pre.rules
+include $(osbe_builddir)/config/CXX/External/Apache.pre.rules
+
+include $(osbe_builddir)/config/CXX/External/ElBasic.pre.rules
+include $(osbe_builddir)/config/CXX/External/ElPython.pre.rules
+include $(osbe_builddir)/config/CXX/External/ElNet.pre.rules
+include $(osbe_builddir)/config/CXX/External/ElApache.pre.rules
+include $(osbe_builddir)/config/CXX/External/ElLocalization.pre.rules
+include $(osbe_builddir)/config/CXX/External/ElGeography.pre.rules
+include $(osbe_builddir)/config/CXX/External/ElPSP.pre.rules
+include $(osbe_builddir)/config/CXX/External/ElDictionary.pre.rules
+
+include $(top_builddir)/config/Commons/Python/PythonCommons.so.pre.rules
+include $(top_builddir)/config/Services/Dictionary/Commons/DictionaryCommons.so.pre.rules
+
+sources := WordEngine.cpp
+target := WordEngine
+
+#CXX_FLAGS := -I/home/karen/projects/research/include/python2.4 $(CXX_FLAGS)
+#LD_FLAGS := -L/home/karen/projects/research/lib $(LD_FLAGS)
+
+include $(osbe_builddir)/config/CXX/Corba.post.rules
+include $(osbe_builddir)/config/CXX/So.post.rules

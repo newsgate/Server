@@ -1,0 +1,6 @@
+newslog.com(ru)
+newsface.com (ru)
+newsmetric.com (ru)
+
+
+Stopped at 'alive'

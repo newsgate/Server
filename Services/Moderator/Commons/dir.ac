@@ -1,0 +1,5 @@
+# @file   dir.ac
+# @author Karen Aroutiounov
+# $Id:$
+
+OSBE_CONFIG_FILE([Makefile])

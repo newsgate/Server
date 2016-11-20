@@ -1,0 +1,60 @@
+#!/bin/sh
+
+# product   : NewsGate - news search WEB server
+# copyright : Copyright (c) 2005-2016 Karen Arutyunov
+# licenses  : CC BY-NC-SA 3.0; see accompanying LICENSE file
+#             Commercial; contact karen.arutyunov@gmail.com
+
+mkdir -p "$MYSQL_WORKSPACE_ROOT"
+
+PID_FILE=$MYSQL_WORKSPACE_ROOT/mysqld.pid
+
+ARGV="$@"
+
+is_running="0"
+
+if test -f "$PID_FILE"; then
+#  kill -s 0 `cat "$PID_FILE"` 1>/dev/null 2>&1
+  ps -p `cat "$PID_FILE"` 1>/dev/null 2>&1
+  if test "$?" -eq "0"; then
+    is_running="1"
+  fi
+fi
+
+case $ARGV in
+start)
+    if test "$is_running" -eq "1"; then
+      echo "Already running."
+      exit 1
+    fi
+
+    mysqld_safe --defaults-file="$SITE_CONFIG_ROOT/mysql.cnf" \
+                --datadir="$NEWSGATE_DBDIR" \
+                --log-error="$MYSQL_WORKSPACE_ROOT/mysqld.err" \
+                --pid-file="$PID_FILE" \
+                --port=$MYSQL_PORT \
+                --socket="$MYSQL_WORKSPACE_ROOT/mysql.socket" \
+                1>"$MYSQL_WORKSPACE_ROOT/mysqld_safe.out" 2>&1 &
+    exit $?
+    ;;
+stop)
+    if test "$is_running" -eq "1"; then
+      kill -s TERM `cat $PID_FILE`
+      exit $?
+    else
+      echo "Not running."
+      exit 0
+    fi
+    ;;
+status)
+    if test "$is_running" -eq "1"; then
+      echo "Running."
+      exit 0
+    else
+      echo "Not running."
+      exit 1
+    fi
+    ;;
+*) echo "Usage ng-mysqld start|stop|status"
+   exit 3
+esac

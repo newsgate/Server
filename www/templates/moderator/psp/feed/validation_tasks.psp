@@ -1,0 +1,97 @@
+from moderation_func import *
+
+request = context.request
+prn, param = request.output.stream.prn, request.input.parameters().find
+
+#moderator = connect_moderator(request, moderator_connector)
+
+try:
+  moderator = moderator_connector.connect(request, False)
+except:
+  el.exit(401) # Unauthorized
+
+if moderator.has_privilege(newsgate.moderation.moderator.PV_FEED_CREATOR) == False:
+  el.exit(403) # Forbidden
+
+request.output.content_type("application/xml")
+request.output.send_header("Cache-Control", "no-cache")
+
+prefs = el.NameValueMap(request.input.cookies().most_specific("mp"), ':', '-')
+
+try:
+  provide_subordinates_tasks = prefs["sst"] == "1"
+except: provide_subordinates_tasks = False
+
+ids = [ moderator.id ]
+id_to_name = { moderator.id:moderator.name }
+
+if provide_subordinates_tasks:
+  try:
+    subordinates = moderator.moderator_manager.get_subordinates()
+
+  except newsgate.moderation.InvalidSession:
+    el.exit(el.psp.Forward("/psp/login.psp", 
+                           "Your session expired.<br>Please, relogin."))
+
+  except newsgate.moderation.NotReady:
+    el.exit(el.psp.Forward(\
+            "/psp/feeds.psp", 
+            "The system is not ready to serve your request.<br>Please, try again in several minutes."))
+
+  for sub in subordinates: 
+    ids.append(sub.id)
+    id_to_name[sub.id] = sub.name
+
+try:
+  task_infos = moderator.feed_manager.validation_task_infos(ids)
+except newsgate.moderation.NotReady:
+  task_infos = []
+
+expiration = el.Moment(el.TimeValue(request.time().sec() + 2 * 365 * 86400))
+
+request.output.send_cookie(
+  el.net.http.CookieSetter("mp", 
+                           prefs.string(), 
+                           expiration, 
+                           "/", 
+                           "", 
+                           request.secure()))
+
+prn(
+R'''<?xml version="1.0" encoding="UTF-8"?>
+<tasks>
+''')
+
+flags = el.string.manip.XE_TEXT_ENCODING | \
+        el.string.manip.XE_ATTRIBUTE_ENCODING | \
+        el.string.manip.XE_PRESERVE_UTF8
+
+for task in task_infos:
+
+  if task.status == newsgate.moderation.feed.VS_ACTIVE: status = "A"
+  elif task.status == newsgate.moderation.feed.VS_SUCCESS: status = "S"
+  elif task.status == newsgate.moderation.feed.VS_ERROR: status = "E"
+  elif task.status == newsgate.moderation.feed.VS_INTERRUPTED: status = "I"
+
+  name = "<unknown>:" + str(task.creator_id)
+
+  try: name = id_to_name[task.creator_id]
+  except: pass
+
+  prn(R'''
+  <task ''',
+  'id="', task.id,
+  '" title="', el.string.manip.xml_encode(task.title, flags),
+  '" status="', status,
+  '" started="', el.Moment(el.TimeValue(task.started)).iso8601(), 
+  '" feeds="', task.feeds, 
+  '" pending_urls="', task.pending_urls, 
+  '" processed_urls="', task.processed_urls,
+  '" received_bytes="', traffic(task.received_bytes), 
+  '" creator="', el.string.manip.xml_encode(name, flags), 
+   '"/>')
+
+prn(
+R'''
+</tasks>
+''')

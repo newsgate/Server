@@ -1,0 +1,106 @@
+#!/bin/sh
+
+# product   : NewsGate - news search WEB server
+# copyright : Copyright (c) 2005-2016 Karen Arutyunov
+# licenses  : CC BY-NC-SA 3.0; see accompanying LICENSE file
+#             Commercial; contact karen.arutyunov@gmail.com
+
+source "$1/lib.sh"
+
+echo_date "Creating table SearchMailSubscription ..."
+
+echo "create table SearchMailSubscription ( \
+      id CHAR(32) character set ascii NOT NULL PRIMARY KEY, \
+      status ENUM ('E', 'D', 'L') NOT NULL, \
+      reg_time DATETIME NOT NULL, \
+      reg_time_usec MEDIUMINT UNSIGNED NOT NULL, \
+      update_time DATETIME NOT NULL, \
+      update_time_usec MEDIUMINT UNSIGNED NOT NULL, \
+      search_time BIGINT UNSIGNED NOT NULL, \
+      email VARCHAR(256) COLLATE utf8_bin NOT NULL, \
+      format TINYINT UNSIGNED NOT NULL, \
+      length SMALLINT UNSIGNED NOT NULL, \
+      time_offset SMALLINT NOT NULL, \
+      title TEXT(1024) NOT NULL, \
+      query TEXT(4096) NOT NULL, \
+      modifier BLOB(4096) NOT NULL, \
+      filter BLOB(4096) NOT NULL, \
+      res_query TEXT(4096) NOT NULL, \
+      res_filter_category VARCHAR(2048) NOT NULL, \
+      res_filter_feed VARCHAR(2048) NOT NULL, \
+      res_filter_event BIGINT UNSIGNED NOT NULL, \
+      res_filter_lang CHAR(3) character set ascii NOT NULL, \
+      res_filter_country CHAR(3) character set ascii NOT NULL, \
+      locale_lang CHAR(3) character set ascii NOT NULL, \
+      locale_country CHAR(3) character set ascii NOT NULL, \
+      lang CHAR(3) character set ascii NOT NULL, \
+      user_id VARCHAR(32) character set ascii NOT NULL, \
+      user_ip CHAR(15) character set ascii NOT NULL, \
+      user_agent VARCHAR(256) NOT NULL, \
+      user_session CHAR(32) character set ascii NOT NULL, \
+      times BLOB(512) NOT NULL, \
+      index invariant (email, res_query(256), res_filter_category(128), \
+             res_filter_feed(128), res_filter_event, res_filter_lang, \
+             res_filter_country), \
+      index trust (email, user_id, user_ip, user_agent, user_session, \
+                   update_time) \
+) engine=InnoDB;" | ng-mysql --user=root NewsGate
+
+if test $? -eq 0; then echo_date "Done"; else echo_date "Failed"; exit 1; fi
+
+echo_date "Creating table SearchMailSubscriptionUpdate ..."
+
+echo "create table SearchMailSubscriptionUpdate ( \
+      token CHAR(32) character set ascii NOT NULL PRIMARY KEY, \
+      state ENUM ('N', 'T', 'C', 'E') NOT NULL, \
+      type TINYINT UNSIGNED NOT NULL, \
+      conf_email VARCHAR(256) COLLATE utf8_bin NOT NULL, \
+      conf_time BIGINT UNSIGNED NOT NULL, \
+      id CHAR(32) character set ascii NOT NULL, \
+      status ENUM ('E', 'D', 'L') NOT NULL, \
+      req_time DATETIME NOT NULL, \
+      req_time_usec MEDIUMINT UNSIGNED NOT NULL, \
+      email VARCHAR(256) COLLATE utf8_bin NOT NULL, \
+      format TINYINT UNSIGNED NOT NULL, \
+      length SMALLINT UNSIGNED NOT NULL, \
+      time_offset SMALLINT NOT NULL, \
+      title TEXT(1024) NOT NULL, \
+      query TEXT(4096) NOT NULL, \
+      modifier BLOB(4096) NOT NULL, \
+      filter BLOB(4096) NOT NULL, \
+      res_query TEXT(4096) NOT NULL, \
+      res_filter_category VARCHAR(2048) NOT NULL, \
+      res_filter_feed VARCHAR(2048) NOT NULL, \
+      res_filter_event BIGINT UNSIGNED NOT NULL, \
+      res_filter_lang CHAR(3) character set ascii NOT NULL, \
+      res_filter_country CHAR(3) character set ascii NOT NULL, \
+      locale_lang CHAR(3) character set ascii NOT NULL, \
+      locale_country CHAR(3) character set ascii NOT NULL, \
+      lang CHAR(3) character set ascii NOT NULL, \
+      user_id VARCHAR(32) character set ascii NOT NULL, \
+      user_ip CHAR(15) character set ascii NOT NULL, \
+      user_agent VARCHAR(256) NOT NULL, \
+      user_session CHAR(32) character set ascii NOT NULL, \
+      times BLOB(512) NOT NULL, \
+      index trust (email, user_id, user_ip, user_agent, user_session, \
+                   conf_time) \
+) engine=InnoDB;" | ng-mysql --user=root NewsGate
+
+if test $? -eq 0; then echo_date "Done"; else echo_date "Failed"; exit 1; fi
+
+echo_date "Creating table SearchMailState ..."
+
+echo "create table SearchMailState ( \
+      last_dispatch_time BIGINT UNSIGNED NOT NULL DEFAULT 0, \
+      mailer_id VARCHAR(256) NOT NULL \
+) engine=InnoDB;" | \
+ng-mysql --user root NewsGate
+
+if test $? -eq 0; then echo_date "Done"; else echo_date "Failed"; exit 1; fi
+
+echo_date "Filling table SearchMailState ..."
+
+echo "insert ignore into SearchMailState set last_dispatch_time=0;" | \
+ng-mysql --user=root NewsGate
+
+if test $? -eq 0; then echo_date "Done"; else echo_date "Failed"; exit 1; fi

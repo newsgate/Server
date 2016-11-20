@@ -1,0 +1,29 @@
+# @file   Config.mk.in
+# @author Karen Arutyunov
+# $Id: $
+
+include Common.pre.rules
+include $(osbe_builddir)/config/CXX/CXX.pre.rules
+
+include $(osbe_builddir)/config/CXX/External/Python.pre.rules
+include $(osbe_builddir)/config/CXX/External/LibXML.pre.rules
+
+include $(osbe_builddir)/config/CXX/External/ElBasic.pre.rules
+include $(osbe_builddir)/config/CXX/External/ElXML.pre.rules
+include $(osbe_builddir)/config/CXX/External/ElPython.pre.rules
+include $(osbe_builddir)/config/CXX/External/ElPythonInterceptor.pre.rules
+include $(osbe_builddir)/config/CXX/External/ElPythonSandboxService.pre.rules
+include $(osbe_builddir)/config/CXX/External/ElNet.pre.rules
+include $(osbe_builddir)/config/CXX/External/ElLibXML.pre.rules
+include $(osbe_builddir)/config/CXX/External/ElHTML.pre.rules
+include $(osbe_builddir)/config/CXX/External/ElGeography.pre.rules
+
+include $(top_builddir)/config/Commons/Python/PythonCommons.so.pre.rules
+include $(top_builddir)/config/Commons/Feed/FeedCommons.so.pre.rules
+include $(top_builddir)/config/Commons/Message/MessageCommons.so.pre.rules
+
+sources := MsgAdjustment.cpp HTMLFeedParser.cpp
+includes := .
+target := FeedParsing
+
+include $(osbe_builddir)/config/CXX/So.post.rules

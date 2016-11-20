@@ -1,0 +1,10 @@
+from moderation_func import *
+
+request, conf = context.request, context.config.get
+prn = request.output.stream.prn
+
+try:
+  moderator = moderator_connector.connect(request, False)
+  refresh_session(request, moderator)
+except:
+  el.exit(403) # Forbidden

@@ -1,0 +1,631 @@
+import sys
+import subprocess
+import search_util
+
+class SearchMailRender(search_util.SearchPageContext):
+
+  search_mail_render_base = search_util.SearchPageContext
+
+  OP_UPDATE = 1
+  OP_CONFIRM = 2
+  OP_DISABLE = 3
+  OP_ENABLE = 4
+  OP_DELETE = 5
+  OP_EDIT = 6
+  OP_MANAGE = 7
+
+  TP_NONE =   0
+  TP_CREATE = 1
+  TP_UPDATE = 2
+  TP_EMAIL_UPDATE = 3
+  TP_DISABLE = 4
+  TP_DELETE = 5
+  TP_ENABLE = 6
+  TP_MANAGE = 7
+
+  def __init__(this, context, search_engine):
+    
+    this.search_mail_render_base.__init__(this,
+                                          context,
+                                          search_engine,
+                                          "h",
+                                          True)
+    
+    if this.interceptor: this.block = this.interceptor.bastion("eml")
+
+    conf = context.config.get
+
+    this.recaptcha_server_key = conf("search.mail.recaptcha_server_key")
+    this.recaptcha_client_key = conf("search.mail.recaptcha_client_key")
+
+    op = this.raw_param("sm_o")
+
+    this.operation = op == "u" and this.OP_UPDATE or op == "c" and \
+      this.OP_CONFIRM or op == "d" and this.OP_DISABLE or \
+      op == "e" and this.OP_ENABLE or op == "l" and this.OP_DELETE or \
+      op == "t" and this.OP_EDIT or op == "g" and this.OP_MANAGE
+
+    this.token = this.raw_param("sm_k")
+    tp = this.raw_param("sm_p")
+
+    this.confirmation_type = tp == "c" and this.TP_CREATE or \
+      tp == "u" and this.TP_UPDATE or tp == "m" and this.TP_EMAIL_UPDATE or \
+      tp == "d" and this.TP_DISABLE or tp == "e" and this.TP_ENABLE or \
+      tp == "l" and this.TP_DELETE or tp == "g" and this.TP_MANAGE or \
+      this.TP_NONE
+
+    this.email = this.string_param("sm_e").strip()
+    this.id = this.raw_param("sm_i").strip()
+    this.recaptcha = this.raw_param("sm_r")
+
+  def prn_css(this):
+
+    if this.static.development:
+      
+      this.search_mail_render_base.prn_css(this)
+    
+      this.prn(\
+        '\n<link rel="stylesheet" type="text/css" href="',
+        this.resource_url('/fixed/css/e.css'),
+        '" media="all"/>')
+
+      if this.site_version == search_util.SearchPageContext.SV_MOB:
+        this.prn(\
+          '\n<link rel="stylesheet" type="text/css" href="',
+          this.resource_url('/fixed/css/e-mob.css'),
+          '" media="all"/>')
+
+    else:
+
+      if this.site_version == search_util.SearchPageContext.SV_MOB:
+        this.prn(\
+          '\n<link rel="stylesheet" type="text/css" href="',
+          this.compound_resource_url('css/e-mob.css'),
+          '" media="all"/>')
+        
+      else:
+        this.prn(\
+          '\n<link rel="stylesheet" type="text/css" href="',
+          this.compound_resource_url('css/e.css'),
+          '" media="all"/>')
+
+  def prn_script(this):
+
+    this.search_mail_render_base.prn_script(this)
+
+    this.prn(R'''
+<script type="text/javascript">
+function subs_status(status, id, email)
+{
+  var url = "/p/s/e?sm_o=" + (status ? "e" : "d") + "&sm_i=" + id + "&sm_e=" +
+    el_mime_url_encode(email);
+
+  navigate(url, true);
+
+  el_by_id("st_" + id).style.display = "none";
+  el_by_id("row_" + id).style.color = status ? "black" : "#808084";
+}
+
+function subs_del(id, email)
+{
+  var url = "/p/s/e?sm_o=l&sm_i=" + id+ "&sm_e=" + el_mime_url_encode(email);
+  navigate(url, true);
+
+  el_by_id("row_" + id).style.display = "none";
+
+  if(page.site.version.current == page.site.version.MOBILE)
+  {
+    el_by_id("row_ctl_" + id).style.display = "none";
+  }
+}
+
+function recaptcha_callback(response)
+{
+  var url = "''', this.site, this.context.request.unparsed_uri(), R'''&sm_r=" +
+    el_mime_url_encode(response);
+
+  el_post_url(url);
+}
+
+function on_recaptcha_load()
+{
+  grecaptcha.render(
+      "recaptcha_widget", 
+      { 'sitekey' : "''', el.string.manip.js_escape(this.recaptcha_client_key),
+                    R'''",
+        'callback' : recaptcha_callback
+      });
+}
+function update_opener(status, id, email)
+{
+  if(window.opener != null)
+  {
+    var link = window.opener.document.getElementById("st_" + id);
+
+    if(link)
+    {
+      link.innerHTML = status ? "''', lm, "SUBS_SUSPEND", '" : "',
+                                      lm, "SUBS_RESUME", R'''";
+      link.href = "javascript:subs_status(" + !status + ", '" + id + "', '" +
+                   el_js_escape(email) + "')";
+
+      link.style.display = "inline";
+    }
+  }
+}
+
+function init()
+{
+  if(el_by_id("recaptcha_widget") != null)
+  {
+    var head = document.getElementsByTagName('head').item(0);
+    var script = document.createElement('script');
+    script.setAttribute('type', 'text/javascript');
+    script.setAttribute('src', 'https://www.google.com/recaptcha/api.js?hl=''',
+          this.language.l2_code(), R'''&onload=on_recaptcha_load&render=explicit');
+    head.appendChild(script);
+  }
+
+  if(window.opener != null)
+  {
+    var obj = el_by_id("close");
+
+    if(obj)
+    {
+      obj.innerHTML = 
+        '<button type="button" onclick="window.close()">''', lm, 
+        "CLOSE", R'''</button>';
+    }
+  }
+}
+</script>''')
+
+  def update_subscription(this):
+
+    request = this.context.request
+    subs = newsgate.search.SearchMailSubscription();
+
+    subs.email = this.email
+    pos = subs.email.find("@")
+    len_email = len(subs.email)
+
+    success = pos > 0 and len_email and pos < len_email - 1 and \
+      subs.email.translate(None, ",;<>\n\r\t") == subs.email
+
+    recaptcha = False
+
+    if not success: info = this.loc("INVALID_EMAIL")
+    else:
+
+      for p in request.input.parameters():
+        if p.name == "sm_m":
+          tm = p.value.split('-')
+
+          t = newsgate.search.SearchMailTime()
+          t.day = long(tm[0])
+          t.time = long(tm[1])
+
+          subs.times.append(t)
+          if len(subs.times) == 24: break
+
+      if not len(subs.times):
+        success = False
+        info = this.loc("NO_TIMES")
+
+    if success:
+
+      if not this.crawler:
+        
+        success = not this.recaptcha or this.check_recaptcha()
+
+        if not success:
+          info = this.loc("RECAPTCHA_ERROR")
+          recaptcha = True
+
+        else:
+
+          subs.id = this.id
+          subs.title = this.raw_param("sm_t").strip()
+          subs.time_offset = long(this.raw_param("sm_z"))
+          subs.format = long(this.string_param("sm_f"))
+          subs.length = long(this.string_param("sm_h"))
+          subs.modifier = this.modifier.params()
+          subs.filter = this.filter.params(False, this.static.main_languages)
+          subs.query = not subs.modifier and this.query or ''
+
+          is_human = (not this.recaptcha_server_key or this.recaptcha) and \
+                     True or False
+
+#          if True:
+          try:
+      
+            result = \
+              this.search_engine.mailer.update_subscription(\
+                subs,
+                this.search_context(),
+                is_human)
+
+            if result == newsgate.search.SearchMailer.US_MAILED:
+              info = this.loc(this.id and "SUBSCRIPTION_UPDATE_EMAIL_SENT" or \
+                              "SUBSCRIPTION_CREATION_EMAIL_SENT")
+
+            elif result == newsgate.search.SearchMailer.US_EMAIL_CHANGE:
+              info = this.loc("SUBSCRIPTION_EMAIL_CHANGE")
+
+            elif result == newsgate.search.SearchMailer.US_NOT_FOUND:
+              info = this.loc("NO_SUBSCRIPTION_FOUND")
+
+            elif result == newsgate.search.SearchMailer.US_YES:
+              info = this.loc(this.id and "SUBSCRIPTION_UPDATED" or \
+                              "SUBSCRIPTION_ADDED")
+
+            elif result == newsgate.search.SearchMailer.US_CHECK_HUMAN:
+              info = this.loc("PROVE_HUMAN")
+              recaptcha = True
+              success = False
+            else:
+              info = this.loc("TEMPORARY_FAILED")
+
+          except:
+            success = False
+            info = this.loc("INTERNAL_ERROR")
+
+        this.save_prefs()
+
+    request.output.content_type("application/x-javascript; charset=UTF-8")
+
+    this.prn(R'''{
+  success: ''', success and "true" or "false", R''',
+  recaptcha: ''', recaptcha and "true" or "false", R''',
+  info: "''', el.string.manip.js_escape(info), R'''"
+}''')
+
+  def check_recaptcha(this):
+
+    args = 'curl "https://www.google.com/recaptcha/api/siteverify?secret=' + \
+           el.string.manip.mime_url_encode(this.recaptcha_server_key) + \
+           '&response=' + el.string.manip.mime_url_encode(this.recaptcha) + '"'
+
+    proc = subprocess.Popen(args, 
+                            shell = True, 
+                            stdout = subprocess.PIPE, 
+                            stderr = subprocess.PIPE)
+
+    output, error = proc.communicate()
+
+    if proc.returncode != 0:
+      raise RuntimeError("Recaptcha failed: code " + str(proc.returncode) + \
+                         ". Description: " + error)
+
+    return output.find('"success": true') >= 0
+
+  def confirm_operation(this):
+
+    confirmed = this.search_engine.mailer.confirm_operation(\
+                  this.token,
+                  this.search_context())
+
+    return this.loc(confirmed and (\
+             this.confirmation_type == this.TP_CREATE and \
+               "SUBSCRIPTION_ADDED" or \
+             this.confirmation_type == this.TP_UPDATE and \
+               (confirmed == newsgate.search.SearchMailer.CO_YES and \
+                "SUBSCRIPTION_UPDATED" or "SUBSCRIPTION_EMAIL_CHANGE") or \
+             this.confirmation_type == this.TP_EMAIL_UPDATE and \
+               "SUBSCRIPTION_EMAIL_UPDATED" or \
+             this.confirmation_type == this.TP_DISABLE and \
+               "SUBSCRIPTION_DISABLED" or \
+             this.confirmation_type == this.TP_ENABLE and \
+               "SUBSCRIPTION_ENABLED" or \
+             this.confirmation_type == this.TP_DELETE and \
+               "SUBSCRIPTION_DELETED") \
+             or "NO_OPERATION_FOUND")
+
+  def enable_subscription(this):
+
+    recaptcha_checked = not this.recaptcha or this.check_recaptcha()
+
+    if not recaptcha_checked:
+      return this.prn_recapture("RECAPTCHA_ERROR")
+
+    if render.operation == this.OP_ENABLE:
+      status = newsgate.search.SearchMailer.SS_ENABLED
+    elif render.operation == this.OP_DISABLE:
+      status = newsgate.search.SearchMailer.SS_DISABLED
+    else:
+      status = newsgate.search.SearchMailer.SS_DELETED
+    
+    is_human = (not this.recaptcha_server_key or this.recaptcha) and \
+               True or False
+
+#    if True:
+    try:
+      result = \
+        this.search_engine.mailer.enable_subscription(this.email, 
+                                                      this.id, 
+                                                      status,
+                                                      this.search_context(),
+                                                      is_human)
+    except:
+      return this.loc("INTERNAL_ERROR")      
+
+    if result == newsgate.search.SearchMailer.ES_CHECK_HUMAN:
+      return this.prn_recapture("PROVE_HUMAN")
+
+    text = ""
+
+    if result == newsgate.search.SearchMailer.ES_YES or \
+       result == newsgate.search.SearchMailer.ES_ALREADY:
+      text += '<script type="text/javascript">update_opener(' + \
+        (status == newsgate.search.SearchMailer.SS_ENABLED and "1" or "0") + \
+        ', "' + this.id + '", "' + el.string.manip.js_escape(this.email) + \
+        '");</script>'
+
+    text += this.loc(result == newsgate.search.SearchMailer.ES_YES and \
+             (status == newsgate.search.SearchMailer.SS_ENABLED \
+                and "SUBSCRIPTION_ENABLED" or \
+              status == newsgate.search.SearchMailer.SS_DISABLED \
+                and "SUBSCRIPTION_DISABLED" or \
+              status == newsgate.search.SearchMailer.SS_DELETED \
+                and "SUBSCRIPTION_DELETED") or \
+             result == newsgate.search.SearchMailer.ES_MAILED and \
+             (status == newsgate.search.SearchMailer.SS_ENABLED \
+                and "SUBSCRIPTION_ENABLING_EMAIL_SENT" or \
+              status == newsgate.search.SearchMailer.SS_DISABLED \
+                and "SUBSCRIPTION_DISABLING_EMAIL_SENT" or \
+              status == newsgate.search.SearchMailer.SS_DELETED \
+                and "SUBSCRIPTION_DELETING_EMAIL_SENT") or \
+             result == newsgate.search.SearchMailer.ES_ALREADY and \
+             (status == newsgate.search.SearchMailer.SS_ENABLED \
+                and "SUBSCRIPTION_ALREADY_ENABLED" or \
+                    "SUBSCRIPTION_ALREADY_DISABLED") or \
+             result == newsgate.search.SearchMailer.ES_LIMIT_EXCEEDED and \
+             "TEMPORARY_FAILED" or "NO_SUBSCRIPTION_FOUND")
+
+    return text
+
+  def edit_subscription(this):
+
+    try:
+      result = this.search_engine.mailer.get_subscription(this.id)
+
+      if result == None: return this.loc("TEMPORARY_FAILED")
+      elif not result or result.email != this.email:
+        return this.loc("NO_SUBSCRIPTION_FOUND")
+
+    except:
+      return this.loc("INTERNAL_ERROR")
+
+    extra_params = result.modifier
+    if extra_params: extra_params += "&"
+    extra_params += result.filter
+    if extra_params: extra_params += "&"
+
+    extra_params += "sm_i=" + el.string.manip.mime_url_encode(result.id) +\
+      "&sm_e=" + el.string.manip.mime_url_encode(result.email) +\
+      "&sm_t=" + el.string.manip.mime_url_encode(result.title) + \
+      "&sm_f=" + str(result.format) + "&sm_h=" + str(result.length);
+
+    for t in result.times:
+      extra_params += "&sm_m=" + str(t.day) + "-" + str(t.time)
+
+    url = this.search_link(path = '/p/s/h',
+                           modifier = False,
+                           filter = False,
+                           query = result.query,
+                           extra_params = extra_params)
+
+    context.request.output.send_location(url)
+    render.exit(302) # found
+
+  def manage_subscriptions(this):
+
+    result = None
+
+#    if True:
+    try:
+
+      if this.confirmation_type == this.TP_MANAGE:
+
+        if this.token:
+
+          result = \
+            this.search_engine.mailer.get_subscriptions("",
+                                                        this.token,
+                                                        this.search_context(),
+                                                        False)
+
+      else:
+
+        if this.email:
+
+          recaptcha_checked = not this.recaptcha or this.check_recaptcha()
+
+          if not recaptcha_checked:
+            return this.prn_recapture("RECAPTCHA_ERROR")
+
+          is_human = (not this.recaptcha_server_key or this.recaptcha) and \
+                     True or False
+
+          result = \
+            this.search_engine.mailer.get_subscriptions(this.email,
+                                                        "",
+                                                        this.search_context(),
+                                                        is_human)
+
+          if result == None:
+            return this.loc("SUBSCRIPTION_MANAGEMENT_EMAIL_SENT")          
+
+          if result == True:
+            return this.prn_recapture("PROVE_HUMAN")
+
+          if result == False:
+            return this.loc("TEMPORARY_FAILED")
+
+        else:
+ 
+          return this.loc("EMPTY_EMAIL")
+
+    except:
+      return this.loc("INTERNAL_ERROR")
+
+    if not result:
+      return this.loc("NO_SUBSCRIPTION_FOR_EMAIL")
+
+    return result
+
+  def prn_subs(this, subscriptions, status):
+
+    first = True
+
+    for subs in subscriptions:
+
+      if subs.status == status:
+
+        if first: first = False
+        else: this.prn('<tr><td colspan="3"> <td></tr>')
+
+        this.prn('<tr class="subs_row" id="row_', subs.id,
+                 not status and '" style="color:#808084' or '',
+                 '"><td')
+
+        if this.site_version == search_util.SearchPageContext.SV_MOB:
+          this.prn(' colspan="3"')
+
+        this.prn('>', el.string.manip.xml_encode(subs.title), '</td>')
+
+        if this.site_version == search_util.SearchPageContext.SV_MOB:
+          this.prn('</tr><tr class="subs_row" id="row_ctl_', subs.id, '">')
+
+        this.prn('<td><a href="/p/s/e?sm_o=t&sm_i=', subs.id, '&sm_e=', 
+                 el.string.manip.mime_url_encode(subs.email),
+                 '" target="_blank">', lm, "SUBS_EDIT", 
+                 '</a><td><a href="javascript:subs_status(',
+                 not subs.status, ",'", subs.id, "','", 
+                 el.string.manip.js_escape(subs.email),
+                 '\')" id="st_', subs.id, '">',
+                 lm, subs.status and "SUBS_SUSPEND" or "SUBS_RESUME",
+                 '</a></td><td><a href="javascript:subs_del(\'', subs.id, 
+                 "','", el.string.manip.js_escape(subs.email),
+                 '\')">', lm, "SUBS_DELETE", '</a></td></tr>')
+
+  def prn_recapture(this, text_id):
+
+    return '<div>' + this.loc(text_id) + \
+           '</div><div id="recaptcha_widget"></div>'
+
+  def prn_message(this, text):
+
+    this.prn(text, '<div id="close"></div>')
+
+#
+# Initialization
+#
+
+lm = el.psp.LocalizationMarker
+render = SearchMailRender(context, search_engine)
+
+if render.operation == SearchMailRender.OP_UPDATE:
+  render.update_subscription()
+
+  # Break circular references ...
+  render.exit(0)
+
+op_result = None
+
+if render.operation == SearchMailRender.OP_EDIT:
+
+  op_result = render.edit_subscription()
+
+elif render.operation == SearchMailRender.OP_MANAGE or \
+     render.confirmation_type == SearchMailRender.TP_MANAGE:
+
+  op_result = render.manage_subscriptions()
+
+elif render.operation == SearchMailRender.OP_CONFIRM:
+
+  op_result = render.confirm_operation()
+
+elif render.operation == SearchMailRender.OP_DISABLE or \
+     render.operation == SearchMailRender.OP_ENABLE or \
+     render.operation == SearchMailRender.OP_DELETE:
+
+  op_result = render.enable_subscription()
+
+render.prn_html_open()
+render.prn_head_open()
+
+if render.browser == "msie":
+  render.prn('\n<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE8">')
+
+render.prn('\n<title>', lm, "TITLE", ' - ', 
+           el.string.manip.xml_encode(render.static.server_instance_name),
+           '</title>')
+
+render.prn_css()
+render.prn_script()
+render.prn_head_close()
+render.prn_body_open("init()")
+   
+render.prn(R'''
+<table id="topbar_table" cellspacing="0">
+  <tr>
+  <td id="tagline">''', lm, "TAGLINE", R'''</td>
+  <td id="menu"><a href="''',
+    el.string.manip.xml_encode(render.site + "/"), '">')
+
+if render.site_version == search_util.SearchPageContext.SV_MOB:
+  render.prn('<img src="', render.resource_url('/fixed/img/home32.png'),
+             '" width="32" height="32" class="mob_menu_img"/>')
+
+else:
+  render.prn(lm, "NEW_SEARCH")
+
+render.prn(R'''</a>
+  </td>
+  </tr>
+</table>
+<table id="main_area" align="center" cellspacing="0"><tr><td>
+<div id="content">''')
+
+#if True:
+try:
+
+  if render.operation == SearchMailRender.OP_MANAGE or \
+     render.confirmation_type == SearchMailRender.TP_MANAGE:
+
+    if isinstance(op_result, str):
+      render.prn_message(op_result)
+
+    else:
+      render.prn('<table id="subs_table">')
+      render.prn_subs(op_result, True)
+      render.prn_subs(op_result, False)
+      render.prn('\n</table>')
+
+  elif render.operation == SearchMailRender.OP_CONFIRM:
+
+    render.prn_message(op_result)
+
+  elif render.operation == SearchMailRender.OP_DISABLE or \
+       render.operation == SearchMailRender.OP_ENABLE or \
+       render.operation == SearchMailRender.OP_DELETE:
+
+    render.prn_message(op_result)
+
+  elif render.operation == SearchMailRender.OP_EDIT:
+
+    render.prn_message(op_result)
+
+except:
+  render.prn_message(this.loc("INTERNAL_ERROR"))
+
+render.prn('\n</div></td></tr></table>')
+
+render.prn_copyright(False)
+render.prn_counters()
+render.prn_body_close()
+render.prn_html_close()
+
+# Break circular references ...
+render.exit()

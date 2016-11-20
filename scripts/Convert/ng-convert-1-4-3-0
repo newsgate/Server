@@ -1,0 +1,18 @@
+#!/bin/sh
+
+# product   : NewsGate - news search WEB server
+# copyright : Copyright (c) 2005-2016 Karen Arutyunov
+# licenses  : CC BY-NC-SA 3.0; see accompanying LICENSE file
+#             Commercial; contact karen.arutyunov@gmail.com
+
+echo "Deleting broken privileges ..."
+
+echo "delete from ModeratorPrivileges where privilege=0;" | \
+ng-mysql --user root NewsGateModeration
+
+if test $? -eq 0; then
+  echo "Done"
+else
+  echo "Failed"
+  exit 1
+fi

@@ -1,0 +1,53 @@
+DUPLICATES       Include Duplicates
+
+SORT_CONF        Sorting
+SORT_CRIT        Criterion
+SORT_CRIT_REL    Relevance
+SORT_CRIT_PUB    Publication Date
+SORT_CRIT_FETCH  Fetch Date
+SORT_CRIT_EVENT  Reference
+SORT_CRIT_POP    Popularity
+SORT_DIR         Direction
+SORT_DIR_ASC     Ascending	
+SORT_DIR_DESC    Descending
+
+SUBS_CONF        Subscriptions
+SUBS_EMAIL       Email
+SUBS_EDIT        Manage subscriptions
+
+REPR_CONF        Display
+RESULTS_PER_PAGE Results Per Page
+ANNOTATION_LEN   Annotation Length
+ANNOTATION_FULL  Full
+2_COLUMNS        In 2 Columns
+LARGE_PRINT      Large Print
+IMAGES           Images
+MESSAGE_VIEW     Format
+MV_PAPER         Newspaper
+MV_LINE          Newsline
+TOP_STORIES      Top Stories
+
+CREATE_SEARCH_MAIL Subscribe
+SAVE_SEARCH_MAIL   Save
+CANCEL_SEARCH_MAIL Cancel
+CLOSE_SEARCH_MAIL  Close
+MAILER_EMAIL_LABEL Email
+MAILER_TITLE_LABEL Subject
+MAILER_FORMAT_LABEL Format
+MAILER_FORMAT_HTML HTML
+MAILER_FORMAT_TEXT Text
+MAILER_FORMAT_BOTH HTML and Text
+MAILER_MESSAGE_COUNT Messages
+MAILER_TIME_LABEL  Delivery Time
+MAILER_ADD_TIME    add
+MAILER_SAVING      Saving information. Please wait ...
+MAILER_SRV_ERR     Server communication error
+MAILER_TRY_LATER   Please try again later.
+MAILER_DAILY       Daily
+MAILER_SUN         Sunday
+MAILER_MON         Monday
+MAILER_TUE         Tuesday
+MAILER_WED         Wednesday
+MAILER_THU         Thursday
+MAILER_FRI         Friday
+MAILER_SAT         Saturday

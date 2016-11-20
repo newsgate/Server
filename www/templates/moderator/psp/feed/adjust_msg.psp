@@ -1,0 +1,107 @@
+from moderation_func import *
+
+request = context.request
+prn, param = request.output.stream.prn, request.input.parameters().find
+
+try:
+  moderator = moderator_connector.connect(request, False)
+except:
+  el.exit(401) # Unauthorized
+
+if moderator.has_privilege(newsgate.moderation.moderator.PV_FEED_MANAGER) == \
+  False:
+  el.exit(403) # Forbidden
+
+script = param("scr")
+
+src_item = newsgate.feed.Item()
+
+src_item.feed_id = long(param("fid"))
+src_item.title = param("i_tit").strip()
+src_item.description = param("i_dsc").strip()
+
+src_message = newsgate.message.Message()
+
+try:
+  src_message.source.url = param("s_url").strip()
+except: pass
+
+src_message.source.title = param("s_tit").strip()
+src_message.source.html_link = param("s_hln").strip()
+
+try:
+  src_message.url = param("url").strip()
+except: pass
+
+src_message.title = param("tit").strip()
+src_message.description = param("dsc").strip()
+
+try: src_message.space = long(param("spc"))
+except: pass
+
+try: src_message.lang = el.Lang(param("lng").strip())
+except: pass
+
+try: src_message.country = el.Country(param("ctr").strip())
+except: pass
+
+for k in param("kwd").split('\n'):
+  k = k.strip()
+  if k: src_message.keywords.append(k)
+
+encoding = param("enc")
+
+image = newsgate.message.Image()
+
+for iml in param("img").split('\n'):
+  iml = iml.strip()
+
+  if iml == "" and image.src != "":
+    src_message.images.append(image)
+    image = newsgate.message.Image()
+    continue
+    
+  iml_pair = iml.split(':', 1)
+
+  try:
+    attr = iml_pair[0].strip()
+    val = iml_pair[1].strip()
+
+    if attr == "src": image.src = val
+    elif attr == "alt": image.alt = val
+    elif attr == "width": image.width = long(val)
+    elif attr == "height": image.height = long(val)
+    elif attr == "origin": image.origin = image_origin_id(val)
+    elif attr == "status": image.status = image_status_id(val)
+  except: pass
+
+if image.src != "":
+  src_message.images.append(image)
+
+request.output.content_type("text/xml; charset=UTF-8")
+
+prn('<?xml version="1.0" encoding="utf-8" ?><result>')
+
+adjustment_context = newsgate.MA_Context()
+adjustment_context.message = src_message
+adjustment_context.item = src_item
+adjustment_context.encoding = encoding
+
+adjustment_result = \
+  moderator.feed_manager.adjust_message(script, adjustment_context)
+
+error = adjustment_result.error
+
+if error != "":
+  pos = error.find("name:")
+  if pos > 0: error = error[0:pos]
+
+  prn('<error>', xml_smart_encode(error),
+      '</error>')
+
+if adjustment_result.log != "":
+  prn('<log>', xml_smart_encode(adjustment_result.log), '</log>')
+
+prn_message_items(adjustment_result.message, prn)
+
+prn('\n</result>')

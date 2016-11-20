@@ -1,0 +1,21 @@
+# NewsGate/Server/xsd/DataFeed/RSS/RSSParserTypes.map
+
+namespace ".*"
+{
+  include <xsd/DataFeed/RSS/Data.hpp>;
+
+  tRfc822FormatDate std::wstring;
+  tEnclosure        ::NewsGate::RSS::Enclosure;
+  tGuid             ::NewsGate::RSS::Guid;
+  tRssItem          ::NewsGate::RSS::Item;
+  tRssChannel       ::NewsGate::RSS::Channel;
+}
+
+namespace http://search.yahoo.com/mrss/
+{
+  include <xsd/DataFeed/RSS/Data.hpp>;
+
+  mrssContentType   ::NewsGate::RSS::Enclosure;
+  mrssThumbnailType ::NewsGate::RSS::Enclosure;
+  mediumType        std::wstring;
+}

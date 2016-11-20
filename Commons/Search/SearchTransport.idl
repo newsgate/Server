@@ -1,0 +1,48 @@
+/*
+ * product   : NewsGate - news search WEB server
+ * copyright : Copyright (c) 2005-2016 Karen Arutyunov
+ * licenses  : CC BY-NC-SA 3.0; see accompanying LICENSE file
+ *             Commercial; contact karen.arutyunov@gmail.com
+ */
+
+/**
+ * @file NewsGate/Server/Commons/Search/SearchTransport.idl
+ * @author Karen Arutyunov
+ * $Id:$
+ */
+
+#ifndef _NEWSGATE_SERVER_COMMONS_SEARCH_SEARCHTRANSPORT_IDL_
+#define _NEWSGATE_SERVER_COMMONS_SEARCH_SEARCHTRANSPORT_IDL_
+
+module NewsGate
+{ 
+  module Search
+  {
+    module Transport
+    {
+      //
+      // Implementations are in Commons/Search/TransportImpl.hpp
+      //
+      
+      custom valuetype Expression
+      {
+      };
+
+      custom valuetype Strategy
+      {
+      };      
+
+      custom valuetype Result
+      {
+      };
+
+      custom valuetype Stat
+      {
+      };
+    };
+    
+  };
+  
+};
+
+#endif // _NEWSGATE_SERVER_COMMONS_SEARCH_SEARCHTRANSPORT_IDL_

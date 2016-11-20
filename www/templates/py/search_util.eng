@@ -1,0 +1,54 @@
+ALL_OPTION - All -
+
+NEWS_TITLE       News
+NEWS_DESCRIPTION Breaking news
+
+QUERY_TITLE_ALL         All News
+QUERY_TITLE_IN_SIMILAR  in story
+QUERY_TITLE_IN_SOURCE   in source 
+QUERY_TITLE_IN_CATEGORY in category
+QUERY_TITLE_IN_LANG     article language
+QUERY_TITLE_IN_COUNTRY  country
+
+QUERY_DESCRIPTION_ALL   News:
+
+RIGHT_BAR_CATEGORIES     Categories
+RIGHT_BAR_READ_ALSO      Read&nbsp;Also
+RIGHT_BAR_OTHER_SUBJECTS Other&nbsp;Categories
+RIGHT_BAR_HTML_SOURCES   Resources
+RIGHT_BAR_HTML_SOURCE    Resource
+
+TRANSLATE_NONE   Disable
+TRANSLATE_GOOGLE Google Translate
+
+PUBLISHED     Published {{MSG_TIME_AGO}} ago by <a href='{{URL}}'{{ATTRIBUTES}}>{{MSG_SOURCE_TITLE}}</a>{{MSG_COUNTRY}}
+PUBLISHED_MOB {{MSG_TIME_AGO}} ago <a href='{{URL}}'{{ATTRIBUTES}}>{{MSG_SOURCE_TITLE}}</a>{{MSG_COUNTRY}}
+FETCHED       Fetched {{MSG_TIME_AGO}} ago from <a href='{{URL}}'{{ATTRIBUTES}}>{{MSG_SOURCE_TITLE}}</a>{{MSG_COUNTRY}}
+SOURCE        <a href='{{URL}}'{{ATTRIBUTES}}>{{MSG_SOURCE_TITLE}}</a>{{MSG_COUNTRY}}
+
+READ_MORE     Read&nbsp;more&nbsp;...
+SIMILAR_POSTS Whole&nbsp;story
+CATEGORIES    Categories:
+COPYRIGHT     All rights reserved.
+CONTACT       Contact Us
+
+ALL_MSG       news
+SIMILAR_TO    story
+FROM_SOURCE   source
+FROM_CATEGORY category
+
+IN_CATEGORY    in category
+IN_SOURCE      in source 
+IN_SIMILAR     in story
+IN_LANGUAGE    article language
+IN_LANGUAGE_TR translation
+IN_COUNTRY     country
+ALL_LANGUAGE   articles in all languages
+ALL_COUNTRY    all countries
+
+EXCLUDE_SEARCH   Exclude search condition
+EXCLUDE_SIMILAR  Exclude story condition
+EXCLUDE_SOURCE   Exclude source condition
+EXCLUDE_CATEGORY Exclude category condition
+EXCLUDE_LANG     Exclude language condition
+EXCLUDE_COUNTRY  Exclude country condition

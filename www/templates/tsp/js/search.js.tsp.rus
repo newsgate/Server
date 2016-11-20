@@ -1,0 +1,53 @@
+DUPLICATES       Включать повторы
+
+SORT_CONF        Сортировка
+SORT_CRIT        Критерий
+SORT_CRIT_REL    Значимость
+SORT_CRIT_PUB    Дата публикации
+SORT_CRIT_FETCH  Дата обнаружения
+SORT_CRIT_EVENT  Упоминаемость
+SORT_CRIT_POP    Популярность
+SORT_DIR         Направление
+SORT_DIR_ASC     Возрастание
+SORT_DIR_DESC    Убывание
+
+SUBS_CONF        Подписки
+SUBS_EMAIL       Email
+SUBS_EDIT        Управлять подписками
+
+REPR_CONF        Отображение
+RESULTS_PER_PAGE Сообщений на странице
+ANNOTATION_LEN   Длина аннотации
+ANNOTATION_FULL  Целиком
+2_COLUMNS        Вывод в 2 колонки
+LARGE_PRINT      Крупный шрифт
+IMAGES           Картинки
+MESSAGE_VIEW     Формат
+MV_PAPER         Газета
+MV_LINE          Лента
+TOP_STORIES      Главные новости
+
+CREATE_SEARCH_MAIL Подписаться
+SAVE_SEARCH_MAIL   Сохранить
+CANCEL_SEARCH_MAIL Отменить
+CLOSE_SEARCH_MAIL  Закрыть
+MAILER_EMAIL_LABEL Email
+MAILER_TITLE_LABEL Название
+MAILER_FORMAT_LABEL Формат
+MAILER_MESSAGE_COUNT Сообщений
+MAILER_FORMAT_HTML HTML
+MAILER_FORMAT_TEXT Текст
+MAILER_FORMAT_BOTH HTML и Текст
+MAILER_TIME_LABEL  Время доставки писем
+MAILER_ADD_TIME    добавить
+MAILER_SAVING      Сохранение информации. Пожалуйста, подождите ...
+MAILER_SRV_ERR     Ошибка взаимодействия с сервером
+MAILER_TRY_LATER   Пожалуйста, повторите операцию позже.
+MAILER_DAILY       Ежедневно
+MAILER_SUN         Воскресенье
+MAILER_MON         Понедельник
+MAILER_TUE         Вторник
+MAILER_WED         Среда
+MAILER_THU         Четверг
+MAILER_FRI         Пятница
+MAILER_SAT         Суббота

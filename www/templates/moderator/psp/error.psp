@@ -1,0 +1,26 @@
+from moderation_func import *
+
+request, message = context.request, context.forward_params
+prn = request.output.stream.prn
+
+prn(
+R'''<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>Management: Operation Failed</title>
+<link rel="stylesheet" type="text/css" href="/fixed/css/common.css" media="all" />
+<link rel="stylesheet" type="text/css" href="/fixed/css/error.css" media="all" />
+</head>
+
+<body>
+  <div id="error">''')
+
+if message != None:
+  prn(message)
+
+prn(
+R'''
+  </div>
+</body>
+</html>
+''')

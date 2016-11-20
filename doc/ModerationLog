@@ -1,0 +1,37 @@
+ModerationActivityLog
+  id, (autoincrement, PK)
+  time,
+  type, (WordListsUpdate)
+  moderator_id,
+  moderator_name,
+  summary
+
+CategoryUpdateLog
+  moderation_activity, (reference ModerationActivity)
+  category_id,
+  operations, (CREATE, DELETE, UPDATE_NAME, UPDATE_STATUS, UPDATE_SEARCHEABLE, 
+               UPDATE_DESC, UPDATE_WORD_LISTS, UPDATE_EXPRESSIONS,
+               UPDATE_PARENTS, UPDATE_CHILDREN, UPDATE_LOCALES) // Or-ed
+  new_name,
+  prev_name,
+  new_status,
+  prev_status,
+  .....
+
+WordListUpdateLog
+  moderation_activity, (reference ModerationActivity)
+  category_id,
+  name,
+  operations, (CREATE, DELETE, UPDATE_WORDS, UPDATE_DESC) // identified by name
+  words_addition,
+  words_removal,
+  new_description
+
+ExpressionsUpdateLog
+  moderation_activity, (reference ModerationActivity)
+  category_id,
+  operation, (CREATE, DELETE, UPDATE_DESC) // identified by expression value
+                                           // and desc
+  expression,
+  new_desc,
+  prev_desc

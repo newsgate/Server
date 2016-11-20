@@ -1,0 +1,58 @@
+from moderation_func import *
+
+request = context.request
+param = request.input.parameters().find
+
+try:
+  moderator = moderator_connector.connect(request, False)
+except:
+  el.exit(401) # Unauthorized
+
+if moderator.has_privilege(newsgate.moderation.moderator.PV_FEED_CREATOR) == False:
+  el.exit(403) # Forbidden
+
+op = param("o")
+arg = param("a")
+
+if op == "submit":
+  el.exit(el.psp.Forward("/psp/feed/validation_result.psp"))
+
+prefs = el.NameValueMap(request.input.cookies().most_specific("mp"), ':', '-')
+
+ids = [ moderator.id ]
+
+try:
+  subordinates = moderator.moderator_manager.get_subordinates()
+
+except newsgate.moderation.InvalidSession:
+  el.exit(el.psp.Forward("/psp/login.psp", 
+                         "Your session expired.<br>Please, relogin."))
+
+except newsgate.moderation.NotReady:
+  el.exit(el.psp.Forward(\
+          "/psp/feeds.psp", 
+          "The system is not ready to serve your request.<br>Please, try again in several minutes."))
+
+for sub in subordinates: 
+  ids.append(sub.id)
+
+if op == "interrupt":
+  moderator.feed_manager.stop_validation(arg, ids)
+elif op == "delete":
+  moderator.feed_manager.delete_validation(arg, ids)
+elif op == "subs":
+  prefs["sst"] = arg
+else:
+  el.exit(400) # Bad request
+
+expiration = el.Moment(el.TimeValue(request.time().sec() + 2 * 365 * 86400))
+
+request.output.send_header("Cache-Control", "no-cache")
+
+request.output.send_cookie(
+  el.net.http.CookieSetter("mp", 
+                           prefs.string(), 
+                           expiration, 
+                           "/", 
+                           "", 
+                           request.secure()))

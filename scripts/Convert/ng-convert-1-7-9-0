@@ -1,0 +1,19 @@
+#!/bin/sh
+
+# product   : NewsGate - news search WEB server
+# copyright : Copyright (c) 2005-2016 Karen Arutyunov
+# licenses  : CC BY-NC-SA 3.0; see accompanying LICENSE file
+#             Commercial; contact karen.arutyunov@gmail.com
+
+source "$1/lib.sh"
+
+echo_date "Altering CategoryLocale table ..."
+
+echo "alter table CategoryLocale \
+add keywords TEXT(1024) BINARY NOT NULL DEFAULT '' after name, \
+add description TEXT(1024) BINARY NOT NULL DEFAULT '' after name, \
+add short_title TEXT(512) BINARY NOT NULL DEFAULT '' after name, \
+add title TEXT(1024) BINARY NOT NULL DEFAULT '' after name;" | \
+ng-mysql --user root NewsGate
+
+if test $? -eq 0; then echo_date "Done"; else echo_date "Failed"; exit 1; fi

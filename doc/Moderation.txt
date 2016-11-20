@@ -1,0 +1,12 @@
+Feed properties: url, status, owner.
+Moderator properties: status, owner, priveleges.
+
+Moderator priveleges:
+1) FeedCreator manages own feeds. Can register feeds in the system and 
+   change their properties.
+2) FeedModerator manages own feeds and these of all descendant
+   moderators. Same as previous but also can change properties of 
+   feeds belonging to descendant moderators.
+3) ModeratorManager manages descendant moderators. Can create
+   moderators and change properties of all descendant moderators. He
+   can assign descendant moderator any privilege he has.

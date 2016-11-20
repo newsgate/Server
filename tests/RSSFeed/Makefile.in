@@ -1,0 +1,11 @@
+# @file   Makefile.in
+# @author Karen Aroutiounov
+# $Id: $
+
+include Common.pre.rules
+
+target_directory_list := Frontend Service
+Frontend: Service
+
+include $(osbe_builddir)/config/Direntry.post.rules
+

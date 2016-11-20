@@ -1,0 +1,89 @@
+#!/bin/sh
+
+# product   : NewsGate - news search WEB server
+# copyright : Copyright (c) 2005-2016 Karen Arutyunov
+# licenses  : CC BY-NC-SA 3.0; see accompanying LICENSE file
+#             Commercial; contact karen.arutyunov@gmail.com
+
+source "$1/lib.sh"
+
+echo_date "Cleaning MessageBank service cache ..."
+
+rm $3/Message/Bank/* 2>/dev/null
+
+# Resets possibly non-zero $?
+echo "" > /dev/null
+
+echo_date "Copying table Message ..."
+
+echo "create table Message2 ( \
+      id BIGINT UNSIGNED NOT NULL PRIMARY KEY, \
+      event_id BIGINT UNSIGNED NOT NULL, \
+      event_capacity INTEGER UNSIGNED NOT NULL, \
+      flags TINYINT UNSIGNED NOT NULL, \
+      signature BIGINT UNSIGNED NOT NULL, \
+      source_id BIGINT UNSIGNED NOT NULL, \
+      dict_hash INTEGER UNSIGNED NOT NULL, \
+      published BIGINT UNSIGNED NOT NULL, \
+      updated BIGINT UNSIGNED NOT NULL, \
+      fetched BIGINT UNSIGNED NOT NULL, \
+      type SMALLINT UNSIGNED NOT NULL, \
+      space SMALLINT UNSIGNED NOT NULL, \
+      complements BLOB(40960) NOT NULL, \
+      url VARCHAR(512) character set ascii, \
+      lang SMALLINT UNSIGNED NOT NULL, \
+      country SMALLINT UNSIGNED NOT NULL, \
+      source_title VARCHAR(1024), \
+      source_description VARCHAR(4096), \
+      broken_down BLOB(20480) NOT NULL, \
+      categories BLOB(40960) NOT NULL \
+) engine=InnoDB \
+select id, event_id, event_capacity, flags, signature, 0 as source_id, \
+dict_hash, published, updated, fetched, type, space, complements, url, lang, \
+country, source_title, source_description, broken_down, categories \
+from Message;" | ng-mysql --user=root NewsGate
+
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+echo_date "Dropping Message table ..."
+
+echo "drop table Message;" | ng-mysql --user=root NewsGate
+
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+echo_date "Renaming Message2 table to Message ..."
+
+echo "rename table Message2 to Message;" | ng-mysql --user=root NewsGate
+
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+echo_date "Adding source_id column to MessageBuff table ..."
+
+echo "alter table MessageBuff add column source_id BIGINT UNSIGNED NOT NULL DEFAULT 0 after signature;" | \
+ng-mysql --user root NewsGate
+
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+echo_date "Creating table StatFeed ..."
+
+echo "create table StatFeed ( \
+      date DATETIME NOT NULL, \
+      feed_id BIGINT UNSIGNED NOT NULL REFERENCES Feed ( id ), \
+      msg_impressions BIGINT UNSIGNED NOT NULL, \
+      msg_clicks BIGINT UNSIGNED NOT NULL, \
+      PRIMARY KEY (date, feed_id), \
+      INDEX feed_id_index (feed_id) \
+) engine=InnoDB;" | ng-mysql --user=root NewsGate
+
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+echo_date "Creating table StatFeedBuff ..."
+
+echo "create table StatFeedBuff ( \
+      date DATETIME NOT NULL, \
+      feed_id BIGINT UNSIGNED NOT NULL, \
+      msg_impressions BIGINT UNSIGNED NOT NULL, \
+      msg_clicks BIGINT UNSIGNED NOT NULL \
+) engine=InnoDB;" | ng-mysql --user=root NewsGate
+
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi

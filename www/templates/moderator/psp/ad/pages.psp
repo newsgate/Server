@@ -1,0 +1,72 @@
+from moderation_func import *
+
+request, conf = context.request, context.config.get
+message = context.forward_params
+prn = request.output.stream.prn
+
+moderator = connect_moderator(request, moderator_connector)
+
+ad_manager = \
+  moderator.has_privilege(newsgate.moderation.moderator.PV_AD_MANAGER)
+
+advertiser_id = moderator.advertiser_id
+
+if not ad_manager and not advertiser_id:
+  el.exit(403) # Forbidden
+
+pages = moderator.ad_manager.get_pages(advertiser_id)
+
+prn(
+R'''<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>Management: Ad Pages</title>
+<link rel="stylesheet" type="text/css" href="/fixed/css/common.css" media="all" />
+<link rel="stylesheet" type="text/css" href="/fixed/css/ad/pages.css" media="all" />
+</head>
+
+<body>
+<table id="skeleton" cellspacing="0">
+''')
+
+menus = []
+create_topbar_main_menus(context, moderator, "Ad", menus)
+prn(create_topbar(create_ad_menus(moderator, "Pages"), menus[0], menus[1]))
+
+prn(R'''
+  <tr><td id="main_area" valign="top" align="center">
+    <table id="pages">
+    <tr align="center" id="header">
+      <td>Name</td><td>Status</td><td>Slot Count</td><td>Max Ad Count</td>''')
+
+if advertiser_id:
+  prn('<td>Advertiser Max<br>Ad Count</td>')
+
+prn('\n    </tr>')
+
+for page in pages:
+  prn('\n    <tr class="option_row"><td><a href="/psp/ad/page?id=', page.id,
+    '">', el.string.manip.xml_encode(page.name), '</a></td><td>', 
+    page.status == newsgate.moderation.ad.PS_ENABLED and "Enabled" or \
+    "Disabled", '</td><td class="number_option">', len(page.slots), 
+    '</td><td class="number_option">', page.max_ad_num, '</td>')
+
+  if advertiser_id:
+    if page.advertiser_info.max_ad_num < newsgate.moderation.ad.MAX_AD_NUM:
+      max_ad_num = page.advertiser_info.max_ad_num
+    else:
+      max_ad_num = ""
+
+    prn('<td class="number_option">', max_ad_num, '</td>')
+
+  prn('</tr>')
+
+prn(
+R'''
+    </table>
+  </td></tr>
+''', create_copyright(context), R'''
+</table>
+</body>
+</html>
+''')

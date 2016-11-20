@@ -1,0 +1,96 @@
+#!/bin/sh
+
+# product   : NewsGate - news search WEB server
+# copyright : Copyright (c) 2005-2016 Karen Arutyunov
+# licenses  : CC BY-NC-SA 3.0; see accompanying LICENSE file
+#             Commercial; contact karen.arutyunov@gmail.com
+
+source "$1/lib.sh"
+
+echo_date "Copying table StatMessageImpression ..."
+
+echo "create table StatMessageImpression2 ( \
+      request_id CHAR(32) character set ascii NOT NULL \
+        REFERENCES StatSearchRequest ( id ), \
+      message_id BIGINT UNSIGNED NOT NULL, \
+      client_id VARCHAR(32) character set ascii NOT NULL, \
+      time DATETIME NOT NULL, \
+      time_usec MEDIUMINT UNSIGNED NOT NULL, \
+      count BIGINT UNSIGNED NOT NULL DEFAULT 1, \
+      PRIMARY KEY (request_id, message_id, client_id) \
+) engine=InnoDB \
+select request_id, message_id, client_id, time, time_usec, 1 as count from \
+StatMessageImpression;" | ng-mysql --user=root NewsGate
+
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+echo_date "Dropping StatMessageImpression table ..."
+
+echo "drop table StatMessageImpression;" | ng-mysql --user=root NewsGate
+
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+echo_date "Renaming StatMessageImpression2 table to StatMessageImpression ..."
+
+echo "rename table StatMessageImpression2 to StatMessageImpression;" | \
+ng-mysql --user=root NewsGate
+
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+echo_date "Copying table StatMessageClick ..."
+
+echo "create table StatMessageClick2 ( \
+      request_id CHAR(32) character set ascii NOT NULL \
+        REFERENCES StatSearchRequest ( id ), \
+      message_id BIGINT UNSIGNED NOT NULL, \
+      client_id VARCHAR(32) character set ascii NOT NULL, \
+      time DATETIME NOT NULL, \
+      time_usec MEDIUMINT UNSIGNED NOT NULL, \
+      count BIGINT UNSIGNED NOT NULL DEFAULT 1, \
+      PRIMARY KEY (request_id, message_id, client_id) \
+) engine=InnoDB \
+select request_id, message_id, client_id, time, time_usec, 1 as count from \
+StatMessageClick;" | ng-mysql --user=root NewsGate
+
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+echo_date "Dropping StatMessageClick table ..."
+
+echo "drop table StatMessageClick;" | ng-mysql --user=root NewsGate
+
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+echo_date "Renaming StatMessageClick2 table to StatMessageClick ..."
+
+echo "rename table StatMessageClick2 to StatMessageClick;" | \
+ng-mysql --user=root NewsGate
+
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+echo "Creating StatMessageImpressionBuff table ..."
+
+echo "create table StatMessageImpressionBuff ( \
+      request_id CHAR(32) character set ascii NOT NULL \
+        REFERENCES StatSearchRequest ( id ), \
+      message_id BIGINT UNSIGNED NOT NULL, \
+      client_id VARCHAR(32) character set ascii NOT NULL, \
+      time DATETIME NOT NULL, \
+      time_usec MEDIUMINT UNSIGNED NOT NULL, \
+      count BIGINT UNSIGNED NOT NULL DEFAULT 1 \
+) engine=InnoDB;" | ng-mysql --user=root NewsGate
+
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+echo "Creating StatMessageClickBuff table ..."
+
+echo "create table StatMessageClickBuff ( \
+      request_id CHAR(32) character set ascii NOT NULL \
+        REFERENCES StatSearchRequest ( id ), \
+      message_id BIGINT UNSIGNED NOT NULL, \
+      client_id VARCHAR(32) character set ascii NOT NULL, \
+      time DATETIME NOT NULL, \
+      time_usec MEDIUMINT UNSIGNED NOT NULL, \
+      count BIGINT UNSIGNED NOT NULL DEFAULT 1 \
+) engine=InnoDB;" | ng-mysql --user=root NewsGate
+
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi

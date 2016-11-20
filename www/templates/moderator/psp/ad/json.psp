@@ -1,0 +1,176 @@
+from moderation_func import *
+
+request, conf = context.request, context.config.get
+message = context.forward_params
+prn, param = request.output.stream.prn, request.input.parameters().find
+
+moderator = connect_moderator(request, moderator_connector)
+
+ad_manager = \
+  moderator.has_privilege(newsgate.moderation.moderator.PV_AD_MANAGER)
+
+advertiser = \
+  moderator.has_privilege(newsgate.moderation.moderator.PV_ADVERTISER)
+
+if not ad_manager and not advertiser:
+  el.exit(403) # Forbidden
+
+obj = param("o")
+
+request.output.content_type("application/x-javascript;charset=UTF-8")
+
+if obj == "sizes":
+
+  prn("[\n")
+
+  sizes = moderator.ad_manager.get_sizes()
+  sep = ""
+
+  for s in sizes:
+    prn(sep, '  { id:', s.id, ', status:', s.status, ', width:', s.width,
+        ', height:', s.height, ', name:"', 
+        el.string.manip.js_escape(s.name), '" }')
+
+    sep = ",\n"
+
+  prn("\n]")
+
+elif obj == "conditions":
+
+  prn("[\n")
+
+  conditions = moderator.ad_manager.get_conditions(moderator.advertiser_id)
+  sep = ""
+
+  for c in conditions:
+
+    if not moderator.show_deleted and \
+       c.status == newsgate.moderation.ad.CS_DELETED:
+      continue
+
+    prn(sep, '  { id:', c.id, ', status:', c.status, ', name:"', 
+        el.string.manip.js_escape(c.name), '" }')
+
+    sep = ",\n"
+
+  prn("\n]")
+
+elif obj == "slots":
+
+  prn("[\n")
+
+  sep = ""
+
+  for p in moderator.ad_manager.get_pages(moderator.advertiser_id):
+
+    for s in p.slots:
+
+      prn(sep, '  { id:', s.id, ', page:', p.id, ', status:', s.status,
+          ', min_width:', s.min_width, ', max_width:', s.max_width,
+          ', min_height:', s.min_height, ', max_height:', s.max_height,
+          ', name:"', el.string.manip.js_escape(s.name), 
+          '", page_name:"', el.string.manip.js_escape(p.name), '" }')
+
+      sep = ",\n"
+
+  prn("\n]")
+
+elif obj == "pages":
+
+  prn("[\n")
+
+  sep = ""
+
+  for p in moderator.ad_manager.get_pages(moderator.advertiser_id):
+
+    prn(sep, '  { id:', p.id, ', status:', p.status,
+        ', name:"', el.string.manip.js_escape(p.name), '" }')
+
+    sep = ",\n"
+
+  prn("\n]")
+
+elif obj == "ads":
+
+  prn("[\n")
+
+  ads = moderator.ad_manager.get_ads(moderator.advertiser_id)
+  sep = ""
+
+  for a in ads:
+
+    if not moderator.show_deleted and \
+       a.status == newsgate.moderation.ad.AS_DELETED:
+      continue
+
+    prn(sep, '  { id:', a.id, ', status:', a.status, 
+        ', width:', a.width, ', height:', a.height, ', name:"', 
+        el.string.manip.js_escape(a.name), '", size_name:"', 
+        el.string.manip.js_escape(a.size_name), '" }')
+
+    sep = ",\n"
+
+  prn("\n]")
+
+elif obj == "counters":
+
+  prn("[\n")
+
+  counters = moderator.ad_manager.get_counters(moderator.advertiser_id)
+  sep = ""
+
+  for c in counters:
+
+    if not moderator.show_deleted and \
+       c.status == newsgate.moderation.ad.US_DELETED:
+      continue
+
+    prn(sep, '  { id:', c.id, ', status:', c.status,
+        ', name:"', el.string.manip.js_escape(c.name), '" }')
+
+    sep = ",\n"
+
+  prn("\n]")
+
+elif obj == "advertisers":
+
+  prn("[\n")
+
+  advertisers = moderator.moderator_manager.get_advertisers()
+  sep = ""
+
+  for a in advertisers:
+    prn(sep, '  { id:', a.id, ', status:', a.status, ', name:"', 
+        el.string.manip.js_escape(a.name), '" }')
+
+    sep = ",\n"
+
+  prn("\n]")
+
+elif obj == "languages":
+
+  prn("[\n")
+
+  sep = ""
+
+  for l in el.Lang.all:
+    prn(sep, '  { n:"', l.l3_code(), '", d:"', 
+        el.string.manip.js_escape(l.name()), '" }')
+
+    sep = ",\n"
+
+  prn("\n]")
+
+elif obj == "countries":
+
+  prn("[\n")
+
+  sep = ""
+
+  for c in el.Country.all:
+    prn(sep, '  { n:"', c.l3_code(), '", d:"', 
+        el.string.manip.js_escape(c.name()), '" }')
+
+    sep = ",\n"
+
+  prn("\n]")

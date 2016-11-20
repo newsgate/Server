@@ -1,0 +1,20 @@
+# @file   Makefile.in
+# @author Karen Aroutiounov
+# $Id:$
+
+include Common.pre.rules
+include $(osbe_builddir)/config/CXX/CXX.pre.rules
+
+include $(osbe_builddir)/config/CXX/External/ACE.pre.rules
+include $(osbe_builddir)/config/CXX/External/Xerces.pre.rules
+include $(osbe_builddir)/config/CXX/External/MySQL.pre.rules
+
+include $(osbe_builddir)/config/CXX/External/ElBasic.pre.rules
+include $(osbe_builddir)/config/CXX/External/ElMySQL.pre.rules
+
+include $(top_builddir)/config/Commons/Message/MessageCommons.so.pre.rules
+
+sources  := MessageExportApp.cpp
+target   := MessageExport
+
+include $(osbe_builddir)/config/CXX/Ex.post.rules

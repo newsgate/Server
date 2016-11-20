@@ -1,0 +1,143 @@
+from moderation_func import *
+
+request, conf = context.request, context.config.get
+message = context.forward_params
+prn, param = request.output.stream.prn, request.input.parameters().find
+
+moderator = connect_moderator(request, moderator_connector)
+
+ad_manager = \
+  moderator.has_privilege(newsgate.moderation.moderator.PV_AD_MANAGER)
+
+if ad_manager == False:
+  el.exit(403) # Forbidden
+
+advertiser_id = moderator.advertiser_id
+svc = SetValueCtx()
+
+global_opts = moderator.ad_manager.get_global(advertiser_id)
+
+if param("u"):
+
+  update = newsgate.moderation.ad.GlobalUpdate()
+  update.flags = newsgate.moderation.ad.PU_AD_MANAGEMENT_INFO
+
+  if param("s") == "E": 
+    global_opts.selector_status = newsgate.moderation.ad.RS_ENABLED
+  else: 
+    global_opts.selector_status = newsgate.moderation.ad.RS_DISABLED
+
+  global_opts.pcws_weight_zones = \
+    set_ulong_value(
+          "wz",
+          param("wz").strip(), 
+          0,
+          1000, 
+          "Probabilistic Creative Weight Zones should be a number \
+from 0 to 1000",
+          svc)
+
+  global_opts.pcws_reduction_rate = \
+    set_float_value(
+          "rr",
+          param("rr").strip(),
+          0,
+          1000,
+          "Probabilistic Creative Weight Reduction should be a number \
+from 0 to 1000",
+          svc)
+
+  if advertiser_id:
+    update.flags |= newsgate.moderation.ad.PU_ADVERTISER_INFO
+    update.advertiser = advertiser_id
+
+    global_opts.adv_max_ads_per_page = \
+      set_ulong_value(
+            "ap",
+            param("ap").strip(), 
+            0, 
+            100, 
+            "Advertiser Max Page Ad Count should be a number from 0 to 100",
+            svc)
+
+  if not svc.error:
+
+    update.selector_status = global_opts.selector_status
+    update.pcws_weight_zones = global_opts.pcws_weight_zones
+    update.pcws_reduction_rate = global_opts.pcws_reduction_rate
+    update.adv_max_ads_per_page = global_opts.adv_max_ads_per_page
+
+    global_opts = moderator.ad_manager.update_global(update)
+
+prn(
+R'''<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>Management: Global Ad Settings</title>
+<link rel="stylesheet" type="text/css" href="/fixed/css/common.css" media="all" />
+<link rel="stylesheet" type="text/css" href="/fixed/css/ad/global.css" media="all" />
+</head>
+
+<body>
+<table id="skeleton" cellspacing="0">
+''')
+
+menus = []
+create_topbar_main_menus(context, moderator, "Ad", menus)
+
+prn(create_topbar(create_ad_menus(moderator, "Global"), menus[0], menus[1]))
+
+prn(R'''
+  <tr><td id="main_area" valign="top" align="center">
+    <form id="form" method="post" action="global">
+    <table id="selector">''')
+
+if svc.error:
+  prn('\n    <tr><td colspan="2" class="error">', 
+      el.string.manip.xml_encode(svc.error), '</td></tr>')
+
+prn('\n    <tr class="option_row"><td>Ad Selector Status</td>\
+<td><select name="s">')
+
+selector_statuses = [ (newsgate.moderation.ad.RS_ENABLED, "Enabled", "E"), 
+                      (newsgate.moderation.ad.RS_DISABLED, "Disabled", "D")
+                    ]
+
+for s in selector_statuses:
+  prn('<option', 
+      global_opts.selector_status == s[0] and ' selected="selected"' or '', 
+      ' value="', s[2], '">', s[1], '</option>')
+
+prn('</select></td></tr>')
+
+if advertiser_id:
+  prn(R'''
+      <tr class="option_row"><td>Advertiser Max Page Ad Count</td><td>
+      <input type="text" value="''', 
+      ulong_value("ap", global_opts.adv_max_ads_per_page, svc),
+      '" name="ap" class="text_option"></td></tr>')
+
+prn(R'''
+      <tr class="option_row"><td>Probabilistic Creative Weight Zones</td><td>
+      <input type="text" value="''', 
+    ulong_value("wz", global_opts.pcws_weight_zones, svc),
+    R'''" name="wz" class="text_option"></td></tr>
+      <tr class="option_row"><td>Probabilistic Creative Weight Reduction</td><td>
+      <input type="text" value="''', 
+    ulong_value("rr", "%.3f" % global_opts.pcws_reduction_rate, svc),
+    R'''" name="rr" class="text_option"></td></tr>
+    <tr class="option_row"><td>Ad Update Number</td><td>''',
+    global_opts.update_number, '</td></tr>')
+
+prn(R'''
+    <tr><td colspan="6">
+      <input type="submit" name="u" value="Update"/>
+    </td></tr>
+    </table>
+  </form>
+  </td></tr>
+''', create_copyright(context), R'''
+</table>
+</body>
+</html>
+''')

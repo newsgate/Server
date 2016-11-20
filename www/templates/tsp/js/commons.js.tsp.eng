@@ -1,0 +1,42 @@
+SITE_CONF        Site
+INTERFACE_LANG   Language
+SITE_VER         Version
+SITE_VER_DESKTOP Desktop
+SITE_VER_TAB     Tablet
+SITE_VER_MOBILE  Mobile
+
+SEARCH_CONF      Search
+LANGUAGE         Language
+COUNTRY          Country
+
+TRANSLATE_CONF   Translation
+TRANSLATE_SRV    Service
+TRANSLATE_LANG   Language
+
+SAVE_SETTINGS    Save
+DEFAULT_SETTINGS Restore
+CLOSE_SETTINGS   Cancel
+CLOSE_PAGING     Close
+CLOSE_SEARCH     Close
+
+LANG_ENG English
+LANG_RUS Russian
+
+LOADING        Loading ...
+READING        Reading ...
+SERVER_ERROR   Server communication failure. Error code:
+COOKIE_WARNING Note: settings will not be saved if cookies have been disabled in your browser.
+PAGE           Page:
+SEARCH         Search:
+
+IT_undefined  Undefined
+IT_news       News
+IT_talk       Talks
+IT_ad         Ads
+IT_blog       Blogs
+IT_article    Articles
+IT_photo      Photo Feeds
+IT_video      Video Feeds
+IT_audio      Audio Feeds
+IT_printed    Printed
+DEFAULT_SPACES Select&nbsp;all

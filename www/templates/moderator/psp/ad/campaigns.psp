@@ -1,0 +1,69 @@
+from moderation_func import *
+
+request, conf = context.request, context.config.get
+message = context.forward_params
+prn, param = request.output.stream.prn, request.input.parameters().find
+
+moderator = connect_moderator(request, moderator_connector)
+advertiser_id = moderator.advertiser_id
+
+ad_manager = \
+  moderator.has_privilege(newsgate.moderation.moderator.PV_AD_MANAGER)
+
+if not advertiser_id:
+  el.exit(403) # Forbidden
+
+campaigns = moderator.ad_manager.get_campaigns(advertiser_id)
+
+prn(
+R'''<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>Management: Campaigns</title>
+<link rel="stylesheet" type="text/css" href="/fixed/css/common.css" media="all" />
+<link rel="stylesheet" type="text/css" href="/fixed/css/ad/campaigns.css" media="all" />
+</head>
+
+<body>
+<table id="skeleton" cellspacing="0">
+''')
+
+menus = []
+create_topbar_main_menus(context, moderator, "Ad", menus)
+
+prn(create_topbar(create_ad_menus(moderator, "Campaigns"),menus[0], menus[1]))
+
+prn(
+R'''
+  <tr><td id="main_area" valign="top" align="center">
+    <table id="campaigns">
+    <tr align="center" id="header"><td>Name</td><td>Status</td>
+    <td>Groups</td></tr>
+''')
+
+for cmp in campaigns:
+
+  if not moderator.show_deleted and \
+     cmp.status == newsgate.moderation.ad.AS_DELETED:
+    continue
+
+  if cmp.status == newsgate.moderation.ad.MS_ENABLED: 
+    status = "Enabled"
+  elif cmp.status == newsgate.moderation.ad.MS_DISABLED:
+    status = "Disabled"
+  else: 
+    status = "Deleted"
+
+  prn('\n    <tr class="option_row"><td><a href="/psp/ad/campaign?id=', 
+      cmp.id, '">', el.string.manip.xml_encode(cmp.name), '</a></td><td>', 
+      status, '</td><td class="number_option">', len(cmp.groups), '</td></tr>')
+
+prn(
+R'''
+    </table>
+  </td></tr>
+''', create_copyright(context), R'''
+</table>
+</body>
+</html>
+''')

@@ -1,0 +1,27 @@
+# @file   Makefile.in
+# @author Karen Aroutiounov
+# $Id:$
+
+include Common.pre.rules
+include $(osbe_builddir)/config/CXX/CXX.pre.rules
+include $(osbe_builddir)/config/CXX/Corba.pre.rules
+
+include $(osbe_builddir)/config/CXX/External/ACE.pre.rules
+include $(osbe_builddir)/config/CXX/External/ElBasic.pre.rules
+include $(osbe_builddir)/config/CXX/External/ElCorba.pre.rules
+
+include $(top_builddir)/config/Commons/Python/PythonCommons.so.pre.rules
+include $(top_builddir)/config/Commons/Ad/AdCommons.so.pre.rules
+
+sources := TransportImpl.cpp
+includes := .
+
+corba_stub_idls := AdServices.idl
+corba_skeleton_idls := AdServices.idl
+corba_includes := .
+corba_idl_includes := .
+
+target := AdServiceCommons
+
+include $(osbe_builddir)/config/CXX/Corba.post.rules
+include $(osbe_builddir)/config/CXX/So.post.rules

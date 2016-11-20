@@ -1,0 +1,145 @@
+from moderation_func import *
+
+request = context.request
+prn, param = request.output.stream.prn, request.input.parameters().find
+
+conf = context.config.get
+
+moderator = connect_moderator(request, moderator_connector)
+
+if moderator.has_privilege(newsgate.moderation.moderator.PV_ACCOUNT_MANAGER) == False:
+  el.exit(403) # Forbidden
+
+focus_id = "n"
+message = None
+error_occured = False
+
+if param("c") == "":
+  email = ""
+  name = ""
+  password = ""
+  password2 = ""
+  privileges = el.Sequence()
+  status = newsgate.moderation.moderator.MS_DISABLED
+else:
+  name = param("n")
+  email = param("e")
+  password = param("p")
+  password2 = param("p2")
+  privileges = get_privileges(context, None)
+  if param("s") == "Enabled": status = newsgate.moderation.moderator.MS_ENABLED
+  else: status = newsgate.moderation.moderator.MS_DISABLED
+
+  if name == "":
+    message = "Name should be specified"
+    error_occured = True
+    focus_id = "n"
+  elif password == "":
+    message = "Password should specified"
+    error_occured = True
+    focus_id = "p"
+  elif password2 == "":
+    message = "Please reenter password"
+    error_occured = True
+    focus_id = "p2"
+  elif password != password2:
+    message = "Password should be equal to the reentered one"
+    error_occured = True
+    focus_id = "p"
+  elif email == "":
+    message = "Email should be specified"
+    error_occured = True
+    focus_id = "e"
+
+  if error_occured == False:
+
+    try:
+      mci = newsgate.moderation.moderator.ModeratorCreationInfo()
+
+      mci.name = name
+      mci.email = email
+      mci.password = password
+      mci.privileges = privileges
+      mci.status = status
+
+      account = moderator.moderator_manager.create_moderator(mci)
+
+      if account.is_customer():
+        update_info = newsgate.moderation.customer.CustomerUpdateInfo()
+        update_info.id = account.id
+
+        if account.status == newsgate.moderation.moderator.MS_ENABLED:
+           update_info.status = newsgate.moderation.customer.CS_ENABLED
+        else:
+           update_info.status = newsgate.moderation.customer.CS_DISABLED
+
+        moderator.customer_manager.update_customer(update_info)
+
+      message = "Account '" + name + "' was successfully created"
+
+      email=""
+      name=""
+      password=""
+      password2=""
+      privileges = el.Sequence()
+      status = newsgate.moderation.moderator.MS_DISABLED
+
+    except newsgate.moderation.moderator.AccountAlreadyExist:
+      el.exit(el.psp.Forward("/psp/accounts.psp", "User account already exist."))
+
+    except newsgate.moderation.InvalidSession:
+      el.exit(el.psp.Forward("/psp/login.psp", 
+                             "Your session expired.<br>Please, relogin."))
+
+    except newsgate.moderation.NotReady:
+      el.exit(el.psp.Forward(\
+        "/psp/accounts.psp", 
+        "The system is not ready to serve your request.<br>Please, try again in several minutes."))
+
+prn(
+R'''
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>Management: Create Account</title>
+<link rel="stylesheet" type="text/css" href="/fixed/css/common.css" media="all" />
+<link rel="stylesheet" type="text/css" href="/fixed/css/account/create.css" media="all" />
+</head>
+
+<body onload='document.getElementById("''', focus_id, R'''").focus()'>
+<table id="skeleton" cellspacing="0">
+''')
+
+menus = []
+create_topbar_main_menus(context, moderator, "Accounts", menus)
+
+left_menu = [ ("View", "/psp/account/view"),
+              ("New", "")                    
+            ]
+
+#if moderator.id == 1 and conf("moderation.customer_moderating") == "1":
+#  left_menu.append(("Accounting (" + moderator.name + ")", 
+#                    "/psp/account/accounting?i=1"))
+
+prn(create_topbar(left_menu,
+                  menus[0], 
+                  menus[1]))
+
+prn(create_account_form(context,
+                        moderator, 
+                        "/psp/account/create",
+                        name, 
+                        password, 
+                        password2, 
+                        email, 
+                        privileges,
+                        status,
+                        ("c", "Create"),
+                        [],
+                        message,
+                        error_occured), 
+    create_copyright(context), R'''
+</table>
+</body>
+</html>
+''')

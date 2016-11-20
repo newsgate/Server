@@ -1,0 +1,29 @@
+# @file   Makefile.in
+# @author Karen Aroutiounov
+# $Id:$
+
+include Common.pre.rules
+include $(osbe_builddir)/config/CXX/CXX.pre.rules
+include $(osbe_builddir)/config/CXX/Corba.pre.rules
+
+include $(osbe_builddir)/config/CXX/External/ACE.pre.rules
+
+include $(osbe_builddir)/config/CXX/External/ElBasic.pre.rules
+include $(osbe_builddir)/config/CXX/External/ElPython.pre.rules
+include $(osbe_builddir)/config/CXX/External/ElDictionary.pre.rules
+
+include $(top_builddir)/config/Commons/Message/MessageCommons.so.pre.rules
+include $(top_builddir)/config/Commons/Search/SearchCommons.so.pre.rules
+
+corba_stub_idls := DictionaryServices.idl
+corba_skeleton_idls := DictionaryServices.idl
+corba_includes := .
+corba_idl_includes := .
+
+includes := .
+sources := TransportImpl.cpp
+
+target := DictionaryCommons
+
+include $(osbe_builddir)/config/CXX/Corba.post.rules
+include $(osbe_builddir)/config/CXX/So.post.rules

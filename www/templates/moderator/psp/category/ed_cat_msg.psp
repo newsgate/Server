@@ -1,0 +1,46 @@
+from moderation_func import *
+
+request = context.request
+prn = request.output.stream.prn
+param = request.input.parameters().find
+
+try:
+  moderator = moderator_connector.connect(request, False)
+except: 
+  el.exit(403) # Forbidden
+  
+cat_manager = \
+  moderator.has_privilege(newsgate.moderation.moderator.PV_CATEGORY_MANAGER)
+
+wl_editor = cat_manager == False and \
+  moderator.has_privilege(\
+    newsgate.moderation.moderator.PV_CATEGORY_EDITOR)
+
+if cat_manager == False and wl_editor == False:
+  el.exit(403) # Forbidden
+
+prn('<?xml version="1.0" encoding="UTF-8"?>\n<result>')
+
+for p in request.input.parameters():
+
+  if p.name == "c":  
+
+    cat = p.value
+
+    try: category = moderator.category_manager.find_category(cat)
+    except newsgate.moderation.category.CategoryNotFound:
+      continue
+
+    wl = newsgate.moderation.category.WordListDescriptor()
+    wl.name = ".MSG"
+
+    category.word_lists = el.Sequence()
+    category.word_lists.append(wl)
+
+    ed_word_lists = editable_word_lists(moderator, category, context)
+
+    if wl.name in ed_word_lists:
+      prn('\n  <category id="', category.id, '"><![CDATA[', cat, 
+          ']]></category>')
+
+prn("\n</result>")

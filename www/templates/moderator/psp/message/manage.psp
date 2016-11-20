@@ -1,0 +1,27 @@
+from random import *
+from moderation_func import *
+
+request, conf = context.request, context.config.get
+prn, param = request.output.stream.prn, request.input.parameters().find
+conf = context.config.get
+url_prefix = (request.secure() and "https://" or "http://") + conf("endpoint")
+
+if context.run_number == 0:
+  seed(el.gettimeofday().sec())
+
+try:
+  moderator = moderator_connector.connect(request, False)
+except:
+  el.exit(403) # Forbidden
+
+if moderator.has_privilege(newsgate.moderation.moderator.PV_FEED_MANAGER) == False:
+  el.exit(403) # Forbidden
+
+ids = param("ids").split(",")
+moderator.message_manager.add_message_filter(ids)
+
+url = url_prefix + "/fixed/image/success.gif?r=" + \
+      ("%X" % randint(0, 0xFFFFFFFF)) + "-" + str(context.run_number)
+
+request.output.send_location(url)
+el.exit(302)

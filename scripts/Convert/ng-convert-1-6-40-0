@@ -1,0 +1,36 @@
+#!/bin/sh
+
+# product   : NewsGate - news search WEB server
+# copyright : Copyright (c) 2005-2016 Karen Arutyunov
+# licenses  : CC BY-NC-SA 3.0; see accompanying LICENSE file
+#             Commercial; contact karen.arutyunov@gmail.com
+
+source "$1/lib.sh"
+
+echo_date "Altering Category table ..."
+
+echo "alter table Category add column \
+version BIGINT UNSIGNED NOT NULL after creator;" | \
+ng-mysql --user root NewsGate
+
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+echo_date "Updating Category.version ..."
+
+echo "update Category set version=1;" | ng-mysql --user root NewsGate
+
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+echo_date "Altering CategoryWordList table ..."
+
+echo "alter table CategoryWordList add column \
+version BIGINT UNSIGNED NOT NULL after words;" | \
+ng-mysql --user root NewsGate
+
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+echo_date "Updating CategoryWordList.version ..."
+
+echo "update CategoryWordList set version=1;" | ng-mysql --user root NewsGate
+
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi

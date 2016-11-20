@@ -1,0 +1,57 @@
+from moderation_func import *
+
+request = context.request
+param = request.input.parameters().find
+
+try:
+  moderator = moderator_connector.connect(request, False)
+except: 
+  el.exit(403) # Forbidden
+  
+cat_manager = \
+  moderator.has_privilege(newsgate.moderation.moderator.PV_CATEGORY_MANAGER)
+
+wl_editor = cat_manager == False and \
+  moderator.has_privilege(\
+    newsgate.moderation.moderator.PV_CATEGORY_EDITOR)
+
+if cat_manager == False and wl_editor == False:
+  el.exit(403) # Forbidden
+
+cat = param("cat")
+cat_id = long(param("cat_id", 0))
+msg = param("msg")
+rel = param("rel")
+
+if not cat and not cat_id or msg == "" or rel != 'I' and rel != 'E':
+  el.exit(400) # Bad request
+
+try: 
+  if cat_id:
+    category = moderator.category_manager.get_category(cat_id)
+  else:
+    category = moderator.category_manager.find_category(cat)
+except newsgate.moderation.category.CategoryNotFound:
+  el.exit(404)
+
+wl = newsgate.moderation.category.WordListDescriptor()
+wl.name = ".MSG"
+
+category.word_lists = el.Sequence()
+category.word_lists.append(wl)
+
+ed_word_lists = editable_word_lists(moderator, category, context)
+
+if wl.name not in ed_word_lists:
+  el.exit(403) # Forbidden
+
+try:
+  moderator.category_manager.add_category_message(category.id, 
+                                                  msg, 
+                                                  rel, 
+                                                  moderator.id, 
+                                                  moderator.name,
+                                                  request.remote_ip())
+
+except newsgate.moderation.category.CategoryNotFound:
+  el.exit(404)

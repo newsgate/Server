@@ -1,0 +1,397 @@
+from moderation_func import *
+
+def name_cmp(a,b):
+  if a.name() < b.name(): return -1
+  elif a.name() > b.name(): return 1
+  return 0
+
+# 1.5KB
+MAX_URL_LEN = 1536
+
+request = context.request
+prn, param = request.output.stream.prn, request.input.parameters().find
+conf = context.config.get
+url_prefix = (request.secure() and "https://" or "http://") + conf("endpoint")
+
+moderator = connect_moderator(request, moderator_connector)
+
+if moderator.has_privilege(newsgate.moderation.moderator.PV_FEED_MANAGER) ==\
+   False:
+  el.exit(403) # Forbidden
+
+spaces = get_spaces()
+
+xml_encode_flags = el.string.manip.XE_TEXT_ENCODING | \
+                   el.string.manip.XE_PRESERVE_UTF8
+
+xml_attr_encode_flags = xml_encode_flags | \
+                        el.string.manip.XE_ATTRIBUTE_ENCODING                  
+
+mod_params = param("mod_params", "")
+vf = param("vf")
+
+if vf: vf_param_name = "vf"
+else:
+  vf = param("vfa")
+  if vf: vf_param_name = "vfa"
+
+vo_prefs = el.NameValueMap(request.input.cookies().most_specific("vo"), 
+                           ':',
+                           '~')
+
+stat_from = get_date("frm", vo_prefs)
+stat_to = get_date("to", vo_prefs)
+
+feed_info = moderator.feed_manager.feed_info_seq([ long(param("id")) ],
+                                                 False, 
+                                                 stat_from,
+                                                 stat_to)
+if len(feed_info) == 0:
+  el.exit(el.psp.Forward("/psp/feeds.psp", "Feed not found"))
+
+feed_info = feed_info[0]
+redirect_url = ""
+html_feed = feed_info.type == newsgate.moderation.feed.RT_HTML_FEED
+
+show_script_editor = False
+adjustment_result = None
+src_item = newsgate.feed.Item()
+src_message = newsgate.message.Message()
+
+fill_src_message_item(context, src_message, src_item)
+
+if param("update") != "":
+
+  feed_update_info = newsgate.moderation.feed.FeedUpdateInfo()
+
+  feed_update_info.id = long(param("id", feed_info.id))
+  feed_update_info.space = int(param("p", feed_info.space))
+  feed_update_info.lang = int(param("n", feed_info.lang.el_code()))
+  feed_update_info.country = int(param("y", feed_info.country.el_code()))
+  feed_update_info.status = int(param("t", feed_info.status))
+  feed_update_info.keywords = param("k", feed_info.keywords)
+  feed_update_info.encoding = param("e", feed_info.encoding)
+
+  feed_update_info.adjustment_script = \
+    param("a", feed_info.adjustment_script).replace('\r', "")
+
+  adjustment_script = param("a").replace('\r', "")
+
+  if adjustment_script != feed_info.adjustment_script:
+
+    if html_feed:
+
+      keywords = el.Sequence()
+
+      for k in param("k").split('\n'):
+        k = k.strip()
+        if k: keywords.append(k)
+
+      adjustment_result = \
+        moderator.feed_manager.get_html_items(feed_info.url,
+                                              adjustment_script,
+                                              feed_info.type,
+                                              feed_update_info.space,
+                                              feed_update_info.country,
+                                              feed_update_info.lang,
+                                              keywords,
+                                              "",
+                                              feed_update_info.encoding)
+
+    else:
+      adjustment_context = newsgate.MA_Context()
+      adjustment_context.message = src_message
+      adjustment_context.item = src_item
+
+      adjustment_result = \
+        moderator.feed_manager.adjust_message(adjustment_script, \
+                                              adjustment_context)
+
+  if adjustment_result != None and adjustment_result.error != "" and \
+     (html_feed == False or len(adjustment_result.messages) == 0):
+
+    pos = adjustment_result.error.find("name:")
+    if pos > 0: adjustment_result.error = adjustment_result.error[0:pos]
+
+    feed_info.space = feed_update_info.space
+    feed_info.lang = el.Lang(feed_update_info.lang)
+    feed_info.country = el.Country(feed_update_info.country)
+    feed_info.status = feed_update_info.status
+    feed_info.keywords = feed_update_info.keywords
+    feed_info.adjustment_script = feed_update_info.adjustment_script
+    feed_info.encoding = feed_update_info.encoding
+
+    show_script_editor = True
+  else:
+    feed_update_info.comment = feed_info.comment
+
+    comment = param("c")
+
+    if comment != "":
+      feed_update_info.comment += \
+      str(feed_info.comment != "" and "\n" or "") + \
+      "By " + moderator.name + "(" + str(moderator.id) + ") at " + \
+      el.Moment(el.gettimeofday()).iso8601() + ":\n" + comment
+
+    moderator.feed_manager.feed_update_info([ feed_update_info ])
+
+    redirect_url = url_prefix + "/psp/feed/view?s=" + param("s") + "&r=" + \
+                   param("r")
+
+    if vf != "":
+      redirect_url += "&" + vf_param_name + "=" + \
+                      el.string.manip.mime_url_encode(vf)
+
+    if mod_params == "" and len(redirect_url) < MAX_URL_LEN:
+      request.output.send_location(redirect_url)
+      el.exit(302) # found
+  
+    redirect_url += "&mod_params=" + \
+                    el.string.manip.mime_url_encode(mod_params)
+
+    feed_info = moderator.feed_manager.feed_info_seq([ long(param("id")) ],
+                                                     False, 
+                                                     stat_from,
+                                                     stat_to)
+    if len(feed_info) == 0:
+      el.exit(el.psp.Forward("/psp/feeds.psp", "Feed not found"))
+
+    feed_info = feed_info[0]
+
+#prn(R'''<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">''')
+
+prn(
+R'''<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>Management: Edit Feed ''', 
+el.string.manip.xml_encode(feed_info.url, xml_attr_encode_flags), R'''</title>
+<link rel="stylesheet" type="text/css" href="/fixed/css/common.css" media="all" />
+<link rel="stylesheet" type="text/css" href="/fixed/css/feed/edit_commons.css" media="all" />
+<script src="/fixed/js/elements.js" type="text/javascript"></script>
+<script src="/fixed/js/feed/edit_commons.js" type="text/javascript"></script>
+<script type="text/javascript">''')
+
+feed_infos = [ feed_info ]
+
+prn_init_script(context, feed_infos)
+
+prn(R'''
+</script>
+</head>
+<body onload='init("''', el.string.manip.js_escape(conf("url_prefix")), '", ',
+    html_feed and "true" or "false", R''')'>
+<table id="skeleton" cellspacing="0">
+''')
+
+left_menu = [ ("View", "/psp/feed/view"), 
+              ("Edit", "")
+            ]
+
+feed_creator = \
+  moderator.has_privilege(newsgate.moderation.moderator.PV_FEED_CREATOR)
+
+feed_moderator = \
+  moderator.has_privilege(newsgate.moderation.moderator.PV_FEED_MANAGER)
+
+if feed_creator:
+  left_menu.append( ("New", "/psp/feed/register") )
+  left_menu.append( ("Crawling Tasks", "/psp/feed/validations") )
+
+if feed_moderator:
+  left_menu.append( ("XPath", "/psp/feed/xpath") )
+
+left_menu.append( ("Search", 
+                   feed_search_link(feed_creator, feed_moderator, None)) )
+
+menus = []
+create_topbar_main_menus(context, moderator, "Feeds", menus)
+
+prn(create_topbar(left_menu, menus[0], menus[1]))
+
+prn(
+R'''
+  <tr><td id="main_area" align="center" valign="top">''')
+
+prn(
+R'''
+    <form id="post" action="/psp/feed/edit" method="post">
+    <table id="edit_form" cellspacing="0">
+''')
+
+prn(R'''
+    <tr valign="top" id="feed_id"><td>Id:</td><td>''', feed_info.id, R'''</td></tr>
+    <tr valign="top" id="feed_url"><td>Url:</td><td><a href="''', 
+    el.string.manip.xml_encode(feed_info.url, xml_attr_encode_flags), '">', 
+    feed_info.url, R'''</a></td></tr>
+''')
+
+prn(R'''
+    <tr valign="top" id="feed_space"><td>Space:</td>
+    <td><select class="select_ctl" name="p" id="p" onfocus="save_focus(this)" onchange="feed_option_changed()">''')
+
+for sp in spaces:
+  prn(R'''
+      <option value="''', sp[0], '"', 
+      str(feed_info.space == sp[0] and ' selected="selected"' or ' '), '>', 
+      sp[1], '</option>')
+
+prn(R'''
+    </select>
+    </td></tr>
+''')
+
+sorted = []
+for l in el.Lang.all: sorted.append(l)
+sorted.sort(name_cmp)
+
+languages = []
+
+languages.append( ( el.Lang.nonexistent.el_code(), "auto", "") )
+languages.append( ( el.Lang.null.el_code(), "undefined", "") )
+
+for l in sorted:
+  languages.append( ( l.el_code(), l.name(), l.l3_code() ) )
+
+prn(R'''
+    <tr valign="top" id="feed_lang"><td>Language:</td>
+    <td><select class="select_ctl" name="n" id="n"onfocus="save_focus(this)" onchange="feed_option_changed()">''')
+
+for l in languages:
+  prn(R'''
+      <option value="''', l[0], '"', 
+      str(feed_info.lang.el_code() == l[0] and ' selected="selected"' or ' '), 
+      ' title="', l[2], '">', 
+      l[1], '</option>')
+
+prn(R'''
+    </select>
+    </td></tr>
+''')
+
+sorted = []
+for l in el.Country.all: sorted.append(l)
+sorted.sort(name_cmp)
+
+countries = []
+
+countries.append( ( el.Country.nonexistent.el_code(), "auto", "") )
+countries.append( ( el.Country.null.el_code(), "undefined", "") )
+
+for c in sorted:
+  countries.append( ( c.el_code(), c.name(), c.l3_code() ) )
+
+prn(R'''
+    <tr valign="top" id="feed_country"><td>Country:</td>
+    <td><select class="select_ctl" name="y" id="y"onfocus="save_focus(this)" onchange="feed_option_changed()">''')
+
+for c in countries:
+  prn(R'''
+      <option value="''', c[0], '"', 
+      str(feed_info.country.el_code() == c[0] and ' selected="selected"' or ' '), 
+      ' title="', c[2], '">', c[1], '</option>')
+
+prn(R'''
+    </select>
+    </td></tr>
+''')
+
+statuses = [ ( newsgate.moderation.feed.ST_ENABLED, "enabled" ),
+             ( newsgate.moderation.feed.ST_DISABLED, "disabled" ),
+             ( newsgate.moderation.feed.ST_PENDING, "pending" ),
+             ( newsgate.moderation.feed.ST_DELETED, "deleted" )
+           ]
+
+prn(R'''
+    <tr valign="top" id="feed_status"><td>Status:</td>
+    <td><select class="select_ctl" name="t" onfocus="save_focus(this)">''')
+
+for st in statuses:
+  prn(R'''
+      <option value="''', st[0], '"', 
+      str(feed_info.status == st[0] and ' selected="selected"' or ' '), '>', 
+      st[1], '</option>')
+
+
+prn(R'''
+    </select>
+    </td></tr>''')
+
+if html_feed:
+  prn_channel_script_editor(context,
+                            show_script_editor,
+                            feed_info.adjustment_script,
+                            adjustment_result,
+                            feed_infos)
+else:
+  prn_adjustment_script_editor(context, 
+                               show_script_editor, 
+                               feed_info.adjustment_script,
+                               feed_infos,
+                               adjustment_result,
+                               src_item,
+                               src_message)
+
+value_editor_class = show_script_editor and ' class="hidden"' or ''
+
+prn(R'''
+    <tr valign="top" id="encoding_editor"''', value_editor_class,
+    R'''><td>Encoding:</td>
+    <td><input type="text" id="e" name="e" onchange="feed_option_changed()" value="''',
+    el.string.manip.xml_encode(feed_info.encoding, xml_encode_flags),
+    R'''"></input>
+    </td></tr>''')
+
+prn(R'''
+    <tr valign="top" id="keyword_editor"''', value_editor_class,
+    R'''><td>Keywords:</td>
+    <td><textarea rows="5" id="k" name="k" onchange="feed_option_changed()">''',
+    el.string.manip.xml_encode(feed_info.keywords, xml_encode_flags),
+    R'''</textarea>
+    </td></tr>''')
+
+prn(R'''
+    <tr valign="top" id="comment_editor"''', value_editor_class,
+    R'''><td>Add Comment:</td>
+    <td><textarea rows="5" id="c" name="c"></textarea>
+    </td></tr>''')
+
+# Submit button
+
+if redirect_url == "":
+  prn('\n      <tr id="feed_update"><td></td><td><input type="submit" value="Update" name="update"/></td></tr>')
+
+prn('</table>')
+
+if redirect_url == "":
+  prn(R'''
+    <input type="hidden" name="id" value="''', feed_info.id, R'''"/>
+    <input type="hidden" name="s" value="''', param('s'), R'''"/>
+    <input type="hidden" name="r" value="''', param('r'), R'''"/>''')
+
+  if vf !=  "":
+    prn(R'''
+    <input type="hidden" name="''', vf_param_name, '" value="', vf, '"/>')
+
+  if mod_params != "":
+    prn('\n    <input type="hidden" name="mod_params" value="', 
+        el.string.manip.xml_encode(mod_params, xml_attr_encode_flags) , '"/>')
+
+prn('\n    </form>')
+
+prn(
+R'''
+  </td></tr>
+''', create_copyright(context), R'''
+</table>''')
+
+if redirect_url != "":
+  prn(R'''
+<script type="text/javascript">
+  el_post_url("''', el.string.manip.js_escape(redirect_url), R'''");
+</script>''')
+
+prn(R'''
+</body>
+</html>
+''')

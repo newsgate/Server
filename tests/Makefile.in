@@ -1,0 +1,19 @@
+# @file   Makefile.in
+# @author Karen Aroutiounov
+# $Id: $
+
+include Common.pre.rules
+
+target_directory_list := SearchExpression \
+                         RSSParser \
+                         RSSFeed \
+                         Commons \
+                         DummySegmentor \
+                         HashTable \
+                         DataFetch \
+                         AdSelection
+
+DataFetch SearchExpression RSSParser SimpleHtmlParser RSSFeed : Commons
+DummySegmentor AdSelection : Commons
+
+include $(osbe_builddir)/config/Direntry.post.rules

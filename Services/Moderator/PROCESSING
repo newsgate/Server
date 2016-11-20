@@ -1,0 +1,20 @@
+Check Feeds
+  Metaurl        - not source, do not save 
+  HTML           - can't present 
+  Secondary HTML - can't present
+
+Parse page, grab feeds (PP)
+  Metaurl        - PP
+  HTML           - PP
+  Secondary HTML - can't present
+
+Look around page (LA)
+  Metaurl        - LA
+  HTML           - LA
+  Secondary HTML - PP
+
+Traverse company domain (TD)
+  Metaurl        - TD
+  HTML           - TD
+  Secondary HTML - PP
+

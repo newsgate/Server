@@ -1,0 +1,20 @@
+#!/bin/sh
+
+# product   : NewsGate - news search WEB server
+# copyright : Copyright (c) 2005-2016 Karen Arutyunov
+# licenses  : CC BY-NC-SA 3.0; see accompanying LICENSE file
+#             Commercial; contact karen.arutyunov@gmail.com
+
+echo "Adding create_informer column to StatSearchRequest table ..."
+
+echo "alter table StatSearchRequest add column create_informer TINYINT NOT NULL DEFAULT 0 after protocol;" | \
+ng-mysql --user root NewsGate
+
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+echo "Adding informer_params column to StatSearchRequest table ..."
+
+echo "alter table StatSearchRequest add column informer_params VARBINARY(1024) NOT NULL DEFAULT '' after query;" | \
+ng-mysql --user root NewsGate
+
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi

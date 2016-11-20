@@ -1,0 +1,92 @@
+/*
+ * product   : NewsGate - news search WEB server
+ * copyright : Copyright (c) 2005-2016 Karen Arutyunov
+ * licenses  : CC BY-NC-SA 3.0; see accompanying LICENSE file
+ *             Commercial; contact karen.arutyunov@gmail.com
+ */
+
+/**
+ * @file NewsGate/Server/Services/Dictionary/Commons/DictionaryServices.idl
+ * @author Karen Arutyunov
+ * $Id:$
+ */
+
+#ifndef _NEWSGATE_SERVER_SERVICES_DICTIONARY_COMMONS_DICTIONARYSERVICES_IDL_
+#define _NEWSGATE_SERVER_SERVICES_DICTIONARY_COMMONS_DICTIONARYSERVICES_IDL_
+
+#include <Commons/Search/SearchTransport.idl>
+
+module NewsGate
+{ 
+  module Dictionary
+  {
+    exception NotReady
+    {
+      string reason;
+    };
+      
+    exception ImplementationException
+    {
+      string description;
+    };
+      
+    module Transport
+    {
+      custom valuetype MessageWordsPack
+      {
+      };
+    
+      custom valuetype NormalizedMessageWordsPack
+      {
+      };
+
+      custom valuetype NormalizedWordsPack
+      {
+      };      
+
+      custom valuetype GetLemmasParams
+      {
+      };
+      
+      custom valuetype LemmaPack
+      {
+      };
+    };
+
+    //
+    // WordManager interface
+    //    
+    interface WordManager
+    {
+      boolean is_ready() raises(ImplementationException);
+
+      unsigned long hash() raises(NotReady, ImplementationException);
+
+      typedef sequence<string> WordSeq;
+
+      unsigned long normalize_words(
+        in WordSeq words,
+        in string language,
+        out Transport::NormalizedWordsPack result)
+        raises(NotReady, ImplementationException);
+
+      unsigned long normalize_message_words(
+        in Transport::MessageWordsPack words,
+        out Transport::NormalizedMessageWordsPack result)
+        raises(NotReady, ImplementationException);
+
+      unsigned long normalize_search_expression(
+        in Search::Transport::Expression expression,
+        out Search::Transport::Expression result)
+        raises(NotReady, ImplementationException);
+
+      void get_lemmas(in Transport::GetLemmasParams words,
+                      out Transport::LemmaPack result)
+        raises(NotReady, ImplementationException);
+    };
+
+  };
+  
+};
+
+#endif // _NEWSGATE_SERVER_SERVICES_DICTIONARY_COMMONS_DICTIONARYSERVICES_IDL_

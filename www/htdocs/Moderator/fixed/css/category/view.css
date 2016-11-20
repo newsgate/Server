@@ -1,0 +1,29 @@
+.breadcrumb
+{
+  text-align: left;
+}
+
+#child_categories
+{
+  width: 35em;
+  font-size: 100%;
+  padding: 0.3em 0.1em; 
+  margin: 0;
+}
+
+.option_group_label
+{
+  padding: 0.3em 0 0 0; 
+  margin: 0;
+}
+
+.option_label
+{
+  width: 7em;
+}
+
+#header td
+{
+  border-bottom: 1px solid rgb(0,0,80);
+  padding: 0 0.3em 0.3em 0.3em;
+}

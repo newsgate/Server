@@ -1,0 +1,11 @@
+#include ../../py/parse_error.eng
+#include ../../py/search_util.eng
+#include ../../py/search_page_util.eng
+
+MSG_IMAGES_HEADING Another {{MSG_IMAGES_COUNT}} ( <a href="{{MSG_PAGE_REF}}" target="_blank"{{ATTRS}}>show</a> )
+SUBSCRIBE Subscribe :&nbsp;
+SUBSCRIBE_MAIL Receive free news by e-mail on the topic 
+
+TOP_STORIES_TODAY Top Stories Today
+TOP_STORIES_WEEK  Top Stories This Week
+TOP_PUBLISHED {{MSG_TIME_AGO}} ago

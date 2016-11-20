@@ -1,0 +1,249 @@
+from moderation_func import *
+
+request, conf = context.request, context.config.get
+message = context.forward_params
+prn, param = request.output.stream.prn, request.input.parameters().find
+
+moderator = connect_moderator(request, moderator_connector)
+
+ad_manager = \
+  moderator.has_privilege(newsgate.moderation.moderator.PV_AD_MANAGER)
+
+advertiser_id = moderator.advertiser_id
+
+if not ad_manager and not advertiser_id:
+  el.exit(403) # Forbidden
+
+id = long(param("id"))
+svc = SetValueCtx()
+
+page = moderator.ad_manager.get_page(id, advertiser_id)
+
+if param("u"):
+
+  page_update = newsgate.moderation.ad.PageUpdate()
+  page_update.id = id
+
+  if advertiser_id:
+
+    page_update.flags |= newsgate.moderation.ad.PU_ADVERTISER_INFO
+    page_update.advertiser_info_update.id = advertiser_id
+
+    aan = param("aan").strip()
+
+    if aan:
+      page.advertiser_info.max_ad_num = \
+        set_ulong_value(
+          "aan",
+          aan, 
+          0, 
+          100, 
+          "Advertiser Max Ad Count should be a number from 0 to 100",
+          svc)
+    else:
+      page.advertiser_info.max_ad_num = newsgate.moderation.ad.MAX_AD_NUM
+
+    page.advertiser_info.adv_max_ad_nums = el.Sequence()
+
+    for p in request.input.parameters():
+
+      pos = p.name.find('_')
+
+      if pos > 0 and p.name[0:pos] == 'an':
+
+        values = p.value.split('_')
+
+        aman = newsgate.moderation.ad.AdvertiserMaxAdNum()
+        aman.id = long(values[0])
+        aman.max_ad_num = long(values[1])
+        aman.name = values[2]
+
+        page.advertiser_info.adv_max_ad_nums.append(aman)
+
+    if not svc.error:
+
+      page_update.advertiser_info_update.max_ad_num = \
+        page.advertiser_info.max_ad_num
+
+      for obj in page.advertiser_info.adv_max_ad_nums:
+        page_update.advertiser_info_update.adv_max_ad_nums.append(obj)
+
+  if ad_manager:
+
+    page_update.flags |= newsgate.moderation.ad.PU_AD_MANAGEMENT_INFO
+
+    if param("ps") == "E": page.status = newsgate.moderation.ad.PS_ENABLED
+    else: page.status = newsgate.moderation.ad.PS_DISABLED
+
+    for p in request.input.parameters():
+
+      pos = p.name.find('_')
+
+      if pos > 0 and p.name[0:pos] == 's':
+
+        slot_update = newsgate.moderation.ad.SlotUpdate()
+        slot_update.id = long(p.name[pos + 1:])
+
+        if p.value == "E": slot_update.status = newsgate.moderation.ad.SS_ENABLED
+        else: slot_update.status = newsgate.moderation.ad.SS_DISABLED
+
+        page_update.slot_updates.append(slot_update)
+
+    page.max_ad_num = \
+      set_ulong_value("an",
+                      param("an"), 
+                      0, 
+                      100, 
+                      "Max Ad Count should be a number from 0 to 100",
+                      svc)
+
+    if not svc.error:
+      page_update.status = page.status
+      page_update.max_ad_num = page.max_ad_num
+
+  if not svc.error:
+    page = moderator.ad_manager.update_page(page_update)
+
+prn(R'''<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>Management: ''', el.string.manip.xml_encode(page.name), 
+R''' Ad Page</title>
+<link rel="stylesheet" type="text/css" href="/fixed/css/common.css" media="all" />
+<link rel="stylesheet" type="text/css" href="/fixed/css/ad/page.css" media="all" />
+<script src="/fixed/js/elements.js" type="text/javascript"></script>
+<script src="/fixed/js/commons.js" type="text/javascript"></script>
+<script src="/fixed/js/ad/page.js" type="text/javascript"></script>
+</head>
+
+<body>
+<table id="skeleton" cellspacing="0">
+''')
+
+menus = []
+create_topbar_main_menus(context, moderator, "Ad", menus)
+prn(create_topbar(create_ad_menus(moderator, "Page"), menus[0], menus[1]))
+
+page_statuses = [ (newsgate.moderation.ad.PS_ENABLED, "Enabled", "E"), 
+                  (newsgate.moderation.ad.PS_DISABLED, "Disabled", "D")
+                ]
+
+prn(R'''
+  <tr><td id="main_area" valign="top" align="center">
+    <form id="form" method="post" action="page">
+    <table id="slots">''')
+
+if svc.error:
+  prn('\n    <tr><td colspan="6" class="error">', 
+      el.string.manip.xml_encode(svc.error), '</td></tr>')
+
+prn(R'''
+    <tr class="option_row"><td>Status</td><td>''')
+
+if ad_manager:
+  prn('<select name="ps">')
+
+  for s in page_statuses:
+    prn('<option', page.status == s[0] and ' selected="selected"' or '', 
+        ' value="', s[2], '">', s[1], '</option>')
+
+  prn('</select>')
+
+else:
+  for s in page_statuses:
+    if page.status == s[0]: prn(s[1])
+
+prn(R'''</td><td colspan="4"></td></tr>
+      <tr class="option_row"><td>Max Ad Count</td><td>''')
+
+if ad_manager: prn('<input type="text" value="')
+
+prn(ulong_value("an", page.max_ad_num, svc))
+
+if ad_manager: prn('" name="an" class="text_option">')
+
+prn('</td><td colspan="4"></td></tr>')
+
+if advertiser_id:
+  prn(R'''
+      <tr class="option_row"><td>Advertiser Max Ad Count</td><td>
+      <input type="text" value="''')
+ 
+  if page.advertiser_info.max_ad_num < newsgate.moderation.ad.MAX_AD_NUM:
+    prn(ulong_value("aan", page.advertiser_info.max_ad_num, svc))  
+
+  prn('" name="aan" class="text_option"></td><td colspan="4"></td></tr>')
+
+  prn(R'''
+    <tr><td colspan="6">&nbsp;</td></tr>
+    <tr align="center" id="header"><td>Advertiser</td><td>Joint Max Ad Count</td>
+                                   <td colspan="4">&nbsp;</td></tr>''')
+
+  for inf in page.advertiser_info.adv_max_ad_nums:
+
+    prn('\n    <tr class="option_row" id="an_', inf.id, '"><td id="ann_', 
+        inf.id, '">', el.string.manip.xml_encode(inf.name),
+        '</td><td class="number_option" id="anc_', inf.id, '">', 
+        inf.max_ad_num, '</td><td id="anm_', inf.id, R'''">
+<a href="javascript:edit_jmac(''', advertiser_id, ',', inf.id, 
+        R''')">edit</a>&nbsp;|&nbsp;<a href="javascript:delete_jmac(''', 
+        inf.id, R''')">delete</a>
+<input type="hidden" value="''', inf.id, '_', inf.max_ad_num, '_',
+        el.string.manip.xml_encode(inf.name), '" name="an_', inf.id,
+        '"></td><td colspan="3"></td></tr>')
+
+  prn('<tr id="add_jmac" class="option_row"><td colspan="6">\
+<a href="javascript:add_jmac(', advertiser_id, ')">\
+ADD&nbsp;JOINT&nbsp;MAX&nbsp;AD&nbsp;COUNT</a></td></tr>')
+
+prn(R'''
+    <tr><td colspan="6">&nbsp;</td></tr>
+    <tr align="center" id="header"><td>Slot Name</td><td>Status</td>
+                                   <td>Min Width</td><td>Max Width</td>
+                                   <td>Min Height</td><td>Max Height</td></tr>
+''')
+
+slot_statuses = [ (newsgate.moderation.ad.SS_ENABLED, "Enabled", "E"), 
+                  (newsgate.moderation.ad.SS_DISABLED, "Disabled", "D")
+                ]
+
+for slot in page.slots:
+  pos = slot.name.find(' of')
+  if pos > 0: slot.name = slot.name[0:pos]
+
+  prn('\n    <tr class="option_row"><td>', 
+      el.string.manip.xml_encode(slot.name),
+      '</td><td>')
+
+  if ad_manager:
+    prn('<select name="s_', slot.id, '">')
+
+    for s in slot_statuses:
+      prn('<option', slot.status == s[0] and ' selected="selected"' or '', 
+          ' value="', s[2], '">', s[1], '</option>')
+
+    prn('</select>')
+
+  else:
+    for s in slot_statuses:
+      if slot.status == s[0]: prn(s[1])
+
+  prn('</td><td class="number_option">', 
+      slot.min_width, '</td><td class="number_option">', 
+      slot.max_width, '</td><td class="number_option">', 
+      slot.min_height, '</td><td class="number_option">', 
+      slot.max_height, '</td></tr>')
+
+prn(R'''
+    <tr><td colspan="6">
+      <input type="submit" name="u" value="Update"/>
+    </td></tr>
+    </table>
+  <input type="hidden" name="id" value="''', id, R'''">
+  </form>
+  </td></tr>
+''', create_copyright(context), R'''
+</table>
+</body>
+</html>
+''')

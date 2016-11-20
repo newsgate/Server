@@ -1,0 +1,53 @@
+#!/bin/sh
+
+# product   : NewsGate - news search WEB server
+# copyright : Copyright (c) 2005-2016 Karen Arutyunov
+# licenses  : CC BY-NC-SA 3.0; see accompanying LICENSE file
+#             Commercial; contact karen.arutyunov@gmail.com
+
+source "$1/lib.sh"
+
+echo_date "Adding encoding to Feed table ..."
+
+echo "alter table Feed \
+add encoding VARCHAR(128) character set ascii NOT NULL after url;" | \
+ng-mysql --user root NewsGate
+
+if test $? -eq 0; then echo_date "Done"; else echo_date "Failed"; exit 1; fi
+
+echo_date "Adding encoding to FeedUpdateBuff table ..."
+
+echo "alter table FeedUpdateBuff \
+add encoding_ VARCHAR(128) character set ascii NOT NULL after url_;" | \
+ng-mysql --user root NewsGate
+
+if test $? -eq 0; then echo_date "Done"; else echo_date "Failed"; exit 1; fi
+
+echo_date "Fixing min height of some AdSlots ..."
+
+echo "update AdSlot set min_height=10 where id in (7002, 7003, 7004);" | \
+ng-mysql --user root NewsGate
+
+if test $? -eq 0; then echo_date "Done"; else echo_date "Failed"; exit 1; fi
+
+echo_date "Adding tags, tag_exclusions, referers, referer_exclusions to \
+AdCondition table ..."
+
+echo "alter table AdCondition \
+add referer_exclusions VARCHAR(40960) NOT NULL after ip_mask_exclusions, \
+add referers VARCHAR(40960) NOT NULL after ip_mask_exclusions, \
+add tag_exclusions VARCHAR(512) character set ascii NOT NULL after ip_mask_exclusions, \
+add tags VARCHAR(512) character set ascii NOT NULL after ip_mask_exclusions;" | \
+ng-mysql --user root NewsGate
+
+if test $? -eq 0; then echo_date "Done"; else echo_date "Failed"; exit 1; fi
+
+echo_date "Adding pcws_weight_zones, pcws_reduction_rate to \
+AdSelector table ..."
+
+echo "alter table AdSelector \
+add pcws_reduction_rate DOUBLE NOT NULL DEFAULT 0.5 after update_num, \
+add pcws_weight_zones INTEGER UNSIGNED NOT NULL DEFAULT 0 after update_num;" | \
+ng-mysql --user root NewsGate
+
+if test $? -eq 0; then echo_date "Done"; else echo_date "Failed"; exit 1; fi

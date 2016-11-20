@@ -1,0 +1,227 @@
+from moderation_func import *
+
+request = context.request
+prn, param = request.output.stream.prn, request.input.parameters().find
+conf = context.config.get
+url_prefix = (request.secure() and "https://" or "http://") + conf("endpoint")
+
+moderator = connect_moderator(request, moderator_connector)
+
+if moderator.has_privilege(newsgate.moderation.moderator.PV_FEED_CREATOR) == False:
+  el.exit(403) # Forbidden
+
+del_task = param("del_task")
+
+ids = [ moderator.id ]
+
+try:
+  subordinates = moderator.moderator_manager.get_subordinates()
+
+except newsgate.moderation.InvalidSession:
+  el.exit(el.psp.Forward("/psp/login.psp", 
+                         "Your session expired.<br>Please, relogin."))
+
+except newsgate.moderation.NotReady:
+  el.exit(el.psp.Forward(\
+          "/psp/feeds.psp", 
+          "The system is not ready to serve your request.<br>Please, try again in several minutes."))
+
+for sub in subordinates: 
+  ids.append(sub.id)
+
+if del_task != "":
+  moderator.feed_manager.delete_validation(del_task, ids)
+
+redirect_url = url_prefix + "/psp/feed/validations"
+
+if param("d") != "":
+  request.output.send_location(redirect_url)
+  el.exit(302) # found
+
+feed_source_seq = []
+feed_info_seq = []
+
+for p in request.input.parameters():
+  prefix = p.name[0:3]
+  is_feed_source = prefix == "fs_"
+
+  if prefix == "fu_" or is_feed_source and p.value == "on":
+    if is_feed_source:
+      type = p.name[3:5]
+
+      if type == "s_": source_type = newsgate.moderation.feed.FST_SINGLE_FEED_HTML
+      elif type == "m_": source_type = newsgate.moderation.feed.FST_MULTI_FEED_HTML
+      elif type == "t_": source_type = newsgate.moderation.feed.FST_META_URL
+      else: continue
+
+      type = p.name[5:7]
+
+      if type == "c_": processing_type = newsgate.moderation.feed.PT_CHECK_FEEDS
+      elif type == "p_": 
+        processing_type = newsgate.moderation.feed.PT_PARSE_PAGE_FOR_FEEDS
+      elif type == "a_": 
+        processing_type = newsgate.moderation.feed.PT_LOOK_AROUND_PAGE_FOR_FEEDS
+      elif type == "d_": 
+        processing_type = newsgate.moderation.feed.PT_PARSE_DOMAIN_FOR_FEEDS
+      else: continue
+
+      url = p.name[7:]
+      if url == "": continue
+
+      feed_source = newsgate.moderation.feed.FeedSource()
+      feed_source.type = source_type
+      feed_source.url = url
+      feed_source.processing_type = processing_type
+
+      feed_source_seq.append(feed_source)
+    else:
+      url = p.name[3:]
+      if url == "": continue
+      
+      url_desc = newsgate.moderation.feed.UrlDesc()
+      url_desc.url = url
+
+      feed_info_seq.append(url_desc)
+
+validation_results = \
+  moderator.feed_manager.add_feeds(feed_info_seq, 
+                                   feed_source_seq,
+                                   newsgate.moderation.feed.CT_MODERATOR, 
+                                   moderator.id)
+
+if len(validation_results) == 0:
+  request.output.send_location(redirect_url)
+  el.exit(302) # found
+
+prn(
+R'''
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>Management: Feeds Registration Result</title>
+<link rel="stylesheet" type="text/css" href="/fixed/css/common.css" media="all" />
+<link rel="stylesheet" type="text/css" href="/fixed/css/feed/submit.css" media="all" />
+</head>
+
+<body>
+<table id="skeleton" cellspacing="0">
+''')
+
+left_menu = [  ]
+
+feed_moderator = \
+  moderator.has_privilege(newsgate.moderation.moderator.PV_FEED_MANAGER)
+
+if feed_moderator:
+ left_menu.append( ("View", "/psp/feed/view") )
+
+feed_creator = \
+  moderator.has_privilege(newsgate.moderation.moderator.PV_FEED_CREATOR)
+
+if feed_creator:
+  left_menu.append( ( "New", "/psp/feed/register"))
+  left_menu.append( ( "Submit", "") )
+  left_menu.append( ( "Crawling Tasks", "/psp/feed/validations") )
+
+if feed_moderator:
+  left_menu.append( ("XPath", "/psp/feed/xpath") )
+
+left_menu.append( ("Search", 
+                   feed_search_link(feed_creator, feed_moderator, None)) )
+
+menus = []
+create_topbar_main_menus(context, moderator, "Feeds", menus)
+
+prn(create_topbar(left_menu, menus[0], menus[1]))
+
+filter = ""
+
+if moderator.has_privilege(newsgate.moderation.moderator.PV_FEED_MANAGER):
+  feed_ids = []
+  
+  for result in validation_results:
+    if result.feed_id: 
+      feed_ids.append(result.feed_id)
+
+  feed_ids.sort()
+
+  v1 = -1
+  v2 = v1
+
+  for id in feed_ids:
+
+    if id == v2 + 1:
+      v2 = id
+      continue
+
+    if v1 > 0:
+      if filter != "": filter += "+"
+      filter += str(v1)
+      if v2 > v1: filter += "-" + str(v2)
+
+    v1 = id
+    v2 = v1
+
+  if v1 > 0:
+    if filter != "": filter += "+"
+    filter += str(v1)
+    if v2 > v1: filter += "-" + str(v2)
+
+prn(
+R'''
+  <tr><td id="main_area" align="center" valign="top">
+    <form action="/psp/feed/view" method="post">
+    <table id="feeds" cellspacing="0">''')
+
+if filter != "": 
+  prn(
+R'''
+    <tr><td colspan="2" style="padding: 0 0 1em 0">
+    <input type="submit" value="Manage added feeds" name="s"/>
+    </td></tr>''')
+
+prn(
+R'''
+    <tr align="left" id="header"><td>Result</td><td>Url</td><td>Comment</td></tr>
+''')
+
+for result in validation_results:
+
+  url_text = result.url
+  if len(url_text) > 103: url_text = url_text[0:100] + "..."
+
+  res_desc = result_description(result)
+
+  prn(R'''
+    <tr class="option_row"><td>''', res_desc, '</td><td><a href="', 
+      result.url, '">', url_text, '</a></td><td>', result.description, 
+      '</td></tr>')
+
+if filter != "":
+  prn(
+R'''
+    <tr><td colspan="2" style="padding: 1em 0 0 0">
+    <input type="submit" value="Manage added feeds" name="s"/>
+    </td></tr>''')
+
+prn(
+R'''
+    </table>''')
+
+if filter != "":
+
+  prn(
+R'''
+    <input type="hidden" name="vfa" value="0/''', newsgate.moderation.feed.FS_ID, 
+    "/", newsgate.moderation.feed.FO_ANY_OF, "/~", filter, ':ver~',
+    filter_rules_version(), R'''"/>''')
+
+prn(
+R'''
+    </form>
+  </td></tr>
+''', create_copyright(context), R'''
+</table>
+</body>
+</html>
+''')

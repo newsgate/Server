@@ -1,0 +1,334 @@
+#!/bin/bash
+
+USAGE="backup_sync [--verbose] [--part] [--help] --host <hostname> \
+--dest <dest dir> [--pbt <partial backups timeout (mins)>] \
+[--fbt <full backups timeout (mins)>] [--bwlimit <rsync --bwlimit arg>] \
+[--key <aduser key>] [--copy tar|none|link]"
+
+function on_exit
+{
+  read pid 2>/dev/null < "$pid_file"
+
+  if test $pid -eq $$; then
+    rm -f "$pid_file"
+  fi
+}
+
+function echo_date()
+{
+  echo $@ "(`date -u '+%Y-%m-%d %H:%M:%S'`)"
+}
+
+function link_img_thumbs()
+{
+  msg_image_src_dir="$1" 
+  msg_image_dst_dir="$2"
+
+  dir_list=""
+  for file in $msg_image_src_dir/*; do
+    dir_list="$dir_list
+`basename $file`"
+  done
+
+  dir_list=`echo "$dir_list" | sort`
+
+  for dr in $dir_list; do
+        
+    dd="$msg_image_dst_dir/$dr"
+    mkdir -p "$dd"
+
+    for img in $msg_image_src_dir/$dr/*; do
+      fl=`basename $img`
+      ln -f "$img" "$dd/$fl"
+
+      if test $? -ne 0; then 
+        echo "Failed"
+        exit 1
+      fi
+
+    done
+
+  done
+}
+
+operation_pid=$$
+wait_arg=""
+
+part=0
+verbose=0
+verbose_rsync=""
+nghost=""
+dest_dir=""
+# minutes
+part_backup_timeout=43200
+full_backup_timeout=4320
+bwlimit="512"
+copy="tar"
+key=~/.ssh/adkey
+
+for arg in $@; do
+
+  if test -n "$wait_arg"; then
+    case "$wait_arg" in
+      --host) nghost="$arg" ;;
+      --dest) dest_dir="$arg" ;;
+      --pbt) part_backup_timeout="$arg" ;;
+      --fbt) full_backup_timeout="$arg" ;;
+      --bwlimit) bwlimit="$arg" ;;
+      --key) key="$arg" ;;
+      --copy) copy="$arg" ;;
+    esac
+    wait_arg=""
+  else
+    case "$arg" in
+      --verbose) verbose=1; verbose_rsync="-v --progress" ;;
+      --part) part=1;;
+      --help) echo $USAGE; exit;;
+      --host) wait_arg=$arg ;;
+      --dest) wait_arg=$arg ;;
+      --pbt) wait_arg=$arg ;;
+      --fbt) wait_arg=$arg ;;
+      --bwlimit) wait_arg=$arg ;;
+      --key) wait_arg=$arg ;;
+      --copy) wait_arg=$arg ;;
+    esac
+  fi
+done
+
+bwlimit="--bwlimit=$bwlimit"
+
+if test "$copy" != "tar" -a "$copy" != "none" -a "$copy" != "link"; then
+  echo "Invalid copy method specified.
+$USAGE"
+  exit 1
+fi
+
+if test -z "$nghost"; then
+  echo "No hostname specified.
+$USAGE"
+  exit 1
+fi
+
+if test -z "$dest_dir"; then
+  echo "No destination directory specified.
+$USAGE"
+  exit 1
+fi
+
+full_dest_dir=$dest_dir/latest.full/
+
+if test $part -eq 1; then
+  pid_file="/tmp/backup_sync_$USER.part.pid"
+else
+  pid_file="/tmp/backup_sync_$USER.full.pid"
+fi
+
+read pid 2>/dev/null < "$pid_file"
+
+ps "$pid" 1>/dev/null 2>/dev/null
+
+if test $? -eq 0; then
+
+  if test $verbose -eq 1; then
+    echo "backup_sync $pid is already running"
+  fi
+
+  exit
+fi
+
+echo "$operation_pid" > "$pid_file"
+trap on_exit 0
+
+mkdir -p $dest_dir
+
+if test $part -eq 1; then
+
+  if test $verbose -eq 1; then
+    echo_date "Cleaning partial backups in $dest_dir"
+  fi
+
+  find $dest_dir -maxdepth 1 -name '*.part.tar' -type f -mmin +$part_backup_timeout -delete
+
+  latest_part_backup=`ssh -i $key aduser@$nghost ls /opt/NewsGate/var/lib/archives/\*part\*|grep '.part' | sort -r|head -1|sed -e 's/://'`
+#  latest_part_backup=`ssh -i $key aduser@$nghost ls -t /opt/NewsGate/var/lib/archives/\*part\*|head -1|sed -e 's/://'`
+
+  if test $? -ne 0; then
+    echo_date "Failed to lookup for latest partial backup"
+    exit 1
+  fi
+
+  if test $verbose -eq 1; then
+    echo_date "Copying latest partial backup $latest_part_backup to $dest_dir"
+    scp -i $key aduser@$nghost:$latest_part_backup $dest_dir
+  else
+    scp -i $key aduser@$nghost:$latest_part_backup $dest_dir 1>/dev/null
+  fi
+
+  if test $? -ne 0; then
+    echo_date "Failed to obtain latest partial backup $latest_part_backup"
+    exit 1
+  fi
+
+else
+
+  latest_full_backup=`ssh -i $key aduser@$nghost find /opt/NewsGate/var/lib/archives/ -name '\*.full'|sort -r|head -n 1|sed -e 's/://'`/
+#  latest_full_backup=`ssh -i $key aduser@$nghost ls -t /opt/NewsGate/var/lib/archives/\*full\*|head -n 1|sed -e 's/://'`/
+
+  if test $? -ne 0; then
+    echo_date "Failed to lookup for latest full backup"
+    exit 1
+  fi
+
+  if test -z "$latest_full_backup"; then  
+
+    if test $verbose -eq 1; then
+      echo_date "No full backup exist on $nghost"
+    fi
+
+    exit 1
+  fi
+  
+  backup_date=`echo $latest_full_backup|sed -n -e "s%.*\.\([^\.]*\)\.full/%\1%p"`
+
+  if test -z "$backup_date"; then  
+    echo_date "Failed to extract date from $latest_full_backup"
+    exit 1
+  fi
+
+  if test $verbose -eq 1; then
+    echo_date "Latest full backup: $latest_full_backup"
+  fi
+
+  if test "$copy" == "tar"; then
+
+    backup_tar=$dest_dir/$nghost.$backup_date.full.tar
+
+    if test -f $backup_tar; then
+
+      if test $verbose -eq 1; then
+        echo_date "Full backup $backup_tar already exist"
+      fi
+
+      exit 0
+    fi
+
+  elif test "$copy" == "link"; then
+
+    backup_dest=$dest_dir/$nghost.$backup_date.full
+
+    if test -d $backup_dest; then
+
+      if test $verbose -eq 1; then
+        echo_date "Full backup $backup_dest already exist"
+      fi
+
+      exit 0
+    fi
+
+  fi
+
+  if test $verbose -eq 1; then
+    echo_date "Rsyncing $latest_full_backup to $full_dest_dir"
+  fi
+
+  mkdir -p $full_dest_dir
+  rsync -a -z $bwlimit --partial $verbose_rsync --delete-after -e "ssh -i $key -l aduser" $nghost:$latest_full_backup $full_dest_dir
+
+  if test "$copy" == "none"; then
+    exit 0
+  fi
+
+  data_file=${full_dest_dir}data.tar
+
+  if test -f $data_file; then
+
+    if test $verbose -eq 1; then
+      echo_date "Cleaning full backup files and dirs in $dest_dir"
+    fi
+
+    find $dest_dir -maxdepth 1 -name '*.full.tar' -type f -mmin +$full_backup_timeout -delete
+    find $dest_dir -maxdepth 1 -name '*.????????-??????-?????????.full' -mmin +$full_backup_timeout -print0 | xargs -0 rm -rf
+
+    if test "$copy" == "tar"; then
+
+      if test $verbose -eq 1; then
+        echo_date "Archiving $full_dest_dir to $backup_tar ..."
+      fi
+
+      tar cf "$backup_tar.tmp" -C "$dest_dir" latest.full
+
+      if test $? -eq 0; then 
+
+        if test $verbose -eq 1; then
+          echo_date "Done"
+        fi
+
+        mv "$backup_tar.tmp" "$backup_tar"
+
+      else 
+        if test $verbose -eq 1; then
+          echo_date "Failed"
+        fi
+      fi
+
+      if test $verbose -eq 1; then
+        echo_date "Cleaning full backup files in $dest_dir"
+      fi
+
+      find $dest_dir -maxdepth 1 -name '*.full.tar' -type f -mmin +$full_backup_timeout -delete
+
+    else
+
+      from="$dest_dir/latest.full"
+      to="$backup_dest.tmp"
+
+      if test $verbose -eq 1; then
+        echo_date "Copying $from/data.tar to $to/data.tar ..."
+      fi
+
+      mkdir -p $to
+      cp $from/data.tar $to/data.tar
+
+      if test $? -eq 0; then 
+        if test $verbose -eq 1; then
+          echo_date "Done"
+        fi
+      else 
+        if test $verbose -eq 1; then
+          echo_date "Failed"
+        fi
+        exit 1
+      fi
+
+      from="$from/Message/Bank/ImgThumb"
+      to="$to/Message/Bank/ImgThumb"
+
+      if test $verbose -eq 1; then
+        echo_date "Linking images from $from to $to ..."
+      fi
+
+      link_img_thumbs "$from" "$to"
+      
+      if test $? -eq 0; then 
+
+        if test $verbose -eq 1; then
+          echo_date "Done"
+        fi
+
+        mv "$backup_dest.tmp" "$backup_dest"
+
+      else 
+        if test $verbose -eq 1; then
+          echo_date "Failed"
+        fi
+      fi
+
+      if test $verbose -eq 1; then
+        echo_date "Cleaning full backup dirs in $dest_dir"
+      fi
+
+      find $dest_dir -maxdepth 1 -name '*.????????-??????-?????????.full' -mmin +$full_backup_timeout -print0 | xargs -0 rm -rf
+    fi
+  fi
+
+fi

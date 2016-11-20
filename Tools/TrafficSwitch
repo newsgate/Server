@@ -1,0 +1,8 @@
+No-downtime support.
+
+Direct traffic comming to original server to spare one: 
+sudo /sbin/iptables -t nat -I  PREROUTING 1 -p tcp --dport http -j DNAT --to-destination 195.91.155.138:7180
+
+Switch back:
+sudo /sbin/iptables -t nat -D PREROUTING 1
+

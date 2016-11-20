@@ -1,0 +1,87 @@
+include <El/Python/Types.pid>
+include <El/Net/Types.pid>
+include <El/LibXML/Types.pid>
+
+include <Commons/Feed/Types.pid>
+
+module newsgate.message
+{
+  static unsigned long OP_ADD_BEGIN;
+  static unsigned long OP_ADD_END;
+  static unsigned long OP_ADD_TO_EMPTY;
+  static unsigned long OP_REPLACE;
+
+  type ImageRestrictions
+  {
+    unsigned long min_width;
+    unsigned long min_height;
+    el.Sequence black_list; // Sequence of strings - forbidden url prefixes
+    el.Sequence extensions; // Sequence of strings - expected extensions
+  };
+
+  type MessageRestrictions
+  {
+    unsigned long max_title_len;
+    unsigned long max_desc_len;
+    unsigned long max_desc_chars;
+    ImageRestrictions image_restrictions;
+    unsigned long max_image_count;
+  };
+
+  type Image
+  {
+    static unsigned long IO_UNKNOWN;
+    static unsigned long IO_DESC_IMG;
+    static unsigned long IO_DESC_LINK;
+    static unsigned long IO_ENCLOSURE;
+
+    static unsigned long IS_VALID;
+    static unsigned long IS_BAD_SRC;
+    static unsigned long IS_BLACKLISTED;
+    static unsigned long IS_BAD_EXTENSION;
+    static unsigned long IS_TOO_SMALL;
+    static unsigned long IS_SKIP;
+    static unsigned long IS_DUPLICATE;
+    static unsigned long IS_TOO_MANY;
+    static unsigned long IS_TOO_BIG;
+    static unsigned long IS_UNKNOWN_DIM;
+
+    static unsigned long DIM_UNDEFINED;
+
+    Image(el.libxml.Node node (0));
+
+    void read_size(el.net.http.RequestParams params); // Reads image dimensions
+                                                      // from internet-located
+                                                      // file; leave existing 
+                                                      // if fails
+
+    string src;
+    string alt;
+    unsigned long width;  // DIM_UNDEFINED if not provided
+    unsigned long height; // DIM_UNDEFINED if not provided
+    unsigned long origin; // One of IO_* values
+    unsigned long status; // One of IS_* values
+  };
+
+  type Source
+  {
+    string url; // Feed url
+    string title;
+    string html_link; // Feed alternate html link
+  };
+
+  type Message
+  {
+    string url; // Article url
+    string title;
+    string description;
+    el.Sequence images; // Sequence of Image objects
+    el.Sequence keywords; // Sequence of strings
+    Source source;
+    el.Lang lang;
+    el.Country country;
+    unsigned long space; // Any of newsgate.feed.SP_* values
+    boolean valid; // If False will be dropped
+    string log; // Message parsing log
+  };
+}

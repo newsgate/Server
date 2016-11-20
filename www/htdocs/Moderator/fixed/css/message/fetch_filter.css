@@ -1,0 +1,52 @@
+#edit_form
+{
+  font-size: 100%;
+  margin: 0;
+}
+
+#filter_new_rules
+{
+  font-size: 100%;
+  padding: 0.7em 0.1em 0.5em; 
+  margin: 0;
+}
+
+#filter_rules
+{
+  width: 100%;
+  font-size: 100%;
+  margin: 0;
+}
+
+.header
+{
+  border-bottom: 1px solid rgb(0,0,80);
+  padding: 0 0 0.3em 0;
+}
+
+.rule_cell_error
+{
+  background-color: rgb(255, 0, 0);
+}
+
+#message
+{
+  font-size: 90%;
+}
+
+#error
+{
+  color: red;
+}
+
+#header td
+{
+  border-bottom: 1px solid rgb(0,0,80);
+  padding: 0 0.3em 0.3em 0.3em;
+}
+
+textarea
+{
+  font-family: Verdana, Tahoma, Geneva, Helvetica, Arial, Sans-serif;
+  font-size: 95%;
+}

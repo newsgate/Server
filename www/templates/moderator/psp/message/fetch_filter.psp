@@ -1,0 +1,143 @@
+from moderation_func import *
+
+request, conf = context.request, context.config.get
+prn, param = request.output.stream.prn, request.input.parameters().find
+
+moderator = connect_moderator(request, moderator_connector)
+
+if moderator.has_privilege(newsgate.moderation.moderator.PV_FEED_MANAGER) == False:
+  el.exit(403) # Forbidden
+
+rules = {}
+rule_error = None
+
+if param("update") != "":
+
+  for p in request.input.parameters():
+
+    rule_info = p.name.split("_")
+    rule_part = rule_info[0]
+
+    if rule_part != "e" and rule_part != "d": continue
+    
+    rule_id = int(rule_info[1])
+
+    try: 
+      rule = rules[rule_id]
+    except:
+      rule = newsgate.moderation.message.MessageFetchFilterRule()
+      rules[rule_id] = rule
+
+    rule.id = rule_id
+
+    if rule_part == "e": rule.expression = p.value
+    else: rule.description = p.value
+
+  try:
+    moderator.message_manager.set_message_fetch_filter(rules.values())
+  except newsgate.moderation.message.MessageFetchFilterRuleError, e:
+    rule_error = e.args[0]
+else:
+
+  rule_list = moderator.message_manager.get_message_fetch_filter()
+  for rule in rule_list: rules[rule.id] = rule
+  
+prn(
+R'''
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>Management: Message Fetch Filter</title>
+<link rel="stylesheet" type="text/css" href="/fixed/css/common.css" media="all" />
+<link rel="stylesheet" type="text/css" href="/fixed/css/message/fetch_filter.css" media="all" />
+<script type="text/javascript" src="/fixed/js/message/fetch_filter.js"></script>
+
+<script type="text/javascript">
+
+filter_init();
+
+function filter_init()
+{
+  var filter_rules = document.getElementById("filter_rules");
+
+  if(filter_rules == undefined)
+  {
+    setTimeout("filter_init()", 100);
+    return;
+  }
+  
+''')
+
+rule_ids = rules.keys()
+rule_ids.sort()
+
+for id in rule_ids:
+
+  r = rules[id]
+
+  if rule_error != None and rule_error.id == id: pos = rule_error.position
+  else: pos = -1
+
+  prn(R'''
+  add_specific_rule("''', el.string.manip.js_escape(r.expression), '", "', 
+  el.string.manip.js_escape(r.description), '", ', pos, ')')
+
+prn(
+R'''
+}
+</script>
+
+</head>
+
+<body>
+<table id="skeleton" cellspacing="0">
+''')
+
+left_menu = [ ("Fetch Filter", ""),
+              ("Search", message_search_link())
+            ]
+
+menus = []
+create_topbar_main_menus(context, moderator, "Messages", menus)
+
+prn(create_topbar(left_menu, menus[0], menus[1]))
+
+prn(
+R'''
+  <tr><td id="main_area" align="center" valign="top">
+''')
+
+
+prn(
+R'''    <form action="/psp/message/fetch_filter" method="post">
+    <table id="edit_form" cellspacing="0">
+''')
+
+prn(
+R'''
+    <tr><td valign="top"><table id="filter_new_rules" cellspacing="0">''')
+
+prn(
+R'''
+    <tr>
+    <td><input type="button" value="Add Rule" onclick="add_rule();"/></td>
+    <td><input type="submit" value="Update Filter" name="update"/></td></tr>
+    </tr>
+    </table></td></tr>
+    <tr><td id="message">''')
+
+if rule_error != None:
+  prn('<span id="error">', rule_error.description, '</span>')
+
+prn('''</td></tr>
+    <tr><td valign="top"><table id="filter_rules">
+      
+    </table></td></tr>
+    </table>
+    </form>
+  </td></tr>
+''', create_copyright(context), R'''
+</table>
+</body>
+</html>
+''')

@@ -1,0 +1,20 @@
+# @file   RSSFeedStubs.mk.in
+# @author Karen Arutyunov
+# $Id:$
+
+include Common.pre.rules
+include $(osbe_builddir)/config/CXX/CXX.pre.rules
+include $(osbe_builddir)/config/CXX/Corba.pre.rules
+
+sources := 
+includes := .
+
+corba_stub_idls := RSSFeed.idl
+corba_skeleton_idls := RSSFeed.idl
+corba_includes := .
+corba_idl_includes := .
+
+target  := RSSFeedStubs
+
+include $(osbe_builddir)/config/CXX/Corba.post.rules
+include $(osbe_builddir)/config/CXX/So.post.rules

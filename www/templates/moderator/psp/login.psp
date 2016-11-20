@@ -1,0 +1,41 @@
+from moderation_func import *
+
+request, message = context.request, context.forward_params
+prn = request.output.stream.prn
+
+clear_session(request, moderator_connector)
+
+prn(
+R'''<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>Management: Login</title>
+<link rel="stylesheet" type="text/css" href="/fixed/css/common.css" media="all" />
+<link rel="stylesheet" type="text/css" href="/fixed/css/login.css" media="all" />
+</head>
+
+<body onload="document.getElementById('n').focus()">
+<form class="form" action="/psp/home" method="post">
+  <table id="skeleton" cellspacing="0">
+  <tr><td align="center" valign="top">
+  <table id="login_form" cellspacing="0">
+  <tr><td>Name:</td><td><input type="text" name="n" id="n" class="edit"/></td></tr>
+  <tr><td>Password:</td><td><input type="password" name="p" class="edit"/></td></tr>
+  <tr><td></td><td><input type="submit" value="Login" name="r"/></td></tr>
+  <tr><td id="error" colspan="2">''')
+
+if message != None:
+  prn(message)
+
+prn(
+R'''</td></tr>
+  </table>
+  </td></tr>
+''', create_copyright(context), R'''
+
+  </table>
+</form>
+
+</body>
+</html>
+''')

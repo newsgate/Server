@@ -1,0 +1,14 @@
+#include py/search_util.eng
+#include py/search_page_util.eng
+
+NEWS_DESCRIPTION Breaking news
+QUERY_TITLE_ALL  News
+TAGLINE          News
+INFORMER         Widget
+TRANSLATE        Translation
+ORIGINAL         Original
+SETTINGS         Settings
+BUTTON_VALUE     Search
+SEARCH_HELP      Search Help
+SOURCES          Sources
+MORE_CAT         more ...

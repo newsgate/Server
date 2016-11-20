@@ -1,0 +1,79 @@
+#!/bin/sh
+
+# product   : NewsGate - news search WEB server
+# copyright : Copyright (c) 2005-2016 Karen Arutyunov
+# licenses  : CC BY-NC-SA 3.0; see accompanying LICENSE file
+#             Commercial; contact karen.arutyunov@gmail.com
+
+echo "Creating StatPageImpression table ..."
+
+echo "create table StatPageImpression ( \
+      id CHAR(32) character set ascii NOT NULL, \
+      ref_url VARCHAR(767) character set ascii NOT NULL, \
+      time DATETIME NOT NULL, \
+      time_usec MEDIUMINT UNSIGNED NOT NULL, \
+      protocol ENUM ('R', 'X', 'H', 'J') NOT NULL, \
+      ref_internal TINYINT NOT NULL, \
+      ref_site VARCHAR(256) character set ascii NOT NULL, \
+      ref_company_domain VARCHAR(256) character set ascii NOT NULL, \
+      ref_page VARCHAR(1024) character set ascii NOT NULL, \
+      count BIGINT UNSIGNED NOT NULL DEFAULT 1, \
+      PRIMARY KEY (id, ref_url) \
+) engine=InnoDB;" | ng-mysql --user=root NewsGate
+
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+echo "Creating StatPageImpressionBuff table ..."
+
+echo "create table StatPageImpressionBuff ( \
+      id CHAR(32) character set ascii NOT NULL, \
+      ref_url VARCHAR(767) character set ascii NOT NULL, \
+      time DATETIME NOT NULL, \
+      time_usec MEDIUMINT UNSIGNED NOT NULL, \
+      protocol ENUM ('R', 'X', 'H', 'J') NOT NULL, \
+      ref_internal TINYINT NOT NULL, \
+      ref_site VARCHAR(256) character set ascii NOT NULL, \
+      ref_company_domain VARCHAR(256) character set ascii NOT NULL, \
+      ref_page VARCHAR(1024) character set ascii NOT NULL, \
+      count BIGINT UNSIGNED NOT NULL DEFAULT 1 \
+) engine=InnoDB;" | ng-mysql --user=root NewsGate
+
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+echo "Re-creating StatMessageImpression table ..."
+
+echo "drop table if exists StatMessageImpression;" | \
+ng-mysql --user root NewsGate
+
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+echo "create table StatMessageImpression ( \
+      request_id CHAR(32) character set ascii NOT NULL \
+        REFERENCES StatSearchRequest ( id ), \
+      message_id BIGINT UNSIGNED NOT NULL, \
+      client_id VARCHAR(32) character set ascii NOT NULL, \
+      time DATETIME NOT NULL, \
+      time_usec MEDIUMINT UNSIGNED NOT NULL, \
+      PRIMARY KEY (request_id, message_id, client_id) \
+) engine=InnoDB;" | ng-mysql --user=root NewsGate
+
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+echo "Re-creating StatMessageClick table ..."
+
+echo "drop table if exists StatMessageClick;" | \
+ng-mysql --user root NewsGate
+
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+echo "create table StatMessageClick ( \
+      request_id CHAR(32) character set ascii NOT NULL \
+        REFERENCES StatSearchRequest ( id ), \
+      message_id BIGINT UNSIGNED NOT NULL, \
+      client_id VARCHAR(32) character set ascii NOT NULL, \
+      time DATETIME NOT NULL, \
+      time_usec MEDIUMINT UNSIGNED NOT NULL, \
+      PRIMARY KEY (request_id, message_id, client_id) \
+) engine=InnoDB;" | ng-mysql --user=root NewsGate
+
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi

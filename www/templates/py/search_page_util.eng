@@ -1,0 +1,29 @@
+SOURCES       sources
+SOURCES_TITLE Show message sources
+
+CATEGORY_BAR_SEARCH_TITLE Search in category
+CATEGORY_BAR_MOVE_TITLE   Navigate to category
+
+CRAWLER_RESULTS_HEADING Search results for <span class="search_exp">{{QUERY_IN_PAGE_TOP_BAR}}</span>
+RESULTS_HEADING         Search results from {{RESULT_FROM}} to {{RESULT_TO}} of {{TOTAL_RESULTS}} for <span class="search_exp">{{QUERY_IN_PAGE_TOP_BAR}}</span>
+NO_MORE_MESSAGE_HEADING There is no more messages for <span class="search_exp">{{QUERY_IN_PAGE_TOP_BAR}}</span>
+NO_RESULTS_HEADING      No messages found for <span class="search_exp">{{QUERY_IN_PAGE_TOP_BAR}}</span>
+EXPRESSION_ERROR        <span class="error">{{ERROR_DESC}}</span>
+SEARCH_BUTTON           Search
+SEARCH_HELP             Search&#xA0;Help
+
+SUPPRESSED_INFO    &nbsp;<span class="suppressed_msg_count">(<a class="watered_link" href="{{ENABLE_DUPS_QUERY}}" title="Include duplicate messages ({{SUPPRESSED_RESULTS}}) into the result set">+{{SUPPRESSED_RESULTS}}</a>)</span>
+DISABLE_DUPS       &nbsp;<span class="suppressed_msg_count">(<a class="watered_link" href="{{DISABLE_DUPS_QUERY}}" title="Exclude duplicate messages from the result set">-duplicates</a>)</span>
+
+NEW_SEARCH     Home
+SETTINGS       Settings
+SEARCH         Search
+INFORMER       Widget
+TRANSLATE      Translation
+ORIGINAL       Original
+MV_PAPER       Newspaper
+MV_LINE        Newsline
+
+SEARCH_PAGE_LINKS_LABEL Page :
+PREV_PAGE_LINK &lt;
+NEXT_PAGE_LINK &gt;

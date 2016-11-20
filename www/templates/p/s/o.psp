@@ -1,0 +1,385 @@
+import search_util
+import informer_util
+import sys
+
+class InformerScriptRender(informer_util.JSInformerRender):
+
+  informer_script_render_base = informer_util.JSInformerRender
+  preview_var_name = "newsgate_informer_object"
+
+  def __init__(this, context, search_engine):
+    
+    this.informer_script_render_base.__init__(this,
+                                              context,
+                                              search_engine,
+                                              "o",
+                                              False)
+    this.translator = None
+
+  def prn_object(this):
+
+    var_name = this.var_name or ir.informer_create_mode and \
+      this.preview_var_name or ""
+
+    if var_name: this.prn(var_name, ' =\n')
+
+    this.prn('{')
+
+    if this.catchword_pos:
+
+      nh_param = this.query and this.modifier.empty() and 'nh=1' or ''
+
+      url = this.search_link(export = True,
+                             path = '/p/s/h',
+                             extra_params = nh_param)
+
+      this.prn('\n  footer:\n  {\n    url:"', el.string.manip.js_escape(url), 
+               '",\n    text:"', 
+               el.string.manip.js_escape(this.catchword_link_text), '"\n  },')
+
+    this.prn(R'''
+  messages:
+  [''')
+
+    first = True
+
+    for msg in this.search_result.messages: 
+
+      this.prn_msg(msg, first)
+      first = False
+
+    this.prn(R'''
+  ]
+}''')
+
+    if var_name: prn(';\n')
+
+  def encode(this, str):
+    if this.xml_encoding:
+      return el.string.manip.js_escape(\
+               el.string.manip.xml_encode(str))
+    else:
+      return el.string.manip.js_escape(str)
+
+  def prn_msg(this, msg, first):
+
+    if not first: this.prn(',')
+
+    this.prn('\n    {\n      url:"', 
+             this.encode(this.message_url(msg)), '"')
+
+    if this.title_length:
+      this.prn(',\n      title:"', this.encode(msg.title), '"')
+
+    if this.desc_length:
+
+      this.prn(',\n      description:"', 
+               this.encode(msg.description), '"')
+
+    if this.image_square:
+
+      image_info = this.find_image_thumb(msg)
+
+      if image_info == None:
+        image_info = this.find_image_thumb(msg, False)
+
+      this.prn(',\n      image:')
+
+      if image_info == None:
+        this.prn('null')
+      else:
+        img = image_info.image
+        thumb = image_info.thumbnail
+
+        thumb_width = image_info.adjust_ratio == None and \
+                      image_info.thumbnail.width or \
+                      round(image_info.thumbnail.width / \
+                            image_info.adjust_ratio)
+
+        thumb_height = image_info.adjust_ratio == None and \
+                       image_info.thumbnail.height or \
+                       round(image_info.thumbnail.height / \
+                             image_info.adjust_ratio)
+
+        this.prn('\n      {\n        src:"',
+                 this.encode(img.src), '",',
+                 '\n        width:', img.width, ',',
+                 '\n        height:', img.height, ',',
+                 '\n        thumbnail:', 
+                 '\n        {\n          src:"', 
+                 this.encode(thumb.src), '",',
+                 '\n          width:', thumb.width, ',',
+                 '\n          height:', thumb.height, ',',
+                 '\n          scaled_width:', thumb_width, ',',
+                 '\n          scaled_height:', thumb_height,
+                 '\n        }', 
+                 '\n      }')
+
+    if this.similar_messages and this.metainfo_columns:
+
+      this.prn(',\n      story:')
+
+      if not this.modifier.similar.message_id and \
+         not this.filter.event.event_id and msg.event_capacity > 1:
+
+        url = this.story_url(msg, path = '/p/s/h', export = True)
+
+        prn('\n      {\n        url:"',
+            this.encode(url), '",',
+            '\n        size:', msg.event_capacity,
+            '\n      }')
+      else:
+        this.prn('null')
+
+    if this.message_date and this.metainfo_columns:
+
+      this.prn(',\n      date:new Date(', 
+               this.message_date == 1 and msg.published or msg.fetched, '000)')
+
+    if (this.source_length or this.source_country) and this.metainfo_columns:
+
+      origin = msg.source_html_link or msg.source_url
+      url = this.source_url(msg, path = '/p/s/h', export = True)
+
+      this.prn(',\n      source:\n      {\n        origin:"',
+               this.encode(origin), '",',
+               '\n        url:"', this.encode(url),'"')
+
+      if this.source_country:
+        this.prn(',\n        country:"',
+                 this.encode(\
+                   this.localizer.country(msg.country, 
+                                          this.language)), '"')
+
+      if this.source_length:
+
+        if len(msg.source_title) > 0: src_title = msg.source_title
+        else: src_title = msg.source_url
+
+        if this.source_length > 0:
+          src_title = search_util.truncate_text(src_title, this.source_length)
+
+        this.prn(',\n        title:"', this.encode(src_title),
+                 '"')
+
+      this.prn('\n      }')
+
+    if this.message_categories and this.metainfo_columns:
+
+      first_cat = True
+      this.prn(',\n      categories:\n      [')
+
+      for cat in msg.categories:
+
+        name = this.translate_category_name(cat)
+        if not name: continue
+
+        url = this.category_url(cat, path = '/p/s/h', export = True)
+
+        if first_cat: first_cat = False
+        else: this.prn(',')
+
+        this.prn('\n        {\n          name:"', 
+                 this.encode(name), '",\n          url:"', 
+                 this.encode(url), '"')
+
+        this.prn('\n        }')
+
+      this.prn('\n      ]')
+
+    this.prn('\n    }')
+
+  def prn_preview(this):
+
+    var_name = this.var_name or this.preview_var_name
+
+    this.prn(R'''
+var story_comment = "''', this.lm, "STORY_COMMENT", R'''";
+var image_comment = "''', this.lm, "IMAGE_COMMENT", R'''";
+var scaled_comment = "''', this.lm, "SCALED_COMMENT", R'''";
+var preview = "''')
+
+    if this.var_name: prn(var_name, R''' =\n''')
+
+    this.prn(R'''{";
+
+if(''', var_name, R'''.footer !== undefined)
+
+  preview += '\n  footer:\n  {\n    url:"' + 
+             el_js_escape(''', var_name, R'''.footer.url) + '",\n    text:"' +
+             el_js_escape(''', var_name, R'''.footer.text) + '"\n  },';
+
+preview += "\n  messages:\n  [";
+
+for(var i = 0; i < ''', var_name, R'''.messages.length; ++i)
+{
+  if(i) preview += ",";
+  preview += "\n    {";
+
+  var msg = ''', var_name, R'''.messages[i];
+  var first = true;
+
+  preview += '\n      url:"' + el_js_escape(msg.url) + '"';
+
+  if(msg.title !== undefined)
+  {
+    preview += ',\n      title:"' + el_js_escape(msg.title) + '"';
+  }
+
+  if(msg.description !== undefined)
+  {
+    preview += ',\n      description:"' + el_js_escape(msg.description) + '"';
+  }
+
+  if(msg.image !== undefined)
+  {
+    preview += ',';
+
+    if(image_comment)
+    {
+      preview += '\n      ' + image_comment;
+      image_comment = "";
+    }
+
+    preview += '\n      image:';
+ 
+    if(msg.image == null)
+    {
+      preview += 'null';
+    }
+    else
+    {
+      var img = msg.image;
+      var thumb = img.thumbnail;
+
+      preview += '\n      {\n        src:"' + 
+                 el_js_escape(img.src) + '",\n        width:' + img.width +
+                 ',\n        height:' + img.height + 
+                 ',\n        thumbnail:\n        {\n          src:"' +
+                 el_js_escape(thumb.src) + '",\n          width:' + 
+                 thumb.width + ',\n          height:' + thumb.height + ',';
+
+      if(scaled_comment)
+      {
+        preview += '\n          ' + scaled_comment;
+        scaled_comment = "";
+      }
+
+      preview += '\n          scaled_width:' + thumb.scaled_width + 
+                 ',\n          scaled_height:' + thumb.scaled_height +
+                 '\n        }\n      }';
+    }
+  }
+
+  if(msg.story !== undefined)
+  {
+    preview += ',';
+
+    if(story_comment)
+    {
+      preview += '\n      ' + story_comment;
+      story_comment = "";
+    }
+
+    preview += '\n      story:';
+ 
+    if(msg.story == null)
+    {
+      preview += 'null';
+    }
+    else
+    {
+      preview += '\n      {\n        url:"' + 
+                 el_js_escape(msg.story.url) + 
+                 '",\n        size:' + msg.story.size +
+                 '\n      }';
+    }
+  }
+
+  if(msg.date !== undefined)
+  {
+    preview += ',\n      date:new Date(' + msg.date.getTime() + ')';
+  }
+
+  if(msg.source !== undefined)
+  {
+    var src = msg.source;
+
+    preview += ',\n      source:\n      {\n        origin:"' + 
+                 el_js_escape(src.origin) + 
+                 '",\n        url:"' + el_js_escape(src.url) + '"';
+
+    if(src.country !== undefined)
+    {
+      preview += ',\n        country:"' + el_js_escape(src.country) + '"';
+    }
+
+    if(src.title !== undefined)
+    {
+      preview += ',\n        title:"' + el_js_escape(src.title) + '"';
+    }
+
+    preview += '\n      }';
+  }
+
+  if(msg.categories !== undefined)
+  {
+    preview += ',\n      categories:\n      [';
+
+    for(var j = 0; j < msg.categories.length; ++j)
+    {
+      if(j) preview += ',';
+
+      var cat = msg.categories[j];
+
+      preview += '\n        {\n          name:"' + el_js_escape(cat.name) + 
+                 '",\n          url:"' + el_js_escape(cat.url) + 
+                 '"\n        }';
+    }
+
+    preview += '\n      ]';
+  }
+
+  preview += "\n    }";
+}
+
+preview += "\n  ]\n}''')
+
+    if this.var_name: prn(';')
+
+    prn(R'''"
+
+el_by_id('ir_placeholder').innerHTML = 
+  '<table id="ir_preview"><tr><td><div id="ir_preview_inner"><div id="ir_preview_intro">' +
+  "''', el.string.manip.js_escape(this.loc("CODE_INTRO")), R'''" + 
+  '</div><pre>' + 
+  el_xml_encode(preview) + '</pre></div></td></tr></table>';
+''')
+
+#
+# Initialization
+#
+
+request, loc = context.request, context.localization.get
+header = request.input.headers().find
+cache, prn = context.cache, request.output.stream.prn
+
+ir = InformerScriptRender(context, search_engine)
+ir.debug_mode = False
+
+search_context = ir.search_context()
+search_context.description_format = 0
+
+try: search_result = ir.search(search_context)
+except SyntaxError, e:
+  ir.exit(400) #bad request
+
+ir.set_catchword_link_text()
+ir.send_headers()
+
+ir.prn_object()
+
+if ir.informer_create_mode: ir.prn_preview()
+
+# Break circular references ...
+ir.exit()

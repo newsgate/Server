@@ -1,0 +1,11 @@
+# @file   Makefile.in
+# @author Karen Aroutiounov
+# $Id:$
+
+include Common.pre.rules
+include $(osbe_builddir)/config/CXX/CXX.pre.rules
+
+includes := .
+target   := NewsGateCommons
+
+include $(osbe_builddir)/config/CXX/Inl.post.rules

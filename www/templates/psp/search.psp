@@ -1,0 +1,11 @@
+param = context.request.input.parameters().find
+
+tp = param("t")
+
+if tp == "x": path = "/p/s/x"
+elif tp == "r": path = "/p/s/r"
+elif tp == "j": path = "/p/s/j"
+elif param("ir", "") == "1": path = "/p/s/i"
+else: path = "/p/s/h"
+
+el.exit(el.psp.Forward(path + ".psp", True)) 

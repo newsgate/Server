@@ -1,0 +1,173 @@
+/*
+ * product   : NewsGate - news search WEB server
+ * copyright : Copyright (c) 2005-2016 Karen Arutyunov
+ * licenses  : CC BY-NC-SA 3.0; see accompanying LICENSE file
+ *             Commercial; contact karen.arutyunov@gmail.com
+ */
+
+/**
+ * @file NewsGate/Server/Services/Moderator/Commons/ModeratorManager.idl
+ * @author Karen Arutyunov
+ * $Id:$
+ */
+
+#ifndef _NEWSGATE_SERVER_SERVICES_MODERATOR_COMMONS_MODERATORMANAGER_IDL_
+#define _NEWSGATE_SERVER_SERVICES_MODERATOR_COMMONS_MODERATORMANAGER_IDL_
+
+#include <Services/Moderator/Commons/ModerationCommons.idl>
+
+module NewsGate
+{ 
+  module Moderation
+  {
+    typedef string SessionId;
+
+    typedef unsigned long long ModeratorId;
+    typedef sequence<ModeratorId> ModeratorIdSeq;
+
+    enum PrivilegeId
+    {
+      PV_NULL,
+      PV_FEED_CREATOR,
+      PV_FEED_MANAGER,
+      PV_ACCOUNT_MANAGER,
+      PV_CATEGORY_MANAGER,
+      PV_CLIENT_MANAGER,
+      PV_CUSTOMER_MANAGER,
+      PV_CUSTOMER,
+      PV_CATEGORY_EDITOR,
+      PV_AD_MANAGER,
+      PV_ADVERTISER,
+      PV_COUNT
+    };
+
+    struct Privilege
+    {
+      PrivilegeId id;
+      string args;
+    };
+
+    typedef sequence<Privilege> PrivilegeSeq;
+
+    struct GrantedPrivilege
+    {
+      Privilege priv;
+      string name;
+      string granted_by;
+    };
+    
+    typedef sequence<GrantedPrivilege> GrantedPrivilegeSeq;
+
+    enum ModeratorStatus
+    {
+      MS_ENABLED,
+      MS_DISABLED,
+      MS_COUNT
+    };
+
+    struct ModeratorInfo
+    {
+      ModeratorId id;
+      ModeratorId advertiser_id;
+      string name;
+      string advertiser_name;
+      string email;
+      string updated;
+      string created;
+      string creator;
+      string superior;
+      ModeratorStatus status;
+      boolean show_deleted;
+      string comment;
+      GrantedPrivilegeSeq privileges;
+    };
+
+    typedef sequence<ModeratorInfo> ModeratorInfoSeq;
+
+    struct ModeratorCreationInfo
+    {
+      string name;
+      string email;
+      string password;
+      ModeratorStatus status;
+      boolean show_deleted;
+      PrivilegeSeq privileges;
+    };
+    
+    struct ModeratorUpdateInfo
+    {
+      ModeratorId id;
+      string name;
+      string email;
+      string password;
+      ModeratorStatus status;
+      boolean show_deleted;
+      PrivilegeSeq privileges;
+    };    
+
+    interface ModeratorManager
+    {
+      SessionId login(in string username, in string password, in string ip)
+        raises(InvalidUsername,
+               AccountDisabled,
+               NotReady,
+               ImplementationException);
+
+      void logout(in SessionId session, in string ip)
+        raises(ImplementationException);
+
+      ModeratorInfo create_moderator(in SessionId session,
+                                     in ModeratorCreationInfo moderator_info)
+        raises(InvalidSession,
+               PermissionDenied,
+               AccountAlreadyExist,
+               NotReady,
+               ImplementationException);
+
+      ModeratorInfo update_moderator(in SessionId session,
+                                     in ModeratorUpdateInfo moderator_info)
+        raises(InvalidSession,
+               PermissionDenied,
+               AccountNotExist,
+               NewNameOccupied,
+               NotReady,
+               ImplementationException);
+
+      ModeratorInfo authenticate(in SessionId session,
+                                 in string ip,
+                                 in boolean advance_sess_timeout)
+        raises(InvalidSession,
+               AccountDisabled,
+               NotReady,
+               ImplementationException);
+
+      ModeratorInfoSeq get_subordinates(in SessionId session)
+        raises(InvalidSession,
+               NotReady,
+               ImplementationException);
+
+      
+      ModeratorInfoSeq get_moderators(in SessionId session,
+                                      in ModeratorIdSeq ids)
+        raises(InvalidSession,
+               NotReady,
+               ImplementationException);
+
+      ModeratorInfoSeq get_advertisers(in SessionId session)
+        raises(InvalidSession,
+               NotReady,
+               ImplementationException);
+
+      ModeratorInfo set_advertiser(in SessionId session,
+                                   in ModeratorId id,
+                                   in ModeratorId advertiser_id)
+        raises(InvalidSession,
+               PermissionDenied,
+               NotReady,
+               ImplementationException);
+    };
+  };
+  
+};
+
+#endif // _NEWSGATE_SERVER_SERVICES_MODERATOR_COMMONS_MODERATORMANAGER_IDL_

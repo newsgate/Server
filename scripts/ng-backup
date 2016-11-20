@@ -1,0 +1,701 @@
+#!/bin/sh
+
+# product   : NewsGate - news search WEB server
+# copyright : Copyright (c) 2005-2016 Karen Arutyunov
+# licenses  : CC BY-NC-SA 3.0; see accompanying LICENSE file
+#             Commercial; contact karen.arutyunov@gmail.com
+
+source "$SITE_CONFIG_ROOT/lib.sh"
+
+function on_exit
+{
+  if test -n "$temp_path"; then
+    rm -f -r "$temp_path"
+    popd 1>/dev/null
+  fi
+
+  if test -n "$archive_path"; then
+    rm -f -r "$archive_path"
+  fi
+
+  read pid type cmd 2>/dev/null < "$pid_file"
+
+  if test -n "$pid"; then
+    if test $pid -eq $$; then
+      rm -f "$pid_file"
+    fi
+  fi
+}
+
+function numeric_version()
+{
+  echo $1 | sed -n -e "s/\(.*\)\.\(.*\)\.\(.*\)\.\(.*\)/\1 \2 \3 \4/p" | \
+       (read a b c d; expr $a \* 1000000 + $b \* 10000 + $c \* 100 + $d) \
+       2>/dev/null
+
+  return $?
+}
+
+function temp_dir()
+{
+  dir="$TMP_ROOT/backup/$1"
+  echo "$dir"
+  mkdir -p "$dir"
+}
+
+function abs_path()
+{
+  dir=`dirname "$1"`
+  name=`basename "$1"`
+  abspath="`cd \"$dir\" 2>/dev/null && pwd || echo \"$dir\"`/$name"  
+  echo "$abspath";
+}
+
+function link_img_thumbs()
+{
+  msg_image_src_dir="$1" 
+  msg_image_dst_dir="$2"
+  check_ln_res="$3"
+
+  dir_list=""
+
+  for file in $msg_image_src_dir/*; do
+
+    if test -d "$file"; then
+
+      dir_list="$dir_list
+`basename $file`"
+    fi
+
+  done
+
+  dir_list=`echo "$dir_list" | sort`
+
+  for dr in $dir_list; do
+        
+    dest_dir="$msg_image_dst_dir/$dr"
+    mkdir -p "$dest_dir"
+
+    for img in $msg_image_src_dir/$dr/*; do
+
+      if test -f "$img"; then
+
+        fl=`basename $img`
+        ln "$img" "$dest_dir/$fl"
+
+        if test $? -ne 0 -a $check_ln_res -eq 1; then 
+          echo "Failed"
+          exit 1
+        fi
+      fi
+
+    done
+
+  done
+}
+
+function skip_img()
+{
+  from="$1"
+  to="$2"
+  
+  echo_date "Skipping images ..."
+}
+
+function link_img()
+{
+  from="$1/Bank/ImgThumb"
+  to="$2/Message/Bank/ImgThumb"
+  
+  echo_date "Linking images from $from to $to ..."
+  link_img_thumbs "$from" "$to" 1
+}
+
+function do_restore()
+{
+  full="$1"
+  restore_from="$2"
+  temp_path="$3"
+
+  if test -d "$restore_from"; then
+    arc_path="$restore_from/data.tar"
+    msg_path="$restore_from/Message"    
+
+    case $img_restore_method in
+      move) img_mv="mv" ;;
+      link) img_mv="link_img" ;;
+      none) img_mv="skip_img" ;;
+      copy) img_mv="cp -r" ;;
+    esac
+
+  else
+    arc_path="$restore_from"
+    msg_path="$temp_path/Message"
+    img_mv="mv"
+  fi
+
+  cur_time=`date -u "+%s"`
+
+  echo_date "Extracting from $arc_path to $temp_path ..."
+  
+  tar xf "$arc_path" -C "$temp_path"
+  if test $? -eq 0; then echo "Done"; else echo "Failed"; return 1; fi
+
+  echo_date "Updating NewsGate database ..."
+
+  if test $full -eq 1; then
+    if test -f "$temp_path/NewsGate.sql"; then
+      cat "$temp_path/NewsGate.sql" | ng-mysql --user root
+    else
+      gunzip -c "$temp_path/NewsGate.sql.gz" | ng-mysql --user root
+    fi
+  else
+    if test -f "$temp_path/NewsGate.sql"; then
+      cat "$temp_path/NewsGate.sql" | ng-mysql --user root NewsGate
+    else
+      gunzip -c "$temp_path/NewsGate.sql.gz" | ng-mysql --user root NewsGate
+    fi
+  fi
+
+  if test $? -eq 0; then echo "Done"; else echo "Failed"; return 1; fi
+
+  echo_date "Adjusting SearchMailState.last_dispatch_time ..."
+
+  res=`echo "show tables" | ng-mysql --skip-column-names --user root NewsGate |\
+grep SearchMailState`
+
+  if test -n "$res"; then
+    echo "update SearchMailState set last_dispatch_time=$cur_time;" | \
+    ng-mysql --user root NewsGate
+
+    if test $? -eq 0; then echo "Done"; else echo "Failed"; return 1; fi
+  fi
+
+  echo_date "Updating NewsGateModeration database ..."
+
+  if test $full -eq 1; then
+    if test -f "$temp_path/NewsGateModeration.sql"; then
+      cat "$temp_path/NewsGateModeration.sql" | ng-mysql --user root
+    else
+      gunzip -c "$temp_path/NewsGateModeration.sql.gz" | ng-mysql --user root
+    fi
+
+  else
+    if test -f "$temp_path/NewsGateModeration.sql"; then
+      cat "$temp_path/NewsGateModeration.sql" | \
+      ng-mysql --user root
+    else
+      gunzip -c "$temp_path/NewsGateModeration.sql.gz" | \
+      ng-mysql --user root
+    fi
+  fi
+  
+  if test $? -eq 0; then echo "Done"; else echo "Failed"; return 1; fi
+
+  if test -z "$db_only"; then
+
+    if test -d "$msg_path"; then
+      echo_date "Restoring image thumbnails (method: $img_mv) ..."
+   
+      rm -f -r "$DATA_ROOT/Frontends"
+      rm -f -r "$DATA_ROOT/Message"
+      $img_mv "$msg_path" "$DATA_ROOT"
+
+      if test $? -eq 0; then echo "Done"; else echo "Failed"; return 1; fi
+    fi
+
+    echo_date "Removing cache ..."
+    rm -r -f "$CACHE_ROOT"
+
+  fi
+
+  echo_date "Restoring VERSION file ..."
+  mv "$temp_path/VERSION" "$DATA_ROOT"
+
+  if test $? -eq 0; then echo "Done"; else echo "Failed"; return 1; fi
+
+  echo_date "Restore completed ..."
+}
+
+function host_name()
+{
+  if test -d "$1"; then
+    echo echo "$1" | sed -n -e "s%.*/\(.*\)\.[^\.]*\.[^\.]*$%\1%p"
+  else
+    echo "$1" | sed -n -e "s%.*/\(.*\)\.[^\.]*\.[^\.]*\.tar$%\1%p"
+  fi
+}
+
+function file_type()
+{
+  if test -d "$1"; then
+    type=`echo "$1" | sed -n -e "s/.*\.\([^\.]*\)$/\1/p"`
+    if test "$type" != "full"; then
+      type=""
+    fi
+    echo "$type"
+  else
+    echo "$1" | sed -n -e "s/.*\.\([^\.]*\)\.tar$/\1/p"
+  fi
+}
+
+function restore()
+{
+  restore_from="`dirname $1`/`basename $1`"
+  temp_path="$2"
+
+  if test ! -f "$restore_from" -a ! -d "$restore_from"; then
+    echo_date "File $restore_from not found"
+    return 1
+  fi
+
+  export NO_DB_CHECK=""
+  export NO_BACKUP=""
+
+  type=`file_type "$restore_from"`  
+
+  echo_date "Stopping all services on $HOSTNAME ..."
+  ElStart stop --nodeps $HOSTNAME: "$SITE_CONFIG_ROOT/Cluster.xml"
+  if test $? -eq 0; then echo "Done"; else echo "Failed"; return 1; fi
+
+  echo_date "Deleting DB files on $HOSTNAME ..."
+  rm -r -f "$DATA_ROOT/MySQL"
+
+  echo_date "Running start DB script on $HOSTNAME ..."
+  ElStart start $HOSTNAME:DB "$SITE_CONFIG_ROOT/Cluster.xml"
+  if test $? -eq 0; then echo "Done"; else echo "Failed"; return 1; fi
+
+  echo_date "Dropping NewsGate database ..."
+  echo "drop database NewsGate" | ng-mysql --user root
+  if test $? -eq 0; then echo "Done"; else echo "Failed"; return 1; fi
+
+  echo_date "Dropping NewsGateModeration database ..."
+  echo "drop database NewsGateModeration" | ng-mysql --user root
+  if test $? -eq 0; then echo "Done"; else echo "Failed"; return 1; fi
+
+  case $type in
+  full) do_restore "1" "$restore_from" "$temp_path"
+        ;;
+  part)
+
+    echo_date "Searching for latest full backup before $restore_from ..."
+
+    host=`host_name "$restore_from"`
+
+    if test -z "$host"; then
+      echo_date "Invalid archive file name"
+      return 1
+    fi
+
+    arc_dir=`dirname "$restore_from"`
+    file_list=""
+    
+    for file in $arc_dir/*; do
+      file_host=`host_name "$file"`
+
+      if test "$file_host" = "$host"; then
+        file_list="$file_list
+$file"
+      fi
+    done
+
+    file_list=`echo "$file_list" | sort`
+    
+    for file in $file_list; do
+      type=`file_type "$file"`
+
+      if test "$type" = "full"; then
+        full_backup="$file"
+      elif test "$file" = "$restore_from"; then
+        partial_backup="$file"
+        break
+      fi
+    done
+
+    if test -z "$partial_backup"; then
+      echo_date "Partial backup $restore_from not found"
+      return 1
+    fi
+
+    if test -z "$full_backup"; then
+      echo_date "No matching full backup found"
+      
+      create_empty_ng=`tar xf "$partial_backup" NewsGate.schema.gz -O 2>/dev/null | gunzip 2>/dev/null`
+
+      if test -n "$create_empty_ng"; then
+
+        echo_date "Creating empty NewsGate database ..."
+        echo "$create_empty_ng" | ng-mysql --user root
+        if test $? -eq 0; then echo "Done"; else echo "Failed"; return 1; fi
+
+        if test -z "$db_only"; then
+          echo_date "Removing image thumbnails ..."
+          rm -f -r "$DATA_ROOT/Frontends"
+          rm -f -r "$DATA_ROOT/Message"
+        fi
+
+      else
+        echo_date "No valid NewsGate.schema.gz found in $partial_backup";
+        return 1;
+      fi
+
+    else
+      echo_date "Full backup $full_backup found"
+
+      partial_backup_dsp_ver=`tar xf "$partial_backup" VERSION -O`
+
+      if test -d "$full_backup"; then
+        arch_path="$full_backup/data.tar"
+      else
+        arch_path="$full_backup"
+      fi
+
+      full_backup_ver=`tar xf "$arch_path" VERSION -O`
+
+      partial_backup_ver=`numeric_version "$partial_backup_dsp_ver"`
+      full_backup_ver=`numeric_version "$full_backup_ver"`
+
+      if test -z "$partial_backup_ver"; then
+        echo_date "Invalid VERSION file in $partial_backup"
+        return 1
+      fi
+
+      if test -z "$full_backup_ver"; then
+        echo_date "Invalid VERSION file in $partial_backup"
+        return 1
+      fi
+
+      if test $partial_backup_ver -lt $full_backup_ver; then
+        echo_date "Version of $full_backup is unexpectedly greater than that \
+of $partial_backup"
+        return 1
+      fi
+
+      do_restore "1" "$full_backup" "$temp_path"
+      if test $? -ne 0; then return 1; fi
+
+      if test $partial_backup_ver -gt $full_backup_ver; then
+
+        ng-convert --to "$partial_backup_dsp_ver" "$SERVER_SCRIPTS" \
+                   "$SITE_CONFIG_ROOT" "$DATA_ROOT" "$CACHE_ROOT"
+
+        if test $? -ne 0; then return 1; fi
+      fi
+    fi
+
+    do_restore "0" "$partial_backup" "$temp_path"
+    if test $? -ne 0; then return 1; fi
+
+    ;;
+  *)
+    echo_date "Invalid archive file name"
+    return 1
+    ;;
+  esac
+}
+
+function backup()
+{
+  name="$1"
+  partial="$2"
+  temp_path="$3"
+  fast="$4"
+
+  export NO_DB_CHECK=""
+  export NO_BACKUP=""
+
+  echo_date "Starting backup"
+
+  ElStart start $HOSTNAME:DB "$SITE_CONFIG_ROOT/Cluster.xml"
+  if test $? -eq 0; then echo "Done"; else echo "Failed"; return 1; fi
+
+  if test $partial -eq 0; then
+    echo_date "Dumping NewsGate database ..."
+
+    mysqldump --single-transaction --port=$MYSQL_PORT \
+              --socket="$MYSQL_WORKSPACE_ROOT/mysql.socket" --user root \
+              --databases NewsGate | gzip > "$temp_path/NewsGate.sql.gz"
+  else
+    echo_date "Dumping NewsGate database schema ..."
+
+    mysqldump --no-data --single-transaction --port=$MYSQL_PORT \
+              --socket="$MYSQL_WORKSPACE_ROOT/mysql.socket" --user root \
+              --databases NewsGate | gzip > "$temp_path/NewsGate.schema.gz"
+
+    echo_date "Dumping tables ..."
+
+    mysqldump --single-transaction --port=$MYSQL_PORT \
+              --socket="$MYSQL_WORKSPACE_ROOT/mysql.socket" --user root \
+              NewsGate Feed FeedFormerUrl FeedUpdateNum FeedSource Category \
+              CategoryChild CategoryWordList CategoryExpression \
+              CategoryLocale CategoryMessage CategoryUpdateNum \
+              MessageFetchFilter MessageFilter MessageFilterUpdateNum \
+              Customer Ad AdCampaign AdCampaignCondition AdCondition \
+              AdCounter AdCounterPlacement AdGroup AdGroupCondition AdPage \
+              AdPageAdvAdvRestriction AdPageAdvRestriction AdPlacement \
+              AdSelector AdSize AdSlot Advertiser SearchMailSubscription \
+              SearchMailSubscriptionUpdate SearchMailState | \
+              gzip > "$temp_path/NewsGate.sql.gz"
+  fi
+
+  if test $? -eq 0; then echo "Done"; else echo "Failed"; return 1; fi
+
+  echo_date "Dumping NewsGateModeration database ..."
+
+  mysqldump --single-transaction --port=$MYSQL_PORT \
+            --socket="$MYSQL_WORKSPACE_ROOT/mysql.socket" --user root \
+            --databases NewsGateModeration | \
+            gzip > "$temp_path/NewsGateModeration.sql.gz"
+
+  if test $? -eq 0; then echo "Done"; else echo "Failed"; return 1; fi
+
+  echo_date "Creating backup $name:"
+
+  if test $fast -eq 1; then
+    arch_dir=`echo $name|sed -e 's/\.full/.tmp/'`
+    tar_name="$arch_dir/data.tar"
+  else
+    arch_dir="$DATA_ROOT/archives"
+    tar_name="$name"
+  fi
+
+  echo_date "Creating directory $arch_dir ..."
+
+  mkdir -p "$arch_dir"
+  if test $? -eq 0; then echo "Done"; else echo "Failed"; return 1; fi
+
+  echo_date "Creating archieve $tar_name ..."
+
+  echo_date "Archiving VERSION file ..."
+  tar rf $tar_name -C "$DATA_ROOT" VERSION
+  if test $? -eq 0; then echo "Done"; else echo "Failed"; return 1; fi
+
+  echo_date "Archiving NewsGateModeration.sql.gz ..."
+
+  tar rf $tar_name -C "$temp_path" NewsGateModeration.sql.gz
+  if test $? -eq 0; then echo "Done"; else echo "Failed"; return 1; fi
+
+  rm "$temp_path/NewsGateModeration.sql.gz"
+
+  echo_date "Archiving NewsGate.sql.gz ..."
+  tar rf $tar_name -C "$temp_path" NewsGate.sql.gz
+  if test $? -eq 0; then echo "Done"; else echo "Failed"; return 1; fi
+
+  rm "$temp_path/NewsGate.sql.gz"
+
+  if test $partial -eq 1; then
+    echo_date "Archiving NewsGate.schema.gz ..."
+    tar rf $tar_name -C "$temp_path" NewsGate.schema.gz
+    if test $? -eq 0; then echo "Done"; else echo "Failed"; return 1; fi
+
+    rm "$temp_path/NewsGate.schema.gz"
+
+  elif test -z "$db_only"; then
+
+    echo_date "Archiving image thumbnails ..."
+
+    if test $fast -eq 0; then
+      tar rf $tar_name -C "$DATA_ROOT" --ignore-failed-read Message
+      if test $? -le 1; then echo "Done"; else echo "Failed"; return 1; fi
+    else
+      
+      msg_image_src_dir="$DATA_ROOT/Message/Bank/ImgThumb"
+      msg_image_dst_dir="$arch_dir/Message/Bank/ImgThumb"
+
+      link_img_thumbs "$msg_image_src_dir" "$msg_image_dst_dir" 0
+
+      echo_date "Renaming $arch_dir to $name ..."
+      mv "$arch_dir" "$name"
+      if test $? -eq 0; then echo "Done"; else echo "Failed"; return 1; fi
+    fi
+  
+  fi
+
+  if test -n "$copy_transport"; then
+    copy_command=`echo "$copy_transport" | sed -e "s|=BACKUP=|$name|g"`
+
+    echo_date "Copying archive: $copy_command ..."
+    eval $copy_command
+    if test $? -eq 0; then echo "Done"; else echo "Failed"; return 2; fi
+  fi
+
+  echo_date "Backup completed ..."
+}
+
+partial="0"
+operation="full"
+fast="0"
+
+date=`date -u +%Y%m%d-%H%M%S-%N`
+name="$DATA_ROOT/archives/$HOSTNAME.$date"
+
+case $1 in
+help)
+  echo "Usage:
+backup.sh help # display usage
+backup.sh [fast] [--db-only] # full backup
+backup.sh part # partial backup
+backup.sh restore <backup filename> [--img-method (copy|move|link|none)] \
+[--db-only]"
+  exit 0
+  ;;
+part)
+  partial="1"
+  operation="part"
+  shift
+  ;;
+fast)
+  fast="1"
+  shift
+  ;;
+restore)
+  restore_from=`abs_path "$2"`
+  operation="restore"
+
+  if test -z "$restore_from" -o "$restore_from" = "--po" -o "$restore_from" = "--copy"; then
+    echo "No backup file name specified for restore. Try backup.sh help."
+    exit 1
+  fi
+
+  shift 2
+  ;;
+esac
+
+mkdir -p "$RUN_ROOT"
+
+if test ! -d "$RUN_ROOT"; then
+  exit 1
+fi
+
+operation_pid=$$
+img_restore_method="copy"
+db_only=""
+
+while test -n "$1"; do
+
+  case $1 in
+    --po) operation_pid="$2"
+          operation="$3"
+          shift 3
+          ;;
+    --copy) copy_transport="$2"
+            shift 2
+            ;;
+    --db-only) db_only="1"
+               shift 1
+               ;;
+    --img-method) 
+
+      if test "$operation" = "restore"; then
+        img_restore_method="$2"
+        shift 2
+      else
+        echo "--img-method to be used with restore operation only. Try backup.sh help."
+        exit 1
+      fi
+      ;;
+    *) break ;;
+  esac
+
+done
+
+if test -n "$1"; then 
+  echo "Unrecognized argument $1. Try backup.sh help."
+  exit 1
+fi
+
+if test "$img_restore_method" != "copy" -a "$img_restore_method" != "move" -a \
+        "$img_restore_method" != "link" -a "$img_restore_method" != "none"; then
+  echo "Invalid --img-method value $img_restore_method. Try backup.sh help."
+  exit 1
+fi
+
+pid_file="$RUN_ROOT/backup.pid"
+
+while test 1; do
+  
+  read pid type cmd 2>/dev/null < "$pid_file"
+  cmd2=`ps h -p "$pid" -o comm 2>/dev/null`
+
+  if test -z "$cmd" -o "$cmd" != "$cmd2"; then
+    break
+  fi
+
+  case $type in
+  full)
+    echo_date "Full backup is already in progress."
+    exit 1
+    ;;
+  convert)
+    echo_date "Data conversion is already in progress."
+    exit 1
+    ;;
+  restore)
+    echo_date "Restoration is already in progress."
+    exit 1
+    ;;
+  part)
+    if test "$operation" = "part"; then
+      echo_date "Partial backup is already in progress."
+      exit 1
+    fi
+
+    echo_date "Partial backup is already in progress. Waiting for completion ..."
+    sleep 5
+    ;;
+  *)
+     echo_date "Unrecognized process type."
+     exit 1
+    ;;
+  esac
+
+done
+
+cmd=`ps h -p $operation_pid -o comm`
+echo "$operation_pid $operation $cmd" > "$pid_file"
+
+trap on_exit 0
+temp_path=`temp_dir "$date"`
+
+if test $? -ne 0; then
+  temp_path=""
+  echo_date "Failed to create temporary dir $temp_path"
+  exit 1
+fi
+
+pushd "$temp_path" 1>/dev/null
+
+# Just to double check if somebody squizeed in
+read pid type cmd 2>/dev/null < "$pid_file"
+
+if test $pid -ne $operation_pid; then
+  echo_date "Some other backup process is in progress."
+  exit 1
+fi
+
+if test -n "$restore_from"; then
+  restore "$restore_from" "$temp_path"
+else
+
+  if test $partial -eq 1; then
+    archive_path="$name.part.tar"
+  else
+
+    if test $fast -eq 1; then
+      archive_path="$name.full"
+    else
+      archive_path="$name.full.tar"
+    fi
+
+  fi
+
+  backup "$archive_path" "$partial" "$temp_path" "$fast"
+  result=$?
+
+  if test $result -ne 1; then
+    # So on_exit trap do not delete archive
+    archive_path=""
+  fi
+
+  exit $result
+fi

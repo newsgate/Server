@@ -1,0 +1,85 @@
+/*
+ * product   : NewsGate - news search WEB server
+ * copyright : Copyright (c) 2005-2016 Karen Arutyunov
+ * licenses  : CC BY-NC-SA 3.0; see accompanying LICENSE file
+ *             Commercial; contact karen.arutyunov@gmail.com
+ */
+
+/**
+ * @file NewsGate/Server/Services/Commons/Ad/AdServices.idl
+ * @author Karen Arutyunov
+ * $Id:$
+ */
+
+#ifndef _NEWSGATE_SERVER_SERVICES_COMMONS_AD_ADSERVICES_IDL_
+#define _NEWSGATE_SERVER_SERVICES_COMMONS_AD_ADSERVICES_IDL_
+
+module NewsGate
+{ 
+  module Ad
+  {
+    module Transport
+    {
+      //
+      // Implementation in Services/Commons/Ad/TransportImpl.hpp
+      //
+      
+      custom valuetype Selector
+      {
+      };
+
+      custom valuetype SelectionContext
+      {
+      };
+      
+      custom valuetype SelectionResult
+      {
+      };
+
+      custom valuetype Selection
+      {
+      };
+    };
+    
+    exception IncompatibleVersion
+    {
+      unsigned long current_version;
+    };
+
+    exception ImplementationException
+    {
+      string description;
+    };
+    
+    exception NotFound
+    {
+    };
+    
+    interface AdServer
+    {
+      // Increment whenever structures defined in
+      // Commons/Ad.hpp, Services/Commons/Ad/TransportImpl.hpp change
+      const unsigned long INTERFACE_VERSION = 4;
+
+      boolean selector_changed(in unsigned long interface_version,
+                               in unsigned long long update_number)
+        raises(IncompatibleVersion, ImplementationException);
+        
+      Transport::Selector
+      get_selector(in unsigned long interface_version)
+        raises(IncompatibleVersion, ImplementationException);
+
+      Transport::SelectionResult select(in unsigned long interface_version,
+                                        in Transport::SelectionContext ctx)
+        raises(IncompatibleVersion, ImplementationException);
+
+
+      Transport::Selection selection(in unsigned long interface_version,
+                                     in unsigned long long id)
+        raises(NotFound, IncompatibleVersion, ImplementationException);
+    };
+  };
+  
+};
+
+#endif // _NEWSGATE_SERVER_SERVICES_COMMONS_AD_ADSERVICES_IDL_

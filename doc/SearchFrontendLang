@@ -1,0 +1,74 @@
+class SearchRequestContext:
+
+  __init__():
+
+    # defines site lang
+
+    this.language = request.input.lang
+
+    # defines message language based filtering
+
+    this.filter.lang = this.string_param("n") or \
+      this.default_lang_filter() if this.static.main_languages
+
+    this.filter.lang = this.event.lang
+
+    # defines category names language
+    # indirectrly uses request.input.lang
+
+    this.locale = \
+      context.request.input.locale(this.filter.lang, this.filter.country)    
+
+  # sets new this.language and this.locale
+  set_language(new_lang):
+
+    if new_lang == "auto":
+      this.language = this.filter.lang or this.event.lang or first_msg.lang
+    else:
+      this.language = new_lang
+
+    request.input.lang = this.language
+
+    this.locale = \
+      context.request.input.locale(this.filter.lang, this.filter.country)    
+
+
+class SearchPageContext(SearchRequestContext):
+
+  __init__():
+
+    this.translator = ...
+    this.default_translator = ...
+
+    if this.translator and \
+       this.translator.to_lang.l3_code() in this.static.main_languages:
+
+      this.locale = \
+        context.request.input.locale(this.translator.to_lang,
+                                     this.filter.country)
+
+  def set_language(new_lang):
+    
+    base::set_language(new_lang)
+    
+    if this.translator and \
+      this.translator.to_lang.l3_code() in this.static.main_languages:
+      this.locale = \
+        context.request.input.locale(this.translator.to_lang,
+                                     this.filter.country)      
+
+
+class MessagePageRender(search_util.SearchPageContext):
+
+  def __init__():
+
+    this.filter.lang = this.message.lang
+
+    loc_lang = this.filter.lang
+
+    if this.translator and \
+      this.translator.to_lang.l3_code() in this.static.main_languages:
+      loc_lang = this.translator.to_lang
+
+    this.locale = \
+      context.request.input.locale(loc_lang, this.filter.country)

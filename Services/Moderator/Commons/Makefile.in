@@ -1,0 +1,42 @@
+# @file   Makefile.in
+# @author Karen Aroutiounov
+# $Id:$
+
+include Common.pre.rules
+include $(osbe_builddir)/config/CXX/CXX.pre.rules
+include $(osbe_builddir)/config/CXX/Corba.pre.rules
+
+include $(osbe_builddir)/config/CXX/External/Python.pre.rules
+include $(osbe_builddir)/config/CXX/External/ACE.pre.rules
+include $(osbe_builddir)/config/CXX/External/LibXML.pre.rules
+
+include $(osbe_builddir)/config/CXX/External/ElBasic.pre.rules
+include $(osbe_builddir)/config/CXX/External/ElPython.pre.rules
+include $(osbe_builddir)/config/CXX/External/ElNet.pre.rules
+include $(osbe_builddir)/config/CXX/External/ElLibXML.pre.rules
+
+include $(top_builddir)/config/xsd/DataFeed/RSS/FeedParsing.so.pre.rules
+
+sources := TransportImpl.cpp
+includes := .
+
+corba_stub_idls := ModerationCommons.idl \
+                   ModeratorManager.idl \
+                   FeedManager.idl \
+                   CategoryManager.idl \
+                   CustomerManager.idl \
+                   AdManager.idl
+
+corba_skeleton_idls := ModeratorManager.idl \
+                       FeedManager.idl \
+                       CategoryManager.idl \
+                       CustomerManager.idl \
+                       AdManager.idl
+
+corba_includes := .
+corba_idl_includes := .
+
+target := ModeratorServicesCommons
+
+include $(osbe_builddir)/config/CXX/Corba.post.rules
+include $(osbe_builddir)/config/CXX/So.post.rules

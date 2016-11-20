@@ -1,0 +1,175 @@
+from moderation_func import *
+
+request = context.request
+prn, param = request.output.stream.prn, request.input.parameters().find
+
+moderator = connect_moderator(request, moderator_connector)
+
+if moderator.has_privilege(newsgate.moderation.moderator.PV_FEED_CREATOR) == False:
+  el.exit(403) # Forbidden
+
+task_id = param("a")
+all_results = long(param("l", 0))
+
+ids = [ moderator.id ]
+
+try:
+  subordinates = moderator.moderator_manager.get_subordinates()
+
+except newsgate.moderation.InvalidSession:
+  el.exit(el.psp.Forward("/psp/login.psp", 
+                         "Your session expired.<br>Please, relogin."))
+
+except newsgate.moderation.NotReady:
+  el.exit(el.psp.Forward(\
+          "/psp/feeds.psp", 
+          "The system is not ready to serve your request.<br>Please, try again in several minutes."))
+
+for sub in subordinates: 
+  ids.append(sub.id)
+
+try:
+  validation = moderator.feed_manager.validation_result(task_id, 
+                                                        ids, 
+                                                        all_results)
+except newsgate.moderation.NotReady:
+  el.exit(el.psp.Forward(\
+          "/psp/feeds.psp", 
+          "The system is not ready to serve your request.<br>Please, try again in several minutes."))
+except newsgate.moderation.feed.TaskNotFound:
+  el.exit(el.psp.Forward(\
+          "/psp/feeds.psp", 
+          "Requested results not available."))
+
+prn(
+R'''
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>Management: Validate Feeds</title>
+<link rel="stylesheet" type="text/css" href="/fixed/css/common.css" media="all" />
+<link rel="stylesheet" type="text/css" href="/fixed/css/feed/validate.css" media="all" />
+<script type="text/javascript">
+function show_all_feeds(show_all)
+{
+  window.location = "http''', request.secure() and "s://" or "://", 
+request.endpoint(), '/psp/feed/validation_op?o=submit&a=', task_id, 
+R'''&l=" + (show_all ? "1" : "0");
+}
+</script>
+</head>
+
+<body>
+<table id="skeleton" cellspacing="0">
+''')
+
+left_menu = [ ]
+
+feed_moderator = \
+  moderator.has_privilege(newsgate.moderation.moderator.PV_FEED_MANAGER)
+
+if feed_moderator:
+ left_menu.append( ("View", "/psp/feed/view") )
+
+feed_creator = \
+  moderator.has_privilege(newsgate.moderation.moderator.PV_FEED_CREATOR)
+
+if feed_creator:
+  left_menu.append( ("New", "/psp/feed/register") )
+  left_menu.append( ("Crawling Result", "") )
+  left_menu.append( ("Crawling Tasks", "/psp/feed/validations") )
+
+if feed_moderator:
+  left_menu.append( ("XPath", "/psp/feed/xpath") )
+
+left_menu.append( ("Search", 
+                   feed_search_link(feed_creator, feed_moderator, None)) )
+
+menus = []
+create_topbar_main_menus(context, moderator, "Feeds", menus)
+
+prn(create_topbar(left_menu, menus[0], menus[1]))
+
+prn(
+R'''
+  <tr><td id="main_area" align="center" valign="top">
+    <form action="/psp/feed/submit" method="post">
+    <table id="feeds">
+      <tr><td></td><td colspan="3" style="padding: 0 0 1em 0">
+      <input type="submit" value="Submit marked feeds" name="s"/>&nbsp;
+      <input type="submit" value="Discard crawling task result" name="d"/>''')
+
+if all_results:
+  prn('&nbsp;<input type="button" onclick="show_all_feeds(false)" value="Show Feeds & Referers Only"/>')
+else:
+  prn('&nbsp;<input type="button" onclick="show_all_feeds(true)" value="Show All Resources (',
+      validation.total_results, ')"/>')
+
+prn('\n</td></tr>')
+
+if all_results == False and len(validation.results) == 0:
+  prn('\n<tr><td colspan="3">No valid feeds found. Press "Show All Resources" button to see all resources processed.</td></tr>')
+else:
+  prn('\n<tr align="left" id="header"><td></td><td>Result</td><td>Url</td><td>Comment</td></tr>')
+
+for result in validation.results:
+
+  validation_result = result.result
+  res_type = result.type
+  check_box = ""
+
+  if result.processing_type == newsgate.moderation.feed.PT_CHECK_FEEDS:
+    processing_type = 'c'
+  elif result.processing_type == newsgate.moderation.feed.PT_PARSE_PAGE_FOR_FEEDS:
+    processing_type = 'p'
+  elif result.processing_type == newsgate.moderation.feed.PT_LOOK_AROUND_PAGE_FOR_FEEDS:
+    processing_type = 'a'
+  elif result.processing_type == newsgate.moderation.feed.PT_PARSE_DOMAIN_FOR_FEEDS:
+    processing_type = 'd'
+  else:
+    processing_type = 'x'
+
+  if validation_result == newsgate.moderation.feed.VR_VALID:
+    
+    if res_type >= newsgate.moderation.feed.RT_RSS and \
+       res_type <= newsgate.moderation.feed.RT_HTML_FEED:
+      check_box = '<input type="checkbox" name="fu_' + result.url + \
+                  '" checked="checked"/>'
+    elif res_type == newsgate.moderation.feed.RT_HTML:
+      if result.processing_type != newsgate.moderation.feed.PT_PARSE_PAGE_FOR_FEEDS \
+         or result.feed_reference_count > 0:
+        if result.feed_reference_count > 1:
+          check_box = '<input type="checkbox" name="fs_m_' + \
+                      processing_type + '_' + result.url + \
+                      '" checked="checked"/>'
+        else:
+          check_box = '<input type="checkbox" name="fs_s_' + \
+                      processing_type + '_' + result.url + \
+                      '" checked="checked"/>'
+    elif res_type == newsgate.moderation.feed.RT_META_URL:
+      check_box = '<input type="checkbox" name="fs_t_' + \
+                  processing_type + '_' + result.url + \
+                  '" checked="checked"/>'
+
+  url_text = result.url
+  if len(url_text) > 103: url_text = url_text[0:100] + "..."
+
+  res_desc = result_description(result)
+
+  prn(R'''
+    <tr class="option_row"><td>''', check_box, '</td><td>', res_desc, 
+      '</td><td><a href="', result.url, '">', url_text, '</a></td><td>', 
+      result.description, '</td></tr>')
+
+prn(
+R'''
+      <tr><td><input type="hidden" name="del_task" value="''', task_id, 
+R'''"/></td><td colspan="2" style="padding: 1em 0 0 0"><input type="submit" value="Submit marked feeds" name="s"/></td></tr>
+    </table>
+    </form>
+  </td></tr>
+''', create_copyright(context), R'''
+</table>
+</body>
+</html>
+''')

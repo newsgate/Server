@@ -1,0 +1,467 @@
+from moderation_func import *
+
+def make_ref(url):
+  return make_reference(url, False, False, False, post, anchor_refs)
+
+# 1.5KB
+MAX_URL_LEN = 1536
+
+request = context.request
+prn, param = request.output.stream.prn, request.input.parameters().find
+conf = context.config.get
+url_prefix = (request.secure() and "https://" or "http://") + conf("endpoint")
+
+anchor_refs = []
+
+moderator = connect_moderator(request, moderator_connector)
+
+if moderator.has_privilege(newsgate.moderation.moderator.PV_FEED_MANAGER) ==\
+   False:
+  el.exit(403) # Forbidden
+
+xml_encode_flags = el.string.manip.XE_TEXT_ENCODING | \
+                   el.string.manip.XE_ATTRIBUTE_ENCODING | \
+                   el.string.manip.XE_PRESERVE_UTF8
+
+post = False
+url_params = ""
+
+mod_params = param("mod_params", "")
+
+if mod_params != "":
+  post = True
+  url_params = "?mod_params=" + el.string.manip.mime_url_encode(mod_params)
+
+vf = param("vf")
+vf_param_name = ""
+
+if vf: vf_param_name = "vf"
+else:
+  vf = param("vfa")
+  if vf: vf_param_name = "vfa"
+
+if vf:
+  post = True
+  if url_params: url_params += "&"
+  else: url_params += "?"
+  url_params += vf_param_name + "=" + el.string.manip.mime_url_encode(vf)
+
+prefs = el.NameValueMap(request.input.cookies().most_specific("vo"), ':', '~')
+
+res = get_pref("r", prefs, "100", param)
+deleted_feeds = get_pref("dfd", prefs, "h", param)
+
+if moderator.has_privilege(newsgate.moderation.moderator.PV_CATEGORY_MANAGER):
+  word_boxes = get_pref("wbx", prefs, "h", param)
+else:
+  word_boxes = "s"
+
+id = get_pref("id", prefs, "s", param)
+type = get_pref("typ", prefs, "s", param)
+encoding = get_pref("enc", prefs, "h", param)
+space = get_pref("spa", prefs, "s", param)
+feed_lang = get_pref("fln", prefs, "h", param)
+feed_country = get_pref("fcn", prefs, "h", param)
+status = get_pref("sta", prefs, "s", param)
+url = get_pref("url", prefs, "t", param)
+keywords = get_pref("kwd", prefs, "h", param)
+adjustment_script = get_pref("adj", prefs, "h", param)
+creator = get_pref("cre", prefs, "h", param)
+creator_type = get_pref("crt", prefs, "h", param)
+created = get_pref("crd", prefs, "h", param)
+updated = get_pref("upd", prefs, "h", param)
+comment = get_pref("com", prefs, "h", param)
+
+title = get_pref("tit", prefs, "t", param)
+description = get_pref("des", prefs, "t", param)
+html_link = get_pref("hln", prefs, "t", param)
+lang = get_pref("lan", prefs, "h", param)
+country = get_pref("cou", prefs, "h", param)
+ttl = get_pref("ttl", prefs, "h", param)
+last_build_date = get_pref("lbd", prefs, "h", param)
+last_request_date = get_pref("lrd", prefs, "h", param)
+last_modified_hdr = get_pref("lmh", prefs, "h", param)
+etag_hdr = get_pref("eth", prefs, "h", param)
+content_length_hdr = get_pref("clh", prefs, "h", param)
+entropy = get_pref("ent", prefs, "h", param)
+entropy_updated_date = get_pref("eud", prefs, "h", param)
+size = get_pref("siz", prefs, "h", param)
+single_chunked = get_pref("sch", prefs, "h", param)
+first_chunk_size = get_pref("fcs", prefs, "h", param)
+heuristics_counter = get_pref("hec", prefs, "h", param)
+stat_from = get_pref("frm", prefs, "t", param)
+stat_to = get_pref("to", prefs, "t", param)
+
+requests = get_pref("req", prefs, "h", param)
+failed = get_pref("fai", prefs, "h", param)
+unchanged = get_pref("unc", prefs, "h", param)
+not_modified = get_pref("ntm", prefs, "h", param)
+presumably_unchanged = get_pref("pre", prefs, "h", param)
+has_changes = get_pref("hsc", prefs, "h", param)
+wasted = get_pref("was", prefs, "h", param)
+outbound = get_pref("out", prefs, "h", param)
+inbound = get_pref("inb", prefs, "h", param)
+requests_duration = get_pref("red", prefs, "h", param)
+messages = get_pref("mes", prefs, "h", param)
+messages_size = get_pref("mss", prefs, "h", param)
+messages_delay = get_pref("msd", prefs, "h", param)
+max_message_delay = get_pref("mmd", prefs, "h", param)
+msg_impressions = get_pref("mim", prefs, "h", param)
+msg_clicks = get_pref("mcl", prefs, "h", param)
+msg_ctr = get_pref("mct", prefs, "h", param)
+
+expiration = el.Moment(el.TimeValue(request.time().sec() + 2 * 365 * 86400))
+
+request.output.send_cookie(
+  el.net.http.CookieSetter("vo", prefs.string(), expiration, "/"))
+
+redirect_url = ""
+
+if param("update") != "":
+  redirect_url = url_prefix + "/psp/feed/view?s=" + param("s") + "&r=" + \
+                 param("r")
+
+  if vf != "":
+    redirect_url += "&" + vf_param_name + "=" + \
+                    el.string.manip.mime_url_encode(vf)
+
+  if mod_params == "" and len(redirect_url) < MAX_URL_LEN:
+    request.output.send_location(redirect_url)
+    el.exit(302) # found
+
+  redirect_url += "&mod_params=" + el.string.manip.mime_url_encode(mod_params)
+
+prn(
+R'''<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>Management: Feed View Options</title>
+<link rel="stylesheet" type="text/css" href="/fixed/css/common.css" media="all" />
+<link rel="stylesheet" type="text/css" href="/fixed/css/feed/view_options.css" media="all" />
+<script src="/fixed/js/elements.js" type="text/javascript"></script>
+<script type="text/javascript" src="/fixed/js/feed/view_options.js"></script>
+<script type="text/javascript" src="/fixed/js/calendar_adapter.js"></script>
+
+<link rel="stylesheet" type="text/css" href="/fixed/rc/rich_calendar/rich_calendar.css"/>
+<script type="text/javascript" src="/fixed/rc/rich_calendar/rich_calendar.js"></script>
+<script type="text/javascript" src="/fixed/rc/rich_calendar/rc_lang_en.js"></script>
+<script type="text/javascript" src="/fixed/rc/rich_calendar/rc_lang_ru.js"></script>
+<script type="text/javascript" src="/fixed/rc/domready/domready.js"></script>
+
+</head>
+
+<body>
+<table id="skeleton" cellspacing="0">
+''')
+
+left_menu = [ ]
+
+feed_moderator = \
+  moderator.has_privilege(newsgate.moderation.moderator.PV_FEED_MANAGER)
+
+if feed_moderator:
+  left_menu.append( ("View", make_ref("/psp/feed/view" + url_params)) ) 
+  left_menu.append( ("View Options", "") )
+  left_menu.append( ("View Filter", \
+                      vf_param_name == "vf" and \
+                      make_ref("/psp/feed/view_filter" + url_params) or \
+                      "/psp/feed/view_filter") )
+
+feed_creator = \
+  moderator.has_privilege(newsgate.moderation.moderator.PV_FEED_CREATOR)
+
+if feed_creator:
+  left_menu.append( ("New", "/psp/feed/register") )
+  left_menu.append( ("Crawling Tasks", "/psp/feed/validations") )
+
+if feed_moderator:
+  left_menu.append( ("XPath", "/psp/feed/xpath") )
+
+left_menu.append( ("Search", 
+                   feed_search_link(feed_creator, feed_moderator, None)) )
+
+menus = []
+create_topbar_main_menus(context, moderator, "Feeds", menus)
+
+prn(create_topbar(left_menu, menus[0], menus[1]))
+
+lang_options = [ ("Hide", "h"), 
+                 ("2-letter code", "2"), 
+                 ("3-letter code", "3"), 
+                 ("Numeric code", "u"), 
+                 ("Name", "n"),
+                 ("Name (2-letter, 3-letter, numeric codes)", "m") 
+               ]
+
+country_options = [ ("Hide", "h"), 
+                    ("2-letter code", "2"), 
+                    ("3-letter code", "3"), 
+                    ("Name", "n"),
+                    ("Name (2-letter, 3-letter codes)", "m") 
+                  ]
+
+prn(
+R'''
+  <tr><td id="main_area" align="center" valign="top">
+''')
+
+
+prn(
+R'''    <form action="/psp/feed/view_options" method="post" id="post">
+    <table id="edit_form" cellspacing="0">
+''')
+
+prn(
+R'''
+    <tr><td align="center" class="header">Display</td>
+    <td align="center" class="header">Feed Info Columns</td>
+    <td align="center" class="header">Feed State Columns</td>
+    <td align="center" class="header">Feed Statistics Columns</td></tr>
+    <tr><td valign="top"><table class="option_group">
+    
+''')
+
+prn(get_option_select("Feeds Per Page", 
+                      "r", 
+                      res, 
+                      [ ("10", "10"), 
+                        ("100", "100"), 
+                        ("1000", "1000")
+                      ]))
+
+prn(get_option_select("Deleted Feeds", "dfd", deleted_feeds))
+
+if moderator.has_privilege(newsgate.moderation.moderator.PV_CATEGORY_MANAGER):
+  prn(get_option_select("Word Boxes", "wbx", word_boxes))
+
+prn(
+R'''
+    </table></td><td valign="top"><table class="option_group">
+''')
+
+prn(get_option_select("Id", "id", id))
+prn(get_option_select("Type", "typ", type))
+prn(get_option_select("Space", "spa", space))
+
+prn(get_option_select("Status", "sta", status))
+
+prn(get_option_select("Language", 
+                      "fln", 
+                      feed_lang, 
+                      lang_options))
+
+prn(get_option_select("Country",
+                      "fcn", 
+                      feed_country, 
+                      country_options))
+
+prn(get_option_select("Url", 
+                      "url", 
+                      url, 
+                      [ ("Hide", "h"), 
+                        ("Show", "s"), 
+                        ("Show Truncated", "t") 
+                      ]))
+
+prn(get_option_select("Encoding", "enc", encoding))
+
+prn(get_option_select("Keywords", 
+                      "kwd", 
+                      keywords, 
+                      [ ("Hide", "h"),
+                        ("Show", "s"),
+                        ("Show Truncated", "t")
+                      ]))
+
+prn(get_option_select("Adjustment Script", 
+                      "adj", 
+                      adjustment_script, 
+                      [ ("Hide", "h"),
+                        ("Show", "s"),
+                        ("Show Truncated", "t")
+                      ]))
+
+prn(get_option_select("Creator", 
+                      "cre", 
+                      creator, 
+                      [ ("Hide", "h"), 
+                        ("Id", "i"), 
+                        ("Name", "n"),
+                        ("Name (Id)", "m")
+                      ]))
+
+prn(get_option_select("Creator Type", "crt", creator_type))
+prn(get_option_select("Created", "crd", created))
+prn(get_option_select("Updated", "upd", updated))
+
+prn(get_option_select("Comment", 
+                      "com", 
+                      comment, 
+                      [ ("Hide", "h"), 
+                        ("Show", "s"), 
+                        ("Show Truncated", "t") 
+                      ]))
+
+prn(
+R'''
+    </table></td><td valign="top"><table class="option_group">
+''')
+
+prn(get_option_select("Title", 
+                      "tit", 
+                      title, 
+                      [ ("Hide", "h"), 
+                        ("Show", "s"), 
+                        ("Show Truncated", "t") ]))
+
+prn(get_option_select("Description", 
+                      "des", 
+                      description, 
+                      [ ("Hide", "h"), 
+                        ("Show", "s"), 
+                        ("Show Truncated", "t") ]))
+
+prn(get_option_select("Html Link", 
+                      "hln", 
+                      html_link, 
+                      [ ("Hide", "h"), 
+                        ("Show", "s"), 
+                        ("Show Truncated", "t") ]))
+
+prn(get_option_select("Calculated Language", 
+                      "lan", 
+                      lang, 
+                      lang_options))
+
+prn(get_option_select("Calculated Country",
+                      "cou", 
+                      country, 
+                      country_options))
+
+prn(get_option_select("TTL", "ttl", ttl))
+prn(get_option_select("Last Build Date", "lbd", last_build_date))
+prn(get_option_select("Last Request Date", "lrd", last_request_date))
+prn(get_option_select("Last-Modified Hdr", "lmh", last_modified_hdr))
+prn(get_option_select("ETag Hdr", "eth", etag_hdr))
+prn(get_option_select("Content-Length Hdr", "clh", content_length_hdr))
+prn(get_option_select("Entropy", "ent", entropy))
+prn(get_option_select("Entropy Update Date", "eud", entropy_updated_date))
+prn(get_option_select("Size", "siz", size))
+prn(get_option_select("Single Chunked", "sch", single_chunked))
+prn(get_option_select("First Chunk Size", "fcs", first_chunk_size))
+prn(get_option_select("Heuristic Counter", "hec", heuristics_counter))
+
+prn(
+R'''
+    </table></td><td valign="top"><table class="option_group">
+''')
+
+prn(get_date_with_calendar("From", "frm", stat_from))
+prn(get_date_with_calendar("To", "to", stat_to))
+
+prn(get_option_select("Requests", "req", requests))
+prn(get_option_select("Failed", "fai", failed))
+prn(get_option_select("Unchanged", "unc", unchanged))
+prn(get_option_select("Not Modified", "ntm", not_modified))
+prn(get_option_select("Presumably Unchanged", "pre", presumably_unchanged))
+prn(get_option_select("Has Changes", "hsc", has_changes))
+prn(get_option_select("Wasted", "was", wasted))
+
+prn(get_option_select("Outbound", 
+                      "out", 
+                      outbound, 
+                      [ ("Hide", "h"),
+                        ("In bytes", "s"), 
+                        ("Friendly", "f") ]))
+
+prn(get_option_select("Inbound", 
+                      "inb", 
+                      inbound, 
+                      [ ("Hide", "h"),
+                        ("In bytes", "s"), 
+                        ("Friendly", "f") ]))
+
+prn(get_option_select("Requests Duration", 
+                      "red", 
+                      requests_duration, 
+                      [ ("Hide", "h"),
+                        ("In milliseconds", "s"), 
+                        ("Friendly", "f") ]))
+
+prn(get_option_select("Messages", "mes", messages))
+prn(get_option_select("Messages Size", "mss", messages_size))
+
+prn(get_option_select("Messages Delay", 
+                      "msd", 
+                      messages_delay, 
+                      [ ("Hide", "h"),
+                        ("In seconds", "s"), 
+                        ("Friendly", "f") ]))
+
+prn(get_option_select("Max Message Delay", 
+                      "mmd", 
+                      max_message_delay, 
+                      [ ("Hide", "h"),
+                        ("In seconds", "s"), 
+                        ("Friendly", "f") ]))
+
+prn(get_option_select("Impressions", "mim", msg_impressions))
+prn(get_option_select("Clicks", "mcl", msg_clicks))
+prn(get_option_select("CTR%", "mct", msg_ctr))
+
+prn(
+R'''
+    </table></td></tr>
+''')
+
+# Submit button
+
+if redirect_url == "":
+  prn('\n      <tr><td><input type="submit" value="Update" name="update"/></td></tr>')
+
+prn('    </table>')
+
+if redirect_url == "":
+  if vf !=  "":
+    prn(R'''
+        <input type="hidden" name="''', vf_param_name, '" value="', vf,
+        '"/>')
+
+  prn(R'''
+      <input type="hidden" name="s" value="''', param('s'), R'''"/>
+      <input type="hidden" name="r" value="''', param('r'), R'''"/>''')
+
+  if mod_params != "":
+    prn('\n    <input type="hidden" name="mod_params" value="', 
+        el.string.manip.xml_encode(mod_params, xml_encode_flags) , '"/>')
+
+prn('\n    </form>')
+
+prn(
+R'''
+  </td></tr>
+''', create_copyright(context), R'''
+</table>''')
+
+if redirect_url != "":
+  prn(R'''
+<script type="text/javascript">
+  el_post_url("''', el.string.manip.js_escape(redirect_url), R'''");
+</script>''')
+elif len(anchor_refs) > 0:
+
+  prn(R'''<script type="text/javascript">
+  post_refs = new Array();''')
+
+  index = 0
+
+  for ref in anchor_refs:
+    prn("\npost_refs.push('", el.string.manip.js_escape(ref), "');")
+    index += 1
+
+  prn('\n</script>')
+
+prn(R'''
+</body>
+</html>
+''')

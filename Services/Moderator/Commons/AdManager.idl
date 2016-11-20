@@ -1,0 +1,593 @@
+/*
+ * product   : NewsGate - news search WEB server
+ * copyright : Copyright (c) 2005-2016 Karen Arutyunov
+ * licenses  : CC BY-NC-SA 3.0; see accompanying LICENSE file
+ *             Commercial; contact karen.arutyunov@gmail.com
+ */
+
+/**
+ * @file NewsGate/Server/Services/Moderator/Commons/AdManager.idl
+ * @author Karen Arutyunov
+ * $Id:$
+ */
+
+#ifndef _NEWSGATE_SERVER_SERVICES_MODERATOR_COMMONS_ADMANAGER_IDL_
+#define _NEWSGATE_SERVER_SERVICES_MODERATOR_COMMONS_ADMANAGER_IDL_
+
+#include <Services/Moderator/Commons/ModerationCommons.idl>
+
+module NewsGate
+{ 
+  module Moderation
+  {
+    module Ad
+    {
+      typedef unsigned long long SlotId;
+      typedef unsigned long long PageId;
+      typedef unsigned long long SizeId;
+      typedef unsigned long long AdvertId;
+      typedef unsigned long long CounterId;
+      typedef unsigned long long AdvertiserId;
+      typedef unsigned long long ConditionId;
+      typedef unsigned long long CampaignId;
+      typedef unsigned long long GroupId;
+      typedef unsigned long long PlacementId;
+      typedef unsigned long long CounterPlacementId;
+      typedef unsigned long long UpdateNumber;
+
+      const unsigned long PU_AD_MANAGEMENT_INFO = 0x1;
+      const unsigned long PU_ADVERTISER_INFO = 0x2;
+
+      typedef sequence<PlacementId> PlacementIdSeq;
+      
+      enum SelectorStatus
+      {
+        RS_ENABLED,
+        RS_DISABLED,
+        RS_COUNT
+      };
+
+      struct Global
+      {
+        SelectorStatus selector_status;
+        unsigned long pcws_weight_zones;
+        double pcws_reduction_rate;
+        unsigned long adv_max_ads_per_page;
+        UpdateNumber update_number;
+        string dummy; // keep untill first string; otherwise update_customer
+                      // strangelly return by value not by pointer
+      };
+
+      struct GlobalUpdate
+      {
+        unsigned long flags;
+        AdvertiserId advertiser;
+        SelectorStatus selector_status;
+        unsigned long pcws_weight_zones;
+        double pcws_reduction_rate;
+        unsigned long adv_max_ads_per_page;
+      };
+
+      enum SlotStatus
+      {
+        SS_ENABLED,
+        SS_DISABLED,
+        SS_COUNT
+      };
+
+      struct Slot
+      {
+        SlotId id;
+        string name;
+        SlotStatus status;
+        unsigned long min_width;
+        unsigned long max_width;
+        unsigned long min_height;
+        unsigned long max_height;
+      };
+
+      typedef sequence<Slot> SlotSeq;
+
+      struct SlotUpdate
+      {
+        SlotId id;
+        SlotStatus status;
+      };
+
+      typedef sequence<SlotUpdate> SlotUpdateSeq;      
+
+      enum PageStatus
+      {
+        PS_ENABLED,
+        PS_DISABLED,
+        PS_COUNT
+      };
+
+      const unsigned long MAX_AD_NUM = 0xFFFFFFFF;
+
+      struct AdvertiserMaxAdNum
+      {
+        AdvertiserId id;
+        string name;
+        unsigned long max_ad_num;        
+      };
+
+      typedef sequence<AdvertiserMaxAdNum> AdvertiserMaxAdNumSeq;
+      
+      struct PageAdvertiserInfo
+      {
+        AdvertiserId id;
+        unsigned long max_ad_num;
+        AdvertiserMaxAdNumSeq adv_max_ad_nums;
+      };
+      
+      struct Page
+      {
+        PageId id;
+        string name;
+        PageStatus status;
+        unsigned long max_ad_num;
+        SlotSeq slots;
+        PageAdvertiserInfo advertiser_info;
+      };
+
+      typedef sequence<Page> PageSeq;
+
+      struct PageAdvertiserInfoUpdate
+      {
+        AdvertiserId id;
+        unsigned long max_ad_num;
+        AdvertiserMaxAdNumSeq adv_max_ad_nums;
+      };
+
+      struct PageUpdate
+      {
+        unsigned long flags;
+        PageId id;
+        PageStatus status;
+        unsigned long max_ad_num;
+        SlotUpdateSeq slot_updates;
+        PageAdvertiserInfoUpdate advertiser_info_update;
+      };
+
+      typedef sequence<PageUpdate> PageUpdateSeq;
+
+      enum SizeStatus
+      {
+        ZS_ENABLED,
+        ZS_DISABLED,
+        ZS_COUNT
+      };
+
+      struct Size
+      {
+        SizeId id;
+        string name;
+        SizeStatus status;
+        unsigned long width;
+        unsigned long height;
+      };
+
+      typedef sequence<Size> SizeSeq;
+      
+      struct SizeUpdate
+      {
+        SizeId id;
+        SizeStatus status;
+      };
+
+      typedef sequence<SizeUpdate> SizeUpdateSeq;
+
+      enum AdvertStatus
+      {
+        AS_ENABLED,
+        AS_DISABLED,
+        AS_DELETED,
+        AS_COUNT
+      };
+
+      struct Placement;
+      typedef sequence<Placement> PlacementSeq;
+
+      struct Advert
+      {
+        AdvertId id;
+        AdvertiserId advertiser;
+        string name;
+        AdvertStatus status;
+        SizeId size;
+        string size_name;
+        unsigned long width;
+        unsigned long height;
+        string text;
+        PlacementSeq placements;
+      };
+
+      typedef sequence<Advert> AdvertSeq;
+      
+      struct AdvertUpdate
+      {
+        AdvertId id;
+        AdvertiserId advertiser;
+        string name;
+        AdvertStatus status;
+        SizeId size;
+        string text;
+      };
+      
+      enum CounterStatus
+      {
+        US_ENABLED,
+        US_DISABLED,
+        US_DELETED,
+        US_COUNT
+      };
+
+      struct CounterPlacement;
+      typedef sequence<CounterPlacement> CounterPlacementSeq;
+
+      struct Counter
+      {
+        CounterId id;
+        AdvertiserId advertiser;
+        string name;
+        CounterStatus status;
+        string text;
+        CounterPlacementSeq placements;
+      };
+
+      typedef sequence<Counter> CounterSeq;
+      
+      struct CounterUpdate
+      {
+        CounterId id;
+        AdvertiserId advertiser;
+        string name;
+        CounterStatus status;
+        string text;
+      };
+      
+      enum ConditionStatus
+      {
+        CS_ENABLED,
+        CS_DISABLED,
+        CS_DELETED,
+        CS_COUNT
+      };
+
+      struct Condition
+      {
+        ConditionId id;
+        AdvertiserId advertiser;
+        string name;
+        ConditionStatus status;
+        unsigned long rnd_mod;
+        unsigned long rnd_mod_from;
+        unsigned long rnd_mod_to;
+        unsigned long group_freq_cap;
+        unsigned long group_count_cap;
+        unsigned long query_types;
+        unsigned long query_type_exclusions;
+        string page_sources;
+        string page_source_exclusions;
+        string message_sources;
+        string message_source_exclusions;
+        string page_categories;
+        string page_category_exclusions;
+        string message_categories;
+        string message_category_exclusions;
+        string search_engines;
+        string search_engine_exclusions;
+        string crawlers;
+        string crawler_exclusions;
+        string languages;
+        string language_exclusions;
+        string countries;
+        string country_exclusions;
+        string ip_masks;
+        string ip_mask_exclusions;
+        string tags;
+        string tag_exclusions;
+        string referers;
+        string referer_exclusions;
+        string content_languages;
+        string content_language_exclusions;
+      };
+
+      typedef sequence<Condition> ConditionSeq;
+      typedef sequence<ConditionId> ConditionIdSeq;
+      
+      struct ConditionUpdate
+      {
+        ConditionId id;
+        AdvertiserId advertiser;
+        string name;
+        ConditionStatus status;
+        unsigned long rnd_mod;
+        unsigned long rnd_mod_from;
+        unsigned long rnd_mod_to;
+        unsigned long group_freq_cap;
+        unsigned long group_count_cap;
+        unsigned long query_types;
+        unsigned long query_type_exclusions;
+        string page_sources;
+        string page_source_exclusions;
+        string message_sources;
+        string message_source_exclusions;
+        string page_categories;
+        string page_category_exclusions;
+        string message_categories;
+        string message_category_exclusions;
+        string search_engines;
+        string search_engine_exclusions;
+        string crawlers;
+        string crawler_exclusions;
+        string languages;
+        string language_exclusions;
+        string countries;
+        string country_exclusions;
+        string ip_masks;
+        string ip_mask_exclusions;
+        string tags;
+        string tag_exclusions;
+        string referers;
+        string referer_exclusions;
+        string content_languages;
+        string content_language_exclusions;
+      };
+      
+      enum PlacementStatus
+      {
+        TS_ENABLED,
+        TS_DISABLED,
+        TS_DELETED,
+        TS_COUNT
+      };
+
+      enum PlacementInjection
+      {
+        PI_DIRECT,
+        PI_FRAME,
+        PI_COUNT
+      };
+
+      struct Placement
+      {
+        PlacementId id;
+        GroupId group;
+        string group_name;
+        CampaignId campaign;
+        string campaign_name;
+        AdvertiserId advertiser;
+        string name;
+        PlacementStatus status;
+        Slot placement_slot;
+        Advert ad;
+        double cpm;
+        PlacementInjection inject;
+        string display_status;
+      };
+      
+      struct PlacementUpdate
+      {
+        PlacementId id;
+        AdvertiserId advertiser;
+        string name;
+        PlacementStatus status;
+        SlotId slot;
+        AdvertId ad;
+        double cpm;
+        PlacementInjection inject;
+      };
+      
+      enum CounterPlacementStatus
+      {
+        OS_ENABLED,
+        OS_DISABLED,
+        OS_DELETED,
+        OS_COUNT
+      };
+
+      struct CounterPlacement
+      {
+        CounterPlacementId id;
+        GroupId group;
+        string group_name;
+        CampaignId campaign;
+        string campaign_name;
+        AdvertiserId advertiser;
+        string name;
+        CounterPlacementStatus status;
+        Page placement_page;
+        Counter placement_counter;
+        string display_status;
+      };
+      
+      struct CounterPlacementUpdate
+      {
+        CounterPlacementId id;
+        AdvertiserId advertiser;
+        string name;
+        CounterPlacementStatus status;
+        PageId page;
+        CounterId counter;
+      };
+      
+      enum GroupStatus
+      {
+        GS_ENABLED,
+        GS_DISABLED,
+        GS_DELETED,
+        GS_COUNT
+      };
+
+      struct Group
+      {
+        GroupId id;
+        CampaignId campaign;
+        string campaign_name;
+        AdvertiserId advertiser;
+        string name;
+        GroupStatus status;
+        double auction_factor;
+        ConditionSeq conditions;
+        PlacementSeq ad_placements;
+        CounterPlacementSeq counter_placements;
+      };
+
+      typedef sequence<Group> GroupSeq;
+      
+      struct GroupUpdate
+      {
+        GroupId id;
+        AdvertiserId advertiser;
+        string name;
+        GroupStatus status;
+        double auction_factor;
+        ConditionIdSeq conditions;
+        boolean reset_cap_min_time;
+      };
+      
+      enum CampaignStatus
+      {
+        MS_ENABLED,
+        MS_DISABLED,
+        MS_DELETED,
+        MS_COUNT
+      };
+
+      struct Campaign
+      {
+        CampaignId id;
+        AdvertiserId advertiser;
+        string name;
+        CampaignStatus status;
+        ConditionSeq conditions;
+        GroupSeq groups;
+      };
+
+      typedef sequence<Campaign> CampaignSeq;
+      
+      struct CampaignUpdate
+      {
+        CampaignId id;
+        AdvertiserId advertiser;
+        string name;
+        CampaignStatus status;
+        ConditionIdSeq conditions;
+      };
+      
+      interface AdManager
+      {
+        Global get_global(in AdvertiserId advertiser_id)
+          raises(ImplementationException);
+
+        Global update_global(in GlobalUpdate update)
+          raises(ImplementationException);
+        
+        PageSeq get_pages(in AdvertiserId advertiser_id)
+          raises(ImplementationException);
+        
+        Page get_page(in PageId id, in AdvertiserId advertiser_id)
+          raises(ObjectNotFound, ImplementationException);
+        
+        Page update_page(in PageUpdate update)
+          raises(ObjectNotFound, ImplementationException);
+
+        SizeSeq get_sizes() raises(ImplementationException);
+
+        SizeSeq update_sizes(in SizeUpdateSeq updates)
+          raises(ImplementationException);
+
+        AdvertSeq get_ads(in AdvertiserId advertiser_id)
+          raises(ImplementationException);
+
+        Advert get_ad(in AdvertId id, in AdvertiserId advertiser_id)
+          raises(ObjectNotFound, ImplementationException);        
+        
+        Advert update_ad(in AdvertUpdate update)
+          raises(ObjectNotFound, ObjectAlreadyExist, ImplementationException);
+        
+        Advert create_ad(in Advert ad)
+          raises(ObjectAlreadyExist, ImplementationException);
+
+        CounterSeq get_counters(in AdvertiserId advertiser_id)
+          raises(ImplementationException);
+
+        Counter get_counter(in CounterId id, in AdvertiserId advertiser_id)
+          raises(ObjectNotFound, ImplementationException);        
+        
+        Counter update_counter(in CounterUpdate update)
+          raises(ObjectNotFound, ObjectAlreadyExist, ImplementationException);
+        
+        Counter create_counter(in Counter cntr)
+          raises(ObjectAlreadyExist, ImplementationException);
+
+        ConditionSeq get_conditions(in AdvertiserId advertiser_id)
+          raises(ImplementationException);
+
+        Condition get_condition(in ConditionId id,
+                                in AdvertiserId advertiser_id)
+          raises(ObjectNotFound, ImplementationException);        
+        
+        Condition update_condition(in ConditionUpdate update)
+          raises(ObjectNotFound, ObjectAlreadyExist, ImplementationException);
+        
+        Condition create_condition(in Condition cond)
+          raises(ObjectAlreadyExist, ImplementationException);        
+
+        CampaignSeq get_campaigns(in AdvertiserId advertiser_id)
+          raises(ImplementationException);
+
+        Campaign get_campaign(in CampaignId id,
+                              in AdvertiserId advertiser_id)
+          raises(ObjectNotFound, ImplementationException);        
+        
+        Campaign update_campaign(in CampaignUpdate update)
+          raises(ObjectNotFound, ObjectAlreadyExist, ImplementationException);
+        
+        Campaign create_campaign(in Campaign cmp)
+          raises(ObjectAlreadyExist, ImplementationException);        
+
+        Group get_group(in GroupId id,
+                        in AdvertiserId advertiser_id)
+          raises(ObjectNotFound, ImplementationException);        
+        
+        Group update_group(in GroupUpdate update)
+          raises(ObjectNotFound, ObjectAlreadyExist, ImplementationException);
+        
+        Group create_group(in Group grp)
+          raises(ObjectAlreadyExist, ImplementationException);        
+
+        Placement get_placement(in PlacementId id,
+                                in AdvertiserId advertiser_id)
+          raises(ObjectNotFound, ImplementationException);
+        
+        Placement update_placement(in PlacementUpdate update)
+          raises(ObjectNotFound,
+                 ObjectAlreadyExist,
+                 ImplementationException);
+        
+        Placement create_placement(in Placement plc)
+          raises(ObjectAlreadyExist,
+                 ImplementationException);
+
+        CounterPlacement get_counter_placement(in CounterPlacementId id,
+                                               in AdvertiserId advertiser_id)
+          raises(ObjectNotFound, ImplementationException);
+        
+        CounterPlacement update_counter_placement(
+          in CounterPlacementUpdate update)
+          raises(ObjectNotFound,
+                 ObjectAlreadyExist,
+                 ImplementationException);
+        
+        CounterPlacement create_counter_placement(in CounterPlacement plc)
+          raises(ObjectAlreadyExist,
+                 ImplementationException);
+      };
+    };
+  };
+};
+
+#endif // _NEWSGATE_SERVER_SERVICES_MODERATOR_COMMONS_ADMANAGER_IDL_

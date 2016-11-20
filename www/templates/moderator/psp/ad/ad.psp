@@ -1,0 +1,199 @@
+from moderation_func import *
+
+request, conf = context.request, context.config.get
+message = context.forward_params
+prn, param = request.output.stream.prn, request.input.parameters().find
+
+moderator = connect_moderator(request, moderator_connector)
+advertiser_id = moderator.advertiser_id
+
+ad_manager = \
+  moderator.has_privilege(newsgate.moderation.moderator.PV_AD_MANAGER)
+
+if not advertiser_id:
+  el.exit(403) # Forbidden
+
+id = long(param("id", 0))
+cl = long(param("cl", 0))
+error = ""
+
+if param("u"):
+
+  ad = newsgate.moderation.ad.Advert()
+  ad.id = id
+  ad.advertiser = advertiser_id
+
+  try:
+    ad.name = param("an").strip()
+  except:
+    error = "Name can't be empty"
+
+  size_name = param("sn")
+  if size_name: ad.size_name = size_name
+
+  ad.size = long(param("sz"))
+  ad.text = param("tx").strip()
+  ad.width = long(param("wt"))
+  ad.height = long(param("ht"))
+
+  status = param("as")
+
+  if status == "E": ad.status = newsgate.moderation.ad.AS_ENABLED
+  elif status == "D": ad.status = newsgate.moderation.ad.AS_DISABLED
+  else: ad.status = newsgate.moderation.ad.AS_DELETED
+
+  if not ad.size and not error: error = "Select Size"
+
+  if not error:
+
+    if id:
+      update = newsgate.moderation.ad.AdvertUpdate()
+
+      update.id = id
+      update.advertiser = advertiser_id
+      update.status = ad.status
+      update.name = ad.name
+      update.size = ad.size
+      update.text = ad.text
+
+      try:
+        ad = moderator.ad_manager.update_ad(update)
+      except newsgate.moderation.ad.ObjectNotFound:
+        error = "Advert or Ad Size not found"
+      except newsgate.moderation.ad.ObjectAlreadyExist:
+        error = "Such advert name is already used"
+
+    else:
+
+      try:
+        ad = moderator.ad_manager.create_ad(ad)
+        id = ad.id
+      except newsgate.moderation.ad.ObjectAlreadyExist:
+        error = "Such advert name is already used"
+
+elif id:
+    ad = moderator.ad_manager.get_ad(id, advertiser_id)
+elif cl:
+    ad = moderator.ad_manager.get_ad(cl, advertiser_id)
+    ad.id = 0
+    ad.name = ad.name + " (clone)"
+    ad.placements = el.Sequence()
+else:
+    ad = newsgate.moderation.ad.Advert()
+    ad.advertiser = advertiser_id
+
+prn(
+R'''<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>Management: ''', el.string.manip.xml_encode(ad.name), 
+R''' Advertisement</title>
+<link rel="stylesheet" type="text/css" href="/fixed/css/common.css" media="all" />
+<link rel="stylesheet" type="text/css" href="/fixed/css/ad/ad.css" media="all" />
+<script src="/fixed/js/elements.js" type="text/javascript"></script>
+<script src="/fixed/js/commons.js" type="text/javascript"></script>
+<script src="/fixed/js/ad/ad.js" type="text/javascript"></script>
+</head>
+
+<body>
+<table id="skeleton" cellspacing="0">
+''')
+
+menus = []
+create_topbar_main_menus(context, moderator, "Ad", menus)
+
+prn(create_topbar(create_ad_menus(moderator, ad.id and "Ad" or "New Ad", id), 
+                  menus[0], 
+                  menus[1]))
+
+prn(R'''
+  <tr><td id="main_area" valign="top" align="center">
+    <form id="form" method="post" action="ad">
+    <table id="ad">''')
+
+if error:
+  prn('\n    <tr><td colspan="2" class="error">', 
+      el.string.manip.xml_encode(error), '</td></tr>')
+
+prn(R'''
+    <tr class="option_row"><td>Name</td><td>
+      <input type="text" value="''', el.string.manip.xml_encode(ad.name),
+    R'''" name="an" id="an" class="text_option"></td></tr>
+    <tr class="option_row"><td>Status</td><td><select name="as">''')
+
+statuses = [ (newsgate.moderation.ad.AS_ENABLED, "Enabled", "E"), 
+             (newsgate.moderation.ad.AS_DISABLED, "Disabled", "D"),
+             (newsgate.moderation.ad.AS_DELETED, "Deleted", "L")
+           ]
+
+for s in statuses:
+  prn('<option', ad.status == s[0] and ' selected="selected"' or '', 
+      ' value="', s[2], '">', s[1], '</option>')
+
+prn(R'''</select></td></tr>
+    <tr class="option_row"><td>Size</td><td>
+    <a href="javascript:set_ad_size()" id="cur_sz">''')
+
+if ad.size:
+  prn(el.string.manip.xml_encode(ad.size_name), ", ",
+      ad.width, 'x', ad.height)
+else:
+  prn("Select Size")
+
+prn(R'''</a></td></tr>
+    <tr class="option_row"><td colspan="2">
+    <textarea rows="5" id="tx" name="tx">''', 
+    el.string.manip.xml_encode(ad.text),
+    R'''</textarea>
+    <tr><td colspan="2">
+      <input type="submit" name="u" value="''', id and "Update" or "Create", 
+    R'''"/>
+      <button onclick='preview_ad("http://''', conf("newsgate_link"),
+    R'''"); return false;'>Preview</button>
+    </td></tr>
+    </table>''')
+
+prn(R'''
+    <table id="plc">
+    <tr align="center" id="header"><td>Placement Name</td><td>Status</td>
+    <td>Display</td><td>CPM</td>
+    </tr>
+''')
+
+for plc in ad.placements:
+
+  if not moderator.show_deleted and \
+     plc.status == newsgate.moderation.ad.TS_DELETED:
+    continue
+
+  prn('\n    <tr class="option_row"><td><a href="/psp/ad/placement?id=',
+      plc.id, '" target="_blank">', el.string.manip.xml_encode(plc.name), 
+      '</a></td><td>')
+
+  for s in statuses:
+    if s[0] == plc.status:
+      prn(s[1])
+      break
+
+  prn('</td><td>', plc.display_status and 'Inactive' or 'Active', 
+      '</td><td class="number_option">', "%.2f" % plc.cpm, '</td></tr>')
+
+prn(R'''
+    </table>
+  <input type="hidden" name="id" value="''', ad.id, R'''">
+  <input type="hidden" id="sz" name="sz" autocomplete="off" value="''', 
+    ad.size, R'''">
+  <input type="hidden" id="sn" name="sn" autocomplete="off" value="''', 
+    el.string.manip.xml_encode(ad.size_name), R'''">
+  <input type="hidden" id="wt" name="wt" autocomplete="off" value="''', 
+    ad.width, R'''">
+  <input type="hidden" id="ht" name="ht"  autocomplete="off" value="''', 
+    ad.height, R'''">
+  </form>
+  <form id="prv" method="post"></form>
+  </td></tr>
+''', create_copyright(context), R'''
+</table>
+</body>
+</html>
+''')

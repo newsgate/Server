@@ -1,0 +1,1809 @@
+450M - 18M = 432M
+
+Creating messages ...
+10000 messages created
+20000 messages created
+30000 messages created
+40000 messages created
+50000 messages created
+60000 messages created
+70000 messages created
+80000 messages created
+90000 messages created
+100000 messages created
+StoredMessage::break_down
+  Average time: 00:00:00.000821
+  Max time    : 00:00:00.054358
+  Min time    : 00:00:00.000071
+  Total time  : 00:01:22.176504
+  Meterings   : 100000
+SearcheableMessageMap::insert
+  Average time: 00:00:00.000461
+  Max time    : 00:00:00.155078
+  Min time    : 00:00:00.000030
+  Total time  : 00:00:46.163711
+  Meterings   : 100000
+SearcheableMessageMap::remove
+  Average time: 00:00:00.000000
+  Max time    : 00:00:00.000046
+  Min time    : 00:00:00.000000
+  Total time  : 00:00:00.000213
+  Meterings   : 100000
+Words: 16646
+Total length: 102924503
+Positions: 15538860
+Total words: 9206294
+Total words len: 61134260
+Searching
+ALL condition ...
+100 searches performed
+200 searches performed
+300 searches performed
+400 searches performed
+500 searches performed
+600 searches performed
+700 searches performed
+800 searches performed
+900 searches performed
+1000 searches performed
+AllWords::evaluate
+  Average time: 00:00:00.007426
+  Max time    : 00:00:00.220763
+  Min time    : 00:00:00.000003
+  Total time  : 00:00:07.426204
+  Meterings   : 1000
+From 1000 searches 549 matched 451 not matched
+ANY condition ...
+100 searches performed
+200 searches performed
+300 searches performed
+400 searches performed
+500 searches performed
+600 searches performed
+700 searches performed
+800 searches performed
+900 searches performed
+1000 searches performed
+AnyWords::evaluate
+  Average time: 00:00:00.039287
+  Max time    : 00:00:00.245909
+  Min time    : 00:00:00.000004
+  Total time  : 00:00:39.287619
+  Meterings   : 1000
+From 1000 searches 939 matched 61 not matched
+Complex condition ...
+100 searches performed
+200 searches performed
+300 searches performed
+400 searches performed
+500 searches performed
+600 searches performed
+700 searches performed
+800 searches performed
+900 searches performed
+1000 searches performed
+And::evaluate
+  Average time: 00:00:00.038294
+  Max time    : 00:00:00.522622
+  Min time    : 00:00:00.000008
+  Total time  : 00:03:50.381141
+  Meterings   : 6016
+And::evaluate_simple
+  Average time: 00:00:00.094713
+  Max time    : 00:00:00.683803
+  Min time    : 00:00:00.000010
+  Total time  : 00:09:29.795493
+  Meterings   : 6016
+Or::evaluate
+  Average time: 00:00:00.068329
+  Max time    : 00:00:00.960134
+  Min time    : 00:00:00.000012
+  Total time  : 00:05:33.654127
+  Meterings   : 4883
+Or::evaluate_simple
+  Average time: 00:00:00.142334
+  Max time    : 00:00:01.002865
+  Min time    : 00:00:00.000018
+  Total time  : 00:11:35.019964
+  Meterings   : 4883
+AllWords::evaluate
+  Average time: 00:00:00.009191
+  Max time    : 00:00:00.350843
+  Min time    : 00:00:00.000000
+  Total time  : 00:03:35.895157
+  Meterings   : 23488
+AnyWords::evaluate
+  Average time: 00:00:00.034571
+  Max time    : 00:00:00.392472
+  Min time    : 00:00:00.000001
+  Total time  : 00:10:07.833016
+  Meterings   : 17582
+Application::evaluate
+  Average time: 00:00:00.305793
+  Max time    : 00:00:01.377566
+  Min time    : 00:00:00.001921
+  Total time  : 00:05:05.793993
+  Meterings   : 1000
+Application::evaluate_simple
+  Average time: 00:00:00.571795
+  Max time    : 00:00:01.906830
+  Min time    : 00:00:00.003606
+  Total time  : 00:09:31.795709
+  Meterings   : 1000
+From 1000 searches 885 matched 115 not matched
+
+******************************************************************************
+
+360M - 18M = 342M
+
+Creating messages ...
+10000 messages created
+20000 messages created
+30000 messages created
+40000 messages created
+50000 messages created
+60000 messages created
+70000 messages created
+80000 messages created
+90000 messages created
+100000 messages created
+StoredMessage::break_down
+  Average time: 00:00:00.000822
+  Max time    : 00:00:00.036371
+  Min time    : 00:00:00.000077
+  Total time  : 00:01:22.277500
+  Meterings   : 100000
+SearcheableMessageMap::insert
+  Average time: 00:00:00.000403
+  Max time    : 00:00:00.075173
+  Min time    : 00:00:00.000030
+  Total time  : 00:00:40.361337
+  Meterings   : 100000
+SearcheableMessageMap::remove
+  Average time: 00:00:00.000000
+  Max time    : 00:00:00.000130
+  Min time    : 00:00:00.000000
+  Total time  : 00:00:00.091543
+  Meterings   : 100000
+Words: 16647
+Total length: 102923950
+Positions: 15538597
+Total words: 9206245
+Total words len: 61150835
+Searching
+ALL condition ...
+100 searches performed
+200 searches performed
+300 searches performed
+400 searches performed
+500 searches performed
+600 searches performed
+700 searches performed
+800 searches performed
+900 searches performed
+1000 searches performed
+AllWords::evaluate
+  Average time: 00:00:00.008459
+  Max time    : 00:00:00.271879
+  Min time    : 00:00:00.000003
+  Total time  : 00:00:08.459542
+  Meterings   : 1000
+From 1000 searches 583 matched 417 not matched
+ANY condition ...
+100 searches performed
+200 searches performed
+300 searches performed
+400 searches performed
+500 searches performed
+600 searches performed
+700 searches performed
+800 searches performed
+900 searches performed
+1000 searches performed
+AnyWords::evaluate
+  Average time: 00:00:00.049144
+  Max time    : 00:00:00.282810
+  Min time    : 00:00:00.000004
+  Total time  : 00:00:49.144611
+  Meterings   : 1000
+From 1000 searches 947 matched 53 not matched
+Complex condition ...
+100 searches performed
+200 searches performed
+300 searches performed
+400 searches performed
+500 searches performed
+600 searches performed
+700 searches performed
+800 searches performed
+900 searches performed
+1000 searches performed
+And::evaluate
+  Average time: 00:00:00.055907
+  Max time    : 00:00:01.240938
+  Min time    : 00:00:00.000014
+  Total time  : 00:05:27.674121
+  Meterings   : 5861
+And::evaluate_simple
+  Average time: 00:00:00.107990
+  Max time    : 00:00:00.826676
+  Min time    : 00:00:00.000019
+  Total time  : 00:10:32.934635
+  Meterings   : 5861
+Or::evaluate
+  Average time: 00:00:00.095617
+  Max time    : 00:00:01.469428
+  Min time    : 00:00:00.000013
+  Total time  : 00:07:18.213608
+  Meterings   : 4583
+Or::evaluate_simple
+  Average time: 00:00:00.166451
+  Max time    : 00:00:00.823175
+  Min time    : 00:00:00.000014
+  Total time  : 00:12:42.844999
+  Meterings   : 4583
+AllWords::evaluate
+  Average time: 00:00:00.010486
+  Max time    : 00:00:00.366915
+  Min time    : 00:00:00.000000
+  Total time  : 00:03:58.091576
+  Meterings   : 22704
+AnyWords::evaluate
+  Average time: 00:00:00.044855
+  Max time    : 00:00:00.801544
+  Min time    : 00:00:00.000002
+  Total time  : 00:12:35.371081
+  Meterings   : 16840
+Application::evaluate
+  Average time: 00:00:00.396866
+  Max time    : 00:00:01.833886
+  Min time    : 00:00:00.006257
+  Total time  : 00:06:36.866332
+  Meterings   : 1000
+Application::evaluate_simple
+  Average time: 00:00:00.636789
+  Max time    : 00:00:02.368003
+  Min time    : 00:00:00.014701
+  Total time  : 00:10:36.789653
+  Meterings   : 1000
+From 1000 searches 869 matched 131 not matched
+
+*******************************************************************************
+
+Creating messages ...
+10000 messages created
+20000 messages created
+30000 messages created
+40000 messages created
+50000 messages created
+60000 messages created
+70000 messages created
+80000 messages created
+90000 messages created
+100000 messages created
+StoredMessage::break_down
+  Average time: 00:00:00.000798
+  Max time    : 00:00:00.018801
+  Min time    : 00:00:00.000072
+  Total time  : 00:01:19.865692
+  Meterings   : 100000
+SearcheableMessageMap::insert
+  Average time: 00:00:00.000391
+  Max time    : 00:00:00.073318
+  Min time    : 00:00:00.000031
+  Total time  : 00:00:39.144809
+  Meterings   : 100000
+SearcheableMessageMap::remove
+  Average time: 00:00:00.000000
+  Max time    : 00:00:00.000880
+  Min time    : 00:00:00.000000
+  Total time  : 00:00:00.092345
+  Meterings   : 100000
+Words: 16646
+Total length: 102910841
+Positions: 15541383
+Total words: 9207476
+Total words len: 61125571
+Searching
+ALL condition ...
+100 searches performed
+200 searches performed
+300 searches performed
+400 searches performed
+500 searches performed
+600 searches performed
+700 searches performed
+800 searches performed
+900 searches performed
+1000 searches performed
+AllWords::evaluate
+  Average time: 00:00:00.006885
+  Max time    : 00:00:00.315766
+  Min time    : 00:00:00.000001
+  Total time  : 00:00:13.771082
+  Meterings   : 2000
+From 1000 searches 555 matched 445 not matched
+ANY condition ...
+100 searches performed
+200 searches performed
+300 searches performed
+400 searches performed
+500 searches performed
+600 searches performed
+700 searches performed
+800 searches performed
+900 searches performed
+1000 searches performed
+AnyWords::evaluate
+  Average time: 00:00:00.031866
+  Max time    : 00:00:00.203073
+  Min time    : 00:00:00.000001
+  Total time  : 00:01:03.733497
+  Meterings   : 2000
+From 1000 searches 949 matched 51 not matched
+Complex condition ...
+100 searches performed
+200 searches performed
+300 searches performed
+400 searches performed
+500 searches performed
+600 searches performed
+700 searches performed
+800 searches performed
+900 searches performed
+1000 searches performed
+And::evaluate
+  Average time: 00:00:00.029493
+  Max time    : 00:00:00.429739
+  Min time    : 00:00:00.000009
+  Total time  : 00:02:40.769285
+  Meterings   : 5451
+And::evaluate_simple
+  Average time: 00:00:00.078596
+  Max time    : 00:00:00.631740
+  Min time    : 00:00:00.000009
+  Total time  : 00:07:08.427026
+  Meterings   : 5451
+Or::evaluate
+  Average time: 00:00:00.053533
+  Max time    : 00:00:00.512465
+  Min time    : 00:00:00.000009
+  Total time  : 00:04:00.632142
+  Meterings   : 4495
+Or::evaluate_simple
+  Average time: 00:00:00.117278
+  Max time    : 00:00:00.743693
+  Min time    : 00:00:00.000013
+  Total time  : 00:08:47.168824
+  Meterings   : 4495
+AllWords::evaluate
+  Average time: 00:00:00.008316
+  Max time    : 00:00:00.282568
+  Min time    : 00:00:00.000000
+  Total time  : 00:02:58.846005
+  Meterings   : 21506
+AnyWords::evaluate
+  Average time: 00:00:00.027711
+  Max time    : 00:00:00.283094
+  Min time    : 00:00:00.000001
+  Total time  : 00:07:28.984685
+  Meterings   : 16202
+Expression::search
+  Average time: 00:00:00.224270
+  Max time    : 00:00:00.912884
+  Min time    : 00:00:00.005577
+  Total time  : 00:03:44.270348
+  Meterings   : 1000
+Expression::search_simple
+  Average time: 00:00:00.431441
+  Max time    : 00:00:01.593649
+  Min time    : 00:00:00.006562
+  Total time  : 00:07:11.441513
+  Meterings   : 1000
+From 1000 searches 887 matched 113 not matched
+
+*******************************************************************************
+
+Creating messages ...
+10000 messages created
+20000 messages created
+30000 messages created
+40000 messages created
+50000 messages created
+60000 messages created
+70000 messages created
+80000 messages created
+90000 messages created
+100000 messages created
+StoredMessage::break_down
+  Average time: 00:00:00.000801
+  Max time    : 00:00:00.013796
+  Min time    : 00:00:00.000071
+  Total time  : 00:01:20.173936
+  Meterings   : 100000
+SearcheableMessageMap::insert
+  Average time: 00:00:00.000392
+  Max time    : 00:00:00.211659
+  Min time    : 00:00:00.000029
+  Total time  : 00:00:39.261624
+  Meterings   : 100000
+SearcheableMessageMap::remove
+  Average time: 00:00:00.000000
+  Max time    : 00:00:00.000151
+  Min time    : 00:00:00.000000
+  Total time  : 00:00:00.083875
+  Meterings   : 100000
+Words: 16644
+Total length: 102920367
+Positions: 15542475
+Total words: 9212802
+Total words len: 61146585
+Searching
+Complex condition ...
+100 searches performed
+200 searches performed
+300 searches performed
+400 searches performed
+500 searches performed
+600 searches performed
+700 searches performed
+800 searches performed
+900 searches performed
+1000 searches performed
+AllWords::evaluate
+  Average time: 00:00:00.008135
+  Max time    : 00:00:00.278841
+  Min time    : 00:00:00.000000
+  Total time  : 00:03:05.077428
+  Meterings   : 22748
+AnyWords::evaluate
+  Average time: 00:00:00.028314
+  Max time    : 00:00:00.299952
+  Min time    : 00:00:00.000001
+  Total time  : 00:07:44.693197
+  Meterings   : 16412
+And::evaluate
+  Average time: 00:00:00.033702
+  Max time    : 00:00:00.395648
+  Min time    : 00:00:00.000007
+  Total time  : 00:02:22.697590
+  Meterings   : 4234
+And::evaluate_simple
+  Average time: 00:00:00.089814
+  Max time    : 00:00:00.781087
+  Min time    : 00:00:00.000008
+  Total time  : 00:06:20.274722
+  Meterings   : 4234
+Or::evaluate
+  Average time: 00:00:00.059021
+  Max time    : 00:00:00.506777
+  Min time    : 00:00:00.000010
+  Total time  : 00:03:35.899761
+  Meterings   : 3658
+Or::evaluate_simple
+  Average time: 00:00:00.126457
+  Max time    : 00:00:00.844728
+  Min time    : 00:00:00.000010
+  Total time  : 00:07:42.580403
+  Meterings   : 3658
+Except::evaluate
+  Average time: 00:00:00.037042
+  Max time    : 00:00:00.436538
+  Min time    : 00:00:00.000011
+  Total time  : 00:03:11.471643
+  Meterings   : 5169
+Except::evaluate_simple
+  Average time: 00:00:00.089065
+  Max time    : 00:00:00.638076
+  Min time    : 00:00:00.000015
+  Total time  : 00:07:40.381067
+  Meterings   : 5169
+Expression::search
+  Average time: 00:00:00.227530
+  Max time    : 00:00:00.798213
+  Min time    : 00:00:00.003333
+  Total time  : 00:03:47.530883
+  Meterings   : 1000
+Expression::search_simple
+  Average time: 00:00:00.438993
+  Max time    : 00:00:01.414500
+  Min time    : 00:00:00.003340
+  Total time  : 00:07:18.993384
+  Meterings   : 1000
+From 1000 searches 791 matched 209 not matched
+
+******************************************************************************
+
+Creating messages ...
+1000 messages created
+StoredMessage::break_down
+  Average time: 00:00:00.000843
+  Max time    : 00:00:00.021885
+  Min time    : 00:00:00.000289
+  Total time  : 00:00:00.843143
+  Meterings   : 1000
+SearcheableMessageMap::insert
+  Average time: 00:00:00.000394
+  Max time    : 00:00:00.022117
+  Min time    : 00:00:00.000169
+  Total time  : 00:00:00.394346
+  Meterings   : 1000
+SearcheableMessageMap::remove
+  Average time: 00:00:00.000000
+  Max time    : 00:00:00.000002
+  Min time    : 00:00:00.000000
+  Total time  : 00:00:00.000814
+  Meterings   : 1000
+Words: 10585
+Total length: 1028791
+Positions: 155559
+Total words: 91956
+Total words len: 608083
+Searching
+Complex condition ...
+1000 searches performed
+AllWords::evaluate
+  Average time: 00:00:00.000080
+  Max time    : 00:00:00.048231
+  Min time    : 00:00:00.000000
+  Total time  : 00:00:01.288544
+  Meterings   : 16014
+AnyWords::evaluate
+  Average time: 00:00:00.000315
+  Max time    : 00:00:00.165498
+  Min time    : 00:00:00.000001
+  Total time  : 00:00:03.783338
+  Meterings   : 12000
+And::evaluate
+  Average time: 00:00:00.000390
+  Max time    : 00:00:00.006701
+  Min time    : 00:00:00.000006
+  Total time  : 00:00:01.390183
+  Meterings   : 3562
+And::evaluate_simple
+  Average time: 00:00:00.000870
+  Max time    : 00:00:00.167576
+  Min time    : 00:00:00.000007
+  Total time  : 00:00:03.101079
+  Meterings   : 3562
+Or::evaluate
+  Average time: 00:00:00.000667
+  Max time    : 00:00:00.007208
+  Min time    : 00:00:00.000007
+  Total time  : 00:00:02.041766
+  Meterings   : 3057
+Or::evaluate_simple
+  Average time: 00:00:00.001280
+  Max time    : 00:00:00.167142
+  Min time    : 00:00:00.000011
+  Total time  : 00:00:03.913755
+  Meterings   : 3057
+Except::evaluate
+  Average time: 00:00:00.000557
+  Max time    : 00:00:00.006364
+  Min time    : 00:00:00.000007
+  Total time  : 00:00:01.194882
+  Meterings   : 2143
+Except::evaluate_simple
+  Average time: 00:00:00.000986
+  Max time    : 00:00:00.009837
+  Min time    : 00:00:00.000013
+  Total time  : 00:00:02.113862
+  Meterings   : 2143
+Fresh::evaluate
+  Average time: 00:00:00.000564
+  Max time    : 00:00:00.052858
+  Min time    : 00:00:00.000002
+  Total time  : 00:00:01.239976
+  Meterings   : 2195
+Fresh::evaluate_simple
+  Average time: 00:00:00.000735
+  Max time    : 00:00:00.008257
+  Min time    : 00:00:00.000004
+  Total time  : 00:00:01.613537
+  Meterings   : 2195
+Expression::search
+  Average time: 00:00:00.002091
+  Max time    : 00:00:00.053217
+  Min time    : 00:00:00.000020
+  Total time  : 00:00:02.091740
+  Meterings   : 1000
+Expression::search_simple
+  Average time: 00:00:00.003393
+  Max time    : 00:00:00.168748
+  Min time    : 00:00:00.000048
+  Total time  : 00:00:03.393705
+  Meterings   : 1000
+From 1000 searches 691 matched 309 not matched
+
+******************************************************************************
+
+359M - 18M = 341M (dev.ocslab.com)
+
+Creating messages ...
+100000 messages created
+StoredMessage::break_down
+  Average time: 00:00:00.000634
+  Max time    : 00:00:00.031593
+  Min time    : 00:00:00.000057
+  Total time  : 00:01:03.490853
+  Meterings   : 100000
+SearcheableMessageMap::insert
+  Average time: 00:00:00.000341
+  Max time    : 00:00:00.078880
+  Min time    : 00:00:00.000029
+  Total time  : 00:00:34.148728
+  Meterings   : 100000
+SearcheableMessageMap::remove
+  Average time: 00:00:00.000000
+  Max time    : 00:00:00.000026
+  Min time    : 00:00:00.000000
+  Total time  : 00:00:00.001051
+  Meterings   : 100000
+Words: 16645
+Total length: 102928396
+Positions: 15533595
+Total words: 9206686
+Total words len: 61142709
+Searching
+Complex condition ...
+1000 searches performed
+AllWords::evaluate
+  Average time: 00:00:00.007922
+  Max time    : 00:00:00.306846
+  Min time    : 00:00:00.000000
+  Total time  : 00:01:41.514993
+  Meterings   : 12814
+AnyWords::evaluate
+  Average time: 00:00:00.031135
+  Max time    : 00:00:00.307324
+  Min time    : 00:00:00.000002
+  Total time  : 00:04:50.740349
+  Meterings   : 9338
+And::evaluate
+  Average time: 00:00:00.030859
+  Max time    : 00:00:00.399283
+  Min time    : 00:00:00.000007
+  Total time  : 00:01:27.827412
+  Meterings   : 2846
+And::evaluate_simple
+  Average time: 00:00:00.086827
+  Max time    : 00:00:00.643622
+  Min time    : 00:00:00.000008
+  Total time  : 00:04:07.110353
+  Meterings   : 2846
+Or::evaluate
+  Average time: 00:00:00.055574
+  Max time    : 00:00:00.529144
+  Min time    : 00:00:00.000016
+  Total time  : 00:02:14.824946
+  Meterings   : 2426
+Or::evaluate_simple
+  Average time: 00:00:00.111616
+  Max time    : 00:00:00.632002
+  Min time    : 00:00:00.000017
+  Total time  : 00:04:30.781817
+  Meterings   : 2426
+Except::evaluate
+  Average time: 00:00:00.045509
+  Max time    : 00:00:00.549268
+  Min time    : 00:00:00.000012
+  Total time  : 00:01:15.909862
+  Meterings   : 1668
+Except::evaluate_simple
+  Average time: 00:00:00.101743
+  Max time    : 00:00:00.525513
+  Min time    : 00:00:00.000012
+  Total time  : 00:02:49.707337
+  Meterings   : 1668
+Fresh::evaluate
+  Average time: 00:00:00.043733
+  Max time    : 00:00:00.680403
+  Min time    : 00:00:00.000003
+  Total time  : 00:01:15.222025
+  Meterings   : 1720
+Fresh::evaluate_simple
+  Average time: 00:00:00.074542
+  Max time    : 00:00:00.866079
+  Min time    : 00:00:00.000004
+  Total time  : 00:02:08.212605
+  Meterings   : 1720
+Feed::evaluate
+  Average time: 00:00:00.027769
+  Max time    : 00:00:00.482630
+  Min time    : 00:00:00.000003
+  Total time  : 00:00:45.486411
+  Meterings   : 1638
+Feed::evaluate_simple
+  Average time: 00:00:00.069955
+  Max time    : 00:00:00.729277
+  Min time    : 00:00:00.000003
+  Total time  : 00:01:54.586823
+  Meterings   : 1638
+Expression::search
+  Average time: 00:00:00.138580
+  Max time    : 00:00:00.723959
+  Min time    : 00:00:00.000067
+  Total time  : 00:02:18.580947
+  Meterings   : 1000
+Expression::search_simple
+  Average time: 00:00:00.265987
+  Max time    : 00:00:01.331199
+  Min time    : 00:00:00.000335
+  Total time  : 00:04:25.987377
+  Meterings   : 1000
+From 1000 searches 587 matched 413 not matched
+
+*******************************************************************************
+
+DOMAIN condition supported
+
+373M - 21M = 352M (dev.ocslab.com)
+
+Creating messages ...
+100000 messages created
+StoredMessage::break_down
+  Average time: 00:00:00.000650
+  Max time    : 00:00:00.044975
+  Min time    : 00:00:00.000070
+  Total time  : 00:01:05.049693
+  Meterings   : 100000
+SearcheableMessageMap::insert
+  Average time: 00:00:00.000343
+  Max time    : 00:00:00.077450
+  Min time    : 00:00:00.000029
+  Total time  : 00:00:34.389946
+  Meterings   : 100000
+SearcheableMessageMap::remove
+  Average time: 00:00:00.000000
+  Max time    : 00:00:00.000004
+  Min time    : 00:00:00.000000
+  Total time  : 00:00:00.011730
+  Meterings   : 100000
+Words: 16646
+Total length: 102920721
+Positions: 15541489
+Total words: 9212368
+Total words len: 61400131
+Searching
+ALL condition ...
+1000 searches performed
+AllWords::evaluate
+  Average time: 00:00:00.006484
+  Max time    : 00:00:00.186975
+  Min time    : 00:00:00.000001
+  Total time  : 00:00:12.969929
+  Meterings   : 2000
+From 1000 searches 595 matched 405 not matched
+ANY condition ...
+1000 searches performed
+AnyWords::evaluate
+  Average time: 00:00:00.035243
+  Max time    : 00:00:00.140391
+  Min time    : 00:00:00.000000
+  Total time  : 00:01:10.487953
+  Meterings   : 2000
+From 1000 searches 956 matched 44 not matched
+Complex condition ...
+1000 searches performed
+AllWords::evaluate
+  Average time: 00:00:00.008411
+  Max time    : 00:00:00.234091
+  Min time    : 00:00:00.000000
+  Total time  : 00:01:25.943638
+  Meterings   : 10218
+AnyWords::evaluate
+  Average time: 00:00:00.031177
+  Max time    : 00:00:00.294167
+  Min time    : 00:00:00.000001
+  Total time  : 00:04:00.567300
+  Meterings   : 7716
+And::evaluate
+  Average time: 00:00:00.032114
+  Max time    : 00:00:00.501372
+  Min time    : 00:00:00.000015
+  Total time  : 00:01:11.839974
+  Meterings   : 2237
+And::evaluate_simple
+  Average time: 00:00:00.090481
+  Max time    : 00:00:00.612938
+  Min time    : 00:00:00.000018
+  Total time  : 00:03:22.407689
+  Meterings   : 2237
+Or::evaluate
+  Average time: 00:00:00.055318
+  Max time    : 00:00:00.610752
+  Min time    : 00:00:00.000046
+  Total time  : 00:01:50.636167
+  Meterings   : 2000
+Or::evaluate_simple
+  Average time: 00:00:00.111679
+  Max time    : 00:00:00.638772
+  Min time    : 00:00:00.000130
+  Total time  : 00:03:43.358363
+  Meterings   : 2000
+Except::evaluate
+  Average time: 00:00:00.050253
+  Max time    : 00:00:00.498859
+  Min time    : 00:00:00.000026
+  Total time  : 00:01:04.274469
+  Meterings   : 1279
+Except::evaluate_simple
+  Average time: 00:00:00.102466
+  Max time    : 00:00:00.828285
+  Min time    : 00:00:00.000124
+  Total time  : 00:02:11.055225
+  Meterings   : 1279
+Fresh::evaluate
+  Average time: 00:00:00.042184
+  Max time    : 00:00:00.373819
+  Min time    : 00:00:00.000004
+  Total time  : 00:00:57.792692
+  Meterings   : 1370
+Fresh::evaluate_simple
+  Average time: 00:00:00.072468
+  Max time    : 00:00:00.609290
+  Min time    : 00:00:00.000007
+  Total time  : 00:01:39.281329
+  Meterings   : 1370
+Feed::evaluate
+  Average time: 00:00:00.028300
+  Max time    : 00:00:00.341877
+  Min time    : 00:00:00.000003
+  Total time  : 00:00:38.007974
+  Meterings   : 1343
+Feed::evaluate_simple
+  Average time: 00:00:00.074544
+  Max time    : 00:00:00.580392
+  Min time    : 00:00:00.000004
+  Total time  : 00:01:40.113495
+  Meterings   : 1343
+Domain::evaluate
+  Average time: 00:00:00.039997
+  Max time    : 00:00:00.577527
+  Min time    : 00:00:00.000003
+  Total time  : 00:00:54.916452
+  Meterings   : 1373
+Domain::evaluate_simple
+  Average time: 00:00:00.083113
+  Max time    : 00:00:00.556732
+  Min time    : 00:00:00.000004
+  Total time  : 00:01:54.114231
+  Meterings   : 1373
+Expression::search
+  Average time: 00:00:00.116391
+  Max time    : 00:00:00.627111
+  Min time    : 00:00:00.000102
+  Total time  : 00:01:56.391730
+  Meterings   : 1000
+Expression::search_simple
+  Average time: 00:00:00.228907
+  Max time    : 00:00:00.829648
+  Min time    : 00:00:00.000054
+  Total time  : 00:03:48.907448
+  Meterings   : 1000
+From 1000 searches 567 matched 433 not matched
+
+*******************************************************************************
+
+Creating messages ...
+100000 messages created
+StoredMessage::break_down
+  Average time: 00:00:00.000649
+  Max time    : 00:00:00.001885
+  Min time    : 00:00:00.000071
+  Total time  : 00:01:04.987403
+  Meterings   : 100000
+SearcheableMessageMap::insert
+  Average time: 00:00:00.000347
+  Max time    : 00:00:00.077740
+  Min time    : 00:00:00.000034
+  Total time  : 00:00:34.778714
+  Meterings   : 100000
+SearcheableMessageMap::remove
+  Average time: 00:00:00.000000
+  Max time    : 00:00:00.000024
+  Min time    : 00:00:00.000000
+  Total time  : 00:00:00.001757
+  Meterings   : 100000
+Words: 16647
+Total length: 102914887
+Positions: 15535023
+Total words: 9215164
+Total words len: 61428701
+Searching
+ALL condition ...
+1000 searches performed
+AllWords::evaluate
+  Average time: 00:00:00.006576
+  Max time    : 00:00:00.211029
+  Min time    : 00:00:00.000000
+  Total time  : 00:00:13.153908
+  Meterings   : 2000
+From 1000 searches 563 matched 437 not matched
+ANY condition ...
+1000 searches performed
+AnyWords::evaluate
+  Average time: 00:00:00.037067
+  Max time    : 00:00:00.240863
+  Min time    : 00:00:00.000000
+  Total time  : 00:01:14.135010
+  Meterings   : 2000
+From 1000 searches 958 matched 42 not matched
+Complex condition ...
+1000 searches performed
+AllWords::evaluate
+  Average time: 00:00:00.008695
+  Max time    : 00:00:00.254533
+  Min time    : 00:00:00.000000
+  Total time  : 00:01:30.794585
+  Meterings   : 10442
+AnyWords::evaluate
+  Average time: 00:00:00.033781
+  Max time    : 00:00:00.550104
+  Min time    : 00:00:00.000002
+  Total time  : 00:04:18.560308
+  Meterings   : 7654
+And::evaluate
+  Average time: 00:00:00.034240
+  Max time    : 00:00:00.477096
+  Min time    : 00:00:00.000022
+  Total time  : 00:01:18.787649
+  Meterings   : 2301
+And::evaluate_simple
+  Average time: 00:00:00.090927
+  Max time    : 00:00:00.822119
+  Min time    : 00:00:00.000086
+  Total time  : 00:03:29.225071
+  Meterings   : 2301
+Or::evaluate
+  Average time: 00:00:00.064711
+  Max time    : 00:00:00.663766
+  Min time    : 00:00:00.000027
+  Total time  : 00:02:09.422683
+  Meterings   : 2000
+Or::evaluate_simple
+  Average time: 00:00:00.120254
+  Max time    : 00:00:00.716032
+  Min time    : 00:00:00.000033
+  Total time  : 00:04:00.508185
+  Meterings   : 2000
+Except::evaluate
+  Average time: 00:00:00.051472
+  Max time    : 00:00:00.556401
+  Min time    : 00:00:00.000007
+  Total time  : 00:01:10.569042
+  Meterings   : 1371
+Except::evaluate_simple
+  Average time: 00:00:00.101903
+  Max time    : 00:00:01.085017
+  Min time    : 00:00:00.000010
+  Total time  : 00:02:19.709234
+  Meterings   : 1371
+Fresh::evaluate
+  Average time: 00:00:00.048316
+  Max time    : 00:00:00.714492
+  Min time    : 00:00:00.000002
+  Total time  : 00:01:03.536198
+  Meterings   : 1315
+Fresh::evaluate_simple
+  Average time: 00:00:00.074635
+  Max time    : 00:00:00.590110
+  Min time    : 00:00:00.000003
+  Total time  : 00:01:38.145140
+  Meterings   : 1315
+Feed::evaluate
+  Average time: 00:00:00.032204
+  Max time    : 00:00:00.654302
+  Min time    : 00:00:00.000003
+  Total time  : 00:00:42.639105
+  Meterings   : 1324
+Feed::evaluate_simple
+  Average time: 00:00:00.077176
+  Max time    : 00:00:00.682204
+  Min time    : 00:00:00.000003
+  Total time  : 00:01:42.181817
+  Meterings   : 1324
+Domain::evaluate
+  Average time: 00:00:00.046077
+  Max time    : 00:00:00.617212
+  Min time    : 00:00:00.000003
+  Total time  : 00:01:02.527524
+  Meterings   : 1357
+Domain::evaluate_simple
+  Average time: 00:00:00.083993
+  Max time    : 00:00:00.753640
+  Min time    : 00:00:00.000004
+  Total time  : 00:01:53.979457
+  Meterings   : 1357
+Expression::search
+  Average time: 00:00:00.134301
+  Max time    : 00:00:00.797639
+  Min time    : 00:00:00.000077
+  Total time  : 00:02:14.301260
+  Meterings   : 1000
+Expression::search_simple
+  Average time: 00:00:00.240142
+  Max time    : 00:00:01.183669
+  Min time    : 00:00:00.000089
+  Total time  : 00:04:00.142158
+  Meterings   : 1000
+From 1000 searches 600 matched 400 not matched
+
+*******************************************************************************
+
+SITE condition supported
+
+Creating messages ...
+100000 messages created
+StoredMessage::break_down
+  Average time: 00:00:00.000644
+  Max time    : 00:00:00.009492
+  Min time    : 00:00:00.000069
+  Total time  : 00:01:04.488659
+  Meterings   : 100000
+SearcheableMessageMap::insert
+  Average time: 00:00:00.000344
+  Max time    : 00:00:00.072462
+  Min time    : 00:00:00.000032
+  Total time  : 00:00:34.463526
+  Meterings   : 100000
+SearcheableMessageMap::remove
+  Average time: 00:00:00.000000
+  Max time    : 00:00:00.000005
+  Min time    : 00:00:00.000000
+  Total time  : 00:00:00.003422
+  Meterings   : 100000
+Words: 16647
+Total length: 102924837
+Positions: 15543461
+Total words: 9215956
+Total words len: 61386392
+Searching
+ALL condition ...
+1000 searches performed
+AllWords::evaluate
+  Average time: 00:00:00.006037
+  Max time    : 00:00:00.127620
+  Min time    : 00:00:00.000000
+  Total time  : 00:00:12.075860
+  Meterings   : 2000
+From 1000 searches 578 matched 422 not matched
+ANY condition ...
+1000 searches performed
+AnyWords::evaluate
+  Average time: 00:00:00.034308
+  Max time    : 00:00:00.192554
+  Min time    : 00:00:00.000000
+  Total time  : 00:01:08.616763
+  Meterings   : 2000
+From 1000 searches 961 matched 39 not matched
+Complex condition ...
+1000 searches performed
+AllWords::evaluate
+  Average time: 00:00:00.008467
+  Max time    : 00:00:00.247672
+  Min time    : 00:00:00.000000
+  Total time  : 00:00:46.300283
+  Meterings   : 5468
+AnyWords::evaluate
+  Average time: 00:00:00.032819
+  Max time    : 00:00:00.250985
+  Min time    : 00:00:00.000001
+  Total time  : 00:02:19.221282
+  Meterings   : 4242
+Site::evaluate
+  Average time: 00:00:00.004854
+  Max time    : 00:00:00.039641
+  Min time    : 00:00:00.000002
+  Total time  : 00:00:19.134846
+  Meterings   : 3942
+And::evaluate
+  Average time: 00:00:00.027254
+  Max time    : 00:00:00.303136
+  Min time    : 00:00:00.000011
+  Total time  : 00:00:45.652076
+  Meterings   : 1675
+And::evaluate_simple
+  Average time: 00:00:00.064683
+  Max time    : 00:00:00.347319
+  Min time    : 00:00:00.000019
+  Total time  : 00:01:48.345652
+  Meterings   : 1675
+Or::evaluate
+  Average time: 00:00:00.053227
+  Max time    : 00:00:00.433230
+  Min time    : 00:00:00.000047
+  Total time  : 00:01:20.480055
+  Meterings   : 1512
+Or::evaluate_simple
+  Average time: 00:00:00.088392
+  Max time    : 00:00:00.476934
+  Min time    : 00:00:00.000263
+  Total time  : 00:02:13.649742
+  Meterings   : 1512
+Except::evaluate
+  Average time: 00:00:00.041197
+  Max time    : 00:00:00.321523
+  Min time    : 00:00:00.000017
+  Total time  : 00:00:42.104047
+  Meterings   : 1022
+Except::evaluate_simple
+  Average time: 00:00:00.071593
+  Max time    : 00:00:00.365814
+  Min time    : 00:00:00.000021
+  Total time  : 00:01:13.168393
+  Meterings   : 1022
+Fresh::evaluate
+  Average time: 00:00:00.035328
+  Max time    : 00:00:00.312316
+  Min time    : 00:00:00.000003
+  Total time  : 00:00:35.540396
+  Meterings   : 1006
+Fresh::evaluate_simple
+  Average time: 00:00:00.052875
+  Max time    : 00:00:00.450011
+  Min time    : 00:00:00.000004
+  Total time  : 00:00:53.193106
+  Meterings   : 1006
+Feed::evaluate
+  Average time: 00:00:00.024823
+  Max time    : 00:00:00.487876
+  Min time    : 00:00:00.000004
+  Total time  : 00:00:26.313339
+  Meterings   : 1060
+Feed::evaluate_simple
+  Average time: 00:00:00.052298
+  Max time    : 00:00:00.554927
+  Min time    : 00:00:00.000003
+  Total time  : 00:00:55.436577
+  Meterings   : 1060
+Domain::evaluate
+  Average time: 00:00:00.036684
+  Max time    : 00:00:00.530756
+  Min time    : 00:00:00.000003
+  Total time  : 00:00:35.914415
+  Meterings   : 979
+Domain::evaluate_simple
+  Average time: 00:00:00.062283
+  Max time    : 00:00:00.595744
+  Min time    : 00:00:00.000004
+  Total time  : 00:01:00.975257
+  Meterings   : 979
+Expression::search
+  Average time: 00:00:00.083707
+  Max time    : 00:00:00.547133
+  Min time    : 00:00:00.000013
+  Total time  : 00:01:23.707544
+  Meterings   : 1000
+Expression::search_simple
+  Average time: 00:00:00.140976
+  Max time    : 00:00:00.722938
+  Min time    : 00:00:00.000007
+  Total time  : 00:02:20.976937
+  Meterings   : 1000
+From 1000 searches 605 matched 395 not matched
+
+*******************************************************************************
+
+URL condition supported
+
+377M - 21M = 356M (dev.ocslab.com)
+
+Creating messages ...
+10000 messages created
+StoredMessage::break_down
+  Average time: 00:00:00.000849
+  Max time    : 00:00:00.248954
+  Min time    : 00:00:00.000074
+  Total time  : 00:01:24.950797
+  Meterings   : 100000
+SearcheableMessageMap::insert
+  Average time: 00:00:00.000474
+  Max time    : 00:00:00.090441
+  Min time    : 00:00:00.000042
+  Total time  : 00:00:47.480776
+  Meterings   : 100000
+SearcheableMessageMap::remove
+  Average time: 00:00:00.000000
+  Max time    : 00:00:00.001479
+  Min time    : 00:00:00.000000
+  Total time  : 00:00:00.051322
+  Meterings   : 100000
+Words: 16647
+Total length: 102914855
+Positions: 15543210
+Total words: 9209467
+Total words len: 61144772
+Searching
+Complex condition ...
+1000 searches performed
+AllWords::evaluate
+  Average time: 00:00:00.008993
+  Max time    : 00:00:00.273128
+  Min time    : 00:00:00.000001
+  Total time  : 00:00:31.748537
+  Meterings   : 3530
+AnyWords::evaluate
+  Average time: 00:00:00.038325
+  Max time    : 00:00:00.408628
+  Min time    : 00:00:00.000002
+  Total time  : 00:01:41.485076
+  Meterings   : 2648
+Site::evaluate
+  Average time: 00:00:00.005152
+  Max time    : 00:00:00.122433
+  Min time    : 00:00:00.000002
+  Total time  : 00:00:13.727451
+  Meterings   : 2664
+And::evaluate
+  Average time: 00:00:00.024383
+  Max time    : 00:00:00.365663
+  Min time    : 00:00:00.000014
+  Total time  : 00:00:34.137207
+  Meterings   : 1400
+And::evaluate_simple
+  Average time: 00:00:00.052004
+  Max time    : 00:00:00.361604
+  Min time    : 00:00:00.000013
+  Total time  : 00:01:12.806643
+  Meterings   : 1400
+Or::evaluate
+  Average time: 00:00:00.042851
+  Max time    : 00:00:00.386327
+  Min time    : 00:00:00.000011
+  Total time  : 00:00:56.649749
+  Meterings   : 1322
+Or::evaluate_simple
+  Average time: 00:00:00.064413
+  Max time    : 00:00:00.383381
+  Min time    : 00:00:00.000011
+  Total time  : 00:01:25.154547
+  Meterings   : 1322
+Except::evaluate
+  Average time: 00:00:00.034340
+  Max time    : 00:00:00.431146
+  Min time    : 00:00:00.000013
+  Total time  : 00:00:30.872346
+  Meterings   : 899
+Except::evaluate_simple
+  Average time: 00:00:00.053168
+  Max time    : 00:00:00.420640
+  Min time    : 00:00:00.000015
+  Total time  : 00:00:47.798144
+  Meterings   : 899
+Fresh::evaluate
+  Average time: 00:00:00.031208
+  Max time    : 00:00:00.335503
+  Min time    : 00:00:00.000003
+  Total time  : 00:00:28.150076
+  Meterings   : 902
+Fresh::evaluate_simple
+  Average time: 00:00:00.042312
+  Max time    : 00:00:00.415070
+  Min time    : 00:00:00.000004
+  Total time  : 00:00:38.165739
+  Meterings   : 902
+Feed::evaluate
+  Average time: 00:00:00.020832
+  Max time    : 00:00:00.316103
+  Min time    : 00:00:00.000004
+  Total time  : 00:00:18.811738
+  Meterings   : 903
+Feed::evaluate_simple
+  Average time: 00:00:00.041494
+  Max time    : 00:00:00.344123
+  Min time    : 00:00:00.000005
+  Total time  : 00:00:37.469606
+  Meterings   : 903
+Domain::evaluate
+  Average time: 00:00:00.031727
+  Max time    : 00:00:00.431148
+  Min time    : 00:00:00.000003
+  Total time  : 00:00:28.110612
+  Meterings   : 886
+Domain::evaluate_simple
+  Average time: 00:00:00.049355
+  Max time    : 00:00:00.481600
+  Min time    : 00:00:00.000004
+  Total time  : 00:00:43.728944
+  Meterings   : 886
+Expression::search
+  Average time: 00:00:00.062192
+  Max time    : 00:00:00.523211
+  Min time    : 00:00:00.000019
+  Total time  : 00:01:02.192584
+  Meterings   : 1000
+Expression::search_simple
+  Average time: 00:00:00.097502
+  Max time    : 00:00:00.644260
+  Min time    : 00:00:00.000014
+  Total time  : 00:01:37.502184
+  Meterings   : 1000
+From 1000 searches 575 matched 425 not matched
+
+*******************************************************************************
+
+LANG condition supported (dev.ocslab.com)
+
+Creating messages ...
+100000 messages created
+StoredMessage::break_down
+  Average time: 00:00:00.000816
+  Max time    : 00:00:00.558933
+  Min time    : 00:00:00.000072
+  Total time  : 00:01:21.689845
+  Meterings   : 100000
+SearcheableMessageMap::insert
+  Average time: 00:00:00.000464
+  Max time    : 00:00:00.709025
+  Min time    : 00:00:00.000039
+  Total time  : 00:00:46.489028
+  Meterings   : 100000
+SearcheableMessageMap::remove
+  Average time: 00:00:00.000000
+  Max time    : 00:00:00.001763
+  Min time    : 00:00:00.000000
+  Total time  : 00:00:00.056300
+  Meterings   : 100000
+Words: 16647
+Total length: 102913279
+Positions: 15546580
+Total words: 9217909
+Total words len: 61187975
+Searching
+Complex condition ...
+1000 searches performed
+AllWords::evaluate
+  Average time: 00:00:00.011360
+  Max time    : 00:00:00.273864
+  Min time    : 00:00:00.000000
+  Total time  : 00:00:35.309012
+  Meterings   : 3108
+AnyWords::evaluate
+  Average time: 00:00:00.040937
+  Max time    : 00:00:00.362689
+  Min time    : 00:00:00.000001
+  Total time  : 00:01:35.631092
+  Meterings   : 2336
+Site::evaluate
+  Average time: 00:00:00.006157
+  Max time    : 00:00:00.040909
+  Min time    : 00:00:00.000002
+  Total time  : 00:00:15.714827
+  Meterings   : 2552
+Url::evaluate
+  Average time: 00:00:00.000031
+  Max time    : 00:00:00.000746
+  Min time    : 00:00:00.000001
+  Total time  : 00:00:00.075865
+  Meterings   : 2386
+And::evaluate
+  Average time: 00:00:00.023860
+  Max time    : 00:00:00.322482
+  Min time    : 00:00:00.000014
+  Total time  : 00:00:30.827471
+  Meterings   : 1292
+And::evaluate_simple
+  Average time: 00:00:00.060132
+  Max time    : 00:00:00.480472
+  Min time    : 00:00:00.000018
+  Total time  : 00:01:17.691261
+  Meterings   : 1292
+Or::evaluate
+  Average time: 00:00:00.044425
+  Max time    : 00:00:00.351821
+  Min time    : 00:00:00.000019
+  Total time  : 00:00:54.021018
+  Meterings   : 1216
+Or::evaluate_simple
+  Average time: 00:00:00.074470
+  Max time    : 00:00:00.606950
+  Min time    : 00:00:00.000021
+  Total time  : 00:01:30.555590
+  Meterings   : 1216
+Except::evaluate
+  Average time: 00:00:00.036554
+  Max time    : 00:00:00.303601
+  Min time    : 00:00:00.000008
+  Total time  : 00:00:27.561762
+  Meterings   : 754
+Except::evaluate_simple
+  Average time: 00:00:00.066403
+  Max time    : 00:00:00.374118
+  Min time    : 00:00:00.000026
+  Total time  : 00:00:50.068005
+  Meterings   : 754
+Fresh::evaluate
+  Average time: 00:00:00.028817
+  Max time    : 00:00:00.342744
+  Min time    : 00:00:00.000004
+  Total time  : 00:00:22.362703
+  Meterings   : 776
+Fresh::evaluate_simple
+  Average time: 00:00:00.046615
+  Max time    : 00:00:00.381514
+  Min time    : 00:00:00.000004
+  Total time  : 00:00:36.173525
+  Meterings   : 776
+Feed::evaluate
+  Average time: 00:00:00.023828
+  Max time    : 00:00:00.359130
+  Min time    : 00:00:00.000004
+  Total time  : 00:00:17.728299
+  Meterings   : 744
+Feed::evaluate_simple
+  Average time: 00:00:00.047573
+  Max time    : 00:00:00.613323
+  Min time    : 00:00:00.000003
+  Total time  : 00:00:35.394898
+  Meterings   : 744
+Domain::evaluate
+  Average time: 00:00:00.034633
+  Max time    : 00:00:00.342742
+  Min time    : 00:00:00.000004
+  Total time  : 00:00:28.607143
+  Meterings   : 826
+Domain::evaluate_simple
+  Average time: 00:00:00.058472
+  Max time    : 00:00:00.488060
+  Min time    : 00:00:00.000004
+  Total time  : 00:00:48.297904
+  Meterings   : 826
+Lang::evaluate
+  Average time: 00:00:00.019314
+  Max time    : 00:00:00.253380
+  Min time    : 00:00:00.000003
+  Total time  : 00:00:13.732296
+  Meterings   : 711
+Lang::evaluate_simple
+  Average time: 00:00:00.043571
+  Max time    : 00:00:00.620637
+  Min time    : 00:00:00.000003
+  Total time  : 00:00:30.979495
+  Meterings   : 711
+Expression::search
+  Average time: 00:00:00.060040
+  Max time    : 00:00:00.473848
+  Min time    : 00:00:00.000017
+  Total time  : 00:01:00.040396
+  Meterings   : 1000
+Expression::search_simple
+  Average time: 00:00:00.103028
+  Max time    : 00:00:00.697642
+  Min time    : 00:00:00.000011
+  Total time  : 00:01:43.028076
+  Meterings   : 1000
+From 1000 searches 563 matched 437 not matched
+
+******************************************************************************
+
+COUNTRY condition supported (dev.ocslab.com)
+
+Creating messages ...
+100000 messages created
+StoredMessage::break_down
+  Average time: 00:00:00.000674
+  Max time    : 00:00:00.038534
+  Min time    : 00:00:00.000070
+  Total time  : 00:01:07.491794
+  Meterings   : 100000
+SearcheableMessageMap::insert
+  Average time: 00:00:00.000387
+  Max time    : 00:00:00.081055
+  Min time    : 00:00:00.000038
+  Total time  : 00:00:38.723685
+  Meterings   : 100000
+SearcheableMessageMap::remove
+  Average time: 00:00:00.000000
+  Max time    : 00:00:00.000036
+  Min time    : 00:00:00.000000
+  Total time  : 00:00:00.007615
+  Meterings   : 100000
+Words: 16646
+Total length: 102918319
+Positions: 15528963
+Total words: 9213305
+Total words len: 61233929
+Searching
+Complex condition ...
+1000 searches performed
+AllWords::evaluate
+  Average time: 00:00:00.008328
+  Max time    : 00:00:00.262723
+  Min time    : 00:00:00.000000
+  Total time  : 00:00:24.219029
+  Meterings   : 2908
+AnyWords::evaluate
+  Average time: 00:00:00.032103
+  Max time    : 00:00:00.205639
+  Min time    : 00:00:00.000001
+  Total time  : 00:01:07.866238
+  Meterings   : 2114
+Site::evaluate
+  Average time: 00:00:00.004904
+  Max time    : 00:00:00.043554
+  Min time    : 00:00:00.000003
+  Total time  : 00:00:10.476885
+  Meterings   : 2136
+Url::evaluate
+  Average time: 00:00:00.000024
+  Max time    : 00:00:00.000093
+  Min time    : 00:00:00.000001
+  Total time  : 00:00:00.049523
+  Meterings   : 2040
+And::evaluate
+  Average time: 00:00:00.017546
+  Max time    : 00:00:00.288453
+  Min time    : 00:00:00.000017
+  Total time  : 00:00:19.950917
+  Meterings   : 1137
+And::evaluate_simple
+  Average time: 00:00:00.045731
+  Max time    : 00:00:00.379941
+  Min time    : 00:00:00.000019
+  Total time  : 00:00:51.996217
+  Meterings   : 1137
+Or::evaluate
+  Average time: 00:00:00.034930
+  Max time    : 00:00:00.323831
+  Min time    : 00:00:00.000017
+  Total time  : 00:00:37.340657
+  Meterings   : 1069
+Or::evaluate_simple
+  Average time: 00:00:00.059201
+  Max time    : 00:00:00.478038
+  Min time    : 00:00:00.000014
+  Total time  : 00:01:03.286569
+  Meterings   : 1069
+Except::evaluate
+  Average time: 00:00:00.028377
+  Max time    : 00:00:00.287636
+  Min time    : 00:00:00.000026
+  Total time  : 00:00:17.509124
+  Meterings   : 617
+Except::evaluate_simple
+  Average time: 00:00:00.051612
+  Max time    : 00:00:00.302581
+  Min time    : 00:00:00.000013
+  Total time  : 00:00:31.844787
+  Meterings   : 617
+Fresh::evaluate
+  Average time: 00:00:00.026275
+  Max time    : 00:00:00.272765
+  Min time    : 00:00:00.000004
+  Total time  : 00:00:16.527258
+  Meterings   : 629
+Fresh::evaluate_simple
+  Average time: 00:00:00.039624
+  Max time    : 00:00:00.276579
+  Min time    : 00:00:00.000004
+  Total time  : 00:00:24.923945
+  Meterings   : 629
+Feed::evaluate
+  Average time: 00:00:00.015337
+  Max time    : 00:00:00.207340
+  Min time    : 00:00:00.000004
+  Total time  : 00:00:09.724135
+  Meterings   : 634
+Feed::evaluate_simple
+  Average time: 00:00:00.034753
+  Max time    : 00:00:00.323488
+  Min time    : 00:00:00.000004
+  Total time  : 00:00:22.033587
+  Meterings   : 634
+Domain::evaluate
+  Average time: 00:00:00.021039
+  Max time    : 00:00:00.255248
+  Min time    : 00:00:00.000004
+  Total time  : 00:00:13.928041
+  Meterings   : 662
+Domain::evaluate_simple
+  Average time: 00:00:00.038098
+  Max time    : 00:00:00.388363
+  Min time    : 00:00:00.000004
+  Total time  : 00:00:25.221055
+  Meterings   : 662
+Lang::evaluate
+  Average time: 00:00:00.016669
+  Max time    : 00:00:00.268916
+  Min time    : 00:00:00.000005
+  Total time  : 00:00:10.635089
+  Meterings   : 638
+Lang::evaluate_simple
+  Average time: 00:00:00.037437
+  Max time    : 00:00:00.325810
+  Min time    : 00:00:00.000005
+  Total time  : 00:00:23.884854
+  Meterings   : 638
+Country::evaluate
+  Average time: 00:00:00.014783
+  Max time    : 00:00:00.249443
+  Min time    : 00:00:00.000004
+  Total time  : 00:00:10.244623
+  Meterings   : 693
+Country::evaluate_simple
+  Average time: 00:00:00.035535
+  Max time    : 00:00:00.369818
+  Min time    : 00:00:00.000003
+  Total time  : 00:00:24.626053
+  Meterings   : 693
+Expression::search
+  Average time: 00:00:00.041120
+  Max time    : 00:00:00.323857
+  Min time    : 00:00:00.000017
+  Total time  : 00:00:41.120476
+  Meterings   : 1000
+Expression::search_simple
+  Average time: 00:00:00.072998
+  Max time    : 00:00:00.512526
+  Min time    : 00:00:00.000009
+  Total time  : 00:01:12.998634
+  Meterings   : 1000
+From 1000 searches 491 matched 509 not matched
+
+******************************************************************************
+
+FEED condition takes multiple arguments (dev.ocslab.com)
+
+Creating messages ...
+100000 messages created
+StoredMessage::break_down
+  Average time: 00:00:00.000759
+  Max time    : 00:00:02.003081
+  Min time    : 00:00:00.000071
+  Total time  : 00:01:15.943015
+  Meterings   : 100000
+SearcheableMessageMap::insert
+  Average time: 00:00:00.000393
+  Max time    : 00:00:00.080205
+  Min time    : 00:00:00.000040
+  Total time  : 00:00:39.315044
+  Meterings   : 100000
+SearcheableMessageMap::remove
+  Average time: 00:00:00.000000
+  Max time    : 00:00:00.000131
+  Min time    : 00:00:00.000000
+  Total time  : 00:00:00.011699
+  Meterings   : 100000
+Words: 16648
+Total length: 102928483
+Positions: 15538084
+Total words: 9217005
+Total words len: 61229286
+Searching
+Complex condition ...
+1000 searches performed
+AllWords::evaluate
+  Average time: 00:00:00.009440
+  Max time    : 00:00:00.325823
+  Min time    : 00:00:00.000000
+  Total time  : 00:00:27.603154
+  Meterings   : 2924
+AnyWords::evaluate
+  Average time: 00:00:00.037292
+  Max time    : 00:00:00.392690
+  Min time    : 00:00:00.000001
+  Total time  : 00:01:20.477778
+  Meterings   : 2158
+Site::evaluate
+  Average time: 00:00:00.005671
+  Max time    : 00:00:00.064326
+  Min time    : 00:00:00.000003
+  Total time  : 00:00:11.978965
+  Meterings   : 2112
+Url::evaluate
+  Average time: 00:00:00.000028
+  Max time    : 00:00:00.000942
+  Min time    : 00:00:00.000001
+  Total time  : 00:00:00.063150
+  Meterings   : 2204
+And::evaluate
+  Average time: 00:00:00.024043
+  Max time    : 00:00:00.438441
+  Min time    : 00:00:00.000015
+  Total time  : 00:00:27.289230
+  Meterings   : 1135
+And::evaluate_simple
+  Average time: 00:00:00.053621
+  Max time    : 00:00:00.420757
+  Min time    : 00:00:00.000013
+  Total time  : 00:01:00.860160
+  Meterings   : 1135
+Or::evaluate
+  Average time: 00:00:00.035376
+  Max time    : 00:00:00.402530
+  Min time    : 00:00:00.000014
+  Total time  : 00:00:36.933190
+  Meterings   : 1044
+Or::evaluate_simple
+  Average time: 00:00:00.062943
+  Max time    : 00:00:00.413274
+  Min time    : 00:00:00.000014
+  Total time  : 00:01:05.712800
+  Meterings   : 1044
+Except::evaluate
+  Average time: 00:00:00.030290
+  Max time    : 00:00:00.412924
+  Min time    : 00:00:00.000012
+  Total time  : 00:00:20.718724
+  Meterings   : 684
+Except::evaluate_simple
+  Average time: 00:00:00.050257
+  Max time    : 00:00:00.511018
+  Min time    : 00:00:00.000008
+  Total time  : 00:00:34.375978
+  Meterings   : 684
+Fresh::evaluate
+  Average time: 00:00:00.023780
+  Max time    : 00:00:00.372404
+  Min time    : 00:00:00.000004
+  Total time  : 00:00:15.742618
+  Meterings   : 662
+Fresh::evaluate_simple
+  Average time: 00:00:00.037201
+  Max time    : 00:00:00.422747
+  Min time    : 00:00:00.000004
+  Total time  : 00:00:24.627082
+  Meterings   : 662
+Feed::evaluate
+  Average time: 00:00:00.019897
+  Max time    : 00:00:00.436932
+  Min time    : 00:00:00.000006
+  Total time  : 00:00:11.978066
+  Meterings   : 602
+Feed::evaluate_simple
+  Average time: 00:00:00.042808
+  Max time    : 00:00:00.402032
+  Min time    : 00:00:00.000004
+  Total time  : 00:00:25.770637
+  Meterings   : 602
+Domain::evaluate
+  Average time: 00:00:00.029779
+  Max time    : 00:00:00.437531
+  Min time    : 00:00:00.000005
+  Total time  : 00:00:19.118473
+  Meterings   : 642
+Domain::evaluate_simple
+  Average time: 00:00:00.047828
+  Max time    : 00:00:00.427594
+  Min time    : 00:00:00.000006
+  Total time  : 00:00:30.705735
+  Meterings   : 642
+Lang::evaluate
+  Average time: 00:00:00.018571
+  Max time    : 00:00:00.436958
+  Min time    : 00:00:00.000006
+  Total time  : 00:00:11.495930
+  Meterings   : 619
+Lang::evaluate_simple
+  Average time: 00:00:00.039891
+  Max time    : 00:00:00.420245
+  Min time    : 00:00:00.000004
+  Total time  : 00:00:24.692801
+  Meterings   : 619
+Country::evaluate
+  Average time: 00:00:00.018045
+  Max time    : 00:00:00.317717
+  Min time    : 00:00:00.000007
+  Total time  : 00:00:11.856213
+  Meterings   : 657
+Country::evaluate_simple
+  Average time: 00:00:00.039246
+  Max time    : 00:00:00.422792
+  Min time    : 00:00:00.000005
+  Total time  : 00:00:25.784676
+  Meterings   : 657
+Expression::search
+  Average time: 00:00:00.047558
+  Max time    : 00:00:00.438448
+  Min time    : 00:00:00.000019
+  Total time  : 00:00:47.558545
+  Meterings   : 1000
+Expression::search_simple
+  Average time: 00:00:00.083940
+  Max time    : 00:00:00.704077
+  Min time    : 00:00:00.000010
+  Total time  : 00:01:23.940992
+  Meterings   : 1000
+From 1000 searches 503 matched 497 not matched

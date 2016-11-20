@@ -1,0 +1,668 @@
+def get_template(id):
+
+  tname = lang + "." + id
+
+  if tname not in cache:
+    cache[tname] = el.string.template.Parser(loc(id), "{{", "}}")
+
+  return cache[tname]
+
+def image(name):
+  return '<a name="IMG_' + name + \
+         R'''"></a><table class="img_holder"><tr><td><div>
+<img src="/fixed/image/help/''' + name + '-' + lang + R'''.png"/>
+</div></td></tr></table>'''
+
+from moderation_func import *
+
+request, conf = context.request, context.config.get
+cache, loc = context.cache, context.localization.get
+prn = request.output.stream.prn
+lm = el.psp.LocalizationMarker
+lang = request.input.lang.l3_code()
+lang = "eng"
+
+moderator = connect_moderator(request, moderator_connector, False, True, False)
+
+newsgate_link = "http://" + conf("newsgate_link")
+search_link = newsgate_link + "/p/s/h"
+search_help_link = newsgate_link + "/p/h/s"
+search_help_cat_link = search_help_link + "#CATEGORY"
+search_help_or_link = search_help_link + "#OR"
+search_help_site_link = search_help_link + "#SITE"
+search_help_url_link = search_help_link + "#URL"
+search_help_any_link = search_help_link + "#ANY"
+search_help_all_link = search_help_link + "#ALL"
+search_help_except_link = search_help_link + "#EXCEPT"
+
+prn(R'''<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>Management: Home</title>
+<link rel="stylesheet" type="text/css" href="/fixed/css/common.css" media="all" />
+<link rel="stylesheet" type="text/css" href="/fixed/css/help.css" media="all" />
+</head>
+
+<body>
+<table id="skeleton" cellspacing="0">
+''')
+
+menus = []
+create_topbar_main_menus(context, moderator, "Help", menus)
+
+prn(create_topbar([], menus[0], menus[1]))
+
+chap_newsgate_intro_templ = get_template("CHAP_NEWSGATE_INTRO")
+
+chap_newsgate_intro_vars = \
+{ 
+  "SEARCH_HELP_LINK" : el.string.manip.xml_encode(search_help_link) 
+}
+
+chap_categories_topic_categorization_paragr_process_templ = \
+  get_template("CHAP_CATEGORIES_TOPIC_CATEGORIZATION_PARAGR_PROCESS")
+
+chap_categories_topic_categorization_paragr_process_vars = \
+{ 
+  "SEARCH_HELP_CAT_LINK" : el.string.manip.xml_encode(search_help_cat_link) 
+}
+
+chap_categories_topic_hierarchy_paragr_definitions_templ = \
+  get_template("CHAP_CATEGORIES_TOPIC_HIERARCHY_PARAGR_DEFINITIONS")
+
+chap_categories_topic_hierarchy_paragr_definitions_vars = \
+{ 
+  "SEARCH_HELP_CAT_LINK" : el.string.manip.xml_encode(search_help_cat_link) 
+}
+
+chap_categories_topic_categoryview_paragr_viewelems_templ = \
+  get_template("CHAP_CATEGORIES_TOPIC_CATEGORYVIEW_PARAGR_VIEWELEMS")
+
+chap_categories_topic_categoryview_paragr_viewelems_vars = \
+{ 
+  "SEARCH_HELP_CAT_LINK" : el.string.manip.xml_encode(search_help_cat_link) 
+}
+
+chap_categories_topic_categoryedit_paragr_view_templ = \
+  get_template("CHAP_CATEGORIES_TOPIC_CATEGORYEDIT_PARAGR_VIEW")
+
+chap_categories_topic_categoryedit_paragr_view_vars = \
+{ 
+  "SEARCH_LINK" : el.string.manip.xml_encode(search_link) 
+}
+
+chap_categories_topic_categoryedit_paragr_subexp_templ = \
+  get_template("CHAP_CATEGORIES_TOPIC_CATEGORYEDIT_PARAGR_SUBEXP")
+
+chap_categories_topic_categoryedit_paragr_subexp_vars = \
+{ 
+  "SEARCH_HELP_OR_LINK" : el.string.manip.xml_encode(search_help_or_link),
+  "SEARCH_HELP_SITE_LINK" : el.string.manip.xml_encode(search_help_site_link),
+  "SEARCH_HELP_URL_LINK" : el.string.manip.xml_encode(search_help_url_link),
+  "SEARCH_HELP_ANY_LINK" : el.string.manip.xml_encode(search_help_any_link)
+}
+
+chap_categories_topic_categoryedit_paragr_corewords_templ = \
+  get_template("CHAP_CATEGORIES_TOPIC_CATEGORYEDIT_PARAGR_COREWORDS")
+
+chap_categories_topic_categoryedit_paragr_corewords_vars = \
+{ 
+  "SEARCH_HELP_ANY_LINK" : el.string.manip.xml_encode(search_help_any_link),
+  "SEARCH_HELP_ALL_LINK" : el.string.manip.xml_encode(search_help_all_link)
+}
+
+chap_categories_topic_categoryedit_paragr_anycount_templ = \
+  get_template("CHAP_CATEGORIES_TOPIC_CATEGORYEDIT_PARAGR_ANYCOUNT")
+
+chap_categories_topic_categoryedit_paragr_anycount_vars = \
+{ 
+  "SEARCH_HELP_ANY_LINK" : el.string.manip.xml_encode(search_help_any_link)
+}
+
+chap_categories_topic_categoryedit_paragr_exactsearch_templ = \
+  get_template("CHAP_CATEGORIES_TOPIC_CATEGORYEDIT_PARAGR_EXACTSEARCH")
+
+chap_categories_topic_categoryedit_paragr_exactsearch_vars = \
+{ 
+  "SEARCH_HELP_CATEGORY_LINK" :
+    el.string.manip.xml_encode(search_help_cat_link),
+  "SEARCH_HELP_ANY_LINK" : el.string.manip.xml_encode(search_help_any_link),
+  "SEARCH_HELP_ALL_LINK" : el.string.manip.xml_encode(search_help_all_link)
+}
+
+chap_categories_topic_categoryedit_paragr_broadsearch_templ = \
+  get_template("CHAP_CATEGORIES_TOPIC_CATEGORYEDIT_PARAGR_BROADSEARCH")
+
+chap_categories_topic_categoryedit_paragr_broadsearch_vars = \
+{ 
+  "SEARCH_HELP_ANY_LINK" : el.string.manip.xml_encode(search_help_any_link),
+  "SEARCH_HELP_ALL_LINK" : el.string.manip.xml_encode(search_help_all_link),
+  "SEARCH_HELP_EXCEPT_LINK" :
+    el.string.manip.xml_encode(search_help_except_link)
+}
+
+chap_usage_section_catman_topic_canenhance_paragr_intro_templ = \
+  get_template("CHAP_USAGE_SECTION_CATMAN_TOPIC_CATENHANCE_PARAGR_INTRO")
+
+chap_usage_section_catman_topic_canenhance_paragr_intro_vars = \
+{ 
+  "SEARCH_HELP_ANY_LINK" : el.string.manip.xml_encode(search_help_any_link),
+  "SEARCH_HELP_URL_LINK" : el.string.manip.xml_encode(search_help_url_link)
+}
+
+prn(
+R'''
+  <tr><td id="main_area" valign="top">
+<div class="chapter">
+<div class="chapter-title">''', lm, "CHAP_NEWSGATE_TITLE", R'''</div>
+<div class="chapter-intro">''', chap_newsgate_intro_templ, 
+    chap_newsgate_intro_vars, R'''
+</div>
+</div> <!-- end of NewsGate chapter -->
+
+<div class="chapter">
+
+<div class="chapter-title">''', lm, "CHAP_USERS_TITLE", R'''</div>
+<div class="chapter-intro">''', lm, "CHAP_USERS_INTRO", R'''
+</div>
+
+<div class="section">
+
+<div class="section-title">''', lm, "CHAP_USERS_TOPIC_USERPRIV_TITLE", 
+    R'''</div>
+<div class="section-intro">''', lm, "CHAP_USERS_TOPIC_USERPRIV_INTRO", 
+    R'''</div>
+<div class="section-content">
+
+<div class="topic-paragraph">''', lm, 
+    "CHAP_USERS_TOPIC_USERPRIV_PARAGR_MODMAN", R'''</div>
+<div class="topic-paragraph">''', lm, 
+    "CHAP_USERS_TOPIC_USERPRIV_PARAGR_FEEDCR", R'''</div>
+<div class="topic-paragraph">''', lm, 
+    "CHAP_USERS_TOPIC_USERPRIV_PARAGR_FEEDMOD", R'''</div>
+<div class="topic-paragraph">''', lm, 
+    "CHAP_USERS_TOPIC_USERPRIV_PARAGR_CATMAN", R'''</div>
+<div class="topic-paragraph">''', lm, 
+    "CHAP_USERS_TOPIC_USERPRIV_PARAGR_CATWLE", R'''</div>
+
+</div>
+</div> <!-- end of User Privileges section -->
+</div> <!-- end of Users chapter -->
+
+<div class="chapter">
+<a name="Categories"></a>
+<div class="chapter-title">''', lm, "CHAP_CATEGORIES_TITLE", R'''</div>
+<div class="chapter-intro">''', lm, "CHAP_CATEGORIES_INTRO",
+R'''
+</div>
+
+<div class="section">
+
+<div class="section-title">''', lm, "CHAP_CATEGORIES_TOPIC_HIERARCHY_TITLE", 
+    R'''</div>
+<div class="section-intro">''', lm, "CHAP_CATEGORIES_TOPIC_HIERARCHY_INTRO", 
+    R'''</div>
+
+<div class="section-content">
+
+<div class="topic-paragraph">''', 
+    chap_categories_topic_hierarchy_paragr_definitions_templ, 
+    chap_categories_topic_hierarchy_paragr_definitions_vars, R'''</div>
+<div class="topic-paragraph">''', lm, 
+    "CHAP_CATEGORIES_TOPIC_HIERARCHY_PARAGR_SEARCH", R'''</div>
+
+</div>
+</div> <!-- end of Category Hierarchy topic -->
+
+<div class="section">
+
+<div class="section-title">''', lm, 
+    "CHAP_CATEGORIES_TOPIC_CATEGORIZATION_TITLE",
+R'''</div>
+<div class="section-intro">''', lm, 
+    "CHAP_CATEGORIES_TOPIC_CATEGORIZATION_INTRO",
+R'''</div>
+
+<div class="section-content">
+
+<div class="topic-paragraph">''', lm, 
+    "CHAP_CATEGORIES_TOPIC_CATEGORIZATION_PARAGR_EXPRESSION", R'''</div>
+<div class="topic-paragraph">''', 
+    chap_categories_topic_categorization_paragr_process_templ, 
+    chap_categories_topic_categorization_paragr_process_vars, R'''</div>
+<div class="topic-paragraph">''', lm, 
+    "CHAP_CATEGORIES_TOPIC_CATEGORIZATION_PARAGR_CHUNKS", R'''</div>
+
+</div>
+</div> <!-- end of Category Categorization topic -->
+
+</div> <!-- end of Categories chapter -->
+
+<div class="chapter">
+
+<div class="chapter-title">''', lm, "CHAP_INTERFACE_TITLE", R'''</div>
+<div class="chapter-intro">''', lm, "CHAP_INTERFACE_INTRO", image("Menu"), R'''
+</div>
+
+<div class="topic-paragraph">''', lm, "CHAP_INTERFACE_PARAGR_SUPPORT",
+R'''</div>
+
+<div class="section">
+
+<div class="section-title">''', lm, "CHAP_INTERFACE_TOPIC_CATEGORY_TITLE", 
+R'''</div>
+<div class="section-intro">''', lm, "CHAP_CATEGORIES_TOPIC_CATEGORY_INTRO", 
+R'''</div>
+
+<div class="section-content">
+
+<a name="Categories_View"></a>
+<div class="topic-title">''', lm, 
+    "CHAP_CATEGORIES_TOPIC_CATEGORYVIEW_TITLE", R'''</div>
+
+<div class="topic-paragraph">''', lm, 
+    "CHAP_CATEGORIES_TOPIC_CATEGORYVIEW_PARAGR_VIEW", image("CategoryView"), 
+R'''</div>
+
+<div class="topic-paragraph">''', 
+    chap_categories_topic_categoryview_paragr_viewelems_templ, 
+    chap_categories_topic_categoryview_paragr_viewelems_vars, R'''</div>
+
+<a name="Categories_Edit"></a>
+<a name="Categories_New"></a>
+<div class="topic-title">''', lm, 
+    "CHAP_CATEGORIES_TOPIC_CATEGORYEDIT_TITLE", R'''</div>
+
+<div class="topic-paragraph">''', 
+    chap_categories_topic_categoryedit_paragr_view_templ, 
+    chap_categories_topic_categoryedit_paragr_view_vars, image("CategoryEdit"),
+ R'''</div>
+
+<div class="topic-paragraph">''', lm, 
+    "CHAP_CATEGORIES_TOPIC_CATEGORYEDIT_PARAGR_VIEWELEMS",
+R'''</div>
+
+<div class="topic-paragraph">''',
+    chap_categories_topic_categoryedit_paragr_subexp_templ,
+    chap_categories_topic_categoryedit_paragr_subexp_vars,
+R'''</div>
+
+<a name="CategoryWordList"></a>
+<div class="topic-paragraph">''', lm,
+    "CHAP_CATEGORIES_TOPIC_CATEGORYEDIT_PARAGR_WORDLIST",
+R'''</div>
+
+<div class="topic-paragraph">''', lm, 
+    "CHAP_CATEGORIES_TOPIC_CATEGORYEDIT_PARAGR_SPACESAMPL",
+R'''</div>
+
+<div class="topic-paragraph">''', 
+    chap_categories_topic_categoryedit_paragr_corewords_templ, 
+    chap_categories_topic_categoryedit_paragr_corewords_vars,
+R'''</div>
+
+<div class="topic-paragraph">''', 
+    chap_categories_topic_categoryedit_paragr_anycount_templ, 
+    chap_categories_topic_categoryedit_paragr_anycount_vars,
+R'''</div>
+
+<div class="topic-paragraph">''', lm, 
+    "CHAP_CATEGORIES_TOPIC_CATEGORYEDIT_PARAGR_HUMANEXPR",
+R'''</div>
+
+<div class="topic-paragraph">''', 
+    chap_categories_topic_categoryedit_paragr_exactsearch_templ, 
+    chap_categories_topic_categoryedit_paragr_exactsearch_vars,
+R'''</div>
+
+<div class="topic-paragraph">''', 
+    chap_categories_topic_categoryedit_paragr_broadsearch_templ, 
+    chap_categories_topic_categoryedit_paragr_broadsearch_vars,
+R'''</div>
+
+<div class="topic-paragraph">''', lm, 
+    "CHAP_CATEGORIES_TOPIC_CATEGORYEDIT_PARAGR_RELEVANTSEARCH",
+R'''</div>
+
+<a name="WordListEditor"></a>
+<div class="topic-title">''', lm, 
+    "CHAP_CATEGORIES_TOPIC_WORDLISTEDIT_TITLE", R'''</div>
+
+<div class="topic-paragraph">''', lm, 
+    "CHAP_CATEGORIES_TOPIC_WORDLISTEDIT_PARAGR_OVERVIEW", 
+    image("WordListEditor"),
+R'''</div>
+
+<div class="topic-paragraph">''', lm, 
+    "CHAP_CATEGORIES_TOPIC_WORDLISTEDIT_PARAGR_MENU", 
+R'''</div>
+
+<div class="topic-paragraph">''', lm, 
+    "CHAP_CATEGORIES_TOPIC_WORDLISTEDIT_PARAGR_SEARCH", 
+R'''</div>
+
+<div class="topic-paragraph">''', lm, 
+    "CHAP_CATEGORIES_TOPIC_WORDLISTEDIT_PARAGR_GOOGLE", 
+R'''</div>
+
+<div class="topic-paragraph">''', lm,
+    "CHAP_CATEGORIES_TOPIC_WORDLISTEDIT_PARAGR_TRANSLATE",
+R'''</div>
+
+<div class="topic-paragraph">''', lm,
+    "CHAP_CATEGORIES_TOPIC_WORDLISTEDIT_PARAGR_FIND",
+R'''</div>
+
+<div class="topic-paragraph">''', lm,
+    "CHAP_CATEGORIES_TOPIC_WORDLISTEDIT_PARAGR_LOWER",
+R'''</div>
+
+<div class="topic-paragraph">''', lm,
+    "CHAP_CATEGORIES_TOPIC_WORDLISTEDIT_PARAGR_UPPER",
+R'''</div>
+
+<div class="topic-paragraph">''', lm,
+    "CHAP_CATEGORIES_TOPIC_WORDLISTEDIT_PARAGR_CAPITALIZE",
+R'''</div>
+
+<div class="topic-paragraph">''', lm,
+    "CHAP_CATEGORIES_TOPIC_WORDLISTEDIT_PARAGR_NORMALIZE",
+R'''</div>
+
+<div class="topic-paragraph">''', lm,
+    "CHAP_CATEGORIES_TOPIC_WORDLISTEDIT_PARAGR_SORT",
+R'''</div>
+
+<div class="topic-paragraph">''', lm,
+    "CHAP_CATEGORIES_TOPIC_WORDLISTEDIT_PARAGR_DEDUP",
+R'''</div>
+
+<div class="topic-paragraph">''', lm,
+    "CHAP_CATEGORIES_TOPIC_WORDLISTEDIT_PARAGR_OK",
+R'''</div>
+
+<div class="topic-paragraph">''', lm,
+    "CHAP_CATEGORIES_TOPIC_WORDLISTEDIT_PARAGR_APPLY",
+R'''</div>
+
+<div class="topic-paragraph">''', lm,
+    "CHAP_CATEGORIES_TOPIC_WORDLISTEDIT_PARAGR_CANCEL",
+R'''</div>
+
+<a name="FindCatWordWnd"></a>
+<div class="topic-title">''', lm, 
+    "CHAP_CATEGORIES_TOPIC_FINDWORD_TITLE", R'''</div>
+
+<div class="topic-paragraph">''', lm,
+    "CHAP_CATEGORIES_TOPIC_FINDWORD_PARAGR_OVERVIEW",
+    image("FindCatWordWnd"),
+R'''</div>
+
+<div class="topic-paragraph">''', lm,
+    "CHAP_CATEGORIES_TOPIC_FINDWORD_PARAGR_USE")
+
+prn(R'''</div>
+
+<a name="WordNormalizationWnd"></a>
+<div class="topic-title">''', lm, 
+    "CHAP_CATEGORIES_TOPIC_WORDNORM_TITLE", R'''</div>
+
+<div class="topic-paragraph">''', lm,
+    "CHAP_CATEGORIES_TOPIC_WORDNORM_PARAGR_OVERVIEW",
+    image("WordNormalizationWnd"),
+R'''</div>
+
+<div class="topic-paragraph">''', lm,
+    "CHAP_CATEGORIES_TOPIC_WORDNORM_PARAGR_DESC",
+R'''</div>
+
+<div class="topic-paragraph">''', lm,
+    "CHAP_CATEGORIES_TOPIC_WORDNORM_PARAGR_1ST",
+R'''</div>
+
+<div class="topic-paragraph">''', lm,
+    "CHAP_CATEGORIES_TOPIC_WORDNORM_PARAGR_2ND",
+R'''</div>
+
+<div class="topic-paragraph">''', lm,
+    "CHAP_CATEGORIES_TOPIC_WORDNORM_PARAGR_3RD",
+R'''</div>
+
+<div class="topic-paragraph">''', lm,
+    "CHAP_CATEGORIES_TOPIC_WORDNORM_PARAGR_4TH",
+R'''</div>
+
+<div class="topic-paragraph">''', lm,
+    "CHAP_CATEGORIES_TOPIC_WORDNORM_PARAGR_5TH",
+R'''</div>
+
+<div class="topic-paragraph">''', lm,
+    "CHAP_CATEGORIES_TOPIC_WORDNORM_PARAGR_6TH",
+R'''</div>
+
+<div class="topic-paragraph">''', lm,
+    "CHAP_CATEGORIES_TOPIC_WORDNORM_PARAGR_GUESSED",
+R'''</div>
+
+<div class="topic-paragraph">''', lm,
+    "CHAP_CATEGORIES_TOPIC_WORDNORM_PARAGR_OK",
+R'''</div>
+
+<div class="topic-paragraph">''', lm,
+    "CHAP_CATEGORIES_TOPIC_WORDNORM_PARAGR_CANCEL",
+R'''</div>
+
+<a name="LemmaWnd"></a>
+<div class="topic-title">''', lm, 
+    "CHAP_CATEGORIES_TOPIC_LEMMA_TITLE", R'''</div>
+
+<div class="topic-paragraph">''', lm,
+    "CHAP_CATEGORIES_TOPIC_LEMMA_PARAGR_OVERVIEW",
+    image("LemmaWnd"),
+R'''</div>
+
+<div class="topic-title">''', lm, 
+    "CHAP_CATEGORIES_TOPIC_EXPREDIT_TITLE", R'''</div>
+
+<div class="topic-paragraph">''', lm, 
+    "CHAP_CATEGORIES_TOPIC_EXPREDIT_PARAGR_OVERVIEW", 
+    image("ExpressionEditor"),
+R'''</div>
+
+<div class="topic-title">''', lm, 
+    "CHAP_CATEGORIES_TOPIC_CATSEL_TITLE", R'''</div>
+
+<div class="topic-paragraph">''', lm, 
+    "CHAP_CATEGORIES_TOPIC_CATSEL_PARAGR_OVERVIEW", 
+R'''</div>
+
+<div class="topic-paragraph">''', lm, 
+    "CHAP_CATEGORIES_TOPIC_CATSEL_PARAGR_SINGLE",
+    image("CategorySingleSel"),
+R'''</div>
+
+<div class="topic-paragraph">''', lm, 
+    "CHAP_CATEGORIES_TOPIC_CATSEL_PARAGR_MULT",
+    image("CategoryMultSel"),
+R'''</div>
+
+<div class="topic-title">''', lm, 
+    "CHAP_CATEGORIES_TOPIC_LOCALEEDIT_TITLE", R'''</div>
+
+<div class="topic-paragraph">''', lm, 
+    "CHAP_CATEGORIES_TOPIC_LOCALEEDIT_PARAGR_OVERVIEW", 
+    image("LocaleEditor"),
+R'''</div>
+
+<div class="topic-paragraph">''', lm, 
+    "CHAP_CATEGORIES_TOPIC_LOCALEEDIT_PARAGR_DESC", 
+R'''</div>
+
+<a name="Categories_Search"></a>
+<div class="topic-title">''', lm, 
+    "CHAP_CATEGORIES_TOPIC_CATEGORYSEARCH_TITLE", R'''</div>
+
+<div class="topic-paragraph">''', lm, 
+    "CHAP_CATEGORIES_TOPIC_CATEGORYSEARCH_PARAGR_VIEW", 
+    image("CategorySearch"),
+R'''</div>
+
+<div class="topic-paragraph">''', lm, 
+    "CHAP_CATEGORIES_TOPIC_CATEGORYSEARCH_PARAGR_MENU",
+R'''</div>
+
+<a name="EMI_LINK"></a>
+<div class="topic-paragraph">''', lm, 
+    "CHAP_CATEGORIES_TOPIC_CATEGORYSEARCH_PARAGR_EMIMENU",
+R'''</div>
+
+<a name="EMI"></a>
+<div class="topic-paragraph">''', lm, 
+    "CHAP_CATEGORIES_TOPIC_CATEGORYSEARCH_PARAGR_EMI",
+R'''</div>
+
+<a name="CATMAN_LINKS"></a>
+<div class="topic-paragraph">''', lm, 
+    "CHAP_CATEGORIES_TOPIC_CATEGORYSEARCH_PARAGR_REMOVECAT",
+R'''</div>
+
+<div class="topic-paragraph">''', lm, 
+    "CHAP_CATEGORIES_TOPIC_CATEGORYSEARCH_PARAGR_EDITCAT",
+R'''</div>
+
+<div class="topic-paragraph">''', lm, 
+    "CHAP_CATEGORIES_TOPIC_CATEGORYSEARCH_PARAGR_ADDCATWND",
+    image("CategoryAdd"),
+R'''</div>
+
+<div class="topic-paragraph">''', lm, 
+    "CHAP_CATEGORIES_TOPIC_CATEGORYSEARCH_PARAGR_ADDCAT",
+R'''</div>
+
+<div class="topic-paragraph">''', lm, 
+    "CHAP_CATEGORIES_TOPIC_CATEGORYSEARCH_PARAGR_EDITSRC",
+R'''</div>
+
+<a name="WordBoxPanel"></a>
+<div class="topic-title">''', lm, 
+    "CHAP_CATEGORIES_TOPIC_CATEGORYSEARCH_PARAGR_WORDBOXPAN_TITLE", R'''</div>
+
+<div class="topic-paragraph">''', lm, 
+    "CHAP_CATEGORIES_TOPIC_CATEGORYSEARCH_PARAGR_WORDBOXPAN",
+R'''</div>
+
+<a name="WordBox"></a>
+<div class="topic-paragraph">''', lm, 
+    "CHAP_CATEGORIES_TOPIC_CATEGORYSEARCH_PARAGR_WORDBOX",
+    image("WordListSelWnd"),
+R'''</div>
+
+<div class="topic-paragraph">''', lm, 
+    "CHAP_CATEGORIES_TOPIC_CATEGORYSEARCH_PARAGR_WORDBOX2",
+R'''</div>
+
+<div class="topic-paragraph">''', lm, 
+    "CHAP_CATEGORIES_TOPIC_CATEGORYSEARCH_PARAGR_WORDBOX3",
+    image("WordListSelChoice"),
+R'''</div>
+
+<div class="topic-paragraph">''', lm, 
+    "CHAP_CATEGORIES_TOPIC_CATEGORYSEARCH_PARAGR_WORDBOX4",
+R'''</div>
+
+<div class="topic-paragraph">''', lm, 
+    "CHAP_CATEGORIES_TOPIC_CATEGORYSEARCH_PARAGR_WORDBOX5",
+R'''</div>
+
+<div class="topic-paragraph">''', lm, 
+    "CHAP_CATEGORIES_TOPIC_CATEGORYSEARCH_PARAGR_WORDBOX6",
+    image("WordBoxMoved"),
+R'''</div>
+
+<div class="topic-paragraph">''', lm, 
+    "CHAP_CATEGORIES_TOPIC_CATEGORYSEARCH_PARAGR_WORDBOX7",
+R'''</div>
+
+<a name="WordConvMenu"></a>
+<div class="topic-paragraph">''', lm, 
+    "CHAP_CATEGORIES_TOPIC_CATEGORYSEARCH_PARAGR_WORDCONVMENU",
+R'''</div>
+
+<div class="topic-paragraph">''', lm, 
+    "CHAP_CATEGORIES_TOPIC_CATEGORYSEARCH_PARAGR_SEARCH",
+R'''</div>
+
+<div class="topic-paragraph">''', lm, 
+    "CHAP_CATEGORIES_TOPIC_CATEGORYSEARCH_PARAGR_GOOGLE",
+R'''</div>
+
+<div class="topic-paragraph">''', lm, 
+    "CHAP_CATEGORIES_TOPIC_CATEGORYSEARCH_PARAGR_TRANSLATE",
+R'''</div>
+
+<div class="topic-paragraph">''', lm, 
+    "CHAP_CATEGORIES_TOPIC_CATEGORYSEARCH_PARAGR_FIND",
+R'''</div>
+
+<div class="topic-paragraph">''', lm, 
+    "CHAP_CATEGORIES_TOPIC_CATEGORYSEARCH_PARAGR_LOWER",
+R'''</div>
+
+<div class="topic-paragraph">''', lm, 
+    "CHAP_CATEGORIES_TOPIC_CATEGORYSEARCH_PARAGR_UPPER",
+R'''</div>
+
+<div class="topic-paragraph">''', lm, 
+    "CHAP_CATEGORIES_TOPIC_CATEGORYSEARCH_PARAGR_CAPITALIZE",
+R'''</div>
+
+<div class="topic-paragraph">''', lm, 
+    "CHAP_CATEGORIES_TOPIC_CATEGORYSEARCH_PARAGR_NORMALIZE",
+R'''</div>
+
+<div class="topic-paragraph">''', lm, 
+    "CHAP_CATEGORIES_TOPIC_CATEGORYSEARCH_PARAGR_SORT",
+R'''</div>
+
+<div class="topic-paragraph">''', lm, 
+    "CHAP_CATEGORIES_TOPIC_CATEGORYSEARCH_PARAGR_DEDUP",
+R'''</div>
+
+</div>
+</div> <!-- end of Category Edit topic -->
+
+</div> <!-- end of Interface chapter -->''')
+
+prn(R'''
+<div class="chapter">
+<div class="chapter-title">''', lm, "CHAP_USAGE_TITLE", R'''</div>
+<div class="chapter-intro">''', lm, "CHAP_USAGE_INTRO", R'''</div>
+
+<div class="section">
+
+<div class="section-title">''', lm, "CHAP_USAGE_SECTION_CATMAN_TITLE", 
+    R'''</div>
+<div class="section-intro">''', lm, "CHAP_USAGE_SECTION_CATMAN_INTRO", 
+    R'''</div>
+<div class="section-content">
+
+<div class="topic-title">''', lm, 
+    "CHAP_USAGE_SECTION_CATMAN_TOPIC_CATENHANCE_TITLE", R'''</div>
+
+<div class="topic-paragraph">''',
+    chap_usage_section_catman_topic_canenhance_paragr_intro_templ,
+    chap_usage_section_catman_topic_canenhance_paragr_intro_vars,
+R'''</div>
+
+</div>
+</div> <!-- end of Category Management Scenarios -->
+</div> <!-- end of Usage scenarios chapter -->''')
+
+prn(
+R'''
+  </td></tr>
+''', create_copyright(context), R'''
+</table>
+</body>
+</html>
+''')

@@ -1,0 +1,86 @@
+/*
+ * product   : NewsGate - news search WEB server
+ * copyright : Copyright (c) 2005-2016 Karen Arutyunov
+ * licenses  : CC BY-NC-SA 3.0; see accompanying LICENSE file
+ *             Commercial; contact karen.arutyunov@gmail.com
+ */
+
+/**
+ * @file NewsGate/Server/Services/Moderator/Commons/ModerationCommons.idl
+ * @author Karen Arutyunov
+ * $Id:$
+ */
+
+#ifndef _NEWSGATE_SERVER_SERVICES_MODERATOR_COMMONS_MODERATIONCOMMONS_IDL_
+#define _NEWSGATE_SERVER_SERVICES_MODERATOR_COMMONS_MODERATIONCOMMONS_IDL_
+
+module NewsGate
+{ 
+  module Moderation
+  {
+    exception AccountAlreadyExist
+    {
+    };
+
+    exception AccountNotExist
+    {
+    };
+
+    exception NewNameOccupied
+    {
+    };
+
+    exception ImplementationException
+    {
+      string description;
+    };
+
+    exception NotReady
+    {
+      string reason;
+    };
+
+    exception InvalidUsername
+    {
+    };
+    
+    exception AccountDisabled
+    {
+    };
+
+    exception InvalidSession
+    {
+    };
+
+    exception PermissionDenied
+    {
+    };    
+
+    exception TaskNotFound
+    {
+    };
+
+    exception OperationFailed
+    {
+      string reason;
+    };
+
+    exception ObjectNotFound
+    {
+      string reason;
+    };
+    
+    exception ObjectAlreadyExist
+    {
+      string reason;
+    };
+/*    
+    exception InvalidObject
+    {
+      string reason;
+    };
+*/
+  };  
+};
+
+#endif // _NEWSGATE_SERVER_SERVICES_MODERATOR_COMMONS_MODERATIONCOMMONS_IDL_

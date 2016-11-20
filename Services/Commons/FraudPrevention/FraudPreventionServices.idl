@@ -1,0 +1,61 @@
+/*
+ * product   : NewsGate - news search WEB server
+ * copyright : Copyright (c) 2005-2016 Karen Arutyunov
+ * licenses  : CC BY-NC-SA 3.0; see accompanying LICENSE file
+ *             Commercial; contact karen.arutyunov@gmail.com
+ */
+
+/**
+ * @file NewsGate/Server/Services/Commons/FraudPrevention/FraudPreventionServices.idl
+ * @author Karen Arutyunov
+ * $Id:$
+ */
+
+#ifndef _NEWSGATE_SERVER_SERVICES_COMMONS_FRAUDPREVENTION_FRAUDPREVENTIONSERVICES_IDL_
+#define _NEWSGATE_SERVER_SERVICES_COMMONS_FRAUDPREVENTION_FRAUDPREVENTIONSERVICES_IDL_
+
+module NewsGate
+{ 
+  module FraudPrevention
+  {
+    module Transport
+    {
+      //
+      // Implementation in Services/Commons/FraudPrevention/TransportImpl.hpp
+      //
+      
+      custom valuetype EventLimitCheckPack
+      {
+      };
+
+      custom valuetype EventLimitCheckResultPack
+      {
+      };
+    };
+    
+    exception IncompatibleVersion
+    {
+      unsigned long current_version;
+    };
+
+    exception ImplementationException
+    {
+      string description;
+    };
+    
+    interface LimitChecker
+    {
+      // Increment whenever structures defined in
+      // Services/Commons/FraudPrevention/TransportImpl.hpp change
+      const unsigned long INTERFACE_VERSION = 1;
+      
+      Transport::EventLimitCheckResultPack
+      check(in unsigned long interface_version,
+            in Transport::EventLimitCheckPack pack)
+        raises(IncompatibleVersion, ImplementationException);
+    };
+  };
+  
+};
+
+#endif // _NEWSGATE_SERVER_SERVICES_COMMONS_FRAUDPREVENTION_FRAUDPREVENTIONSERVICES_IDL_

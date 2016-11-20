@@ -1,0 +1,1977 @@
+import search_intr
+import search_util
+import search_page_util
+
+class WordInfo:
+
+  def __init__(this, i, w):
+    this.index = i
+    this.weight = w
+
+def cmp_word_weight(w1, w2):
+  if w1.weight > w2.weight: return -1
+  if w1.weight < w2.weight: return 1
+  return 0
+
+def cmp_msg_pub(m1, m2):
+  if m1.published > m2.published: return -1
+  if m1.published < m2.published: return 1
+  return 0
+
+class SearchPageResultsRender(search_page_util.SearchPageRender):
+
+  search_page_results_render_base = search_page_util.SearchPageRender
+
+  def __init__(this, context, search_engine):
+    
+    this.search_page_results_render_base.__init__(this,
+                                                  context,
+                                                  search_engine,
+                                                  "h",
+                                                  False)
+
+    try:
+      tmp = this.static.image_show_number
+
+    except:
+
+      conf = context.config.get
+      st = this.static
+
+      st.impression_respected_level = \
+        int(conf("search.sort.impression_respected_level"))
+
+      sort_by_relevance_conf = conf("search.sort.by_relevance").get
+
+      st.core_words_prc = float(sort_by_relevance_conf("core_words_prc"))
+      st.max_core_words = long(sort_by_relevance_conf("max_core_words"))
+      st.image_show_number = int(conf("search.image.show_number"))
+      st.mailing = int(conf("search.mail.enabled"))
+      st.mailing_recaptcha_key = conf("search.mail.recaptcha_client_key")
+
+    this.error_code = -1
+    this.error_pos = 0
+
+    this.ad_crawler = this.crawler and (this.crawler.name == "adsensebot" or \
+      this.crawler.name == "yadirect")
+
+    this.email = this.string_param("sm_e")
+
+    if this.search_engine_refered: this.start_from = 0
+    this.no_follow_msg = True
+    this.crawler_show_story = True
+
+    this.left_bar_today_messages = []
+    this.left_bar_week_messages = []
+
+    if this.moderation_url == "":
+
+      this.page_ad_id = \
+        this.site_version == search_util.SearchPageContext.SV_TAB and \
+        ( this.message_view == "nline" and \
+          newsgate.ad.PI_TAB_NLINE or \
+          this.in_2_columns and newsgate.ad.PI_TAB_PAPER or \
+          newsgate.ad.PI_TAB_COLUMN
+        ) or \
+        this.site_version == search_util.SearchPageContext.SV_MOB and \
+        ( this.message_view == "nline" and \
+          newsgate.ad.PI_MOB_NLINE or newsgate.ad.PI_MOB_COLUMN
+        ) or \
+        ( this.message_view == "nline" and \
+          newsgate.ad.PI_DESK_NLINE or \
+          this.in_2_columns and newsgate.ad.PI_DESK_PAPER or \
+          newsgate.ad.PI_DESK_COLUMN
+        )
+
+#    this.page_ad_id = newsgate.ad.PI_UNKNOWN
+
+    if this.interceptor: this.block = this.interceptor.bastion("search")
+
+  def prn_script(this, 
+                 search_path = "", 
+                 search_query_extra_params = "", 
+                 view_options = True):
+
+    this.search_page_results_render_base.prn_script(this, 
+                                                    search_path, 
+                                                    search_query_extra_params,
+                                                    view_options)
+
+    this.prn('\n<script type="text/javascript">')
+
+    if this.static.mailing:
+
+      this.prn(R'''
+page.search_mail =
+{
+  key: "''', el.string.manip.js_escape(this.static.mailing_recaptcha_key),R'''",
+  id: "''', el.string.manip.js_escape(this.string_param("sm_i")), R'''",
+  email: "''', el.string.manip.js_escape(this.email),
+               R'''",
+  format: ''', this.string_param("sm_f", "0"), R''',
+  messages: ''', this.string_param("sm_h", "100"), R''',
+  title: "''', el.string.manip.js_escape(\
+                 this.raw_param(
+                   "sm_t", 
+                   el.string.manip.xml_decode(this.query_title()))),
+               R'''",
+  del_img: "''', this.resource_url('/fixed/img/delete.png'),
+               R'''",
+  lang: "''', this.language.l2_code(), R'''",
+  times: [''')
+
+      first = True
+      for p in this.context.request.input.parameters():
+        if p.name == "sm_m":
+          if first: first = False
+          else: this.prn(",")
+          t = p.value.split("-")
+          this.prn(" {d:", t[0], ",t:", t[1], "}")
+
+      this.prn(R''' ]
+};''')
+
+    this.prn('\ninit(', render.error_pos, ');\n</script>')
+
+  def search_context(this):
+
+    context = this.search_page_results_render_base.search_context(this)    
+    
+    if this.site_version == search_util.SearchPageContext.SV_MOB:
+      context.in_2_columns = False
+
+    context.optimize_query = True
+    context.adjust_images = True
+
+    if this.site_version == search_util.SearchPageContext.SV_MOB:
+      context.max_title_len = 100
+      context.max_title_from_desc_len = 25
+
+    context.gm_flags |= newsgate.search.SearchContext.GM_SOURCE | \
+                        newsgate.search.SearchContext.GM_ID | \
+                        newsgate.search.SearchContext.GM_LINK | \
+                        newsgate.search.SearchContext.GM_TITLE | \
+                        newsgate.search.SearchContext.GM_PUB_DATE | \
+                        newsgate.search.SearchContext.GM_FETCH_DATE | \
+                        newsgate.search.SearchContext.GM_EVENT |\
+                        newsgate.search.SearchContext.GM_LANG
+
+    if not this.block:
+
+      context.sr_flags |= \
+        newsgate.search.SearchContext.RF_CATEGORY_STAT
+
+      context.gm_flags |= newsgate.search.SearchContext.GM_CATEGORIES
+
+      context.page_ad_id = this.page_ad_id
+
+    if this.desc_length:
+      context.gm_flags |= newsgate.search.SearchContext.GM_DESC
+
+    if this.desc_length > 0:
+      context.max_desc_len = this.desc_length
+
+    if this.with_images:
+      context.max_image_count = 0xFFFFFFFF
+      context.gm_flags |= newsgate.search.SearchContext.GM_IMG
+
+    if this.show_segmentation:
+      flags = newsgate.search.SearchContext.FF_FANCY_SEGMENTATION
+      context.title_format |= flags
+      context.description_format |= flags
+      context.img_alt_format |= flags
+      context.keywords_format |= flags
+
+    if this.require_debug_info:
+      context.gm_flags |= newsgate.search.SearchContext.GM_DEBUG_INFO |\
+                          newsgate.search.SearchContext.GM_STAT |\
+                          newsgate.search.SearchContext.GM_KEYWORDS |\
+                          newsgate.search.SearchContext.GM_VISIT_DATE
+
+    context.event_overlap = this.raw_param("eo")
+    context.event_split = this.raw_param("es")
+
+    try: context.event_separate = long(this.raw_param("ep", 0))
+    except: pass
+
+    if not context.event_separate:
+      try: 
+        context.event_separate = long(this.raw_param("epn", 0))
+        context.event_narrow_separation = True
+      except:
+        pass
+
+    if this.extra_msg_info:
+      context.gm_flags |= newsgate.search.SearchContext.GM_EXTRA_MSG_INFO |\
+                          newsgate.search.SearchContext.GM_LANG |\
+                          newsgate.search.SearchContext.GM_STAT |\
+                          newsgate.search.SearchContext.GM_VISIT_DATE
+
+    if meta_keywords_count or this.extra_msg_info:
+      context.gm_flags |= newsgate.search.SearchContext.GM_CORE_WORDS
+
+    context.category_locale = this.modifier.category
+
+    return context
+
+  def custom_log(this, level):
+
+    return level == 0 and this.block or ''
+
+  def prn_share_page(this):
+
+    if this.rss_link and this.moderation_url == "":
+      this.prn(\
+        R'''<table style="font-size:100%;border-collapse:collapse;padding:0;margin:0;" cellspacing="0">
+<tr style="padding:0;margin:0;">''')
+
+      if this.site_version == search_util.SearchPageContext.SV_MOB:
+        size = "32"
+      else:
+        size = "16"
+        prn('<td style="padding:0;margin:0;white-space:nowrap;">',
+            this.lm, "SUBSCRIBE", '</td>')
+
+      if this.static.mailing:
+
+        this.prn(R'''
+<td class="mail_cell">
+<a href="javascript:show_mail_dialog()" title="''', this.lm, "SUBSCRIBE_MAIL",
+                 "'", this.query_title(), "'",
+        '"><img width="', size, '" height="', size, '" src="/fixed/img/mail',
+        size, '.png"/></a></td>')
+
+      this.prn(R'''
+<td class="rss_cell">
+<a href="''', el.string.manip.xml_encode(this.rss_link), 
+        '" target="_blank" rel="nofollow" title="RSS"><img width="', 
+        size, '" height="', size, '" src="/fixed/img/rss',
+        size, '.png"/></a></td></tr></table>')
+
+  def prn_media_header(this, msg, image_count):
+  
+    msg_images_heading = this.get_template("MSG_IMAGES_HEADING")
+
+    classname = "msg_media_header"
+
+    if render.translator:
+      classname += " " + render.translator.notranslate_class()
+
+    this.prn('\n<div class="', classname, '">')
+
+    vars = { "MSG_IMAGES_COUNT" : this.localizer.plural("image", 
+                                                        image_count,
+                                                        this.language),
+             "MSG_PAGE_REF" : el.string.manip.xml_encode(\
+                                this.message_url(msg, None)),
+             "ATTRS" : this.no_follow_msg and ' rel="nofollow"' or ''
+           }
+
+    this.prn(msg_images_heading, vars, "</div>")
+
+  def prn_images(this, msg, images):
+
+    this.prn('<table class="msg_images" cellspacing="0">\n')
+
+    for img in images:
+
+      img_desc = this.create_image_desc(img)
+
+      this.prn('<tr>\n<td class="msg_media_item">\n<a href="',
+               el.string.manip.xml_encode(\
+               this.message_url(msg, img)),
+               '" target="_blank"', 
+               this.no_follow_msg and ' rel="nofollow"' or '', 
+               '>\n<img class="msg_media_img" src="',
+               el.string.manip.xml_encode(img_desc.url), '" ',
+               img_desc.width_attr, ' ', img_desc.height_attr, 
+               '/>\n</a>\n')
+
+      if img.alt != "":
+        this.prn('<div class="mmi_print_', this.large_print and "l" or "s", 
+                 '">', this.ad_section_start(), img.alt, this.ad_section_end(),
+                 '</div>')
+
+      this.prn(R'''
+</td>
+</tr>
+''')
+
+    this.prn('</table>')
+
+  def prn_final_script(this):
+
+    this.search_page_results_render_base.prn_final_script(this)
+
+    script_opened = False
+
+    if this.crawler == None and not this.moderation_url and \
+       this.static.stat_url != None and this.search_result != None:
+
+      script_opened = True
+
+      this.prn(R'''
+<script type="text/javascript">
+page.impression =
+{ 
+  stat_url_prefix: "''', this.static.stat_url, '?e=i&t=', 
+               this.block and "z" or "h", this.uid and \
+               ('&u=' + el.string.manip.mime_url_encode(this.uid)) or "",
+               '&r=', this.search_result.request_id, R'''",
+  messages: [''')
+
+      is_first = True
+      for msg in this.search_result.messages:
+        if is_first: is_first = False
+        else: this.prn(",")
+        this.prn(' "', el.string.manip.js_escape(msg.encoded_id), '"')
+
+      this.prn(R''' ]
+};
+
+report_message_impression();''')
+
+    if this.moderation_init != "":
+
+      if not script_opened:
+
+        script_opened = True
+        this.prn('\n<script type="text/javascript">')
+
+      this.prn('\n', this.moderation_init, '("', 
+               el.string.manip.js_escape(this.moderation_params), '");')
+
+    if this.crawler == None and not this.moderation_url:
+
+      if not script_opened:
+
+        script_opened = True
+        this.prn('\n<script type="text/javascript">')
+
+      this.prn(R'''
+if(page.search_mail !== undefined && page.search_mail.id)
+{
+  show_mail_dialog();
+}''')
+
+    if script_opened: this.prn('\n</script>')
+
+  def prn_time(this, time):
+
+    if time:
+      tm = request.time().sec()
+  
+      if tm > time: tm = tm - time
+      else: tm = 0
+
+      time = this.friendly_time(tm, True) + ' (' + \
+             el.Moment(el.TimeValue(time)).iso8601(False).replace(' ', '.') + \
+             ')'
+
+      time = time.replace(' ', '&nbsp;')
+
+    this.prn(time)
+
+  def message_weight(this, msg):
+
+      impression_respected_level = this.static.impression_respected_level
+
+      respected_impression = max(msg.impressions, impression_respected_level)
+
+      respected_feed_impression = \
+        max(msg.feed_impressions, impression_respected_level)
+
+      return (respected_impression and \
+        float(min(msg.clicks,msg.impressions)) / respected_impression or 0.0)+\
+        (respected_feed_impression and \
+        float(min(msg.feed_clicks,msg.feed_impressions)) / \
+        respected_feed_impression or 0.0)
+
+  def subsearch(this, query, results):
+
+    messages = []
+
+    if this.event() and this.search_result.messages.size() == \
+       this.search_result.total_matched_messages:
+
+      return messages
+
+    category = this.category()
+
+#    try:
+    if True:
+
+      ctx = newsgate.search.SearchContext()
+
+      ctx.title_format = 0
+
+      ctx.gm_flags = newsgate.search.SearchContext.GM_EVENT |\
+                     newsgate.search.SearchContext.GM_TITLE |\
+                     newsgate.search.SearchContext.GM_ID |\
+                     newsgate.search.SearchContext.GM_SOURCE |\
+                     newsgate.search.SearchContext.GM_PUB_DATE |\
+                     newsgate.search.SearchContext.GM_LINK
+
+      if this.event():
+
+        ctx.gm_flags |= newsgate.search.SearchContext.GM_STAT
+
+        ctx.sorting_type = \
+          newsgate.search.SearchContext.SM_BY_POPULARITY_DESC
+
+        ctx.suppression.type = newsgate.search.SearchContext.ST_SIMILAR
+
+        ctx.suppression.core_words.intersection = 40
+        ctx.suppression.core_words.containment_level = 40
+        ctx.suppression.core_words.min_count = 0
+
+      else:
+
+        ctx.sorting_type = \
+          newsgate.search.SearchContext.SM_BY_EVENT_CAPACITY_DESC
+
+        ctx.suppression.type = newsgate.search.SearchContext.ST_COLLAPSE_EVENTS
+
+        ctx.suppression.core_words.intersection = 10
+        ctx.suppression.core_words.containment_level = 10
+        ctx.suppression.core_words.min_count = 0
+
+      ctx.results_count = results
+
+      filter = this.filter
+
+      ctx.filter.lang = filter.lang
+      ctx.filter.country = filter.country
+      ctx.filter.feed = filter.feed
+      ctx.filter.category = filter.category
+
+      ctx.filter.event = filter.event.event_id and \
+        el.string.manip.base64_to_ulong(filter.event.event_id) or 0
+
+      ctx.query = query
+
+      if category:
+        ctx.results_count *= 5
+
+      res = this.search_engine.search(ctx)
+
+      for m in res.messages:
+
+        dup = False
+
+        for m2 in messages:
+          if m2.title == m.title:
+            dup = True
+            break
+
+        if not dup: messages.append(m)
+
+#      category = None
+
+      if category:
+
+        if category[len(category) - 1] != '/': category += '/'
+        if category[0] != '/': category = '/' + category
+
+        msg_ids = ""
+        event_ids = ""
+
+        for m in messages:
+          msg_ids += " " + m.id
+          event_ids += " " + m.event_id
+
+        if msg_ids:
+
+          ctx.query = "EVENT" + event_ids + " EXCEPT MSG" + msg_ids
+
+          ctx.suppression.core_words.intersection = 101
+          ctx.suppression.core_words.containment_level = 101
+          ctx.suppression.core_words.min_count = 100000000
+
+          ctx.gm_flags = newsgate.search.SearchContext.GM_EVENT |\
+                         newsgate.search.SearchContext.GM_ID |\
+                         newsgate.search.SearchContext.GM_CATEGORIES
+
+          ctx.sorting_type = newsgate.search.SearchContext.SM_NONE
+
+          res = this.search_engine.search(ctx)
+
+          message_map = {}
+          for m in res.messages: message_map[m.event_id] = m
+
+          new_messages = []
+          cat_len = len(category)
+
+          for m in messages:
+
+            if m.event_id in message_map:
+
+              m2 = message_map[m.event_id]
+
+              cat_confirm = False
+
+              for cat in m2.categories:
+                if cat[0:cat_len] == category:
+                  cat_confirm = True
+                  break
+
+              if cat_confirm:
+                new_messages.append(m)
+                if len(new_messages) == results: break
+
+          messages = new_messages
+
+      messages.sort(cmp_msg_pub)
+
+#    except:
+#      pass
+
+    return messages
+
+
+  def prn_left_bar_block(this, title, messages, close_button):
+
+    if not messages: return
+
+    lbt_classname = "left_block_title"
+      
+    if this.translator:
+      lbt_classname += " " + this.translator.notranslate_class()
+
+    this.prn('<div class="', lbt_classname, '">')
+
+    if close_button and not this.crawler:
+
+      link = this.search_link(extra_params = "plb=s-0")
+
+      this.prn('<a href="', 
+               el.string.manip.xml_encode(this.make_ref(link, False)),
+               '"><img width="12" height="12" class="left_bar_close" src="',
+               this.resource_url('/fixed/img/delete2.png'), '"></a>')
+
+    this.prn(this.lm, title)
+
+    this.prn('</div>\n<div class="left_block">')
+
+    main_msg = None
+
+#    if len(messages) > 1:
+    if False:
+
+      main_msg_rctr = 3
+      impression_respected_level = render.static.impression_respected_level
+
+      if this.event():
+        for msg in messages:
+
+          factor = 100.0 * min(msg.clicks, msg.impressions)
+
+          respected_impression = \
+            max(msg.impressions, impression_respected_level)
+
+          rctr = respected_impression and factor / respected_impression or 0.0
+
+          if main_msg_rctr < rctr:
+            main_msg = msg
+            main_msg_rctr = rctr
+
+      else:
+        for msg in messages:
+          if not main_msg or main_msg.event_capacity < msg.event_capacity:
+            main_msg = msg
+
+    for msg in messages:
+
+      msg_url = msg.url
+
+      if this.translator and this.translator.to_lang != msg.lang:
+        msg_url = this.translator.enrich_outer_link(msg_url)
+
+      no_follow = ""
+
+      if this.crawler:
+        msg_url = this.story_url(msg)
+      else:
+        msg_url = this.message_url(msg)
+        if this.no_follow_msg: no_follow = ' rel="nofollow"'
+
+      classname = "left_block_item"
+
+      if this.translator and this.translator.to_lang == msg.lang:
+        classname += " " + this.translator.notranslate_class()
+
+      tm = request.time().sec()
+
+      if tm > msg.published: tm = tm - msg.published
+      else: tm = 0
+
+      time_classname = "nline_msg_time"
+
+      if this.translator:
+        time_classname += " " + this.translator.notranslate_class()
+
+      templ = this.get_template("TOP_PUBLISHED")
+      vars = { "MSG_TIME_AGO" : this.round_time(tm) }
+
+      if msg.country == el.Country.null:
+        msg_country = ""
+      else:
+        msg_country = this.localizer.country(msg.country, 
+                                             this.language)
+
+      this.prn('\n        <div class="', classname, '">')
+
+      classname = msg == main_msg and 'left_block_main_item_link' or \
+                 'left_block_item_link'
+
+      this.prn('<a href="', el.string.manip.xml_encode(msg_url), 
+               '" class="', classname, '" target="_blank"', no_follow,
+               '>', this.ad_section_start(), 
+               el.string.manip.xml_encode(
+                 search_util.truncate_text(msg.title, 100)),
+               this.ad_section_end(), '</a>')
+
+      this.prn('<div class="', time_classname, '">', templ, vars)
+
+      if msg.source_title:
+
+        classname = "pale_link"
+
+        if this.translator:
+          classname += " " + this.translator.notranslate_class()
+
+        link = this.make_ref(this.source_url(msg), False)
+
+        this.prn(' <a href="', el.string.manip.xml_encode(link), 
+                 '" target="_blank" class="', classname, '">', 
+                 el.string.manip.xml_encode(\
+                   search_util.truncate_text(msg.source_title, 50)),
+                 '</a>')
+
+#      this.prn(' (', msg_country, ')</div></div>')
+      this.prn('</div></div>')
+
+    this.prn('</div>')
+
+  def prn_left_bar(this):
+
+    if this.site_version != search_util.SearchPageContext.SV_MOB:
+      this.prn('\n<td class="left_bar">')
+
+    this.prn_left_bar_block("TOP_STORIES_TODAY", 
+                            this.left_bar_today_messages,
+                            True)
+
+    this.prn_left_bar_block("TOP_STORIES_WEEK", 
+                            this.left_bar_week_messages,
+                            not this.left_bar_today_messages)
+
+    if this.site_version != search_util.SearchPageContext.SV_MOB:
+      this.prn('\n</td>\n')
+
+  def prn_nline_view(this, messages):
+
+    this.prn(R'''
+    <table class="msg_container print_''', (this.large_print and "l" or "s"), 
+R'''" cellspacing="0">
+      <tr><td>''')
+
+    if messages: this.prn('<div class="nline">')
+
+    for msg in messages:
+
+      msg_url = msg.url
+
+      if this.translator and this.translator.to_lang != msg.lang:
+        msg_url = this.translator.enrich_outer_link(msg_url)
+
+      no_follow = ""
+
+      if this.crawler:
+        msg_url = this.story_url(msg)
+      else:
+        msg_url = this.message_url(msg)
+        if this.no_follow_msg: no_follow = ' rel="nofollow"'
+      
+      classname = "nline_msg"
+
+      if this.translator and this.translator.to_lang == msg.lang:
+        classname += " " + this.translator.notranslate_class()
+
+      tm = request.time().sec()
+
+      if tm > msg.published: tm = tm - msg.published
+      else: tm = 0
+
+      time_classname = "nline_msg_time"
+
+      if this.translator:
+        time_classname += " " + this.translator.notranslate_class()
+
+      templ = this.get_template("TOP_PUBLISHED")
+      vars = { "MSG_TIME_AGO" : this.round_time(tm) }
+
+      if msg.country == el.Country.null:
+        msg_country = ""
+      else:
+        msg_country = this.localizer.country(msg.country, this.language)
+
+      this.prn('\n        <div class="', classname, '"><div class="msg_in">')
+
+      this.prn('<a href="', el.string.manip.xml_encode(msg_url), 
+               '" class="left_block_item_link" target="_blank"', no_follow,
+               '>', this.ad_section_start(),  msg.title or "...",
+               this.ad_section_end(), '</a>')
+
+      if msg.event_capacity > 1 and not this.event_message_id() or \
+         this.require_debug_info:
+
+        link = this.make_ref(this.story_url(msg), False)
+
+        this.prn('&nbsp;<span class="nline_story"><a href="', 
+                 el.string.manip.xml_encode(link), 
+                 '" class="pale_link">', 
+                 '(', msg.event_capacity, ')</a></span>')
+
+      this.prn('<div class="', time_classname, '">', templ, vars)
+
+      if msg.source_title:
+
+        classname = "pale_link"
+
+        if this.translator:
+          classname += " " + this.translator.notranslate_class()
+
+        link = this.make_ref(this.source_url(msg), False)
+
+        this.prn(' <a href="', el.string.manip.xml_encode(link), 
+                 '" class="', classname, '">', 
+                 el.string.manip.xml_encode(\
+                   search_util.truncate_text(msg.source_title, 50)),
+                 '</a>')
+
+      this.prn(' (', msg_country, ')</div>')
+
+
+      this.prn('\n        </div></div>')
+
+    if messages:
+
+      if this.page_ad_id == newsgate.ad.PI_DESK_NLINE:
+
+        if newsgate.ad.SI_DESK_NLINE_MSA1 in this.ads:
+
+          this.prn('\n<div class="ad_nline_msa">',
+                   this.ads[newsgate.ad.SI_DESK_NLINE_MSA1].text, '</div>')
+
+      elif this.page_ad_id == newsgate.ad.PI_TAB_NLINE:
+
+        if newsgate.ad.SI_TAB_NLINE_MSA1 in this.ads:
+
+          this.prn('\n<div class="ad_nline_msa">',
+                   this.ads[newsgate.ad.SI_TAB_NLINE_MSA1].text, '</div>')
+
+      elif this.page_ad_id == newsgate.ad.PI_MOB_NLINE:
+
+        if newsgate.ad.SI_MOB_NLINE_MSA1 in this.ads:
+
+          this.prn('\n<div class="ad_nline_msa">',
+                   this.ads[newsgate.ad.SI_MOB_NLINE_MSA1].text, '</div>')
+  
+      this.prn('</div>')
+
+    this.prn('</td>\n      </tr>\n    </table>')
+
+  def prn_paper_view(this, messages):
+
+    prn(R'''
+    <table class="msg_container print_''', (this.large_print and "l" or "s"), 
+R'''" cellspacing="0">
+      <tr>''')
+
+    prn('\n      <td class="column', 
+        search_context.in_2_columns and search_result != None and \
+        (search_result.second_column_offset < message_count or \
+          newsgate.ad.SI_DESK_PAPER_MSA2 in this.ads or \
+          newsgate.ad.SI_TAB_PAPER_MSA2 in this.ads) and \
+        ' half_width' or ' full_width', '">')
+
+    show_fetch_date = \
+      search_context.sorting_type != \
+        newsgate.search.SearchContext.SM_BY_PUB_DATE_DESC and \
+      search_context.sorting_type != \
+        newsgate.search.SearchContext.SM_BY_PUB_DATE_ASC
+
+    if this.site_version == search_util.SearchPageContext.SV_MOB:
+      msg_published = this.get_template("PUBLISHED_MOB")
+    else:
+      msg_published = \
+        this.get_template(this.crawler and \
+                            this.brief_text_for_crawler and \
+                            "SOURCE" or show_fetch_date and "FETCHED" or \
+                            "PUBLISHED")
+
+    index = 0
+
+    for msg in messages:
+
+      if index == search_result.second_column_offset:
+
+        if this.page_ad_id == newsgate.ad.PI_DESK_PAPER:
+
+          if newsgate.ad.SI_DESK_PAPER_MSA1 in this.ads:
+            prn('\n        <div class="msg"><div class="msg_in">', 
+                this.ads[newsgate.ad.SI_DESK_PAPER_MSA1].text, '</div></div>')
+
+        elif this.page_ad_id == newsgate.ad.PI_TAB_PAPER:
+
+          if newsgate.ad.SI_TAB_PAPER_MSA1 in this.ads:
+            prn('\n        <div class="msg"><div class="msg_in">', 
+                this.ads[newsgate.ad.SI_TAB_PAPER_MSA1].text, '</div></div>')
+
+        prn('</td> <!-- end of column 1 --><td class="column">')
+
+      msg_url = msg.url
+
+      if this.translator and this.translator.to_lang != msg.lang:
+        msg_url = this.translator.enrich_outer_link(msg_url)
+
+      msg_url = \
+        el.string.manip.xml_encode(this.message_click_url(msg, msg_url))
+
+      classname = "msg"
+
+      if this.translator and this.translator.to_lang == msg.lang:
+        classname += " " + this.translator.notranslate_class()
+
+      prn('\n        <div class="', classname, '"')
+
+      if this.moderation_init: prn(' id="msg_', msg.encoded_id, '"')
+
+      prn('><div class="msg_in">')
+      prn('\n        <table class="msg_cont" cellspacing="0">')
+
+      if len(msg.title) > 0:
+        prn(R'''
+          <tr>
+          <td class="msg_title" id="mt_''', msg.encoded_id, 
+            '">')
+
+        if this.h2_title: prn('<h2>')
+
+        prn('<a href="', msg_url, '" target="_blank"', 
+            not this.h2_title and ' class="msg_title_a"' or '', 
+            this.no_follow_article and ' rel="nofollow"' or '',
+            '>', this.ad_section_start(), msg.title, this.ad_section_end(),
+            '</a>')
+
+        if this.h2_title: prn('</h2>')
+
+        prn('\n          </td>\n          </tr>')
+
+      msg_image_show_number = this.static.image_show_number
+
+      if len(msg.description) > 0:
+
+        prn('\n          <tr>\n          <td class="msg_desc" id="ma_', 
+            msg.encoded_id, '"')
+
+        if msg.lang != el.Lang.null: prn(' lang="', msg.lang.l2_code(), '"')
+
+        prn('>')
+
+        if msg.front_image != None:
+
+          img_desc = this.create_image_desc(msg.front_image)
+
+          prn('<a href="', 
+              el.string.manip.xml_encode(\
+                this.message_url(msg, msg.front_image)),
+              '" target="_blank"', 
+              this.no_follow_msg and ' rel="nofollow"' or '', 
+              '><img class="msg_front_img" src="',
+              el.string.manip.xml_encode(img_desc.url), '" ',
+              img_desc.width_attr, ' ', img_desc.height_attr, '/></a>')
+
+          msg_image_show_number -= 1
+
+        prn(this.ad_section_start(), msg.description, 
+            this.ad_section_end(),
+            '\n          </td>\n          </tr>')
+
+      if msg.images.size() > 0:
+    
+        prn('\n          <tr>\n          <td class="msg_media" id="mm_',
+             msg.encoded_id, '">')
+
+        visible_images = []
+        hidden_images = []
+
+        for img in msg.images:
+          if img.alt_highlighted: visible_images.append(img)
+          else: hidden_images.append(img)
+      
+        while len(visible_images) < msg_image_show_number and \
+              len(hidden_images) > 0:
+          visible_images.append(hidden_images.pop(0))
+
+        this.prn_images(msg, visible_images)
+
+        hidden_images_count = len(hidden_images)
+
+        if hidden_images_count > 0:
+          this.prn_media_header(msg, hidden_images_count)
+
+        prn('\n          </td>\n          </tr> <!-- msg_media -->')
+
+      prn('\n        </table>')
+
+      classname = "msg_more"
+
+      if this.translator:
+        classname += " " + this.translator.notranslate_class()
+
+      prn(R'''
+        <table class="msg_metainfo" id="mf_''', msg.encoded_id, 
+          R'''" cellspacing="0">
+          <tr>
+          <td class="''', classname, '">')
+
+      if not this.crawler:
+        if this.translator:
+          if msg.lang != this.translator.to_lang:
+            prn('<a href="',
+                el.string.manip.xml_encode(\
+                  this.message_url(msg, translator = False)),
+                '" target="_blank"', 
+                this.no_follow_msg and ' rel="nofollow"' or '', '>',
+                this.lm, "ORIGINAL", "</a>")
+
+            if msg.lang != el.Lang.null:
+              prn("&nbsp;(", this.localizer.language(msg.lang, this.language),
+                  ")")
+
+            prn("<br>")
+
+        elif this.default_translator and \
+             msg.lang != this.default_translator.to_lang:
+          prn('<a href="',
+              el.string.manip.xml_encode(\
+                this.message_url(msg, translator = this.default_translator)),
+              '" target="_blank"', 
+              this.no_follow_msg and ' rel="nofollow"' or '', '>', this.lm, 
+              "TRANSLATE", "</a><br>")
+
+      if this.site_version != search_util.SearchPageContext.SV_MOB:
+
+        prn('<a href="',
+            this.ad_crawler and el.string.manip.xml_encode(\
+              this.message_url(msg, None)) or msg_url, 
+            '" target="_blank"',
+            this.no_follow_article and ' rel="nofollow"' or '',
+            '>', lm, "READ_MORE", '</a>')
+
+      event_msg = this.event_message_id()
+
+      if (msg.event_capacity > 1 or this.crawler) and \
+         (not event_msg or \
+          this.crawler and this.crawler_show_story and \
+          event_msg != msg.encoded_id) or \
+         this.require_debug_info:
+
+        link = this.make_ref(this.story_url(msg), False)
+
+        if this.site_version != search_util.SearchPageContext.SV_MOB:
+          prn('<br>')
+
+        prn('<a href="', el.string.manip.xml_encode(link))
+
+        if this.story_title and msg.title and not this.require_debug_info:
+
+          prn('" title="')
+
+          if msg.title.find('<') >= 0:
+            title = msg.title.replace('<span class="found_word">', '')
+            title = title.replace('<span class="found_core_word">', '')
+            prn(title.replace('</span>', ''))
+          else:
+            prn(msg.title)
+
+        prn('">', 
+            lm, "SIMILAR_POSTS", '&nbsp;(', msg.event_capacity, ')</a>')
+
+      prn('\n          </td>')
+
+      if this.site_version == search_util.SearchPageContext.SV_MOB:
+        prn('</tr><tr>')
+
+      tm = request.time().sec()
+      msg_time = show_fetch_date and msg.fetched or msg.published
+
+      if tm > msg_time: tm = tm - msg_time
+      else: tm = 0
+
+      if msg.country == el.Country.null:
+        msg_country = ""
+      else:
+        msg_country = " (" + this.localizer.country(msg.country, 
+                                                      this.language) + ")"
+
+      link = this.make_ref(this.source_url(msg), False)
+
+      vars = \
+      { "MSG_TIME_AGO" : this.round_time(tm),
+        "URL" : el.string.manip.xml_encode(link),
+        "MSG_SOURCE_TITLE" : \
+          el.string.manip.xml_encode(\
+            search_util.truncate_text(\
+              msg.source_title or msg.source_url,
+              this.site_version == \
+                search_util.SearchPageContext.SV_MOB and 30 or 70)),
+        "MSG_COUNTRY" : msg_country,
+        "ATTRIBUTES" : ""
+      }
+
+      prn(R'''
+          <td class="msg_pub" id="mpb_''', msg.encoded_id, '">') 
+
+      if this.translator:
+        prn('<span class="', this.translator.notranslate_class(), '">')
+
+      prn(msg_published, vars)
+
+      if this.moderation_url != "":
+        prn('<span style="display:none" id="msr_', msg.encoded_id, '">', 
+            msg.source_id, '</span>');
+
+      if this.translator: prn('</span>')
+
+      if len(msg.categories):
+        prn('<br>')
+        this.prn_msg_categories(msg)
+
+      prn(R'''          </td>
+          </tr>
+        </table>''')
+
+      if this.page_ad_id == newsgate.ad.PI_DESK_PAPER:
+
+        if index == 0 and newsgate.ad.SI_DESK_PAPER_MSG1 in this.ads:
+
+          prn('\n        <table class="ad_paper_msg" cellspacing="0">\n\
+            <tr>\n          <td>',
+              this.ads[newsgate.ad.SI_DESK_PAPER_MSG1].text,
+              '\n          </td>\n          </tr>\n        </table>')
+
+        elif index == search_result.second_column_offset and \
+             newsgate.ad.SI_DESK_PAPER_MSG2 in this.ads:
+
+          prn('\n        <table class="ad_paper_msg" cellspacing="0">\n\
+            <tr>\n          <td>',
+              this.ads[newsgate.ad.SI_DESK_PAPER_MSG2].text,
+              '\n          </td>\n          </tr>\n        </table>')
+
+      elif this.page_ad_id == newsgate.ad.PI_DESK_COLUMN:
+
+        if index == 0 and newsgate.ad.SI_DESK_COLUMN_MSG1 in this.ads:
+
+          prn('\n        <table class="ad_paper_msg" cellspacing="0">\n\
+            <tr>\n          <td>',
+              this.ads[newsgate.ad.SI_DESK_COLUMN_MSG1].text,
+              '\n          </td>\n          </tr>\n        </table>')
+
+        elif index == 1 and newsgate.ad.SI_DESK_COLUMN_MSG2 in this.ads:
+
+          prn('\n        <table class="ad_paper_msg" cellspacing="0">\n\
+            <tr>\n          <td>',
+              this.ads[newsgate.ad.SI_DESK_COLUMN_MSG2].text,
+              '\n          </td>\n          </tr>\n        </table>')
+
+      elif this.page_ad_id == newsgate.ad.PI_TAB_PAPER:
+
+        if index == 0 and newsgate.ad.SI_TAB_PAPER_MSG1 in this.ads:
+
+          prn('\n        <table class="ad_paper_msg" cellspacing="0">\n\
+            <tr>\n          <td>',
+              this.ads[newsgate.ad.SI_TAB_PAPER_MSG1].text,
+              '\n          </td>\n          </tr>\n        </table>')
+
+        elif index == search_result.second_column_offset and \
+             newsgate.ad.SI_TAB_PAPER_MSG2 in this.ads:
+
+          prn('\n        <table class="ad_paper_msg" cellspacing="0">\n\
+            <tr>\n          <td>',
+              this.ads[newsgate.ad.SI_TAB_PAPER_MSG2].text,
+              '\n          </td>\n          </tr>\n        </table>')
+
+      elif this.page_ad_id == newsgate.ad.PI_TAB_COLUMN:
+
+        if index == 0 and newsgate.ad.SI_TAB_COLUMN_MSG1 in this.ads:
+
+          prn('\n        <table class="ad_paper_msg" cellspacing="0">\n\
+            <tr>\n          <td>',
+              this.ads[newsgate.ad.SI_TAB_COLUMN_MSG1].text,
+              '\n          </td>\n          </tr>\n        </table>')
+
+        elif index == 1 and newsgate.ad.SI_TAB_COLUMN_MSG2 in this.ads:
+
+          prn('\n        <table class="ad_paper_msg" cellspacing="0">\n\
+            <tr>\n          <td>',
+              this.ads[newsgate.ad.SI_TAB_COLUMN_MSG2].text,
+              '\n          </td>\n          </tr>\n        </table>')
+
+      elif this.page_ad_id == newsgate.ad.PI_MOB_COLUMN:
+
+        if index == 0 and newsgate.ad.SI_MOB_COLUMN_MSG1 in this.ads:
+
+          prn('\n        <table class="ad_paper_msg" cellspacing="0">\n\
+            <tr>\n          <td>',
+              this.ads[newsgate.ad.SI_MOB_COLUMN_MSG1].text,
+              '\n          </td>\n          </tr>\n        </table>')
+
+        elif index == 1 and newsgate.ad.SI_MOB_COLUMN_MSG2 in this.ads:
+
+          prn('\n        <table class="ad_paper_msg" cellspacing="0">\n\
+            <tr>\n          <td>',
+              this.ads[newsgate.ad.SI_MOB_COLUMN_MSG2].text,
+              '\n          </td>\n          </tr>\n        </table>')
+
+      print_debug_info = \
+        this.require_debug_info and search_result.debug_info != None
+
+      if print_debug_info or this.extra_msg_info:
+
+        debug_info_msg = None
+
+        try:
+          debug_info_msg = search_result.debug_info.messages[msg.encoded_id]
+        except: pass
+
+        if debug_info_msg:
+          prn('<div class="dbg-msg"><span class="dbg-item">id:</span>&nbsp;',
+              msg.id, 
+              '; <span class="dbg-item">event:</span>&nbsp;', msg.event_id,
+              '; <span class="dbg-item">capacity:</span>&nbsp;', 
+              msg.event_capacity,
+              '; <span class="dbg-item">lang:</span>&nbsp;', 
+              msg.lang.l3_code(),
+              '; <span class="dbg-item">country:</span>&nbsp;', 
+              msg.country.l3_code(),
+              '; <span class="dbg-item">signature:</span>&nbsp;', 
+              el.psp.HexMarker,
+              el.psp.UppercaseMarker, debug_info_msg.signature, 
+              el.psp.DecMarker, el.psp.NouppercaseMarker)
+
+          prn('; <span class="dbg-item">published:</span>&nbsp;')
+          this.prn_time(msg.published)
+
+          prn('; <span class="dbg-item">fetched:</span>&nbsp;')
+          this.prn_time(msg.fetched)
+
+          prn('; <span class="dbg-item">visited:</span>&nbsp;')
+          this.prn_time(msg.visited)
+
+          factor = 100.0 * min(msg.clicks, msg.impressions)
+          ctr = msg.impressions and factor / msg.impressions or 0.0
+
+          feed_factor = 100.0 * \
+            min(debug_info_msg.feed_clicks, debug_info_msg.feed_impressions)
+
+          feed_ctr = debug_info_msg.feed_impressions and \
+            feed_factor / debug_info_msg.feed_impressions or 0.0
+
+          impression_respected_level = this.static.impression_respected_level
+
+          respected_impression = max(msg.impressions, 
+                                     impression_respected_level)
+
+          rctr = respected_impression and factor / respected_impression or 0.0
+
+          respected_feed_impression = \
+            max(debug_info_msg.feed_impressions, impression_respected_level)
+
+          feed_rctr = respected_feed_impression and \
+            feed_factor / respected_feed_impression or 0.0
+
+          prn('; <span class="dbg-item">impressions/clicks/ctr/rctr:'
+              '</span>&nbsp;',
+              '<span style="white-space: nowrap;">', msg.impressions, "/", 
+              msg.clicks, "/", "%.2f" % ctr, "%/", "%.2f" % rctr, '%</span>',
+              '; <span class="dbg-item">f-impressions/f-clicks/f-ctr/f-rctr:',
+              '</span>&nbsp;',
+              '<span style="white-space: nowrap;">', 
+              debug_info_msg.feed_impressions, "/", debug_info_msg.feed_clicks,
+              "/", "%.2f" % feed_ctr, "%/", "%.2f" % feed_rctr, '%</span>')
+
+          if this.extra_msg_info and not print_debug_info:
+
+            prn('<p><span class="dbg-item">core words (',
+                debug_info_msg.core_words.size(), "):</span><br>")
+
+            for word in debug_info_msg.core_words:
+         
+              if this.moderation_url:
+                prn(" '", el.string.manip.xml_encode(word.text), "' ")
+                if word.remarkable: prn('<span class="dbg-coreword">')
+                if word.unknown: prn("$")
+                prn(word.id)
+                if word.remarkable: prn('</span>')
+              else:
+                prn(" ", el.string.manip.xml_encode(word.text))
+
+          prn('</div>')
+
+      if print_debug_info:
+
+        debug_info_msg = None
+
+        try:
+          debug_info_msg = search_result.debug_info.messages[msg.encoded_id]
+        except: pass
+
+        if debug_info_msg:
+
+          prn('<div class="dbg-msg"><span class="dbg-item">url-signature:'
+              '</span>&nbsp;', el.psp.HexMarker, el.psp.UppercaseMarker,
+              debug_info_msg.url_signature,
+              el.psp.DecMarker, el.psp.NouppercaseMarker,
+              '; <span class="dbg-item">match weight:</span>&nbsp;',
+              debug_info_msg.match_weight, ';')
+
+#            prn("%.3f" % word.cw_weight, "/", "%.3f" % word.wp_weight, " ", 
+#                "%.3f" % word.weight, " ", word.lang.l3_code(), 
+
+
+          if msg.keywords != "" > 0:
+            prn('<p><span class="dbg-item">keywords:</span><br>', msg.keywords)
+
+          prn('<p><span class="dbg-item">core words (',
+              debug_info_msg.core_words.size())
+
+          if search_result.debug_info.event.id:
+            prn(" ", debug_info_msg.core_words_in_event,
+                "/", debug_info_msg.common_event_words, " ")
+
+            if debug_info_msg.event_overlap < debug_info_msg.event_merge_level:
+              prn('<span class="dbg-dissenter">')
+
+            prn(debug_info_msg.event_overlap, 
+                "/", debug_info_msg.event_merge_level)
+
+            if debug_info_msg.extras: prn(" ", debug_info_msg.extras)
+
+            if debug_info_msg.event_overlap < debug_info_msg.event_merge_level:
+              prn(' dissenter</span>')
+
+          prn("):</span><br>")
+
+          for word in debug_info_msg.core_words:
+        
+            prn(" '", el.string.manip.xml_encode(word.text), "' ")
+            if word.remarkable: prn('<span class="dbg-coreword">')
+            if word.unknown: prn("$")
+            prn(word.id)
+            if word.remarkable: prn('</span>')
+
+          prn('<p><span class="dbg-item">words:</span><br>')
+
+          i = 0
+          word_infos = []
+
+          for word in debug_info_msg.words:
+            if word.remarkable: word_infos.append(WordInfo(i, word.weight))
+            i += 1
+
+          word_infos.sort(cmp_word_weight)
+
+          i = 0
+          word_orders = {}
+
+          for w in word_infos:
+            word_orders[w.index] = i
+            i += 1
+
+          watermark = min(long(this.static.core_words_prc * \
+                          debug_info_msg.words.size() / 100 + 0.5),
+                          this.static.max_core_words)
+
+          watermark_drawn = False
+
+          words = ""
+
+          i = 0
+          word_count = len(debug_info_msg.words)
+
+          cw_max_weight = 0.0
+          cw_min_weight = 1000000000.0
+          wp_max_weight = 0.0
+          wp_min_weight = 1000000000.0
+          max_weight = 0.0
+          min_weight = 1000000000.0
+
+          for word in debug_info_msg.words:
+        
+            par_break = i and i % 10 == 0
+
+            if par_break:
+              prn("<br>", i, " --------------------<br>")
+
+            if not watermark_drawn:
+
+              is_core = word_count > 1 and (i < 2 or i < watermark and \
+                        word.weight >= 0.001)
+
+              if is_core:
+                if max_weight < word.weight: max_weight = word.weight
+                if min_weight > word.weight: min_weight = word.weight
+
+                if cw_max_weight < word.cw_weight:
+                  cw_max_weight = word.cw_weight
+
+                if cw_min_weight > word.cw_weight:
+                  cw_min_weight = word.cw_weight
+
+                if wp_max_weight < word.wp_weight:
+                  wp_max_weight = word.wp_weight
+
+                if wp_min_weight > word.wp_weight:
+                  wp_min_weight = word.wp_weight
+
+              else:
+                prn(not par_break and "<br>" or "", "=== core end (", i, 
+                    ") ===<br>")
+                watermark_drawn = True
+
+            prn(el.string.manip.xml_encode(word.text), " ")
+
+            words += word.text + " "
+      
+            if word.remarkable: prn('<span class="dbg-coreword">')
+            if word.unknown: prn("$")
+            prn(word.id)
+            if word.remarkable: prn('</span>')
+            prn(" [")
+            if word.remarkable: prn(word.position, "/", word_orders[i], "/")
+
+            prn("%.3f" % word.cw_weight, "/", "%.3f" % word.wp_weight, " ", 
+                "%.3f" % word.weight, " ", word.lang.l3_code(), 
+                "; ", word.token_type)
+
+            if word.flags: prn(" ", word.flags)
+
+            prn("] ")
+
+            i += 1
+      
+          prn('<p><span class="dbg-item">cw_max/min/avg weight:</span>&nbsp;', 
+              "%.3f" % cw_max_weight, "/", "%.3f" % cw_min_weight, '/',
+              "%.3f" % ((cw_max_weight - cw_min_weight) / 2),
+              ';<br><span class="dbg-item">wp_max/min/avg weight:</span>&nbsp;', 
+              "%.3f" % wp_max_weight, "/", "%.3f" % wp_min_weight, '/',
+              "%.3f" % ((wp_max_weight - wp_min_weight) / 2), 
+              '; <span class="dbg-item">max/min/avg weight:</span>&nbsp;', 
+              "%.3f" % max_weight, "/", "%.3f" % min_weight, '/',
+              "%.3f" % ((max_weight - min_weight) / 2), '; <p><a href="', 
+              this.make_ref(words_url + el.string.manip.mime_url_encode(words),
+                            False), 
+              '">Word lemmas</a></div>')
+
+      prn('\n        </div></div> <!-- msg -->')
+
+      index += 1
+
+    if search_result != None:
+      if this.page_ad_id == newsgate.ad.PI_DESK_PAPER:
+
+        if index == search_result.second_column_offset:
+          prn('\n      </td><!-- end of column 1 -->\n      <td class="column">')
+
+        if newsgate.ad.SI_DESK_PAPER_MSA2 in this.ads:
+          prn('\n        <div class="msg"><div class="msg_in">', 
+              this.ads[newsgate.ad.SI_DESK_PAPER_MSA2].text, '</div></div>')
+
+      elif this.page_ad_id == newsgate.ad.PI_DESK_COLUMN:
+
+        if newsgate.ad.SI_DESK_COLUMN_MSA1 in this.ads:
+          prn('\n        <div class="msg"><div class="msg_in">', 
+              this.ads[newsgate.ad.SI_DESK_COLUMN_MSA1].text, '</div></div>')
+
+      elif this.page_ad_id == newsgate.ad.PI_TAB_PAPER:
+
+        if index == search_result.second_column_offset:
+          prn('\n      </td><!-- end of column 1 -->\n      <td class="column">')
+
+        if newsgate.ad.SI_TAB_PAPER_MSA2 in this.ads:
+          prn('\n        <div class="msg"><div class="msg_in">', 
+              this.ads[newsgate.ad.SI_TAB_PAPER_MSA2].text, '</div></div>')
+
+      elif this.page_ad_id == newsgate.ad.PI_TAB_COLUMN:
+
+        if newsgate.ad.SI_TAB_COLUMN_MSA1 in this.ads:
+          prn('\n        <div class="msg"><div class="msg_in">', 
+              this.ads[newsgate.ad.SI_TAB_COLUMN_MSA1].text, '</div></div>')
+
+      elif this.page_ad_id == newsgate.ad.PI_MOB_COLUMN:
+
+        if newsgate.ad.SI_MOB_COLUMN_MSA1 in this.ads:
+          prn('\n        <div class="msg"><div class="msg_in">', 
+              this.ads[newsgate.ad.SI_MOB_COLUMN_MSA1].text, '</div></div>')
+
+    prn('\n      </td><!-- end of column 2 -->\n      </tr>\n    </table>')
+
+  def prn_event_overlap(this, overlap):
+
+    if overlap.level <= 100:
+
+      tm = request.time().sec()
+  
+      if overlap.merge_blacklist_timeout:
+        tm = overlap.merge_blacklist_timeout - tm
+      else:
+        tm = 0
+
+      this.prn('<br>overlap ', overlap.level, '/',
+               overlap.common_words, ', merge level ',
+               overlap.merge_level, ', time diff ',
+               this.friendly_time(overlap.time_diff, True),
+               ", strain ", overlap.strain,
+               ", dissenters ", overlap.dissenters,
+               ", size ", overlap.size,
+               ', time range ',  this.friendly_time(overlap.time_range, True),
+               ", colocated ", overlap.colocated and "yes" or "no",
+               ", lang ", overlap.same_lang and "same" or "diff",
+               ', merge blacklisted ', this.friendly_time(tm, True),
+               ', can merge ', overlap.can_merge and 'yes' or 'no')
+
+      if overlap.extras: this.prn(" ", overlap.extras)
+
+  def prn_event_split(this, split, name):
+
+    if split.part1.size:
+      this.prn('<br>', name, ' ', split.overlap_level, '/',
+               split.common_words, ', merge level ',
+               split.merge_level, ', time diff ',
+               this.friendly_time(split.time_diff, True))
+
+      if split.extras: this.prn(", ", split.extras)
+
+      this.prn_event_split_part(split.part1, name + " part 1")
+      this.prn_event_overlap(split.overlap1)
+      this.prn_event_split_part(split.part2, name + " part 2")
+      this.prn_event_overlap(split.overlap2)
+
+  def prn_event_split_part(this, part, name):
+
+    this.prn('<br>', name,
+             ', strain ', part.strain, 
+             ', dissenters ', part.dissenters, 
+             ', size ', part.size,
+             ', time range ', 
+             this.friendly_time(part.time_range, True),
+             ', published_max ')
+
+    this.prn_time(part.published_max)
+
+    this.prn(', published_min ')
+    this.prn_time(part.published_min)
+
+#
+# Initialization
+#
+
+meta_keywords_count = 0
+crawler_lang = "auto"
+rb_single_source = False
+crawler_convert_empty_res = True
+
+request = context.request
+
+if request.input.parameters().find("t") == "x":
+  el.exit(el.psp.Forward("/p/s/x.psp"))
+
+prn = request.output.stream.prn
+lm = el.psp.LocalizationMarker
+
+render = SearchPageResultsRender(context, search_engine)
+
+render.brief_text_for_crawler = False
+#render.brief_text_for_crawler = render.crawler and render.crawler.name == "googlebot"
+render.legacy_metas = True
+#render.h2_title = False
+render.h2_title = render.modifier.similar.message_id != ""
+#render.h2_title = render.modifier.similar.event_canonized
+render.h1_tagline = True
+render.story_title = True
+render.no_follow_article = False
+
+# Remove if want to allow adsense bot to see ad sections
+render.google_ad_section = True
+
+# 1 - for non crawlers, 2 - for crawlers, 3 - for all
+render.trace_uri = 0
+
+event = render.event()
+
+if event and event.expired:
+    
+  if render.crawler:
+    render.exit(event.loaded and 410 or 503)
+
+  if render.posted == False:
+    mod = True
+      
+    if render.modifier.similar.expired:
+      mod = search_util.Modifier()
+      mod.all = True
+
+    fl = True
+      
+    if render.filter.event.expired:
+      fl = render.filter.clone()
+      fl.event = search_util.Message()
+
+    request.output.send_location(render.search_link(modifier = mod,
+                                                    filter = fl))      
+    render.exit(302) # found
+
+if render.crawler:
+
+  if render.raw_param("msg"): render.exit(410) # gone
+
+  if render.query and render.modifier.empty() == False:
+    render.query = ""
+
+render.save_prefs()
+
+extra_params = not render.search_engine_refered and \
+  render.paging_extra_params() or ''
+
+fl = True
+
+#if render.crawler and render.event_id():
+if render.event_id() or render.source():
+  fl = render.filter.sticky()
+  fl.country = el.Country.null
+
+canonical_location = \
+  render.search_link(path = '/p/s/h',
+                     extra_params = extra_params,
+                     export = True,
+                     filter = fl,
+                     translator = False)
+
+if render.posted == False and render.prefs_updated and \
+   request.args() != render.search_query(extra_params = extra_params) or \
+   request.uri() != '/p/s/h':
+
+#  if "y" in render.prefs_updated_params and render.lang_filter_switched:
+
+#    mod = search_util.Modifier()
+#    mod.all = True
+
+#    location = \
+#      render.search_link(path = '/p/s/h',
+#                         extra_params = extra_params,
+#                         modifier = mod,
+#                         filter = False)
+#  else:
+#    location = \
+#      render.search_link(path = '/p/s/h',
+#                         extra_params = extra_params,
+#                         filter = fl)
+
+  location = \
+    render.search_link(path = '/p/s/h',
+                       extra_params = extra_params)
+
+  render.redirect_to_canonical(location)
+
+if render.crawler and crawler_lang:
+  render.set_language(crawler_lang)
+
+search_context = render.search_context()
+
+if render.crawler and render.crawler.results_per_page >= 0:
+  search_context.results_count = render.crawler.results_per_page
+
+try:
+  search_result = render.search(search_context)
+
+except SyntaxError, e:
+  search_result = None
+  render.error_code = e.args[0].code
+  render.error_pos = e.args[0].position
+
+messages = search_result != None and search_result.messages or []
+message_count = len(messages)
+
+if crawler_convert_empty_res and render.crawler and not message_count:
+  render.exit((search_result == None and render.error_code or \
+               search_result.message_load_status == \
+               newsgate.search.SearchResult.MLS_LOADED) and 410 or 503)
+
+if render.crawler == None and render.posted == False and \
+   render.search_result != None and render.total_matched_messages == None and \
+   not message_count and render.start_from > 0:
+
+# If page out of available message range specified, redirect to proper page
+
+  results = min(render.search_result.total_matched_messages,
+                render.static.max_results)
+
+  if results:
+
+    start_from = \
+      (results - 1) / render.results_per_page * render.results_per_page
+
+    if start_from != render.start_from:
+
+      render.start_from = start_from
+
+      extra_params = render.paging_extra_params()
+      if extra_params: extra_params += "&"
+      extra_params += "tmm=" + str(results)
+
+      location = \
+        render.search_link(path = '/p/s/h',
+                           extra_params = extra_params)
+
+      render.redirect_to_canonical(location)
+
+show_sources = render.modifier.source or render.filter.feed
+
+if not show_sources and rb_single_source:
+
+  show_sources = True
+  msg_sources = ""
+
+  for msg in messages:
+    if not msg_sources: msg_sources = msg.source_url
+    elif msg_sources != msg.source_url:
+      show_sources = False
+      break
+
+if show_sources:
+  print_sources = search_util.SearchPageContext.RBR_SHOW
+else:
+  print_sources = search_util.SearchPageContext.RBR_HIDE
+
+if render.print_left_bar and search_result and \
+   search_result.total_matched_messages > render.results_per_page:
+
+  render.left_bar_today_messages = \
+    render.subsearch(\
+      render.resulted_query() + " DATE 1D CAPACITY 2",
+      10)
+
+  query = render.resulted_query() + \
+    " DATE BEFORE 1D DATE 7D CAPACITY 2"
+
+  if render.left_bar_today_messages and not render.event():
+
+    query = "( " + query + " ) EXCEPT EVENT"
+
+    for m in render.left_bar_today_messages:
+      query += " " + m.event_id
+
+  render.left_bar_week_messages = \
+    render.subsearch(query, 20)
+
+render.prn_html_open()
+render.prn_head_open()
+
+render.prn_title()
+render.prn_description()
+render.prn_meta_keywords(meta_keywords_count)
+
+render.rss_link = ""
+
+if render.crawler == None:
+
+  extra_params = "rv=2&lang=" + render.language_l3_code + \
+                 "&r=" + str(render.results_per_page) + \
+                 "&a=" + str(render.sorting - 1) + \
+                 "&dl=" + str(render.desc_length) + \
+                 "&i=" + (render.with_images and "1" or "0")
+
+  render.rss_link = render.search_link(export = True, 
+                                       path = '/p/s/r',
+                                       extra_params = extra_params)
+
+  prn('\n<link rel="alternate" type="application/rss+xml" href="',
+      el.string.manip.xml_encode(render.rss_link), '">')
+
+prn('\n<link rel="canonical" href="', 
+    el.string.manip.xml_encode(canonical_location), '">')
+
+#if False:
+if not render.event_id() and render.filter.country == el.Country.null:
+
+  fl = render.filter.sticky()
+  l3_code = fl.lang.l3_code()
+
+#  if render.crawler: fl.country = el.Country.null
+
+  alt_langs = 0
+
+  for l in render.static.main_languages:
+    if l in render.lang_counter and l != l3_code: alt_langs += 1
+
+  if alt_langs:
+
+    for l in render.static.main_languages:
+
+      if l not in render.lang_counter: continue            
+
+      lang = el.Lang(l)
+      l2_code = lang.l2_code()
+
+      if l2_code:
+
+        fl.lang = lang
+
+        location = \
+          render.search_link(path = '/p/s/h',
+                             export = True,
+                             filter = fl,
+                             translator = False)
+
+        prn('\n<link rel="alternate" hreflang="', l2_code, '" href="', 
+            el.string.manip.xml_encode(location), '">')
+
+render.prn_css()
+render.prn_script()
+
+if render.need_translation: render.prn(render.translator.headers())
+
+render.prn_head_close()
+render.prn_body_open()
+
+if render.need_translation: render.prn(render.translator.body())
+
+if render.page_ad_id == newsgate.ad.PI_DESK_PAPER:
+
+  if newsgate.ad.SI_DESK_PAPER_ROOF in render.ads:
+
+    render.prn('\n<div class="ad_roof">',
+               render.ads[newsgate.ad.SI_DESK_PAPER_ROOF].text, '</div>')
+
+elif render.page_ad_id == newsgate.ad.PI_TAB_PAPER:
+
+  if newsgate.ad.SI_TAB_PAPER_ROOF in render.ads:
+
+    render.prn('\n<div class="ad_roof">',
+               render.ads[newsgate.ad.SI_TAB_PAPER_ROOF].text, '</div>')
+
+elif render.page_ad_id == newsgate.ad.PI_DESK_COLUMN:
+
+  if newsgate.ad.SI_DESK_COLUMN_ROOF in render.ads:
+
+    render.prn('\n<div class="ad_roof">',
+               render.ads[newsgate.ad.SI_DESK_COLUMN_ROOF].text, '</div>')
+
+elif render.page_ad_id == newsgate.ad.PI_TAB_COLUMN:
+
+  if newsgate.ad.SI_TAB_COLUMN_ROOF in render.ads:
+
+    render.prn('\n<div class="ad_roof">',
+               render.ads[newsgate.ad.SI_TAB_COLUMN_ROOF].text, '</div>')
+
+elif render.page_ad_id == newsgate.ad.PI_MOB_COLUMN:
+
+  if newsgate.ad.SI_MOB_COLUMN_ROOF in render.ads:
+
+    render.prn('\n<div class="ad_roof">',
+               render.ads[newsgate.ad.SI_MOB_COLUMN_ROOF].text, '</div>')
+
+elif render.page_ad_id == newsgate.ad.PI_DESK_NLINE:
+
+  if newsgate.ad.SI_DESK_NLINE_ROOF in render.ads:
+
+    render.prn('\n<div class="ad_roof">',
+               render.ads[newsgate.ad.SI_DESK_NLINE_ROOF].text, '</div>')
+
+elif render.page_ad_id == newsgate.ad.PI_TAB_NLINE:
+
+  if newsgate.ad.SI_TAB_NLINE_ROOF in render.ads:
+
+    render.prn('\n<div class="ad_roof">',
+               render.ads[newsgate.ad.SI_TAB_NLINE_ROOF].text, '</div>')
+
+elif render.page_ad_id == newsgate.ad.PI_MOB_NLINE:
+
+  if newsgate.ad.SI_MOB_NLINE_ROOF in render.ads:
+
+    render.prn('\n<div class="ad_roof">',
+               render.ads[newsgate.ad.SI_MOB_NLINE_ROOF].text, '</div>')
+
+render.prn_top_bar(render.error_code)
+
+if render.require_debug_info and search_result != None and \
+   search_result.debug_info != None:
+    
+  words_url = render.site + '/p/w?q='
+
+  if search_result.debug_info.event.id:
+
+    event_debug_info = search_result.debug_info.event
+
+    prn('<div class="dbg-event">event id ', event_debug_info.id,
+        ', lang ', event_debug_info.lang.l3_code(),
+        ', hash 0x', "%08X" % event_debug_info.hash, 
+        ', flags ', event_debug_info.flags, 
+        ', changed ', event_debug_info.changed and 'yes' or 'no',
+        ', strain ', event_debug_info.strain, 
+        ', dissenters ', event_debug_info.dissenters, 
+        ', size ', event_debug_info.size,
+        ', time range ', 
+        render.friendly_time(event_debug_info.time_range, True),
+        ', published_max ')
+
+    render.prn_time(event_debug_info.published_max)
+
+    prn(', published_min ')
+    render.prn_time(event_debug_info.published_min)
+
+    prn(', can merge ', event_debug_info.can_merge and 'yes' or 'no',
+        ', merge level ', event_debug_info.merge_level)
+
+    render.prn_event_overlap(event_debug_info.overlap)
+    render.prn_event_split(event_debug_info.split, "split")
+    render.prn_event_split(event_debug_info.separate, "separate")
+
+    prn('<br>words (', event_debug_info.words.size(), '):<br>')
+
+    for word in event_debug_info.words:
+
+      prn(" <span class=\"dbg-event-word\">'",
+          el.string.manip.xml_encode(word.text), "' ")
+
+      if word.remarkable: prn('<span class="dbg-coreword">')
+      if word.unknown: prn("$")
+      prn(word.id)
+      if word.remarkable: prn('</span>')
+
+      prn(" /", long(word.weight), "/", word.position, "</span>")
+
+    prn('</div>')
+
+  prn('<div class="dbg-req">Lang/Country: ', render.language_l3_code,
+      '/', render.country_l3_code, ', Loc Lang/Country: ', 
+      render.locale.lang.l3_code(), '/', render.locale.country.l3_code(),
+      '</div>')
+
+  feed_stop_words = {}
+  debug_info_messages = search_result.debug_info.messages
+
+  for key in debug_info_messages.keys():
+    for word in debug_info_messages[key].words:
+      if word.token_type == "F":
+        feed_stop_words[word.id] = word
+
+  prn('<div class="dbg-feed-stop">Feed stop words (', 
+      len(feed_stop_words), '):')
+
+  for key in feed_stop_words.keys():
+    word = feed_stop_words[key]
+    prn(" <span class=\"dbg-feed-stop-word\">'", 
+        el.string.manip.xml_encode(word.text), "' ", 
+        word.unknown and "$" or "", key, '</span>')
+
+  prn('</div>')
+
+prn('\n<table id="mid_area" cellspacing="0">\n  <tr>')
+
+if (render.left_bar_today_messages or render.left_bar_week_messages) and \
+   render.site_version != search_util.SearchPageContext.SV_MOB and \
+  render.moderation_url == "":
+  render.prn_left_bar()
+
+prn('\n  <td id="message_area">')
+
+if render.message_view == "nline":
+  render.prn_nline_view(messages)
+else:
+  render.prn_paper_view(messages)
+
+prn('\n  </td>')
+
+if render.site_version != search_util.SearchPageContext.SV_MOB:
+  render.prn_right_bar(print_sources, render.moderation_url == "")
+
+prn('  </tr>\n</table>')
+
+render.prn_bottom_bar()
+render.prn_copyright()
+render.prn_final_script()
+render.prn_counters()
+
+if render.page_ad_id == newsgate.ad.PI_DESK_PAPER:
+
+  if newsgate.ad.SI_DESK_PAPER_BASEMENT in render.ads:
+
+    render.prn('\n<div class="ad_basement">',
+               render.ads[newsgate.ad.SI_DESK_PAPER_BASEMENT].text, '</div>')
+
+elif render.page_ad_id == newsgate.ad.PI_TAB_PAPER:
+
+  if newsgate.ad.SI_TAB_PAPER_BASEMENT in render.ads:
+
+    render.prn('\n<div class="ad_basement">',
+               render.ads[newsgate.ad.SI_TAB_PAPER_BASEMENT].text, '</div>')
+
+elif render.page_ad_id == newsgate.ad.PI_DESK_COLUMN:
+
+  if newsgate.ad.SI_DESK_COLUMN_BASEMENT in render.ads:
+
+    render.prn('\n<div class="ad_basement">',
+               render.ads[newsgate.ad.SI_DESK_COLUMN_BASEMENT].text, '</div>')
+
+elif render.page_ad_id == newsgate.ad.PI_TAB_COLUMN:
+
+  if newsgate.ad.SI_TAB_COLUMN_BASEMENT in render.ads:
+
+    render.prn('\n<div class="ad_basement">',
+               render.ads[newsgate.ad.SI_TAB_COLUMN_BASEMENT].text, '</div>')
+
+elif render.page_ad_id == newsgate.ad.PI_MOB_COLUMN:
+
+  if newsgate.ad.SI_MOB_COLUMN_BASEMENT in render.ads:
+
+    render.prn('\n<div class="ad_basement">',
+               render.ads[newsgate.ad.SI_MOB_COLUMN_BASEMENT].text, '</div>')
+
+elif render.page_ad_id == newsgate.ad.PI_DESK_NLINE:
+
+  if newsgate.ad.SI_DESK_NLINE_BASEMENT in render.ads:
+
+    render.prn('\n<div class="ad_basement">',
+               render.ads[newsgate.ad.SI_DESK_NLINE_BASEMENT].text, '</div>')
+
+elif render.page_ad_id == newsgate.ad.PI_TAB_NLINE:
+
+  if newsgate.ad.SI_TAB_NLINE_BASEMENT in render.ads:
+
+    render.prn('\n<div class="ad_basement">',
+               render.ads[newsgate.ad.SI_TAB_NLINE_BASEMENT].text, '</div>')
+
+elif render.page_ad_id == newsgate.ad.PI_MOB_NLINE:
+
+  if newsgate.ad.SI_MOB_NLINE_BASEMENT in render.ads:
+
+    render.prn('\n<div class="ad_basement">',
+               render.ads[newsgate.ad.SI_MOB_NLINE_BASEMENT].text, '</div>')
+
+if render.moderation_url == "":
+  event_id = render.event_id()
+  msg_id = render.event_message_id()
+
+  prn(render.page_impression_image(\
+    event_id and ("e=v&v=" + el.string.manip.mime_url_encode(event_id) + \
+                   "&m=" + el.string.manip.mime_url_encode(msg_id)) or ""))
+
+render.prn_body_close()
+render.prn_html_close()
+
+# Break circular references ...
+render.exit()

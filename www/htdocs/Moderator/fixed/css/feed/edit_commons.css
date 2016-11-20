@@ -1,0 +1,270 @@
+#edit_form
+{
+  width: 25em;
+  font-size: 100%;
+  margin: 0;
+}
+
+.select_ctl
+{
+  width: 30em;
+}
+
+#k
+{
+  width: 100%;
+}
+
+#c
+{
+  width: 100%;
+}
+
+#e
+{
+  width: 100%;
+}
+
+.options
+{
+  font-size: 100%;
+  table-layout:fixed;
+  text-align: left;
+}
+
+.options_title
+{
+  padding: 0.4em 0 0 0;
+  text-align: center;
+  font-size: 90%;
+}
+
+.option_textarea
+{
+  width: 100%;
+}
+
+.option_text
+{
+  width: 100%;
+}
+
+.option_cell
+{
+  width: 25em;
+}
+
+.options_lable
+{
+  vertical-align: top;
+  text-align: left;
+  width: 6.2em;
+  font-size: 90%;
+}
+
+.nowrap
+{
+  white-space: nowrap;
+}
+
+.hidden
+{
+  display: none;
+}
+
+#script_viewer_code
+{
+  font-size: 80%;
+}
+
+#script_edit_link
+{
+  vertical-align: middle;
+  padding: 0 0 0 0.5em;
+}
+
+#script_editor
+{
+  position: absolute;
+  left: 0px;
+  top: 3em;
+  width: 100%;
+  background: rgb(247, 247, 247);
+}
+
+.script_editor_cell
+{
+  padding: 0.3em 0 0 0.8em;
+}
+
+#feeds
+{
+  width: 100%;
+}
+
+#items
+{
+  width: 100%;
+}
+
+#chn_error
+{
+  font-size: 85%;
+  color: red;  
+}
+
+#chn_log
+{
+  font-size: 85%;
+  overflow: auto;
+  width: 100%;
+  height: 7em;
+}
+
+#msg_log
+{
+  font-size: 85%;
+  overflow: auto;
+  width: 100%;
+  height: 7em;
+}
+
+#msg_error
+{
+  font-size: 85%;
+  color: red;  
+}
+
+.msg
+{
+  background: rgb(255, 255, 255);
+  color: rgb(60, 60, 60);
+  padding: 0.5em;
+  border: 1px solid rgb(0,0,80);
+  overflow: auto;
+  height: 20em;
+}
+
+.msg_in
+{
+  overflow: hidden;
+  width: 100%;
+}
+
+.msg_cont
+{
+  width: 100%;
+  font-size: 100%;
+  table-layout:fixed;
+}
+
+.msg_title
+{
+  border-bottom: 1px solid rgb(150,150,150);
+  padding: 0 0 0.5em 0;
+}
+
+.msg_desc
+{
+  text-align: justify;
+  font: 95%/115% Times, Times New Roman, serif;
+  color: rgb(60, 60, 60);
+  padding: 0.5em 0 0 0;
+}
+
+.msg_title a, .msg_title a:visited
+{
+  font: 110% Georgia, Palatino, Arial, Times, Times New Roman, serif;
+  color: black;
+  font-weight: 400;
+}
+
+.msg_title a:hover
+{
+  color: black;
+  text-decoration: underline;
+}
+
+.msg_title a:active, .msg_title a:focus
+{
+  color: red;
+  text-decoration: underline;
+}
+
+.msg_metainfo
+{
+  color: black;
+  font-size: 65%;
+  text-align: right;
+  width: 100%;
+  padding: 1em 0 0 0;
+  border-collapse: collapse;
+  margin: 1em 0 0.1em 0;
+}
+
+.msg_more
+{
+  text-align: left;
+  vertical-align: top;
+  width: 8em;
+  padding: 0 1em 0 0;
+}
+
+.msg_pub
+{
+  text-align: right;
+  vertical-align: bottom;
+  padding: 0 0 0 0;
+}
+
+.msg_media
+{
+  text-align: justify;
+  padding: 0.2em 0 0;
+}
+
+.msg_media table
+{
+  font-size: 100%;
+}
+
+.msg_media_item
+{
+  font: 95%/115% Times, Times New Roman, serif;
+  text-align: justify;
+  color: rgb(60, 60, 60);
+  width: 100%;
+  padding: 0.5em 0 0 0; 
+}
+
+.msg_media_img
+{
+  margin: 0.2em 0.5em 0.5em 0;
+  float: left;
+}
+
+.msg_front_img
+{
+  margin: 0.2em 0 0.5em 1em;
+  float: right;
+}
+
+#a
+{
+  font-size: 95%;
+  font-family: Courier New, Courier, monospace;
+  width: 47em;
+}
+
+.helpers
+{
+  padding: 0.3em 0 0 0;
+  font-size: 90%;
+  width: 49em;
+}
+
+#img, #a_img, #kwd, #a_kwd
+{
+  font-family: Verdana, Tahoma, Geneva, Helvetica, Arial, Sans-serif;
+  font-size: 95%;
+}

@@ -1,0 +1,91 @@
+body
+{
+  font-family:Verdana, Tahoma, Geneva, Helvetica, Arial, Sans-serif;
+  background:rgb(250, 250, 250);
+  padding:0;
+  border:0;
+  margin:0;
+}
+
+a
+{
+  color:rgb(0, 0, 238);
+  text-decoration:none;
+}
+
+a:visited
+{
+  color:rgb(0, 0, 238);
+}
+
+a:hover
+{
+  color:rgb(0, 0, 238);
+  text-decoration:underline;
+}
+
+#topbar_table
+{
+  background:rgb(230, 230, 235);
+  height:2em;
+  border-bottom:1px solid rgb(80, 80, 80);
+  padding:0;
+  margin:0;
+  width:100%;
+}
+
+#tagline
+{
+  font-size:80%;
+  text-align:left;
+  width:50%;  
+  padding:0.3em 0 0.5em 1em;
+  white-space:nowrap;
+}
+
+#menu
+{
+  font-size:80%;
+  text-align:right;
+  width:50%;  
+  padding:0.3em 1em 0.5em 0;
+}
+
+a:active, a:focus
+{
+  color:red;
+  text-decoration:underline;
+}
+
+#main_area
+{
+  font:100%/130% Palatino, Times, Georgia, Times New Roman, serif;
+  margin:0 auto;
+}
+
+#content
+{
+  padding:1em 1em 0.3em;
+}
+
+#subs_table
+{
+  font-size:85%;
+  font-family:Verdana, Tahoma, Geneva, Helvetica, Arial, Sans-serif;
+}
+
+.subs_row
+{
+  background-color: rgb(253, 253, 253);
+  vertical-align: top;
+}
+
+.subs_row td
+{
+  padding: 0 0.3em;
+}
+
+#close
+{
+  padding: 0.5em 0 0;
+}

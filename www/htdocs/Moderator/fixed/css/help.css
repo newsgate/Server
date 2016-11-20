@@ -1,0 +1,89 @@
+.chapter
+{
+  margin: 0 2em 1.5em 2em;
+  text-align: justify;
+}
+
+.chapter-title
+{
+  font-size: 135%;
+  font-weight: 600;
+  margin: 0 0 0.3em;
+  border-bottom: 1px solid rgb(160, 160, 160);
+}
+
+.chapter-intro
+{
+  margin: 0 0 0.7em;
+}
+
+.section
+{
+  margin: 0 0 1em;
+}
+
+.section-title
+{
+  font-weight: 600;
+  font-size: 115%;
+  margin: 0 0 0.3em;
+  border-bottom: 1px solid rgb(160, 160, 160);
+}
+
+.section-intro
+{
+  margin: 0 0 0.7em;
+}
+
+.section-content
+{
+}
+
+.topic-title
+{
+  font-weight: 600;
+  font-size: 100%;
+  margin: 0 0 0.3em;
+  border-bottom: 1px solid rgb(160, 160, 160);
+}
+
+.topic-paragraph-title
+{
+  font-weight: 600;
+}
+
+.topic-paragraph
+{
+  margin: 0 0 0.5em;
+}
+
+.term
+{
+  font-style: italic;
+}
+
+ul
+{
+  padding: 0 0 0 1.5em;
+}
+
+.img_holder
+{
+  width: 100%;
+  table-layout: fixed;
+  margin: 0.5em 0 0;
+}
+
+.img_holder div
+{
+  overflow: auto;
+  width: 100%;
+}
+
+.code
+{  
+  font-size: 110%;
+  background-color: white;
+  border: 1px solid rgb(0,0,0);
+  padding: 0.5em;
+}

@@ -1,0 +1,121 @@
+from moderation_func import *
+
+request = context.request
+prn, param = request.output.stream.prn, request.input.parameters().find
+
+conf = context.config.get
+
+customer_moderating = conf("moderation.customer_moderating") == "1"
+client_moderating = conf("moderation.client_moderating") == "1"
+ad_management = conf("moderation.ad_management") == "1"
+
+moderator = connect_moderator(request, moderator_connector)
+
+is_moderator_manager = \
+  moderator.has_privilege(newsgate.moderation.moderator.PV_ACCOUNT_MANAGER)
+
+is_account_manager = \
+  moderator.has_privilege(newsgate.moderation.moderator.PV_CUSTOMER_MANAGER) \
+  and customer_moderating
+
+if is_moderator_manager == False and is_account_manager == False:
+  el.exit(403) # Forbidden
+
+xml_encode_flags = el.string.manip.XE_TEXT_ENCODING | \
+                   el.string.manip.XE_ATTRIBUTE_ENCODING | \
+                   el.string.manip.XE_PRESERVE_UTF8
+
+prn(
+R'''
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>Management: View Accounts</title>
+<link rel="stylesheet" type="text/css" href="/fixed/css/common.css" media="all" />
+<link rel="stylesheet" type="text/css" href="/fixed/css/account/view.css" media="all" />
+</head>
+
+<body>
+<table id="skeleton" cellspacing="0">
+''')
+
+menus = []
+create_topbar_main_menus(context, moderator, "Accounts", menus)
+
+left_menu = [ ("View", "") ]
+
+if is_moderator_manager: left_menu.append(("New", "/psp/account/create"))
+
+#if moderator.id == 1 and conf("moderation.customer_moderating") == "1":
+#  left_menu.append(("Accounting (" + moderator.name + ")", 
+#                    "/psp/account/accounting?i=1"))
+
+prn(create_topbar(left_menu,
+                  menus[0], 
+                  menus[1]))
+try:
+  subordinates = moderator.moderator_manager.get_subordinates()
+
+except newsgate.moderation.InvalidSession:
+  el.exit(el.psp.Forward("/psp/login.psp", 
+                         "Your session expired.<br>Please, relogin."))
+
+except newsgate.moderation.NotReady:
+  el.exit(el.psp.Forward(\
+          "/psp/accounts.psp", 
+          "The system is not ready to serve your request.<br>Please, try again in several minutes."))
+
+prn(
+R'''
+  <tr><td id="main_area" align="left" valign="top">
+
+    <table id="accounts">
+    <tr align="center" id="header"><td>Name</td><td>Email</td><td>Status</td><td>Privileges</td><td>Updated</td><td>Created</td><td>Creator</td><td>Superior</td><td>Comment</td></tr>
+''')
+
+for info in subordinates:
+
+  srv = is_moderator_manager and "update" or \
+        is_account_manager and "accounting"
+
+  prn(R'''
+    <tr class="option_row"><td><a href="/psp/account/''', srv, '?i=', info.id, 
+    '">', 
+    el.string.manip.xml_encode(info.name, xml_encode_flags), '</a></td><td>', 
+    el.string.manip.xml_encode(info.email, xml_encode_flags), '</td><td>', 
+    info.status == newsgate.moderation.moderator.MS_ENABLED and "Enabled" or \
+    "Disabled", '</td><td>')
+
+  for priv in info.privileges:
+
+    pr_id = priv.priv.id
+
+    if customer_moderating == False and ( \
+       pr_id == newsgate.moderation.moderator.PV_CUSTOMER_MANAGER or \
+       pr_id == newsgate.moderation.moderator.PV_CUSTOMER ) or \
+       client_moderating == False and \
+       pr_id == newsgate.moderation.moderator.PV_CLIENT_MANAGER or \
+       ad_management == False and \
+       pr_id == newsgate.moderation.moderator.PV_AD_MANAGER or \
+       (ad_management == False or customer_moderating == False) and \
+       pr_id == newsgate.moderation.moderator.PV_ADVERTISER:
+      continue
+    
+    prn(priv.name, " ")
+
+  prn('</td><td>', info.updated, '</td><td>', 
+    info.created, '</td><td>',
+    el.string.manip.xml_encode(info.creator, xml_encode_flags), '</td><td>', 
+    el.string.manip.xml_encode(info.superior, xml_encode_flags), 
+    '</td><td>', 
+    el.string.manip.xml_encode(info.comment, xml_encode_flags), '</td></tr>')
+
+prn(
+R'''    </table>
+ 
+  </td></tr>
+''', create_copyright(context), R'''
+</table>
+</body>
+</html>
+''')

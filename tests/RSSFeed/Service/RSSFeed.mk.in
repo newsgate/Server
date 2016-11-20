@@ -1,0 +1,26 @@
+# @file   Makefile.in
+# @author Karen Aroutiounov
+# $Id:$
+
+include Common.pre.rules
+include $(osbe_builddir)/config/CXX/CXX.pre.rules
+include $(osbe_builddir)/config/CXX/Corba.pre.rules
+
+include $(osbe_builddir)/config/CXX/External/ACE.pre.rules
+include $(osbe_builddir)/config/CXX/External/Xerces.pre.rules
+
+include $(osbe_builddir)/config/CXX/External/ElBasic.pre.rules
+include $(osbe_builddir)/config/CXX/External/ElCorba.pre.rules
+
+include $(top_builddir)/config/tests/RSSFeed/Service/RSSFeedStubs.so.pre.rules
+include $(top_builddir)/config/tests/Commons/TestCommons.so.pre.rules
+include $(top_builddir)/config/xsd/TestRSSFeed/TestRSSFeedConfig.so.pre.rules
+
+sources  := RSSFeedMain.cpp \
+            RSSFeedServiceImpl.cpp \
+            RSSFeedImpl.cpp
+
+target   := RSSFeedService
+
+include $(osbe_builddir)/config/CXX/Corba.post.rules
+include $(osbe_builddir)/config/CXX/Ex.post.rules

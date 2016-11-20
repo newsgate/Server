@@ -1,0 +1,19 @@
+#accounts
+{
+  width: 100%;
+  font-size: 100%;
+  padding: 0 0 0 0;
+  margin: 0 0 0 0;
+}
+
+#header td
+{
+  border-bottom: 1px solid rgb(0,0,80);
+  padding: 0 0.3em 0.3em 0.3em;
+}
+
+.option_row td
+{
+  padding: 0.3em;
+  vertical-align: top;
+}

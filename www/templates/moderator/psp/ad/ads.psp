@@ -1,0 +1,94 @@
+from moderation_func import *
+
+request, conf = context.request, context.config.get
+message = context.forward_params
+prn, param = request.output.stream.prn, request.input.parameters().find
+
+moderator = connect_moderator(request, moderator_connector)
+advertiser_id = moderator.advertiser_id
+
+ad_manager = \
+  moderator.has_privilege(newsgate.moderation.moderator.PV_AD_MANAGER)
+
+if not advertiser_id:
+  el.exit(403) # Forbidden
+
+ads = moderator.ad_manager.get_ads(advertiser_id)
+
+prn(
+R'''<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>Management: Ads</title>
+<link rel="stylesheet" type="text/css" href="/fixed/css/common.css" media="all" />
+<link rel="stylesheet" type="text/css" href="/fixed/css/ad/ads.css" media="all" />
+<script src="/fixed/js/elements.js" type="text/javascript"></script>
+<script src="/fixed/js/commons.js" type="text/javascript"></script>
+</head>
+
+<body onload="setTimeout('filter_tables()', 500)">
+<table id="skeleton" cellspacing="0">
+''')
+
+menus = []
+create_topbar_main_menus(context, moderator, "Ad", menus)
+
+prn(create_topbar(create_ad_menus(moderator, "Ads"), menus[0], menus[1]))
+
+prn(
+R'''
+  <tr><td id="main_area" valign="top" align="center">
+    <table id="ads">
+    <tr align="center" id="header"><td>Name</td><td>Size</td><td>Width</td>
+      <td>Height</td><td>Status</td><td>Placements</td></tr>''')
+
+if ads:
+  prn('\n  <tr>', table_filter_edit('adn', '100%'),
+      table_filter_edit('adz', '12em'),
+      table_filter_edit('adw', '5em'), 
+      table_filter_edit('adh', '5em'),
+      table_filter_edit('adu', '6em'),
+      table_filter_edit('adp', '8em'), '</tr>')
+
+for ad in ads:
+
+  if not moderator.show_deleted and \
+     ad.status == newsgate.moderation.ad.AS_DELETED:
+    continue
+
+  if ad.status == newsgate.moderation.ad.AS_ENABLED: 
+    status = "Enabled"
+  elif ad.status == newsgate.moderation.ad.AS_DISABLED:
+    status = "Disabled"
+  else: 
+    status = "Deleted"
+
+  active = 0;
+  total = 0
+
+  for plc in ad.placements:
+    if not plc.display_status: active += 1
+
+    if moderator.show_deleted or \
+       plc.status != newsgate.moderation.ad.TS_DELETED:
+      total += 1
+
+  prn('\n    <tr class="option_row filter_row"><td class="filter_row_adn"><a href="/psp/ad/ad?id=', 
+      ad.id, '">', el.string.manip.xml_encode(ad.name), 
+      '</a></td><td class="filter_row_adz">',
+      el.string.manip.xml_encode(ad.size_name), 
+      '</td><td class="number_option filter_row_adw">', ad.width,
+      '</td><td class="number_option filter_row_adh">', ad.height, 
+      '</td><td class="filter_row_adu">', status, 
+      '</td><td class="number_option filter_row_adp">', active, '/',
+      total, '</td></tr>')
+
+prn(
+R'''
+    </table>
+  </td></tr>
+''', create_copyright(context), R'''
+</table>
+</body>
+</html>
+''')

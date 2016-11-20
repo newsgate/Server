@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema
+        xmlns:xs="http://www.w3.org/2001/XMLSchema"
+        elementFormDefault="qualified"
+        attributeFormDefault="unqualified"
+        targetNamespace="http://purl.org/rss/1.0/modules/content/">
+
+	<xs:element name="encoded" type="xs:string"/>
+</xs:schema>

@@ -1,0 +1,55 @@
+#!/bin/sh
+
+# product   : NewsGate - news search WEB server
+# copyright : Copyright (c) 2005-2016 Karen Arutyunov
+# licenses  : CC BY-NC-SA 3.0; see accompanying LICENSE file
+#             Commercial; contact karen.arutyunov@gmail.com
+
+echo "Cleaning Event table ..."
+
+echo "truncate Event;" | ng-mysql --user root NewsGate
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+echo "Cleaning EventBuff table ..."
+
+echo "truncate EventBuff;" | ng-mysql --user root NewsGate
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+echo "Cleaning EventMessage table ..."
+
+echo "truncate EventMessage;" | ng-mysql --user root NewsGate
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+echo "Cleaning EventBank service cache ..."
+
+rm -r -f $3/Event/*
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+echo "Adding lang column to EventMessage table ..."
+
+echo "alter table EventMessage add column lang SMALLINT UNSIGNED NOT NULL after updated;" | \
+ng-mysql --user root NewsGate
+
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+echo "Adding lang column to EventMessageBuff table ..."
+
+echo "alter table EventMessageBuff add column lang_ SMALLINT UNSIGNED NOT NULL after updated_;" | \
+ng-mysql --user root NewsGate
+
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+echo "Adding lang column to Event table ..."
+
+echo "alter table Event add column lang SMALLINT UNSIGNED NOT NULL after updated;" | \
+ng-mysql --user root NewsGate
+
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+echo "Adding lang column to EventBuff table ..."
+
+echo "alter table EventBuff add column lang_ SMALLINT UNSIGNED NOT NULL after updated_;" | \
+ng-mysql --user root NewsGate
+
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+

@@ -1,0 +1,6 @@
+pkgName='newsgate'
+specFile='newsgate.spec'
+vcsModules[$vcsModule]=$modBuild
+vcsModules[newsgate/Elements]=`svnCat "" Elements.version "" 1` 
+
+rpmMacros=( "" )

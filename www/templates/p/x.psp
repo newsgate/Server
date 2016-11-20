@@ -1,0 +1,12 @@
+if context.run_number == 0:
+  psp_extras = context.config.get("psp_extras")
+  context.define_static("psp_extras", psp_extras and ("/" + psp_extras) or "")
+
+if psp_extras:
+
+  path = context.request.uri()[4:]
+
+  if path:
+    el.exit(el.psp.Forward(psp_extras + path + ".psp"))
+
+el.exit(404)

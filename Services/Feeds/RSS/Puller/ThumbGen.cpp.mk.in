@@ -1,0 +1,16 @@
+# @file   Makefile.in
+# @author Karen Aroutiounov
+# $Id:$
+
+include Common.pre.rules
+include $(osbe_builddir)/config/CXX/CXX.pre.rules
+
+include $(osbe_builddir)/config/CXX/External/ImageMagick.pre.rules
+
+include $(osbe_builddir)/config/CXX/External/ElBasic.pre.rules
+include $(osbe_builddir)/config/CXX/External/ElNet.pre.rules
+
+sources  := ThumbGen.cpp
+target   := ThumbGen
+
+include $(osbe_builddir)/config/CXX/So.post.rules

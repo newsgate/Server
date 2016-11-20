@@ -1,0 +1,225 @@
+from moderation_func import *
+
+request, conf = context.request, context.config.get
+prn, param = request.output.stream.prn, request.input.parameters().find
+
+moderator = connect_moderator(request, moderator_connector)
+
+cat_manager = \
+  moderator.has_privilege(newsgate.moderation.moderator.PV_CATEGORY_MANAGER)
+
+cat_editor = cat_manager == False and \
+  moderator.has_privilege(\
+    newsgate.moderation.moderator.PV_CATEGORY_EDITOR)
+
+if cat_manager == False and cat_editor == False:
+  el.exit(403) # Forbidden
+
+cat_id = long(param("c", "1"))
+rel_msg_count = long(param("n", "-1"))
+
+viewed_phrases = el.Sequence();
+
+for p in request.input.parameters():
+  if p.name == "p": viewed_phrases.append(long(p.value))
+
+try: category = moderator.category_manager.get_category(cat_id)
+except newsgate.moderation.category.CategoryNotFound:
+  el.exit(el.psp.Forward("/psp/categories.psp", 
+                         "Category " + str(cat_id) + " Not Found."))
+
+lang = el.Lang.null
+
+try:
+  lang = el.Lang(\
+    el.NameValueMap(request.input.cookies().most_specific("pf"), ':', '-')["n"])
+except:
+  pass
+
+try:
+  phrases = moderator.category_manager.category_relevant_phrases(\
+    cat_id, \
+    lang != el.Lang.null and lang.l3_code() or "",
+    viewed_phrases)
+except newsgate.moderation.category.CategoryNotFound:
+  el.exit(el.psp.Forward("/psp/categories.psp", 
+                         "Category " + str(cat_id) + " Not Found."))
+
+prn(
+R'''<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>Management: phrase recommendation for ''', category.paths[0].path, 
+R'''</title>
+<link rel="stylesheet" type="text/css" href="/fixed/css/common.css" media="all" />
+<link rel="stylesheet" type="text/css" href="/fixed/css/category/recommend.css" media="all" />
+<link rel="stylesheet" type="text/css" href="/fixed/css/mod_css.css" media="all"/>
+<link rel="stylesheet" type="text/css" href="/fixed/css/category/mod_css.css" media="all"/>
+<script src="/fixed/js/elements.js" type="text/javascript"></script>
+<script src="/fixed/js/mod_script.js" type="text/javascript"></script>
+<script src="/fixed/js/category/mod_script.js" type="text/javascript"></script>
+<script src="/fixed/js/category/recommend.js" type="text/javascript"></script>
+<script type="text/javascript">
+rel_query = "''', el.string.manip.js_escape(phrases.query), R'''";
+category_id = ''', cat_id, R''';
+relevant_message_count = ''', phrases.relevant_message_count, R''';
+viewed_phrases = [''')
+
+first = True
+
+for id in viewed_phrases:
+
+  if first: first = False
+  else: prn(",")
+
+  prn(' "', id, '"')
+
+prn(R''' ];
+not_viewed_phrases = [''')
+
+first = True
+
+for p in phrases.phrases:
+
+  if first: first = False
+  else: prn(",")
+
+  prn(' "', p.id, '"')
+
+prn(R''' ];
+</script>
+</head>
+<body onload="on_load();">
+<form id="post" style="display:none;" method="post"></form>
+<table id="skeleton" cellspacing="0">
+''')
+
+menus = []
+create_topbar_main_menus(context, moderator, "Categories", menus)
+
+rec_menu = "Recommend"
+if lang != el.Lang.null: rec_menu += " (" + lang.l3_code() + ")"
+
+left_menu = [ ("View", "view?c=" + str(cat_id)),
+              (rec_menu, ""),
+              ("Search", 
+               category_search_link(cat_manager, category.paths[0].path)
+              )
+            ]
+
+if cat_manager:
+  left_menu.insert(1, ("New", "/psp/category/update?p=" + str(cat_id)))
+
+if cat_id > 1:
+  left_menu.insert(1, 
+                   ("Edit", 
+                    "/psp/category/update?c=" + str(cat_id) + "&p=" + 
+                    str(category.parents[0].id)))
+
+prn(create_topbar(left_menu,
+                  menus[0], 
+                  menus[1]))
+
+prn('<tr><td id="main_area" align="center" valign="top">')
+
+for path in category.paths:
+  prn('\n  <div class="breadcrumb">')
+
+  elem_count = len(path.elems)
+  par_id = 1
+  
+  for elem in path.elems:
+    elem_count -= 1
+
+    if elem_count:
+      prn('<a href="view?c=', elem.id, '">', elem.name, "/</a> ")
+      par_id = elem.id
+    else:
+      prn(elem.name, "/")
+
+  prn('</div>')
+
+prn(R'''  <table id="mid_area">
+  <tr><td class="full_width">
+  <table id="phrases">
+    <tr class="option_row"><td>Relevant messages:</td><td colspan="4">
+    <a href="javascript:search_rel_phrase('')">''', 
+    phrases.relevant_message_count, R'''</a>''')
+
+if rel_msg_count >= 0:
+
+  inc = phrases.relevant_message_count - rel_msg_count
+  prn(" (", inc >= 0 and "+" or "", inc)
+
+  if phrases.relevant_message_count:
+    prc = inc * 100 / phrases.relevant_message_count
+    prn(" ", prc, "%")
+
+  prn(")")
+
+prn(R'''</td></tr>
+    <tr class="option_row"><td>Irrelevant messages:</td><td colspan="4">
+    <a href="javascript:search_irrel_phrase('')">''', 
+    phrases.irrelevant_message_count, R'''</a></td></tr>
+    <tr class="option_row"><td>Total time:</td><td colspan="4">''', 
+    phrases.total_time, R'''</td></tr>
+    <tr class="option_row"><td>Category parsing time:</td><td colspan="4">''', 
+    phrases.category_parsing_time, R'''</td></tr>
+    <tr class="option_row"><td>Phrase counting time:</td><td colspan="4">''', 
+    phrases.phrase_counting_time, R'''</td></tr>
+    <tr class="option_row"><td>Search time:</td><td colspan="4">''', 
+    phrases.search_time, R'''</td></tr>
+    <tr class="option_row"><td>Phrase sorting time:</td><td colspan="4">''', 
+    phrases.phrase_sorting_time, R'''</td></tr>
+    <tr class="option_row"><td>Phrase usefulness calc time:</td><td colspan="4">''', 
+    phrases.usefulness_calc_time, R'''</td></tr>
+    <tr class="option_row"><td>Recommend Phrases:</td><td colspan="5">
+    <button onclick="recommend_not_viewed();">Not Viewed</button>
+    <button onclick="recommend();">All</button></td></tr>
+    <tr><td colspan="5"> </td></tr>
+    <tr id="header"><td>Phrase</td><td>rel</td><td>irrel</td><td>rate</td><td>add</td></tr>''')
+
+for p in phrases.phrases:
+
+  ph = el.string.manip.xml_encode(el.string.manip.js_escape(p.phrase))
+
+  prn('\n<tr class="option_row"><td><div id="pi_', p.id,
+      '"')
+
+  if p.total_irrelevant_occurances == 0: prn(' class="notusefull0"')
+  elif p.total_irrelevant_occurances == 1: prn(' class="notusefull1"')
+
+  prn('>', el.string.manip.xml_encode(p.phrase),
+      '</div></td><td class="number_option"><a href="javascript:search_rel_phrase(\'',
+      ph, '\')">', p.occurances, '</a></td><td class="number_option">', 
+      '<a href="javascript:search_irrel_phrase(\'',
+      el.string.manip.xml_encode(el.string.manip.js_escape(p.phrase)),
+      '\')" title="', p.total_irrelevant_occurances,
+      '">', p.occurances_irrelevant,
+      '</a></td><td class="number_option">', "%.1f" % p.occurances_freq_excess,
+      '</td><td>')
+
+  if ph.find(' ') >= 0: qph = "\\'" + ph + "\\'"
+  else: qph = ph
+
+  for v in range(0, 10):
+    prn(' <a href="javascript:add_word(', v, ',\'', qph, '\')">', 
+        (v + 1) % 10, '</a>')
+
+  prn(' <a href="javascript:google_query(\'', ph, '\')">G</a> <a href="javascript:find_text(\'',
+      ph, '\', \'mod_word_menu\', position_mod_left_block)">F</a>')
+
+  prn('</td></tr>')
+
+prn(R'''
+  </table></td></tr></table>
+</td></tr>''')
+
+prn(create_copyright(context), R'''
+</table>
+<script type="text/javascript">
+mod_init("");
+</script>
+</body>
+</html>
+''')

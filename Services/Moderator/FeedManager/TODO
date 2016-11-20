@@ -1,0 +1,19 @@
++ 1. Before calling add_feed exclude urls with obvious file extensions like
+   .pdf, .mp3, .m4v, .css , ... (take form Apache mime-types file)
+
++ 2. Replace &amp; by & in urls
+
+- 3. Make configurable TCP recv window size; set to small.
+
++ 4. Support 302, 301, ... HTTP codes.
+
++ 5. Ensure everything works correctly if host specified by IP
+
+- 6. Maybe implement the depth of traverse from url specified ?
+
++ 7. Make /feed/view "under construction" page.
+
++ 8. Support RDF
+
++ 9. Support Atom
+

@@ -1,0 +1,322 @@
+PAGE_DESC   Search Expression Queries
+PAGE_TITLE  Search Expression Queries
+PAGE_NAME   Search Expression Queries
+NEW_SEARCH  Home
+COPYRIGHT   All rights reserved.
+CONTACT     Contact Us
+
+OVERVIEW_HEADING Overview
+
+OVERVIEW_INTRO \
+\
+The Search Engine provides an ability to compose expressions for searching posts by words and phrases they contain, \
+as well as by some attributes they have, like feed, site, domain, country, language, \
+topic, category, publication or fetch date. Expression consist from operations classified as \
+<a href="#BASE_OPS">basic</a>, <a href="#LOGIC_OPS">logical</a> and \
+<a href="#RESTRICTING_OPS">restrictive</a>. Basic operations return lists of posts by specific keys such as word, source or site. \
+The set of basic operations is derived from data structure of the system. Logical operations allows \
+to combine expressions uniting, intersecting search results or excluding one result from another. \
+Restrictive operations narrow down result set filtering posts by specific criteria.
+
+BASE_OPERATORS_HEADING Basic operations
+
+BASE_OPERATORS_INTRO \
+\
+<a href="#ALL">ALL</a>, <a href="#ANY">ANY</a>, <a href="#CATEGORY">CATEGORY</a>, <a href="#EVERY">EVERY</a>, <a href="#SITE">SITE</a>, <a href="#URL">URL</a> <span class="op_form">basic operations</span> intended for searching posts by \
+words they contain or by source location news posts come from.
+
+ALL_SEARCH \
+\
+<span class="op_def">Operation ALL</span> have the <span class="op_form">ALL modifier ... term ...</span> form where \
+<span class="op_form">term</span> is a word or a phrase taken into double or single quotes. \
+Operation return just those posts which contain all specified terms. Presence of optional modifier <span class="op_form">CORE</span> mean that only "important" post words should be considered. \
+<span class="op_form">Positional</span> modifiers <span class="op_form">TITLE, DESCRIPTION, IMAGE-ALT, KEYWORDS</span> define in which post parts found terms should be present: <span class="op_form">TITLE</span> - in title, <span class="op_form">DESCRIPTION</span> - in annotation, <span class="op_form">IMAGE-ALT</span> - in explanatory text for an image, <span class="op_form">KEYWORDS</span> - in automatically created invisible list of words characterizing a post. If no positioning operators provided then <span class="op_form">TITLE, DESCRIPTION</span> and <span class="op_form">IMAGE-ALT</span> assumed to be present implicitly. \
+Operation name declaration is optional. \
+If enter only search terms or start with just modifiers then Search Engine will "guess" that word ALL is assumed at the beginning. Search is performed with \
+no respect to character case, this why <span class="inline_example">fly Moon</span> and <span class="inline_example">fly moon</span> \
+searches give the same result. Search is performed with no respect to word forms as well, so <span class="inline_example">tournament winner</span> and \
+<span class="inline_example">tournaments winners</span> searches are identical. When you search for phrases, Search Engine will display \
+only those posts which have no punctuation marks between words inside a phrase being searched. \
+There is a difference between taking search phrases into single or double quotes. \
+When phrase is double quoted then words should appear in posts in exactly same \
+form to be found. When phrase is single quoted then word form is not taken into account. \
+So 'space shuttle' will find all 3 phrases:<br>... the space shuttle \
+Atlantis ... all space shuttles ... space shuttle's fuel tank ...<br>\
+while "space shuttle" will find only the first phrase. Quoted phrase will match to post in presense of CORE modifier \
+if at least one word contained in phrase belong to set of "important" post words.
+
+ALL_SEARCH_SAMPLE_HEADER Usage examples:
+
+ALL_SEARCH_SAMPLES \
+\
+asteroid<br>\
+'space shuttle'<br>\
+TITLE "solar system" research<br>\
+ALL solar system<br>\
+ALL CORE satellite NASA 'successfull launch'<br>\
+ALL CORE TITLE DESCRIPTION satellite NASA 'successfull launch'
+
+ANY_SEARCH \
+\
+<span class="op_def">Operation ANY</span> have the <span class="op_form">ANY (number)? modifier ... term ...</span> form and differs from ALL \
+with one thing - it find posts containing some of listed terms in quantity not less than specified (1 by default).
+
+ANY_SEARCH_SAMPLE_HEADER Usage examples:
+
+ANY_SEARCH_SAMPLES \
+\
+ANY meteorite comet</br>\
+ANY 2 astronaut "space shuttle" "progress M-60"</br>\
+ANY 2 CORE moon mars jupiter saturn</br>\
+ANY 2 CORE TITLE KEYWORDS moon mars jupiter saturn
+
+URL_SEARCH \
+\
+<span class="op_def">Operation URL</span> have the <span class="op_form">URL source url...</span> form and \
+return posts from sources specified.
+
+URL_SEARCH_SAMPLE_HEADER Usage examples:
+
+URL_SEARCH_SAMPLES \
+\
+URL http://news.yahoo.com/rss/tech http://news.yahoo.com/rss/elections<br>\
+URL http://news.yandex.ru/computers.rss
+
+SITE_SEARCH \
+\
+<span class="op_def">Operation SITE</span> have the <span class="op_form">SITE source site...</span> form and \
+return posts from sources belonging to sites specified.
+
+SITE_SEARCH_SAMPLE_HEADER Usage examples:
+
+SITE_SEARCH_SAMPLES \
+\
+SITE rss.news.yahoo.com www.prweb.com<br>\
+SITE news.yandex.ru
+
+CATEGORY_SEARCH \
+\
+<span class="op_def">Operation CATEGORY</span> have the <span class="op_form">CATEGORY category path...</span> form and \
+returns posts attributed to any of categories specified. Leading and trailing slashes in category path are optional. \
+If category path contains space character you need to take the path into quotes otherwise it will \
+be interpreted as 2 separate paths.
+
+CATEGORY_SEARCH_SAMPLE_HEADER Usage examples:
+
+CATEGORY_SEARCH_SAMPLES \
+\
+CATEGORY /Science/Astronomy Science/Biology/<br>\
+CATEGORY "/Sport/Technical/Model Aircraft" Science
+
+EVERY_SEARCH \
+\
+<span class="op_def">Operation EVERY</span> return posts from all sources.
+
+EVERY_SEARCH_SAMPLE_HEADER Usage examples:
+
+EVERY_SEARCH_SAMPLES \
+\
+EVERY<br>\
+EVERY DOMAIN ru
+
+LOGIC_OPERATORS_HEADING Logical operations
+
+LOGIC_OPERATORS_INTRO \
+\
+Besides <span class="op_form">basic operations</span> there are <span class="op_form">logical operations</span> <a href="#AND">AND</a>, <a href="#EXCEPT">EXCEPT</a>, \
+<a href="#OR">OR</a> which allow to specify more complex searches - so called \
+<span class="op_form">search expressions</span>. Strictly saying basic operations are \
+search expressions as well, though trivial ones.
+
+AND_SEARCH \
+\
+<span class="op_def">Operation AND</span> have the <span class="op_form">search expression AND search expression</span> form and return posts \
+which have been found for left and right search expressions simultaneously.
+
+AND_SEARCH_SAMPLE_HEADER Usage examples:
+
+AND_SEARCH_SAMPLES \
+\
+ANY meteorite comet AND SITE rss.msnbc.msn.com<br>\
+rocket AND ANY space canaveral
+
+OR_SEARCH \
+\
+<span class="op_def">Operation OR</span> have the <span class="op_form">search expression OR search expression</span> form and return posts \
+which have been found for left or right search expression.
+
+OR_SEARCH_SAMPLE_HEADER Usage examples:
+
+OR_SEARCH_SAMPLES \
+\
+SITE rss.news.yahoo.com OR URL http://www.prweb.com/rdf/science.xml<br>\
+space research OR ANY astronaut spaceship "space shield"
+
+EXCEPT_SEARCH \
+\
+<span class="op_def">Operation EXCEPT</span> have the <span class="op_form">search expression EXCEPT search expression</span> form and return \
+just those posts which have been found for left search expression but not for the right one.
+
+EXCEPT_SEARCH_SAMPLE_HEADER Usage examples:
+
+EXCEPT_SEARCH_SAMPLES \
+\
+virus EXCEPT ANY computer phone program<br>\
+SITE rss.cnn.com EXCEPT URL http://rss.cnn.com/rss/cnn_law.rss
+
+LOGIC_OPERATORS_PRECEDENCE \
+\
+Search expressions containing not only base operations are called <span class="op_form">compound</span>. \
+They get evaluated in the order of operation priority decrease and from the left \
+to the right for operations with the same priority. Evaluation order can be changed \
+by means of parenthesis. AND and EXCEPT have equal priority, which is higher \
+than that of OR operation. \
+<div style="padding: 0.3em 0;">This why</div> \
+\
+<span class="inline_example">comet AND SITE rss.msnbc.msn.com OR rocket AND ANY space canaveral</span>\
+\
+<div style="padding: 0.3em 0;">is equivalent to</div>\
+\
+<span class="inline_example">( comet AND SITE rss.msnbc.msn.com ) OR ( rocket AND ANY space canaveral ).</span>
+
+RESTRICTING_OPERATORS_HEADING Restrictive operations
+
+RESTRICTING_OPERATORS_INTRO \
+\
+Besides <span class="op_form">basic</span> and <span class="op_form">logical operations</span> Search Engine provides set of\
+<span class="op_form">restrictive operations:</span> <a href="#CAPACITY">CAPACITY</a>, <a href="#COUNTRY">COUNTRY</a>, <a href="#DATE">DATE</a>, <a href="#DOMAIN">DOMAIN</a>, <a href="#FETCHED">FETCHED</a>, <a href="#LANGUAGE">LANGUAGE</a>, <a href="#VISITED">VISITED</a>, <a href="#WITH">WITH</a>. \
+Restricting operations have equal priority which is lower than the one of all other operations.
+
+CAPACITY_SEARCH \
+\
+<span class="op_def">Operation CAPACITY</span> have 2 forms: <span class="op_form">search expression CAPACITY number…</span> and \
+<span class="op_form">search expression CAPACITY number...</span>. First form return only those posts which where found for \
+the search expression on the left and which events unite NOT less posts than number specified. The second - those which were \
+found for expression on the left and which events unite less posts than number specified.
+
+CAPACITY_SEARCH_SAMPLE_HEADER Usage examples:
+
+CAPACITY_SEARCH_SAMPLES \
+\
+EVERY CAPACITY 10<br>\
+medicine CAPACITY NOT 10
+
+DATE_SEARCH \
+\
+<span class="op_def">Operation DATE</span> have the 2 forms: <span class="op_form">search expression DATE time</span> \
+and <span class="op_form">search expression DATE BEFORE time</span>. First form return only those posts \
+which were found for the search expression on the left and published not earlier than specified time. \
+The second - those which were found for expression on the left and published earlier than specified time. Time should be \
+expressed in any of forms described <a href="#TIME">below</a>.
+
+DATE_SEARCH_SAMPLE_HEADER Usage examples:
+
+DATE_SEARCH_SAMPLES \
+\
+president bush DATE 2H<br>\
+( canaveral DATE BEFORE 2D ) OR ( astronaut COUNTRY USA DATE 3D )
+
+DOMAIN_SEARCH \
+\
+<span class="op_def">Operation DOMAIN</span> also have 2 forms: <span class="op_form">search expression DOMAIN internet-domain...</span> \
+and <span class="op_form">search expression DOMAIN NOT internet-domain...</span>. First form return only those posts which were found for \
+the search expression on the left and published with a source in one of listed on the right domains. \
+The second - those which were found for expression on the left and published by a source not belonging to any of listed on the right domains.
+
+DOMAIN_SEARCH_SAMPLE_HEADER Usage examples:
+
+DOMAIN_SEARCH_SAMPLES \
+\
+ANY mac apple DOMAIN ru by<br>\
+ANY linux DOMAIN NOT microsoft.com
+
+COUNTRY_SEARCH \
+\
+<span class="op_def">Operation COUNTRY</span> have 2 forms: <span class="op_form">search expression COUNTRY country code...</span> and \
+<span class="op_form">search expression COUNTRY NOT country code...</span>. First form return only those posts which where found for \
+the search expression on the left and published with a source from \
+one of countries listed on the right. The second - those which were found for expression on the left and published by a source \
+not from any of countries listed on the right.
+
+COUNTRY_SEARCH_SAMPLE_HEADER Usage examples:
+
+COUNTRY_SEARCH_SAMPLES \
+\
+ipod OR itunes COUNTRY USA<br>\
+satellite launch COUNTRY NOT USA GBR
+
+FETCHED_SEARCH \
+\
+<span class="op_def">Operation FETCHED</span> have the 2 forms: <span class="op_form">search expression FETCHED time</span> \
+and <span class="op_form">search expression FETCHED BEFORE time</span>. First form return only those posts \
+which were found for the search expression on the left and fetched from a source not earlier than specified time. \
+The second - those which were found for expression on the left and fetched earlier than specified time. Time should be \
+expressed in any of forms descibed <a href="#TIME">below</a>.
+
+FETCHED_SEARCH_SAMPLE_HEADER Usage examples:
+
+FETCHED_SEARCH_SAMPLES \
+\
+president bush FETCHED 50M<br>\
+( nasa FETCHED BEFORE 500S ) OR ( hubble COUNTRY USA FETCHED 3H )
+
+VISITED_SEARCH \
+\
+<span class="op_def">Operation VISITED</span> have the 2 forms: <span class="op_form">search expression VISITED time</span> \
+and <span class="op_form">search expression VISITED BEFORE time</span>. First form return only those posts \
+which were found for the search expression on the left and opened for the last time not earlier than time specified. \
+The second - those which were found for expression on the left and opened not earlier than specified time or were not opened at all. \
+Time should be expressed in any of forms descibed <a href="#TIME">below</a>. \
+Post considered to be opened in any of the following cases:\
+<li>user followed a link to full article page;</li>\
+<li>user followed a link to an image;</li>\
+<li>post belongs to an event opened by following a link "Similar".</li>
+
+VISITED_SEARCH_SAMPLE_HEADER Usage examples:
+
+VISITED_SEARCH_SAMPLES \
+\
+EVERY VISITED 7D
+
+LANG_SEARCH \
+\
+<span class="op_def">Operation LANGUAGE</span> have 2 forms: <span class="op_form">search expression LANGUAGE language code...</span> and \
+<span class="op_form">search expression LANGUAGE NOT language code...</span>. First form return only those posts which where found for \
+the search expression on the left and written in one of listed on the right languages. \
+The second - those which were found for expression on the left and  \
+written in language different from any of listed on the right.
+
+LANG_SEARCH_SAMPLE_HEADER Usage examples:
+
+LANG_SEARCH_SAMPLES \
+\
+ipod OR itunes LANGUAGE eng<br>\
+satellite launch COUNTRY USA LANGUAGE NOT eng rus
+
+WITH_SEARCH \
+\
+<span class="op_def">Operation WITH</span> have 2 forms: <span class="op_form">search expression WITH feature...</span> and \
+<span class="op_form">search expression WITH NO feature…</span>. First form return only those posts which where found for the search \
+expression on the left and has all features specified. The second - ones which were found for expression on the left and has none \
+of features specified. The only available feature at the moment is IMAGE.
+
+WITH_SEARCH_SAMPLE_HEADER Usage examples:
+
+WITH_SEARCH_SAMPLES \
+\
+ipod OR itunes LANGUAGE eng WITH IMAGE<br>\
+EVERY WITH NO IMAGE
+
+TIME_HEADING Time
+
+TIME_DESC \
+When using operations DATE, FETCHED and VISITED you should express the time in one of \
+the following forms:
+
+TIME_1 <li>YYYY-MM-DD.hh:mm:ss. UTC time is assumed.</li>
+TIME_1_SAMPLE Example: FETCHED 2009-03-25.17:45:07
+TIME_2 <li><span class="op_form">number unit</span>, where unit takes one of the following values: D (days), H (hours), M (minutes), S (seconds). \
+This form points to a moment in the past distant from now by specified number of time units.</li>
+TIME_2_SAMPLE Example: FETCHED 23H (23 hours ago)
+TIME_3 <li>number of seconds since Epoch (00:00:00 UTC, January 1, 1970).</li>
+TIME_3_SAMPLE Example: FETCHED 1239693207 

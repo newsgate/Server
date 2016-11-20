@@ -1,0 +1,343 @@
+/*
+ * product   : NewsGate - news search WEB server
+ * copyright : Copyright (c) 2005-2016 Karen Arutyunov
+ * licenses  : CC BY-NC-SA 3.0; see accompanying LICENSE file
+ *             Commercial; contact karen.arutyunov@gmail.com
+ */
+
+/**
+ * @file NewsGate/Server/Services/Commons/Message/MessageServices.idl
+ * @author Karen Arutyunov
+ * $Id:$
+ */
+
+#ifndef _NEWSGATE_SERVER_SERVICES_COMMONS_MESSAGE_MESSAGESERVICES_IDL_
+#define _NEWSGATE_SERVER_SERVICES_COMMONS_MESSAGE_MESSAGESERVICES_IDL_
+
+#include <Commons/Message/MessageTransport.idl>
+#include <Commons/Search/SearchTransport.idl>
+
+module NewsGate
+{ 
+  module Message
+  {
+    typedef string BankIOR;
+    interface Bank;
+    
+    exception Logout
+    {
+      string reason;
+    };
+      
+    exception NotReady
+    {
+      string reason;
+    };
+    
+    exception IncompartibleInterface
+    {
+      string reason;
+    };
+      
+    exception ImplementationException
+    {
+      string description;
+    };
+
+    exception InvalidData
+    {
+      string description;
+    };
+      
+    exception NotFound
+    {
+    };
+      
+    custom valuetype BankSessionId
+    {
+      string to_string();
+      void from_string(in string str) raises(InvalidData);
+    };
+
+    custom valuetype BankSession
+    {
+      public BankSessionId id;
+      public string sharing_id;
+      public boolean mirror;
+      
+      void location(out unsigned long index, out unsigned long banks_count);
+    };
+
+    // Message Sharing Registration Type
+    
+    const unsigned long MSRT_NEW_MESSAGES = 0x1;
+    const unsigned long MSRT_SHARED_MESSAGES = 0x2;
+    const unsigned long MSRT_OLD_MESSAGES = 0x4;
+    const unsigned long MSRT_OWN_EVENTS = 0x8;
+    const unsigned long MSRT_SHARED_EVENTS = 0x10;
+    const unsigned long MSRT_OWN_MESSAGE_FILTER = 0x20;
+    const unsigned long MSRT_SHARED_MESSAGE_FILTER = 0x40;
+    const unsigned long MSRT_OWN_MESSAGE_STAT = 0x80;
+    const unsigned long MSRT_SHARED_MESSAGE_STAT = 0x100;
+    const unsigned long MSRT_MESSAGE_CATEGORIZER = 0x200;
+
+    enum PostMessageReason
+    {
+      PMR_NEW_MESSAGES,
+      PMR_PUSH_OUT_FOREIGN_MESSAGES,
+      PMR_NEW_MESSAGE_SHARING,
+      PMR_SHARED_MESSAGE_SHARING,
+      PMR_OLD_MESSAGE_SHARING,
+      PMR_LOST_MESSAGE_SHARING,
+      PMR_EVENT_UPDATE,
+      PMR_OWN_EVENT_SHARING,
+      PMR_SHARED_EVENT_SHARING
+    };
+
+    struct SearchLocale
+    {
+      unsigned long lang;
+      unsigned long country;
+    };
+    
+    struct SearchRequest
+    {
+      Search::Transport::Expression expression;
+      Search::Transport::Strategy strategy;
+      string category_locale;
+      SearchLocale locale;
+      unsigned long start_from;
+      unsigned long results_count;
+      unsigned long long etag;
+      unsigned long long gm_flags;
+      long img_index;
+      long thumb_index;
+    };
+
+    struct MatchedMessages
+    {
+      Search::Transport::Result search_result;
+      Transport::CategoryLocale category_locale;
+      unsigned long total_matched_messages;
+      unsigned long suppressed_messages;
+      boolean messages_loaded;
+    };
+    
+    struct SearchResult
+    {
+      boolean nochanges;
+      Transport::StoredMessagePack messages;
+      Transport::CategoryLocale category_locale;
+      unsigned long total_matched_messages;
+      unsigned long suppressed_messages;
+      unsigned long long etag;
+      Search::Transport::Stat stat;
+      boolean messages_loaded;
+    };
+
+    interface BankManager;
+    
+    custom valuetype BankClientSession
+    {
+      enum PostStrategy
+      {
+        PS_TO_RANDOM_BANK,
+        PS_DISTRIBUTE_BY_MSG_ID,
+        PS_PUSH_BEST_EFFORT // Post distributing by id,
+                            // if some posts failed - post to random bank.
+      };
+
+      exception FailedToPostMessages
+      {
+        Transport::MessagePack messages;
+        string description;
+      };
+      
+      void post_messages(in Transport::MessagePack messages,
+                         in PostMessageReason reason,
+                         in PostStrategy post_strategy,
+                         in string validation_id)
+        raises(FailedToPostMessages, NotReady, ImplementationException);
+
+      void message_sharing_offer(
+        in Transport::MessageSharingInfoPack offered_messages,
+        in string validation_id,
+        out Transport::IdPack requested_messages)
+        raises(NotReady, ImplementationException);
+
+      void search(in SearchRequest request, out SearchResult result)
+        raises(ImplementationException);
+
+      enum BankState
+      {
+        BS_VALID,
+        BS_INVALIDATED,
+        BS_PROBABLY_VALID
+      };
+      
+      BankState owner_bank_state(in unsigned long long feed_id);
+
+      enum RequestResultCode
+      {
+        RRC_OK,
+        RRC_NOT_READY,
+        RRC_INVALID_DATA,
+        RRC_MESSAGE_BANK_ERROR,
+        RRC_RESPONSE_ERROR,
+        RRC_CORBA_ERROR
+      };
+
+      struct RequestResult
+      {
+        RequestResultCode code;
+        string description;
+      };
+
+      RequestResult send_request(in Transport::Request req,
+                                 out Transport::Response resp)
+        raises(ImplementationException);
+      
+      // If message_signature != 0 then additional signature
+      // checks will be made
+      
+      Transport::StoredMessage
+      get_message(in Transport::Id message_id,
+                  in unsigned long long gm_flags,
+                  in long img_index, // -1 means all images required
+                  in long thumb_index, // -1 means all thums required
+                  in unsigned long long message_signature)
+        raises(NotFound, NotReady, ImplementationException);
+
+      BankManager bank_manager();
+      string process_id();
+    };
+
+//
+// Bank interface
+//    
+    interface Bank
+    {
+      void post_messages(in Transport::MessagePack messages,
+                         in PostMessageReason reason,
+                         in string validation_id)
+        raises(NotReady, ImplementationException);
+
+      void message_sharing_register(
+        in string manager_persistent_id,
+        in BankClientSession message_sink,
+        in unsigned long flags, // MSRT_ flag combination
+        in unsigned long expiration_time)
+        raises(NotReady, ImplementationException);
+
+      void message_sharing_unregister(in string manager_persistent_id)
+        raises(ImplementationException);
+
+      void message_sharing_offer(
+        in Transport::MessageSharingInfoPack offered_messages,
+        in string validation_id,
+        out Transport::IdPack requested_messages)
+        raises(ImplementationException);
+
+      void search(in SearchRequest request, out MatchedMessages result)
+        raises(NotReady, ImplementationException);                  
+
+      const unsigned long long GM_ID = 0x1;
+      const unsigned long long GM_LINK = 0x2;
+      const unsigned long long GM_TITLE = 0x4;
+      const unsigned long long GM_DESC = 0x8;
+      const unsigned long long GM_IMG = 0x10;
+      const unsigned long long GM_PUB_DATE = 0x20;
+      const unsigned long long GM_FETCH_DATE = 0x40;
+      const unsigned long long GM_LANG = 0x80;
+      const unsigned long long GM_SOURCE = 0x100;
+      const unsigned long long GM_EVENT = 0x200;
+      const unsigned long long GM_CORE_WORDS = 0x400;
+      const unsigned long long GM_DEBUG_INFO = 0x800;
+      const unsigned long long GM_IMG_THUMB = 0x1000;
+      const unsigned long long GM_CATEGORIES = 0x2000;
+      const unsigned long long GM_STAT = 0x4000;
+      const unsigned long long GM_KEYWORDS = 0x8000;
+      const unsigned long long GM_VISIT_DATE = 0x10000;
+      const unsigned long long GM_EXTRA_MSG_INFO = 0x20000;
+      
+      const unsigned long long GM_ALL = GM_ID | GM_LINK | GM_TITLE | GM_DESC |
+        GM_IMG | GM_PUB_DATE | GM_FETCH_DATE | GM_LANG | GM_SOURCE | GM_EVENT |
+        GM_CORE_WORDS | GM_DEBUG_INFO | GM_IMG_THUMB | GM_CATEGORIES |
+        GM_STAT | GM_KEYWORDS | GM_VISIT_DATE | GM_EXTRA_MSG_INFO;
+      
+      Transport::StoredMessagePack
+      get_messages(in Transport::IdPack message_ids,
+                   in unsigned long long gm_flags,
+                   in long img_index, // -1 means all images required
+                   in long thumb_index, // -1 means all thums required
+                   out Transport::IdPack notfound_message_ids)
+        raises(NotReady, ImplementationException);
+
+      void send_request(in Transport::Request req,
+                        out Transport::Response resp)
+        raises(NotReady, InvalidData, ImplementationException);
+    };
+
+//
+// BankManager interface
+//    
+    interface BankManager
+    {
+      // Increment whenever data passed by following methods changes:
+      // Bank::post_messages,
+      // Bank::get_messages,
+      // Bank::message_sharing_offer,
+      // BankManager::set_message_fetch_filter,
+      // BankManager::set_message_categorizer,
+      // implementation of valuetypes CheckMirroredMessagesRequest,
+      // CheckMirroredMessagesResponse
+      
+      const unsigned long SHARING_INTERFACE_VERSION = 12;
+      
+      BankSession bank_login(in BankIOR bank_ior,
+                             in BankSessionId current_session_id)
+        raises(NotReady, ImplementationException);
+
+      // Called by message bank to confirm presence
+      void ping(in BankIOR bank_ior,
+                in BankSessionId current_session_id)
+        raises(Logout, ImplementationException);
+
+      BankClientSession bank_client_session() raises(ImplementationException);
+
+      string message_sharing_register(
+        in unsigned long interface_version,
+        in string manager_persistent_id,
+        in BankClientSession message_sink,
+        in unsigned long flags, // MSRT_ flag combination
+        in unsigned long expiration_time,
+        inout Transport::ColoFrontendPack colo_frontends)
+        raises(NotReady, IncompartibleInterface, ImplementationException);
+
+      void message_sharing_unregister(in string manager_persistent_id)
+        raises(ImplementationException);
+
+      string process_id();
+      string persistent_id();
+
+      void set_message_fetch_filter(
+        in Transport::SetMessageFetchFilterRequest filter,
+        in boolean shared,
+        in string validation_id)
+        raises(ImplementationException);
+
+      void set_message_categorizer(
+        in Transport::SetMessageCategorizerRequest categorizer,
+        in string validation_id)
+        raises(ImplementationException);
+
+      // Called by message bank to report termination
+      void terminate(in BankIOR bank_ior,
+                     in BankSessionId current_session_id)
+        raises(ImplementationException);
+    };
+  };
+  
+};
+
+#endif // _NEWSGATE_SERVER_SERVICES_COMMONS_MESSAGE_MESSAGESERVICES_IDL_

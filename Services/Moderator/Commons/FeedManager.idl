@@ -1,0 +1,441 @@
+/*
+ * product   : NewsGate - news search WEB server
+ * copyright : Copyright (c) 2005-2016 Karen Arutyunov
+ * licenses  : CC BY-NC-SA 3.0; see accompanying LICENSE file
+ *             Commercial; contact karen.arutyunov@gmail.com
+ */
+
+/**
+ * @file NewsGate/Server/Services/Moderator/Commons/FeedManager.idl
+ * @author Karen Arutyunov
+ * $Id:$
+ */
+
+#ifndef _NEWSGATE_SERVER_SERVICES_MODERATOR_COMMONS_FEEDMANAGER_IDL_
+#define _NEWSGATE_SERVER_SERVICES_MODERATOR_COMMONS_FEEDMANAGER_IDL_
+
+#include <Services/Moderator/Commons/ModerationCommons.idl>
+
+module NewsGate
+{ 
+  module Moderation
+  {
+    module Transport
+    {
+      custom valuetype MsgAdjustmentContext
+      {
+      };
+      
+      custom valuetype MsgAdjustmentResult
+      {
+      };
+      
+      custom valuetype MsgAdjustmentContextPack
+      {
+      };
+
+      custom valuetype MessagePack
+      {
+      };
+
+      custom valuetype GetHTMLItemsResult
+      {
+      };      
+    };
+    
+    enum ResourceType
+    {
+      RT_UNKNOWN,
+      RT_RSS,
+      RT_ATOM,
+      RT_RDF,
+      RT_HTML_FEED,
+      RT_HTML,
+      RT_META_URL, // like http://www.a.com/page/{{1-100}}
+      RT_COUNT
+    };
+
+    enum CreatorType
+    {
+      CT_CRAWLER,
+      CT_MODERATOR,
+      CT_USER,
+      CT_ADMIN,
+      CT_COUNT
+    };
+
+    typedef unsigned long long CreatorId;
+    typedef sequence<CreatorId> CreatorIdSeq;
+    typedef sequence<unsigned long long> MessageIdSeq;
+
+    struct UrlDesc
+    {
+      string url;
+    };
+    
+    typedef sequence<UrlDesc> UrlSeq;
+    
+    enum ProcessingType
+    {
+      PT_CHECK_FEEDS,
+      PT_PARSE_PAGE_FOR_FEEDS,
+      PT_LOOK_AROUND_PAGE_FOR_FEEDS,
+      PT_PARSE_DOMAIN_FOR_FEEDS,
+      PT_COUNT
+    };
+
+    enum FeedSourceType
+    {
+      FST_SINGLE_FEED_HTML,
+      FST_MULTI_FEED_HTML,
+      FST_META_URL,
+      FST_COUNT
+    };
+    
+    struct FeedSource
+    {
+      FeedSourceType type;
+      string url;
+      ProcessingType processing_type;
+    };
+
+    typedef sequence<FeedSource> FeedSourceSeq;
+
+    enum ValidationResult
+    {
+      VR_VALID,
+      VR_ALREADY_IN_THE_SYSTEM,
+      VR_UNRECOGNIZED_RESOURCE_TYPE,
+      VR_NO_VALID_RESPONSE,
+      VR_TOO_LONG_URL,
+      VR_COUNT
+    };
+
+    typedef unsigned long long FeedId;
+    typedef sequence<FeedId> FeedIdSeq;
+    
+    struct ResourceValidationResult
+    {
+      string url;      
+      ResourceType type;
+      ProcessingType processing_type;
+      ValidationResult result;
+      unsigned long feed_reference_count;      
+
+      string description;
+      FeedId feed_id;
+    };
+
+    typedef sequence<ResourceValidationResult> ResourceValidationResultSeq;
+
+    typedef string ValidationToken;
+
+    enum ValidationStatus
+    {
+      VS_ACTIVE,
+      VS_SUCCESS,
+      VS_ERROR,
+      VS_INTERRUPTED
+    };
+
+    struct ValidationTaskInfo
+    {
+      ValidationToken id;
+      string title;
+      CreatorId creator_id;
+      ValidationStatus status;
+      unsigned long started;
+      unsigned long feeds;
+      unsigned long pending_urls;
+      unsigned long long received_bytes;
+      unsigned long processed_urls;
+    };
+    
+    typedef sequence<ValidationTaskInfo> ValidationTaskInfoSeq;
+
+    struct FeedInfo
+    {
+      FeedId id;
+      unsigned short type;
+      unsigned short space;
+      unsigned short lang;
+      unsigned short country;
+      char status;
+      string url;
+      string encoding;
+      string keywords;
+      string adjustment_script;
+      unsigned long long creator;
+      char creator_type;
+      unsigned long created;
+      unsigned long updated;
+      string comment;
+      string channel_title;
+      string channel_description;
+      string channel_html_link;
+      unsigned short channel_lang;
+      unsigned short channel_country;
+      long channel_ttl;
+      unsigned long channel_last_build_date;
+      unsigned long last_request_date;
+      string last_modified_hdr;
+      string etag_hdr;
+      long long content_length_hdr;
+      unsigned long entropy;
+      unsigned long entropy_updated_date;
+      unsigned long size;
+      char single_chunked;
+      long long first_chunk_size;
+      long heuristics_counter;
+      unsigned long requests;
+      unsigned long failed;
+      unsigned long unchanged;
+      unsigned long not_modified;
+      unsigned long presumably_unchanged;
+      unsigned long has_changes;
+      float wasted;
+      unsigned long long outbound;
+      unsigned long long inbound;
+      unsigned long long requests_duration;
+      unsigned long long messages;
+      unsigned long long messages_size;
+      unsigned long long messages_delay;
+      unsigned long long max_message_delay;
+      unsigned long long msg_impressions;
+      unsigned long long msg_clicks;
+      float msg_ctr;
+    };
+
+    typedef sequence<FeedInfo> FeedInfoSeq;
+
+    struct FeedInfoResult
+    {
+      unsigned long feed_count;
+      FeedInfoSeq feed_infos;
+    };
+
+    enum FieldSelector
+    {
+      FS_NONE,
+      FS_ID,
+      FS_TYPE,
+      FS_URL,
+      FS_ENCODING,
+      FS_SPACE,
+      FS_LANG,
+      FS_COUNTRY,
+      FS_STATUS,
+      FS_CREATOR,
+      FS_CREATOR_TYPE,
+      FS_KEYWORDS,
+      FS_ADJUSTMENT_SCRIPT,
+      FS_COMMENT,
+      FS_CREATED,
+      FS_UPDATED,
+      FS_STATE_ID,
+      FS_CHANNEL_TITLE,
+      FS_CHANNEL_DESCRIPTION,
+      FS_CHANNEL_HTML_LINK,
+      FS_CHANNEL_LANG,
+      FS_CHANNEL_COUNTRY,
+      FS_CHANNEL_TTL,
+      FS_CHANNEL_LAST_BUILD_DATE,
+      FS_LAST_REQUEST_DATE,
+      FS_LAST_MODIFIED_HDR,
+      FS_ETAG_HDR,
+      FS_CONTENT_LENGTH_HDR,
+      FS_ENTROPY,
+      FS_ENTROPY_UPDATED_DATE,
+      FS_SIZE,
+      FS_SINGLE_CHUNKED,
+      FS_FIRST_CHUNK_SIZE,
+      FS_HEURISTICS_COUNTER,
+      FS_STAT_ID,
+      FS_REQUESTS,
+      FS_FAILED,
+      FS_UNCHANGED,
+      FS_NOT_MODIFIED,
+      FS_PRESUMABLY_UNCHANGED,
+      FS_HAS_CHANGES,
+      FS_WASTED,
+      FS_OUTBOUND,
+      FS_INBOUND,
+      FS_REQUESTS_DURATION,
+      FS_MESSAGES,
+      FS_MESSAGES_SIZE,
+      FS_MESSAGES_DELAY,
+      FS_MAX_MESSAGE_DELAY,
+      FS_PERF_STAT_ID,
+      FS_MSG_IMPRESSIONS,
+      FS_MSG_CLICKS,
+      FS_MSG_CTR,
+      FS_COUNT
+    };
+
+    struct SortInfo
+    {
+      FieldSelector field;
+      boolean descending;
+    };
+
+    typedef sequence<string> ArgSeq;
+
+    enum FilterOperation
+    {
+      FO_LIKE,
+      FO_NOT_LIKE,
+      FO_REGEXP,
+      FO_NOT_REGEXP,
+      FO_EQ,
+      FO_NE,
+      FO_LT,
+      FO_LE,
+      FO_GT,
+      FO_GE,
+      FO_ANY_OF,
+      FO_NONE_OF,
+      FO_COUNT
+    };
+    
+    struct FilterRule
+    {
+      unsigned long id;
+      FieldSelector field;
+      FilterOperation operation;
+      ArgSeq args;
+    };
+
+    typedef sequence<FilterRule> FilterRuleSeq;
+
+    struct FilterInfo
+    {
+      FilterRuleSeq rules;
+    };
+
+    exception FilterRuleError
+    {
+      unsigned long id;
+      string description;
+    };
+
+    struct FeedUpdateInfo
+    {
+      FeedId id;
+      string encoding;
+      unsigned short space;
+      unsigned short lang;
+      unsigned short country;
+      char status;
+      string keywords;
+      string adjustment_script;
+      string comment;
+    };
+
+    typedef sequence<FeedUpdateInfo> FeedUpdateInfoSeq;
+
+    struct MessageFetchFilterRule
+    {
+      string expression;
+      string description;
+    };
+
+    typedef sequence<MessageFetchFilterRule> MessageFetchFilterRuleSeq;
+    typedef sequence<string> KeywordsSeq;
+      
+    interface FeedManager
+    {        
+      ResourceValidationResultSeq validate(in UrlSeq urls,
+                                           in ProcessingType processing_type,
+                                           in CreatorId creator_id)
+        raises(NotReady, ImplementationException);
+
+      ValidationToken validate_async(in UrlSeq urls,
+                                     in ProcessingType processing_type,
+                                     in CreatorId creator_id,
+                                     in unsigned long req_period)
+        raises(NotReady, ImplementationException);
+
+      ResourceValidationResultSeq validation_result(
+        in ValidationToken task_id,
+        in CreatorIdSeq creator_ids,
+        in boolean all_results,
+        out unsigned long total_results)
+        raises(TaskNotFound, NotReady, ImplementationException);
+
+      void stop_validation(in ValidationToken task_id,
+                           in CreatorIdSeq creator_ids)
+        raises(ImplementationException);
+
+      void delete_validation(in ValidationToken task_id,
+                             in CreatorIdSeq creator_ids)
+        raises(ImplementationException);
+
+      ResourceValidationResultSeq add_feeds(in UrlSeq feeds,
+                                            in FeedSourceSeq feed_sources,
+                                            in CreatorType creator_type,
+                                            in CreatorId creator_id)
+        raises(NotReady, ImplementationException);
+
+      ValidationTaskInfoSeq task_infos(in CreatorIdSeq creator_ids)
+        raises(NotReady, ImplementationException);
+
+      FeedInfoResult feed_info_range(in unsigned long start_from,
+                                     in unsigned long results,
+                                     in boolean get_stat,
+                                     in unsigned long stat_from_date,
+                                     in unsigned long stat_to_date,
+                                     in SortInfo sort,
+                                     in FilterInfo filter)
+        raises(FilterRuleError, ImplementationException);
+
+      FeedInfoSeq feed_info_seq(in FeedIdSeq ids,
+                                in boolean get_stat,
+                                in unsigned long stat_from_date,
+                                in unsigned long stat_to_date)
+        raises(ImplementationException);
+
+      void feed_update_info(in FeedUpdateInfoSeq feed_infos)
+        raises(ImplementationException);
+
+      void set_message_fetch_filter(in MessageFetchFilterRuleSeq rules)
+        raises(ImplementationException);
+
+      MessageFetchFilterRuleSeq get_message_fetch_filter()
+        raises(ImplementationException);
+
+      void add_message_filter(in MessageIdSeq ids)
+        raises(ImplementationException);
+
+      string xpath_url(in string xpath, in string url)
+        raises(OperationFailed, ImplementationException);
+
+      void adjust_message(in string adjustment_script,
+                          in Transport::MsgAdjustmentContext ctx,
+                          out Transport::MsgAdjustmentResult result)
+        raises(ImplementationException);
+
+      Transport::MsgAdjustmentContextPack get_feed_items(
+        in string url,
+        in unsigned long type,
+        in unsigned long space,
+        in unsigned long country,
+        in unsigned long lang,
+        in string encoding)
+        raises(OperationFailed, ImplementationException);
+
+      Transport::GetHTMLItemsResult get_html_items(
+        in string url,
+        in string script,
+        in unsigned long type,
+        in unsigned long space,
+        in unsigned long country,
+        in unsigned long lang,
+        in KeywordsSeq keywords,
+        in string cache,
+        in string encoding)
+        raises(OperationFailed, ImplementationException);
+    };
+  };
+};
+
+#endif // _NEWSGATE_SERVER_SERVICES_MODERATOR_COMMONS_FEEDMANAGER_IDL_

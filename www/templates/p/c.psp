@@ -1,0 +1,121 @@
+import search_util
+
+class ContactPageRender(search_util.SearchPageContext):
+
+  contact_page_render_base = search_util.SearchPageContext
+
+  def __init__(this, context, search_engine):
+    
+    this.contact_page_render_base.__init__(this,
+                                           context,
+                                           search_engine,
+                                           "h",
+                                           True)
+    this.query = ""
+    this.modifier = search_util.Modifier()
+    this.posted = False
+
+    if this.interceptor: this.block = this.interceptor.bastion("feedback")
+
+  def prn_css(this):
+
+    if this.static.development:
+      
+      this.contact_page_render_base.prn_css(this)
+    
+      this.prn(\
+        '\n<link rel="stylesheet" type="text/css" href="',
+        this.resource_url('/fixed/css/c.css'),
+        '" media="all"/>')
+
+      if this.site_version == search_util.SearchPageContext.SV_MOB:
+        this.prn(\
+          '\n<link rel="stylesheet" type="text/css" href="',
+          this.resource_url('/fixed/css/c-mob.css'),
+          '" media="all"/>')
+
+    else:
+
+      if this.site_version == search_util.SearchPageContext.SV_MOB:
+        this.prn(\
+          '\n<link rel="stylesheet" type="text/css" href="',
+          this.compound_resource_url('css/c-mob.css'),
+          '" media="all"/>')
+        
+      else:
+        this.prn(\
+          '\n<link rel="stylesheet" type="text/css" href="',
+          this.compound_resource_url('css/c.css'),
+          '" media="all"/>')
+
+request = context.request
+prn = request.output.stream.prn
+loc = context.localization.get
+lm = el.psp.LocalizationMarker
+
+render = ContactPageRender(context, None)
+
+render.prn_html_open()
+render.prn_head_open()
+
+prn('\n<title>', lm, "TITLE", ' - ', 
+    el.string.manip.xml_encode(render.static.server_instance_name),
+    '</title>')
+
+render.prn_css()
+render.prn_head_close()
+
+render.prn_body_open()
+
+prn(R'''
+<table id="topbar_table" cellspacing="0">
+  <tr>
+  <td id="tagline">''', lm, "TAGLINE", R'''</td>
+  <td id="menu"><a href="''',
+    el.string.manip.xml_encode(render.site + "/"), '">')
+
+if render.site_version == search_util.SearchPageContext.SV_MOB:
+  prn('<img src="', render.resource_url('/fixed/img/home32.png'),
+      '" width="32" height="32" class="mob_menu_img"/>')
+
+else:
+  prn(lm, "NEW_SEARCH")
+
+prn(R'''</a>
+  </td>
+  </tr>
+</table>
+<table id="main_area" align="center" cellspacing="0"><tr><td>
+''')
+
+if render.static.email != "":
+  templ = el.string.template.Parser(loc("EMAIL_INFO"), "{{", "}}")
+  vars = { "EMAIL": render.static.email}
+  prn('\n  <div id="email_info">', templ, vars, '</div>')
+
+text = render.raw_param("qw").strip()
+
+prn(R'''
+  <div id="feed_back">''', lm, text and "FEED_BACK_RECEIVED" or "FEED_BACK", 
+  '</div>')
+
+if text:
+
+  render.save_file(text, "feedback", True, False)
+
+else:
+
+  prn(R'''
+  <form id="f" action="/p/c" method="post">
+    <textarea rows="10" name="qw" id="qw"></textarea><br>
+    <div class="button">
+    <input type="submit" value="''', lm, "BUTTON_TEXT", R'''" id="bt"/>
+    </div>
+  </form>''')
+
+prn('\n</td></tr></table>')
+
+render.prn_copyright(False)
+render.prn_counters()
+render.prn_body_close()
+render.prn_html_close()

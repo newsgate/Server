@@ -1,0 +1,47 @@
+body
+{
+  -webkit-text-size-adjust: none;
+}
+
+#topbar_table
+{
+  padding: 0 0.1em 0.1em 0.1em;
+}
+
+#tagline 
+{
+  padding: 0.4em 0 0.4em 1em;
+}
+
+#menu
+{
+  padding: 0.2em 0em 0.2em 0.3em;
+}
+
+.mob_menu_img
+{
+  border-style: none;
+  margin: 0 2px;
+  vertical-align:bottom;
+}
+
+#main_area
+{
+  width: 100%;
+  padding: 0 0.7em;
+}
+
+#email_info
+{
+  padding: 0.3em 0 0;
+}
+
+#feed_back
+{
+  padding: 0.3em 0 0.2em;
+}
+
+.button
+{
+  padding: 0.2em 0 0;
+}

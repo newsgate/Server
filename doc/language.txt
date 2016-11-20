@@ -1,0 +1,230 @@
+Search string
+-------------
+
+Search string defines a search <condition>. Search result is a set of news
+messages satisfying condition specified.
+
+Condition
+---------
+
+condition ::= <leaf condition> | <condition> AND <condition> | 
+              <condition> OR <condition> | <condition> EXCEPT <condition> |
+              <condition> FRESH <days> | 
+              <condition> OUTDATED <days> | 
+              <condition> LANG <language>+ | 
+              <condition> LANG NOT <language>+ |
+              <condition> COUNTRY <country>+ | 
+              <condition> COUNTRY NOT <country>+ |
+              <condition> FEED <feed type>+ | 
+              <condition> FEED NOT <feed type>+ | 
+              <condition> DOMAIN <domain>+ | 
+              <condition> DOMAIN NOT <domain>+ |
+              ( <condition> )
+
+leaf condition ::= ALL <word sequence> | ANY <word sequence> | 
+                   SITE <site>+ | URL <url>+
+
+language  ::= subset of ISO 639-1,2 specified 2-, 3-letter codes and
+              english language names (complex ones truncated)
+country   ::= ISO 3166 2-, 3-letter, 3-digit codes and english country
+              names (complex ones truncated)
+site      ::= valid host name
+url       ::= valid url
+feed type ::= rss | usenet
+domain    ::= valid domain name
+days      ::= <positive number>
+
+positive number ::= sequence of digits producing positive integer
+
+word sequence ::= (<whitespaces>?<word sequence item><stops>?)*<whitespaces>?
+word sequence item ::= <word> | <phrase>
+
+word   ::= sequence of characters not containing whitespaces and with
+           all stop characters removed from the right.
+
+phrase ::= "(<whitespaces>?<word><stops>?)*<whitespaces>?"
+
+
+whitespaces ::= (' ' | '\f' | '\n' | '\r' | '\t' | '\v')+
+stops     ::= ('!' | ':' | ',' | '.' | '?' | ';' | '-')+
+
+Leaf conditions:
+
+ALL  - defines set of messages containing all words specified. 
+
+        Example:   ALL toyota concept car
+        Semantics: messages containing all words "toyota", "concept", "car".
+
+ANY  - defines set of messages containing any of words specified
+
+        Example:   ANY toyota concept car
+        Semantics: messages containing any of words "toyota", "concept", "car".
+
+If some of word sequences in ALL or ANY conditions are taken into
+quotes that mean they should appear exactly in the same order in a
+message to let it fit condition.
+
+        Example:   ANY "toyota concept car" "mazda concept car"
+        Semantics: messages containing exact phrase "toyota concept car"
+                   or exact phrase "mazda concept car"
+
+SITE - defines set of messages belonging to sites specified.
+
+        Example: SITE rss.yahoo.com rss.google.com
+        Semantics: all messages from rss.yahoo.com and rss.google.com sites.
+
+URL - defines set of messages advertised by resources at urls
+      specified.
+
+       Example:   URL http://rss.news.yahoo.com/rss/mostviewed http://rss.news.yahoo.com/rss/latest
+       Semantics: all messages from 
+                  http://rss.news.yahoo.com/rss/mostviewed and
+                  http://rss.news.yahoo.com/rss/latest feeds.
+
+There is a usefull shortcut allowing to skip ALL token, so for example
+
+( ALL middle east OR ALL iraq war ) AND ALL 1991
+
+can be shortened to
+
+( middle east OR iraq war ) AND 1991
+
+Operations
+----------
+
+AND - defines set of messages belonging simultaneously to both sets
+       on the left and on the right.
+
+       Example:   ANY space asteroid AND ANY 2016 crash
+       Semantics: messages containing any of words "space", "asteroid"
+                  and any of words "2019", "crash"
+
+OR  - defines set of messages containing ones from both sets -
+       defined by conditions on the left and on the right.
+
+       Example: ALL middle east OR ALL iraq war
+       Semantics: messages containing both words "middle", "east" or 
+                  both words "iraq", "war"
+
+EXCEPT - narrows message set defined by condition to the left
+         removing messages belonging to the set defined by condition 
+         to the right.
+
+         Example: middle east EXCEPT iraq war
+         Semantics: messages containing both words "middle", "east"
+                    excluding those containing both words "iraq", "war".
+
+FRESH  - narrows message set defined by condition to the left leaving 
+          only those which freshness is not more than number of days specified.
+          
+          Example: middle east OR iraq war FRESH 2
+          Semantics: messages containing both words "middle", "east"
+          or both words "iraq", "war" and which were published not
+          more than 48 hours ago.
+
+OUTDATED - narrows message set defined by condition to the left leaving 
+           only those which freshness is MORE than number of days specified.
+        
+           Example: middle east OR iraq war OUTDATED 2
+           Semantics: messages containing both words "middle", "east"
+           or both words "iraq", "war" and which were published 
+           more than 48 hours ago.
+
+LANG   - narrows message set defined by condition to the left leaving 
+         only written in languages specified to the right.
+
+          Example: ipod LANG eng rus
+          Semantics: messages containing word "ipod" and written in
+          english or russian.
+
+LANG NOT - narrows message set defined by condition to the left leaving 
+           only written NOT in languages specified to the right.
+
+          Example: ipod LANG NOT eng rus
+          Semantics: messages containing word "ipod" and written not in
+          english nor in russian.
+
+COUNTRY  - narrows message set defined by condition to the left leaving 
+           only issued in countries specified to the right.
+
+          Example: ipod COUNTRY usa russia
+          Semantics: messages containing word "ipod" and issued in
+          USA or Russia.
+
+COUNTRY NOT - narrows message set defined by condition to the left leaving 
+              only issued NOT in countries specified to the right.
+
+          Example: ipod COUNTRY NOT usa russia
+          Semantics: messages containing word "ipod" and issued not in
+          USA nor Russia.
+
+FEED   - narrows message set defined by condition to the left leaving 
+          only those which feed type equals to the specified
+          one. Valid feed types are rss, usenet, ...
+
+          Example: ipod LANG en FEED usenet
+          Semantics: messages containing word "ipod", written in
+          english and coming from usenet.
+
+FEED NOT - narrows message set defined by condition to the left leaving 
+             only those which feed type DIFFERES from the specified
+             one. Valid feed types are rss, usenet, ...
+
+             Example: ipod LANG en FEED NOT usenet
+             Semantics: messages containing word "ipod", written in
+             english and not coming from usenet.
+
+DOMAIN - narrows message set defined by condition to the left leaving 
+          only those which belong to at least one of domains specified.
+
+          Example: ipod DOMAIN ru co.uk
+          Semantics: messages containing word "ipod" and belonging to
+                     .ru domain or co.uk domain.
+
+DOMAIN NOT - narrows message set defined by condition to the left leaving 
+               only those which DO NOT belong to ALL of domains specified.
+
+               Example: ipod DOMAIN NOT ru co.uk
+               Semantics: messages containing word "ipod" and not 
+                          belonging to .ru domain nor to .co.uk domain.
+
+()   - defines set of messages applying condition inside. Used to
+       specify operation precedence explicitly.
+
+       Example: ( ALL middle east OR ALL iraq war ) AND 1991
+       Semantics: messages containing all words "middle", "east" or 
+                  all words "iraq", "war", and also "1991" word.
+
+Operations precedence: 
+
+() 
+AND, EXCEPT
+OR
+FRESH, OUTDATED, LANG, LANG NOT, FEED, FEED NOT, DOMAIN, DOMAIN NOT
+
+All special words are distingueshed from regular ones being written in
+upper case. If you want to use any of them as a word to search for you
+should write them in lower case.
+
+Example: fresh fish EXCEPT salmon
+Semantics: messages containing both words "fresh" and "fish"
+           excluding those containing word "salmon".
+
+Phrase
+------
+
+Phrase is arbitrary sequence of words taken into quotes 
+(like " middle east"). Parser goes through search expression left to
+right assuming phrase to start from double quote following whitespace or
+begin of expression and to finish with a double quote followed by
+whitespace or end of expression. Double quotes not starting or ending
+some phrase threated just like regular character inside word.
+
+Examples:
+
+"middle east"        - phrase
+15" and 17" monitors - no phrase here 
+
+To match a message ALL and ANY conditions expect words in phrase to 
+appear in a message in the specified order with no other words and
+stop characters in between.

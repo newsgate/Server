@@ -1,0 +1,8 @@
+# @file   dir.ac
+# @author Karen Aroutiounov
+# $Id:$
+
+OSBE_CONFIG_FILE([Makefile])
+
+OSBE_CONFIG_SUBDIR([Frontend])
+OSBE_CONFIG_SUBDIR([Service])

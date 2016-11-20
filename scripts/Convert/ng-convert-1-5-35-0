@@ -1,0 +1,53 @@
+#!/bin/sh
+
+# product   : NewsGate - news search WEB server
+# copyright : Copyright (c) 2005-2016 Karen Arutyunov
+# licenses  : CC BY-NC-SA 3.0; see accompanying LICENSE file
+#             Commercial; contact karen.arutyunov@gmail.com
+
+echo "Creating StatSearchRequest table ..."
+
+echo "create table StatSearchRequest ( \
+      id CHAR(32) character set ascii NOT NULL UNIQUE KEY, \
+      time DATETIME NOT NULL, \
+      time_usec MEDIUMINT UNSIGNED NOT NULL, \
+      request_duration INTEGER UNSIGNED NOT NULL, \
+      search_duration INTEGER UNSIGNED NOT NULL, \
+      host VARCHAR(256) character set ascii NOT NULL, \
+      client_id VARCHAR(32) character set ascii NOT NULL, \
+      client_type ENUM ('C', 'R', 'B', 'U') NOT NULL, \
+      client_name VARCHAR(20) character set ascii NOT NULL, \
+      client_os VARCHAR(20) character set ascii NOT NULL, \
+      user_agent VARBINARY(256) NOT NULL, \
+      lang CHAR(3) character set ascii NOT NULL, \
+      country CHAR(3) character set ascii NOT NULL, \
+      ip CHAR(15) character set ascii NOT NULL, \
+      ref_internal TINYINT NOT NULL, \
+      ref_site VARCHAR(256) character set ascii NOT NULL, \
+      ref_company_domain VARCHAR(256) character set ascii NOT NULL, \
+      ref_page VARCHAR(1024) character set ascii NOT NULL, \
+      ref_url VARCHAR(1024) character set ascii NOT NULL, \
+      protocol ENUM ('R', 'X', 'H') NOT NULL, \
+      columns TINYINT NOT NULL, \
+      sorting_type TINYINT NOT NULL, \
+      suppression_type TINYINT NOT NULL, \
+      start_item INTEGER UNSIGNED NOT NULL, \
+      item_count INTEGER UNSIGNED NOT NULL, \
+      sr_flags INTEGER UNSIGNED NOT NULL, \
+      gm_flags BIGINT UNSIGNED NOT NULL, \
+      locale_lang CHAR(3) character set ascii NOT NULL, \
+      locale_country CHAR(3) character set ascii NOT NULL, \
+      query VARBINARY(1024) NOT NULL, \
+      modifier_type ENUM ('E', 'S', 'C', 'A') NOT NULL, \
+      modifier_value VARBINARY(1024) NOT NULL, \
+      filter_lang CHAR(3) character set ascii NOT NULL, \
+      filter_country CHAR(3) character set ascii NOT NULL, \
+      filter_event BIGINT UNSIGNED NOT NULL, \
+      filter_feed VARCHAR(512) character set ascii NOT NULL, \
+      filter_category VARBINARY(1024) NOT NULL,
+      response_messages_loaded TINYINT NOT NULL, \
+      response_total_matched_messages INTEGER UNSIGNED NOT NULL, \
+      response_suppressed_messages INTEGER UNSIGNED NOT NULL \
+) engine=InnoDB;" | ng-mysql --user=root NewsGate
+
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi

@@ -1,0 +1,103 @@
+/*
+ * product   : NewsGate - news search WEB server
+ * copyright : Copyright (c) 2005-2016 Karen Arutyunov
+ * licenses  : CC BY-NC-SA 3.0; see accompanying LICENSE file
+ *             Commercial; contact karen.arutyunov@gmail.com
+ */
+
+/**
+ * @file NewsGate/Server/Services/Feeds/RSS/Commons/RSSFeedServices.idl
+ * @author Karen Arutyunov
+ * $Id:$
+ */
+
+#ifndef _NEWSGATE_SERVER_SERVICES_FEEDS_RSS_COMMONS_RSSFEEDSERVICES_IDL_
+#define _NEWSGATE_SERVER_SERVICES_FEEDS_RSS_COMMONS_RSSFEEDSERVICES_IDL_
+
+#include <Commons/Message/MessageTransport.idl>
+
+module NewsGate
+{ 
+  module RSS
+  {
+    //
+    // Basic types
+    //    
+    typedef unsigned long long SessionId;
+
+    //
+    // Feed state
+    //    
+    custom valuetype FeedPack
+    {
+    };
+
+    custom valuetype FeedsStatistics
+    {
+    };
+
+    custom valuetype FeedStateUpdatePack
+    {
+    };
+
+    //
+    // Puller interface
+    //    
+    interface Puller
+    {
+      exception NotReady
+      {
+        string reason;
+      };
+      
+      exception ImplementationException
+      {
+        string description;
+      };
+      
+      void logout(in SessionId session) raises(ImplementationException);
+
+      void update_feeds(in SessionId session, in FeedPack feeds)
+        raises(NotReady, ImplementationException);
+    };
+
+    //
+    // PullerManager interface
+    //
+    interface PullerManager
+    {
+      exception Logout
+      {
+        string reason;
+      };
+      
+      exception ImplementationException
+      {
+        string description;
+      };
+
+      // If 0, then unable to fulfill, please try later
+      SessionId puller_login(in Puller puller_object)
+        raises(ImplementationException);
+      
+      void puller_logout(in SessionId session)
+        raises(ImplementationException);
+      
+      // If false, then unable to accept, please resend later
+      boolean feed_state(in SessionId session,
+                         in FeedStateUpdatePack state_update)
+        raises(Logout, ImplementationException);
+
+      // Called by puller to confirm presence
+      void ping(in SessionId session)
+        raises(Logout, ImplementationException);
+
+      void feed_stat(in SessionId session, in FeedsStatistics stat)
+        raises(Logout, ImplementationException);
+    };
+
+  };
+  
+};
+
+#endif // _NEWSGATE_SERVER_SERVICES_FEEDS_RSS_COMMONS_RSSFEEDSERVICES_IDL_

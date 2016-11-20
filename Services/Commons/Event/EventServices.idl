@@ -1,0 +1,141 @@
+/*
+ * product   : NewsGate - news search WEB server
+ * copyright : Copyright (c) 2005-2016 Karen Arutyunov
+ * licenses  : CC BY-NC-SA 3.0; see accompanying LICENSE file
+ *             Commercial; contact karen.arutyunov@gmail.com
+ */
+
+/**
+ * @file NewsGate/Server/Services/Commons/Event/EventServices.idl
+ * @author Karen Arutyunov
+ * $Id:$
+ */
+
+#ifndef _NEWSGATE_SERVER_SERVICES_COMMONS_EVENT_EVENTSERVICES_IDL_
+#define _NEWSGATE_SERVER_SERVICES_COMMONS_EVENT_EVENTSERVICES_IDL_
+
+#include <Commons/Event/EventTransport.idl>
+#include <Commons/Message/MessageTransport.idl>
+
+module NewsGate
+{ 
+  module Event
+  {
+    exception Logout
+    {
+      string reason;
+    };
+      
+    exception NotReady
+    {
+      string reason;
+    };
+      
+    exception ImplementationException
+    {
+      string description;
+    };
+
+    exception InvalidData
+    {
+      string description;
+    };
+
+    interface BankManager;
+
+    //
+    // BankClientSession interface
+    //
+    custom valuetype BankClientSession
+    {
+      enum RequestResultCode
+      {
+        RRC_OK,
+        RRC_NOT_READY,
+        RRC_EVENT_BANK_ERROR,
+        RRC_CORBA_ERROR
+      };
+
+      struct RequestResult
+      {
+        RequestResultCode code;
+        string description;
+      };
+
+      BankManager bank_manager();
+
+      RequestResult post_message_digest(
+        in Transport::MessageDigestPack digests,
+        out Message::Transport::MessageEventPack events)
+        raises(NotReady, ImplementationException);
+      
+      RequestResult get_events(in Transport::EventIdRelPack ids,
+                               out Transport::EventObjectRelPack events)
+        raises(NotReady, ImplementationException);
+
+      void delete_messages(in Message::Transport::IdPack ids)
+        raises(NotReady, ImplementationException);      
+    };
+
+//
+// Bank interface
+//    
+    interface Bank
+    {
+      unsigned long get_message_events(
+        in Message::Transport::IdPack messages,
+        out Message::Transport::MessageEventPack events)
+        raises(NotReady, ImplementationException);
+
+      void post_message_digest(in Transport::MessageDigestPack digests,
+                               out Message::Transport::MessageEventPack events)
+        raises(NotReady, ImplementationException);
+
+      void get_events(in Transport::EventIdRelPack ids,
+                      out Transport::EventObjectRelPack events)
+        raises(NotReady, ImplementationException);
+
+      void push_events(in Transport::MessageDigestPack digests,
+                       in Transport::EventPushInfoPack events)
+        raises(NotReady, ImplementationException);
+
+      void delete_messages(in Message::Transport::IdPack ids)
+        raises(NotReady, ImplementationException);      
+    };
+
+    typedef string BankIOR;
+
+    custom valuetype BankSessionId
+    {
+      string to_string();
+      void from_string(in string str) raises(InvalidData);
+    };
+
+    custom valuetype BankSession
+    {
+      public BankSessionId id;
+      public Bank left_neighbour;
+      public Bank right_neighbour;
+      public unsigned long bank_count;
+    };
+
+//
+// BankManager interface
+//    
+    interface BankManager
+    {
+      BankSession bank_login(in BankIOR bank_ior)
+        raises(NotReady, ImplementationException);
+
+      // Called by message bank to confirm presence
+      void ping(in BankIOR bank_ior,
+                in BankSessionId current_session_id)
+        raises(Logout, ImplementationException);
+
+      BankClientSession bank_client_session() raises(ImplementationException);
+    };    
+  };
+  
+};
+
+#endif // _NEWSGATE_SERVER_SERVICES_COMMONS_EVENT_EVENTSERVICES_IDL_

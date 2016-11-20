@@ -1,0 +1,30 @@
+.man_msg
+{
+  color: black;
+  font-size: 80%;
+  width: 100%;
+  padding: 0.3em 0.5em;
+  border-collapse: collapse;
+  margin: 0 0 0.5em 0;
+  background: rgb(224, 224, 255);
+}
+
+.msg_man_buttons
+{
+  margin: 0 0 0.5em 1.5em;
+}
+
+.msg_del
+{
+  background: rgb(201, 201, 216);
+}
+
+.man_msg_error
+{
+  color: red;
+}
+
+.man_msg_success
+{
+  color: green;
+}

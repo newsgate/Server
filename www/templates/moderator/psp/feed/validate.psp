@@ -1,0 +1,46 @@
+from moderation_func import *
+
+request = context.request
+prn, param = request.output.stream.prn, request.input.parameters().find
+
+moderator = connect_moderator(request, moderator_connector)
+
+if moderator.has_privilege(newsgate.moderation.moderator.PV_FEED_CREATOR) == False:
+  el.exit(403) # Forbidden
+
+feeds = param("f").split()
+processing_type = param("s").split()[0]
+
+try: req_per_host_period = int(param("p"))
+except: req_per_host_period = 10
+
+if processing_type == "Add":
+  processing_type = newsgate.moderation.feed.PT_CHECK_FEEDS
+elif processing_type == "Parse":
+  processing_type = newsgate.moderation.feed.PT_PARSE_PAGE_FOR_FEEDS
+elif processing_type == "Look":
+  processing_type = newsgate.moderation.feed.PT_LOOK_AROUND_PAGE_FOR_FEEDS
+elif processing_type == "Traverse":
+  processing_type = newsgate.moderation.feed.PT_PARSE_DOMAIN_FOR_FEEDS
+else:
+  el.exit(el.psp.Forward("/psp/feeds.psp", "Invalid request data."))
+
+url_descs = list()
+
+for feed in feeds:
+  desc = newsgate.moderation.feed.UrlDesc()
+  desc.url = feed
+  url_descs.append(desc)
+
+try:
+  validation_token = \
+    moderator.feed_manager.validate_feeds_async(url_descs, 
+                                                processing_type,
+                                                moderator.id,
+                                                req_per_host_period)
+except newsgate.moderation.NotReady:
+  el.exit(el.psp.Forward(\
+          "/psp/feeds.psp", 
+          "The system is not ready to serve your request.<br>Please, try again in several minutes."))
+
+el.exit(el.psp.Forward("/psp/feed/validations.psp", validation_token))

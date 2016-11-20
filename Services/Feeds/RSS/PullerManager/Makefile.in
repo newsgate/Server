@@ -1,0 +1,30 @@
+# @file   Makefile.in
+# @author Karen Aroutiounov
+# $Id:$
+
+include Common.pre.rules
+include $(osbe_builddir)/config/CXX/CXX.pre.rules
+include $(osbe_builddir)/config/CXX/Corba.pre.rules
+
+include $(osbe_builddir)/config/CXX/External/ACE.pre.rules
+include $(osbe_builddir)/config/CXX/External/Xerces.pre.rules
+
+include $(osbe_builddir)/config/CXX/External/ElBasic.pre.rules
+include $(osbe_builddir)/config/CXX/External/ElMySQL.pre.rules
+include $(osbe_builddir)/config/CXX/External/ElCorba.pre.rules
+
+include $(top_builddir)/config/xsd/Config.so.pre.rules
+
+include $(top_builddir)/config/Commons/Feed/FeedCommons.so.pre.rules
+include $(top_builddir)/config/Services/Feeds/RSS/Commons/RSSFeedCommons.so.pre.rules
+
+sources  := SubService.cpp \
+            SessionSupport.cpp \
+            FeedingPullers.cpp \
+            PullerManagerImpl.cpp \
+            PullerManagerMain.cpp
+
+target   := RSSPullerManager
+
+include $(osbe_builddir)/config/CXX/Corba.post.rules
+include $(osbe_builddir)/config/CXX/Ex.post.rules

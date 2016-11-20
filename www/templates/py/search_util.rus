@@ -1,0 +1,55 @@
+ALL_OPTION - Все -
+
+NEWS_TITLE       Новости
+NEWS_DESCRIPTION Актуальные новости
+
+QUERY_TITLE_ALL         Все новости
+QUERY_TITLE_IN_SIMILAR  в сюжете
+QUERY_TITLE_IN_SOURCE   в источнике
+QUERY_TITLE_IN_CATEGORY в категории
+QUERY_TITLE_IN_LANG     язык сообщений
+QUERY_TITLE_IN_COUNTRY  страна
+
+QUERY_DESCRIPTION_ALL   Новости:
+
+RIGHT_BAR_CATEGORIES     Категории
+RIGHT_BAR_READ_ALSO      Читайте&nbsp;также
+RIGHT_BAR_OTHER_SUBJECTS Другие&nbsp;категории
+RIGHT_BAR_HTML_SOURCES   Ресурсы
+RIGHT_BAR_HTML_SOURCE    Ресурс
+
+TRANSLATE_NONE   Отключить
+TRANSLATE_GOOGLE Google Переводчик
+
+PUBLISHED     Опубликовано {{MSG_TIME_AGO}} назад <a href='{{URL}}'{{ATTRIBUTES}}>{{MSG_SOURCE_TITLE}}</a>{{MSG_COUNTRY}}
+PUBLISHED_MOB {{MSG_TIME_AGO}} назад <a href='{{URL}}'{{ATTRIBUTES}}>{{MSG_SOURCE_TITLE}}</a>{{MSG_COUNTRY}}
+FETCHED       Обнаружено {{MSG_TIME_AGO}} назад на <a href='{{URL}}'{{ATTRIBUTES}}>{{MSG_SOURCE_TITLE}}</a>{{MSG_COUNTRY}}
+SOURCE        <a href='{{URL}}'{{ATTRIBUTES}}>{{MSG_SOURCE_TITLE}}</a>{{MSG_COUNTRY}}
+
+READ_MORE     Подробнее&nbsp;...
+SIMILAR_POSTS Весь&nbsp;сюжет
+CATEGORIES    Категории:
+COPYRIGHT     Все права защищены.
+CONTACT       Обратная связь
+
+ALL_MSG       новостей
+SIMILAR_TO    в сюжете
+FROM_SOURCE   по источнику
+FROM_CATEGORY по категории
+
+IN_CATEGORY    в категории
+IN_SOURCE      в источнике
+IN_SIMILAR     в сюжете
+IN_LANGUAGE    язык сообщений
+IN_LANGUAGE_TR перевод
+IN_COUNTRY     страна
+ALL_LANGUAGE   сообщения на всех языках
+ALL_COUNTRY    все страны
+
+EXCLUDE_SEARCH   Исключить поиск термина
+EXCLUDE_SIMILAR  Исключить поиск по сюжету
+EXCLUDE_SOURCE   Исключить поиск по источнику сообщений
+EXCLUDE_CATEGORY Исключить поиск по категории
+EXCLUDE_LANG     Искать по всем языкам сообщений
+EXCLUDE_COUNTRY  Искать по всем странам источников сообщений
+

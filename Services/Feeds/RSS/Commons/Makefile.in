@@ -1,0 +1,22 @@
+# @file   Makefile.in
+# @author Karen Aroutiounov
+# $Id:$
+
+include Common.pre.rules
+include $(osbe_builddir)/config/CXX/CXX.pre.rules
+include $(osbe_builddir)/config/CXX/Corba.pre.rules
+
+include $(top_builddir)/config/Commons/Message/MessageCommons.so.pre.rules
+
+corba_stub_idls := RSSFeedServices.idl
+corba_skeleton_idls := RSSFeedServices.idl
+corba_includes := .
+corba_idl_includes := .
+
+includes := .
+sources := TransportImpl.cpp
+
+target := RSSFeedCommons
+
+include $(osbe_builddir)/config/CXX/Corba.post.rules
+include $(osbe_builddir)/config/CXX/So.post.rules

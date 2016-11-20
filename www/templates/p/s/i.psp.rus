@@ -1,0 +1,82 @@
+#include ../../py/parse_error.rus
+#include ../../py/search_util.rus
+#include ../../py/search_page_util.rus
+#include ../../py/informer_util.rus
+
+IR_LOADING              Загрузка ...
+IR_INFORMER             Информер
+IR_INFORMER_TITLE       информер
+IR_NEWS_INFORMER_TITLE  Новостной информер
+IR_INFORMER_DESCRIPTION Создайте новостной информер выбрав категорию, источник новостей, поисковую фразу, либо комбинацию вышеперечисленного.
+IR_KEYWORDS             новостной информер, JSON, информер новостей, бесплатный информер, блок новостей сайт, интернет информер, каталог информеров, новый информер, онлайн информер, создать информер
+
+IR_SCRIPT_INTRO    Создайте новостной информер выбрав категорию, источник новостей, поисковую фразу, либо комбинацию вышеперечисленного. Вместо поисковой фразы возможно задание более сложного <a href="/p/h/s" target="_blank">поискового выражения</a>.
+IR_FORM_INTRO      Форма настройки содержит основные параметры новостного блока. Цвета, шрифты, размеры задаются в терминах CSS. Вы можете отредактировать созданный ранее информер скопировав его в поле кода - другие поля формы автоматически примут соответствующие значения.
+IR_STYLE_INTRO     Возьмите данный код за основу, отредактируйте и вставьте в элемент &lt;style>&lt;/style> заголовка вашей страницы, либо в подключаемый файл стилей.
+IR_STYLE_EXTENSION Если возможностей формы недостаточно, то более тонкую настройку стиля можно осуществить переключив поле Стиль/Размещение в значение 'Внешний CSS' и взяв предложенный CSS-код за основу. Переключив настройку Информер/Тип в значение Объектный, можно получать новости в <a href='http://ru.wikipedia.org/wiki/JSON' target='_blank'>формате JSON</a>.
+IR_FEEDBACK_NOTICE Пожалуйста, присылайте комментарии и вопросы на <a href="mailto:{{EMAIL}}">{{EMAIL}}</a>. Ваши пожелания и предложения будут обязательно рассмотрены.
+
+IR_ON           Включить
+IR_OFF          Отключить
+IR_TYPE         Тип
+IR_XML_ENCODING XML-кодировка&nbsp;строк
+IR_TYPE_VISUAL  Визуальный
+IR_TYPE_OBJECT  Объектный
+IR_TITLE        Заголовок
+IR_ANNOTATION   Аннотация
+IR_IMAGE        Картинка
+IR_METAINFO     Метаинформация
+IR_CATCHWORD    Колонтитул
+IR_TOP          Сверху
+IR_BOTTOM       Снизу
+IR_FULL         Целиком
+IR_LENGTH       Длина
+IR_ITEMS        Длина
+IR_SORT         Сортировка
+IR_SORT_RELEVANCE Значимость
+IR_SORT_DATE      Дата публикации
+IR_WIDTH        Ширина
+IR_LINK_COLOR   Цвет&nbsp;ссылки
+IR_BORDER_COLOR Цвет&nbsp;границы
+IR_BACKGROUND_COLOR Цвет&nbsp;фона
+IR_DIVIDER_COLOR Цвет&nbsp;разделителя
+IR_VAR_NAME Имя&nbsp;переменной
+IR_FONT Шрифт
+IR_SIZE Размер
+IR_COLOR Цвет&nbsp;текста
+IR_ALIGNMENT Выравнивание
+IR_ALIGN_BOTH_SIDES Двустороннее
+IR_ALIGN_LEFT  Левое
+IR_ALIGN_RIGHT Правое
+IR_UNDERLINE_COLOR Цвет&nbsp;подчерка
+IR_POSITION Расположение
+IR_HIDE Спрятать
+IR_LEFT_ANNOT Слева&nbsp;аннотации
+IR_RIGHT_ANNOT Справа&nbsp;аннотации
+IR_LEFT_TITLE Слева&nbsp;заголовка&nbsp;и&nbsp;аннотации
+IR_RIGHT_TITLE Справа&nbsp;заголовка&nbsp;и&nbsp;аннотации
+IR_CROPPED обрезать
+IR_SOURCE_LENGTH Длина&nbsp;источника
+IR_METAINFO_COLUMNS Расположение
+IR_METAINFO_COLUMN_LEFT  Колонка слева
+IR_METAINFO_COLUMN_RIGHT Колонка справа
+IR_METAINFO_COLUMN_2     2 колонки
+IR_DATE Дата
+IR_PUBLICATION Публикации
+IR_FETCH Обнаружения
+IR_COUNTRY Страна
+IR_SHOW Показать
+IR_CATEGORIES Категории
+IR_MORE Ссылка&nbsp;'Подробнее'
+IR_SIMILAR_MESSAGES Ссылка&nbsp;'Весь&nbsp;сюжет'
+IR_SOURCE Источник
+IR_STYLE Стиль
+IR_STYLE_PLACEMENT Размещение
+IR_STYLE_EXTERNAL Внешний CSS
+IR_STYLE_INTERNAL Информер
+IR_CLASS_PREFIX Префикс&nbsp;классов
+IR_CATCHWORD_LINK_TEXT Текст&nbsp;ссылки
+IR_LOADING Загрузка ...
+IR_ON_TOPIC по теме на
+IR_ON_SITE  на
+IR_BIG_IMAGE Увеличить изображение

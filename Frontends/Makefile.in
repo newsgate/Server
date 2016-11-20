@@ -1,0 +1,17 @@
+# @file   Makefile.in
+# @author Karen Aroutiounov
+# $Id: $
+
+include Common.pre.rules
+
+target_directory_list := SearchEngine \
+                         Moderation \
+                         WordEngine \
+                         Thumbnail \
+                         StatLogger \
+                         AdModule
+
+SearchEngine Moderation WordEngine StatLogger AdModule : Commons
+
+include $(osbe_builddir)/config/Direntry.post.rules
+

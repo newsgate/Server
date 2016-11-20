@@ -1,0 +1,106 @@
+from moderation_func import *
+
+request = context.request
+prn, param = request.output.stream.prn, request.input.parameters().find
+
+message = None
+error_occured = False
+
+moderator = connect_moderator(request, moderator_connector)
+
+focus_id = "p"
+
+update = len(param("u")) > 0
+
+if update:
+  email = param("e")
+  password = param("p")
+  password2 = param("p2")
+  show_deleted = param("sd") == "1"
+
+  if password != "" and password != password2:
+    message = "Password should be equal to the reentered one"
+    error_occured = True
+    focus_id = "p"
+  elif email == "":
+    message = "Email should be specified"
+    error_occured = True
+    focus_id = "e"
+
+  if not error_occured:
+    update_info = newsgate.moderation.moderator.ModeratorUpdateInfo()
+
+    update_info.id = moderator.id
+    update_info.status = moderator.status
+    update_info.email = email
+    update_info.show_deleted = show_deleted
+    if password != "": update_info.password = password
+    update_info.name = moderator.name
+
+    try:
+      moderator = moderator.moderator_manager.update_moderator(update_info)
+      message = "Your settings were successfully updated"
+
+    except newsgate.moderation.moderator.AccountNotExist:
+      el.exit(el.psp.Forward("/psp/home.psp", "User account do not exist."))
+
+    except newsgate.moderation.InvalidSession:
+      el.exit(el.psp.Forward("/psp/login.psp", 
+                             "Your session expired.<br>Please, relogin."))
+
+    except newsgate.moderation.NotReady:
+      el.exit(el.psp.Forward(\
+        "/psp/home.psp", 
+        "The system is not ready to serve your request.<br>Please, try again in several minutes."))
+
+else:
+  email = moderator.email
+
+prn(
+R'''
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>Management: My Settings</title>
+<link rel="stylesheet" type="text/css" href="/fixed/css/common.css" media="all" />
+<link rel="stylesheet" type="text/css" href="/fixed/css/mysettings.css" media="all" />
+</head>
+
+<body onload='document.getElementById("''', focus_id, R'''").focus()'>
+<table id="skeleton" cellspacing="0">
+''')
+
+menus = []
+create_topbar_main_menus(context, moderator, "My Settings", menus)
+
+prn(create_topbar([], menus[0], menus[1]))
+
+prn(R'''
+  <tr><td id="main_area" align="center" valign="top">
+
+  <form action="/psp/mysettings" cellspacing="0">
+    <table id="edit_form">
+    <tr><td>Password:</td><td><input type="password" name="p" id="p" class="edit"/></td></tr>
+    <tr><td>Reenter Password:</td><td><input type="password" name="p2" id="p2" class="edit"/></td></tr>
+    <tr><td>Email:</td><td><input type="text" name="e"  id="e" value="''', email, 
+    R'''" class="edit"/></td></tr>
+    <tr><td></td><td>
+    <input type="checkbox"''',
+    moderator.show_deleted and ' checked="checked"' or '', 
+    R''' name="sd" value="1"/>Show Deleted Items</td></tr>
+    <tr><td></td><td><input type="submit" value="Update" name="u"/></td></tr>
+    <tr><td colspan="2" class="''', error_occured and "error" or "success", R'''">''')
+
+if message != None: prn(message)
+
+prn(
+R'''    </td></tr>
+    </table>
+  </form>
+
+  </td></tr>
+''', create_copyright(context), R'''
+</table>
+</body>
+</html>
+''')

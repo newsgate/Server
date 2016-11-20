@@ -1,0 +1,72 @@
+#include ../../py/search_util.eng
+
+TITLE              Email Subscription
+TAGLINE
+NEW_SEARCH         Home
+INVALID_EMAIL      Invalid email address specified
+NO_TIMES           At least 1 dispatch time should be specified
+SUBS_EDIT          edit
+SUBS_SUSPEND       suspend
+SUBS_RESUME        resume
+SUBS_DELETE        delete
+CLOSE              Close
+
+SUBSCRIPTION_CREATION_EMAIL_SENT Thank you for requesting a subscription to \
+email news. You will soon receive an email asking you to \
+confirm your request. Please click on the link in that email and your \
+subscription will be complete.
+
+SUBSCRIPTION_UPDATE_EMAIL_SENT You will soon receive an email asking you to \
+confirm your request. Please click on the link in that email and your \
+subscription will be updated.
+
+SUBSCRIPTION_DISABLING_EMAIL_SENT You will soon receive an email asking you to \
+confirm your request. Please click on the link in that email and your \
+subscription will be suspended.
+
+SUBSCRIPTION_ENABLING_EMAIL_SENT You will soon receive an email asking you to \
+confirm your request. Please click on the link in that email and your \
+subscription will be resumed.
+
+SUBSCRIPTION_DELETING_EMAIL_SENT You will soon receive an email asking you to \
+confirm your request. Please click on the link in that email and your \
+subscription will be deleted.
+
+SUBSCRIPTION_MANAGEMENT_EMAIL_SENT You will soon receive an email asking you \
+to confirm your request. Please click on the link in that email to manage your \
+subscriptions.
+
+EMPTY_EMAIL No email address specified
+
+NO_SUBSCRIPTION_FOR_EMAIL No subscriptions found.
+
+NO_SUBSCRIPTION_FOUND Sorry, there was a problem processing your request. Your \
+subscription not found.
+
+SUBSCRIPTION_ADDED  Thank you, you are now successfully subscribed.
+
+SUBSCRIPTION_UPDATED  Thank you, your subscription have been updated.
+
+SUBSCRIPTION_EMAIL_CHANGE You will soon receive an email sent to the new \
+subscription address asking you to confirm the address change. Please click on \
+the link in that email and your subscription will be updated.
+
+SUBSCRIPTION_EMAIL_UPDATED  Thank you, your subscription email have been \
+updated.
+
+SUBSCRIPTION_ENABLED  Thank you, your subscription have been resumed.
+SUBSCRIPTION_ALREADY_ENABLED  Sorry, but your subscription as already active.
+
+SUBSCRIPTION_DISABLED  Thank you, your subscription have been suspended.
+SUBSCRIPTION_ALREADY_DISABLED  Sorry, but your subscription as already \
+suspended.
+
+SUBSCRIPTION_DELETED  Your subscription have been deleted. Very sad …
+
+NO_OPERATION_FOUND Sorry, there was a problem processing your request. You \
+probably clicked the link repeatedly.
+
+INTERNAL_ERROR     The service is temporary unavailable. Please try again later.
+TEMPORARY_FAILED   The service is temporary unavailable. Please try again later.
+RECAPTCHA_ERROR    Please confirm you are not a robot
+PROVE_HUMAN        Please confirm you are not a robot

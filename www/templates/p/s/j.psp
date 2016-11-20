@@ -1,0 +1,738 @@
+import search_util
+import informer_util
+
+class InformerScriptRender(informer_util.JSInformerRender):
+
+  informer_script_render_base = informer_util.JSInformerRender
+
+  def __init__(this, context, search_engine):
+    
+    this.informer_script_render_base.__init__(this,
+                                              context,
+                                              search_engine,
+                                              "j",
+                                              False)
+
+  def prn_msg_category(this, msg, cat_path, encoded_cat_name, path, ad_tag):
+
+    mod = search_util.Modifier()
+    mod.category = cat_path
+
+    fl = this.filter.sticky()
+
+    extra_params = \
+      ad_tag and ('at=' + el.string.manip.mime_url_encode(ad_tag)) or ''
+
+    link = \
+      this.make_ref(\
+        this.search_link(path = service_url,
+                         modifier = mod, 
+                         filter = fl,
+                         export = this.informer_create_mode == False,
+                         extra_params = extra_params), 
+        True)
+
+    this.prn('<a')
+    print_ng_class('item_category')
+
+    this.prn(' href="', el.string.manip.xml_encode(link), '"', 
+             this.informer_create_mode == False and ' target="_blank"' or '')
+ 
+    print_ng_item_pub_a_style(True)
+    this.prn('>', encoded_cat_name, '</a>')
+
+def prn_msg_image_thumb(msg):
+  
+  if ir.image_square == 0: return
+
+  image_info = ir.find_image_thumb(msg)
+
+  if image_info == None:
+    image_info = ir.find_image_thumb(msg, False)
+
+  if image_info != None:
+
+    thumb_width = image_info.adjust_ratio == None and \
+                  image_info.thumbnail.width or \
+                  round(image_info.thumbnail.width / image_info.adjust_ratio)
+
+    thumb_height = image_info.adjust_ratio == None and \
+                   image_info.thumbnail.height or \
+                   round(image_info.thumbnail.height / image_info.adjust_ratio)
+
+    link_title = None
+    image_count = len(msg.images)
+
+    if image_count > 1:
+      link_title = ir.localizer.plural("image", 
+                                       image_count,
+                                       ir.language)
+
+    elif thumb_width < image_info.image.width or \
+         thumb_height < image_info.image.height:
+      link_title = loc("IR_BIG_IMAGE")
+
+    if link_title != None:
+      prn('<a href="', 
+          el.string.manip.xml_encode(\
+            ir.message_url(msg, image_info.image, ad_tag = ir.ad_tag)), 
+          '" target="_blank" title="', link_title, '">')
+
+    prn('<img')
+
+    print_ng_class('item_img')
+
+    prn(' src="', image_info.thumbnail.src, '"')
+
+# width="', thumb_width, '" height="', thumb_height, '"')
+
+    print_ng_item_img_style(search_util.ImageDim(thumb_width, thumb_height))
+    prn('/>')
+
+    if link_title != None: prn('</a>')
+
+def print_ng_informer_style(inline):
+
+  if inline and ir.external_style and ir.informer_create_mode == False: return
+
+  if inline: prn(' style="')
+  else: prn('.', ir.class_prefix, 'informer { ')
+
+  prn('table-layout: fixed; white-space: normal; border: 1px solid')
+
+  if ir.border_color != "": prn(" ", ir.border_color)
+  prn(';')
+
+  if ir.width != "": prn(' width: ', ir.width, ';')
+
+  if ir.background_color != "":
+    prn(' background-color: ', ir.background_color, ';')
+
+  if inline: prn('"')
+  else: prn(' }\n')
+
+def print_ng_item_column_style(inline):
+
+  if inline and ir.external_style and ir.informer_create_mode == False: return
+
+  if inline: prn(' style="')
+  else: prn('.', ir.class_prefix, 'item_column { ')
+
+  prn('padding: 0.2em 0.5em 0.5em 0.5em;')
+
+  if inline: prn('"')
+  else: prn(' }\n')
+
+def print_ng_item_style(inline):
+
+  if inline and ir.external_style and ir.informer_create_mode == False: return
+
+  if inline: prn(' style="')
+  else: prn('.', ir.class_prefix, 'item { ')
+
+  prn('width: 100%; overflow: hidden;')
+
+  if inline: prn('"')
+  else: prn(' }\n')
+
+def print_ng_divider_style(inline):
+
+  if inline and ir.external_style and ir.informer_create_mode == False: return
+
+  if inline: prn(' style="')
+  else: prn('.', ir.class_prefix, 'divider { ')
+
+  prn('width: 100%; overflow: hidden; height: 1px;')
+
+  if ir.divider_color != "":
+    prn(' border-top: 1px solid ', ir.divider_color, '; margin: 1px 0 0 0')
+
+  if inline: prn('"')
+  else: prn(' }\n')
+
+def print_ng_divider():
+  if ir.divider_color != "":
+    prn('<div')
+    print_ng_class('divider')
+    print_ng_divider_style(True)
+    prn('></div>')
+
+def print_ng_item_title_style(inline):
+
+  if inline and ir.external_style and ir.informer_create_mode == False: return
+
+  if inline: prn(' style="')
+  else: prn('.', ir.class_prefix, 'item_title { ')
+
+  prn('padding: 0.2em 0.1em 0.1em 0;')
+
+  if ir.title_underline_color != "" and ir.desc_length and ir.title_length and\
+     ir.image_pos < 2:
+    prn(' border-bottom: 1px solid ', ir.title_underline_color, ';')
+
+  if ir.title_size != "": prn(' font-size: ', ir.title_size, ';')
+  if ir.title_font != "": prn(' font-family: ', ir.title_font, ';')
+
+  if inline: prn('"')
+  else: prn(' }\n')
+
+def ng_a_pseudoclass_style(inline, parent, color):
+
+  if inline:
+    return ' onmouseover="this.style.textDecoration=\'underline\'" onmouseout="this.style.textDecoration=\'none\'"'
+  else:
+    return '.' + ir.class_prefix + parent + ' a:hover { text-decoration: underline; }\n'
+
+def print_ng_a_pseudoclass_style(inline, parent, color):
+  prn(ng_a_pseudoclass_style(inline, parent, color))
+
+def print_ng_item_title_a_style(inline):
+
+  if inline and ir.external_style and ir.informer_create_mode == False: return
+
+  if inline: prn(' style="')
+  else: prn('.', ir.class_prefix, 'item_title a { ')
+
+  prn('text-decoration: none;')
+  if ir.title_color != "": prn(' color: ', ir.title_color, ';')
+  
+  if inline: prn('"')
+  else: prn(' }\n')
+
+  print_ng_a_pseudoclass_style(inline, 'item_title', ir.title_color)
+
+def print_ng_item_annot_style(inline):
+
+  if inline and ir.external_style and ir.informer_create_mode == False: return
+
+  if inline: prn(' style="')
+  else: prn('.', ir.class_prefix, 'item_annot { ')
+
+  prn('text-align: ', ir.annotation_alignment == 1 and 'left' or \
+      ir.annotation_alignment == 2 and 'right' or 'justify', 
+      '; padding: 0.3em 0 0.2em 0; line-height: 110%;')
+
+  if ir.annotation_color != "": prn(' color: ', ir.annotation_color, ';')
+  if ir.annotation_size != "": prn(' font-size: ', ir.annotation_size, ';')
+  if ir.annotation_font != "": prn(' font-family: ', ir.annotation_font, ';')
+
+  if inline: prn('"')
+  else: prn(' }\n')
+
+def print_ng_item_annot_a_style(inline):
+
+  if inline and ir.external_style and ir.informer_create_mode == False: return
+
+  if ir.link_color != "":
+    if inline: prn(' style="')
+    else: prn('.', ir.class_prefix, 'item_annot a { ')
+
+    prn("color: ", ir.link_color, ";")
+
+    if inline: prn('"')
+    else: prn(' }\n')
+
+  print_ng_a_pseudoclass_style(inline, 'item_annot', ir.link_color)
+
+def print_ng_item_img_style(img):
+
+  if img and ir.external_style and ir.informer_create_mode == False:
+    prn(' style="width: ', img.width, 'px; height: ', img.height, 'px"')
+    return
+
+  if img: prn(' style="')
+  else: prn('.', ir.class_prefix, 'item_img { ')
+
+  left = ir.image_pos % 2 == 0
+
+  prn('border-style: none; margin: ', \
+      left and '3px 10px 3px 0' or \
+      '3px 0 3px 10px', '; float: ', left and 'left' or 'right', ';')
+
+  if img: prn(' width: ', img.width, 'px; height: ', img.height, 'px"')
+  else: prn(' }\n')
+
+def print_ng_item_metainfo_style(inline):
+
+  if inline and ir.external_style and ir.informer_create_mode == False: return
+  
+  if inline: prn(' style="')
+  else: prn('.', ir.class_prefix, 'item_metainfo { ')
+
+  prn('width: 100%; border-collapse: collapse; ',
+      'border-style: none; margin: 0.1em 0 0.2em 0;');
+
+  if ir.version == 0:
+    if ir.metainfo_color != "": prn(' color: ', ir.metainfo_color, ';')
+    if ir.metainfo_size != "": prn(' font-size: ', ir.metainfo_size, ';')
+    if ir.metainfo_font != "": prn(' font-family: ', ir.metainfo_font, ';')
+
+  if inline: prn('"')
+  else: prn(' }\n')
+
+def print_ng_item_more_style(inline):
+
+  if inline and ir.external_style and ir.informer_create_mode == False: return
+  
+  if inline: prn(' style="')
+  else: prn('.', ir.class_prefix, 'item_more { ')
+
+  prn('vertical-align: top; border-style: none; text-align: ',
+      (ir.metainfo_columns == 1 or ir.metainfo_columns == 2) and \
+      'left' or 'right', '; padding: ', 
+      ir.metainfo_columns == 1 and '0 0 0 0.1em' or 
+      ir.metainfo_columns == 2 and '0 1em 0 0.1em' or '0 0.1em 0 0', ';')
+
+  if ir.version:
+    if ir.metainfo_color != "": prn(' color: ', ir.metainfo_color, ';')
+    if ir.metainfo_size != "": prn(' font-size: ', ir.metainfo_size, ';')
+    if ir.metainfo_font != "": prn(' font-family: ', ir.metainfo_font, ';')
+
+  if inline: prn('"')
+  else: prn(' }\n')
+
+def print_ng_item_more_a_style(inline):
+
+  if inline and ir.external_style and ir.informer_create_mode == False: return
+
+  if inline: prn(' style="')
+  else: prn('.', ir.class_prefix, 'item_more a { ')
+
+  prn('text-decoration: none;')
+  if ir.link_color != "": prn(' color: ', ir.link_color, ';')
+  
+  if inline: prn('"')
+  else: prn(' }\n')
+
+  print_ng_a_pseudoclass_style(inline, 'item_more', ir.link_color)
+
+def print_ng_item_pub_style(inline):
+
+  if inline and ir.external_style and ir.informer_create_mode == False: return
+
+  if inline: prn(' style="')
+  else: prn('.', ir.class_prefix, 'item_pub { ')
+
+  prn('vertical-align: bottom; border-style: none; ',
+      ir.metainfo_columns == 1 and \
+      'text-align: left; padding: 0 0 0 0.1em;' or \
+      'text-align: right; padding: 0 0.1em 0 0;')
+  
+  if ir.version:
+    if ir.metainfo_color != "": prn(' color: ', ir.metainfo_color, ';')
+    if ir.metainfo_size != "": prn(' font-size: ', ir.metainfo_size, ';')
+    if ir.metainfo_font != "": prn(' font-family: ', ir.metainfo_font, ';')
+
+  if inline: prn('"')
+  else: prn(' }\n')
+
+def ng_item_pub_a_style(inline):
+
+  if inline and ir.external_style and ir.informer_create_mode == False: return ''
+
+  res = inline and ' style="' or ('.' + ir.class_prefix + 'item_pub a { ')
+  res += 'text-decoration: none;'
+  if ir.link_color != "": res += ' color: ' + ir.link_color + ';'
+  res += inline and '"' or ' }\n'
+  res += ng_a_pseudoclass_style(inline, 'item_pub', ir.link_color)
+
+  return res
+
+def print_ng_item_pub_a_style(inline):
+
+  prn(ng_item_pub_a_style(inline))
+
+def print_ng_footer_style(inline):
+
+  if inline and ir.external_style and ir.informer_create_mode == False: return
+
+  if inline: prn(' style="')
+  else: prn('.', ir.class_prefix, 'footer { ')
+
+  prn('font-weight: 400; text-align: ', 
+      ir.catchword_link_text == "" and ir.catchword_pos == 2 and 'right' or \
+      'left', '; padding: 0.2em; margin: 0.1em 0 0; overflow: hidden;')
+
+  if ir.catchword_background_color != "": 
+    prn(' background-color: ', ir.catchword_background_color, ';')
+
+  if ir.catchword_color != "": prn(' color: ', ir.catchword_color, ';')
+  if ir.catchword_size != "": prn(' font-size: ', ir.catchword_size, ';')
+  if ir.catchword_font != "": prn(' font-family: ', ir.catchword_font, ';')
+
+  if inline: prn('"')
+  else: prn(' }\n')
+
+def print_ng_footer_a_style(inline):
+
+  if inline and ir.external_style and ir.informer_create_mode == False: return
+
+  if inline: prn(' style="')
+  else: prn('.', ir.class_prefix, 'footer a { ')
+
+  prn('text-decoration: none;')
+
+  if ir.catchword_link_color != "": 
+    prn(' color: ', ir.catchword_link_color, ';')
+  
+  if inline: prn('"')
+  else: prn(' }\n')
+
+  print_ng_a_pseudoclass_style(inline, 'footer', ir.catchword_link_color)
+
+def print_ng_class(name):
+  if ir.external_style: prn(' class="', ir.class_prefix, name, '"')
+
+def print_ng_footer():
+  prn('<div')
+  print_ng_class('footer')
+  print_ng_footer_style(True)
+
+  prn('>')
+
+  if ir.catchword_link_text != "":
+
+    params = ir.query and ir.modifier.empty() and 'nh=1' or ''
+
+    if ir.ad_tag:
+      if params: params += "&"
+      params += "at=" + ir.ad_tag
+
+    prn('<a href="',
+        el.string.manip.xml_encode(\
+          ir.search_link(export = True,
+                         path = '/p/s/h',
+                         extra_params = params,
+                         translator = False)),
+        '" target="_blank"')
+
+    prn(' title="', ir.localizer.plural("news_item", 
+        search_result.total_matched_messages + \
+        search_result.suppressed_messages, ir.language), '"')
+
+    print_ng_footer_a_style(True)
+
+    prn('>',
+        el.string.manip.xml_encode(ir.catchword_link_text),
+        '</a> ', ir.lm, "IR_ON_SITE", ' ')
+
+  prn('<a href="http://', ir.static.canonoical_endpoint, '/" target="_blank"')
+  print_ng_footer_a_style(True)
+
+  prn('>', ir.static.canonoical_endpoint, '</a>')
+
+  prn('</div>')
+
+def prn_msg_meta_info(msg, msg_url, msg_published):
+  prn('<table cellspacing="0"')
+  print_ng_class('item_metainfo')
+  print_ng_item_metainfo_style(True)
+  prn('><tr>')
+
+  msg_similar = ir.similar_messages != 0 and \
+                ir.modifier.similar.message_id == "" and \
+                ir.filter.event.event_id == "" and msg.event_capacity > 1
+
+  if ir.msg_more or msg_similar:
+    prn('<td')
+    print_ng_class('item_more')
+    print_ng_item_more_style(True)
+    prn('>')
+
+  if ir.msg_more:
+    prn('<a href="', msg_url, '" target="_blank"')
+    print_ng_item_more_a_style(True)
+    prn('>', ir.lm, "READ_MORE", '</a>')
+
+  if msg_similar:
+
+    if ir.msg_more: prn('<br>')
+
+    sim_url = \
+      el.string.manip.xml_encode(\
+        ir.make_ref(\
+          ir.story_url(msg, 
+                       path = service_url, 
+                       export = ir.informer_create_mode == False,
+                       ad_tag = ir.ad_tag),
+          True))
+
+    prn('<a href="', sim_url, '"', 
+        ir.informer_create_mode == False and ' target="_blank"' or '')
+
+    print_ng_item_more_a_style(True)
+    prn('>', ir.lm, "SIMILAR_POSTS", '&#xA0;(', msg.event_capacity, ')</a>')
+
+  if ir.msg_more or msg_similar: prn('</td>')
+
+  if ir.metainfo_columns % 2 == 1 and (ir.msg_more or msg_similar):
+    prn('</tr><tr>')
+
+  prn('<td')
+  print_ng_class('item_pub')
+  print_ng_item_pub_style(True)
+  prn('>')
+
+  if ir.source_length == 0: src_title = ""
+  elif len(msg.source_title) > 0: src_title = msg.source_title
+  else: src_title = msg.source_url
+
+  xml_encode_flags = el.string.manip.XE_TEXT_ENCODING | \
+                     el.string.manip.XE_ATTRIBUTE_ENCODING | \
+                     el.string.manip.XE_PRESERVE_UTF8 | \
+                     el.string.manip.XE_FORCE_NUMERIC_ENCODING
+
+  full_src_title = \
+    el.string.manip.xml_encode(src_title, xml_encode_flags)
+
+  src_title = ir.source_length < 0 and full_src_title or \
+    el.string.manip.xml_encode(\
+      search_util.truncate_text(src_title, ir.source_length), xml_encode_flags)
+
+  if msg.country == el.Country.null or ir.source_country == 0: msg_country = ""
+  else: 
+    if src_title or ir.message_date:
+      msg_country = " (" + ir.localizer.country(msg.country, ir.language) + ")"
+    else:
+      msg_country = " " + ir.localizer.country(msg.country, ir.language)
+
+  src_url = el.string.manip.xml_encode(\
+              ir.make_ref(\
+                ir.source_url(msg,
+                              path = service_url,
+                              export = ir.informer_create_mode == False,
+                              ad_tag = ir.ad_tag),
+                True))
+
+  attributes = ir.informer_create_mode == False and ' target="_blank"' or ''
+  attributes += ng_item_pub_a_style(True)
+
+  if full_src_title != src_title:
+    attributes += ' title="' + full_src_title + '"'
+
+  if ir.message_date != 0:
+
+    tm = request.time().sec()
+    msg_time = ir.message_date == 1 and msg.published or msg.fetched
+
+    if tm > msg_time: tm = tm - msg_time
+    else: tm = 0
+
+    vars = \
+    { "MSG_TIME_AGO" : ir.round_time(tm),
+      "URL" : src_url,
+      "MSG_SOURCE_TITLE" : src_title,
+      "MSG_COUNTRY" : msg_country,
+      "ATTRIBUTES" : attributes
+    }
+
+    prn(msg_published, vars)
+  else:
+    if src_title:
+      if ir.message_categories: prn(ir.lm, "IR_SOURCE", ': ')
+      prn('<a href="', src_url, '"', attributes, '>', src_title, '</a>')
+
+    prn(msg_country)
+
+  if len(msg.categories):
+    prn('<br>')
+    ir.prn_msg_categories(msg, ad_tag = ir.ad_tag)
+
+  prn('</td></tr></table>')
+
+#
+# Initialization
+#
+
+request, loc = context.request, context.localization.get
+header = request.input.headers().find
+prn = request.output.stream.prn
+
+ir = InformerScriptRender(context, search_engine)
+ir.debug_mode = False
+
+service_url = ir.informer_create_mode and '/p/s/i' or '/p/s/h'
+
+search_context = ir.search_context()
+
+search_context.in_msg_link_class = ""
+
+if ir.link_color != "" and ir.external_style == False: 
+  search_context.in_msg_link_style = "color: " + ir.link_color + ";";
+
+try: search_result = ir.search(search_context)
+except SyntaxError, e:
+  ir.exit(400) #bad request
+
+ir.set_catchword_link_text()
+ir.send_headers()
+
+if ir.informer_create_mode:
+
+  prn("\nel_by_id('ir_style').value = '", el.psp.JS_EscapeMarker)
+
+  print_ng_informer_style(False)
+  print_ng_item_column_style(False)
+  print_ng_item_style(False)
+  print_ng_item_title_style(False)
+  print_ng_item_title_a_style(False)
+  print_ng_item_annot_style(False)
+  print_ng_item_annot_a_style(False)
+  print_ng_item_img_style(None)
+
+  if ir.metainfo_columns:
+    print_ng_item_metainfo_style(False)
+    print_ng_item_more_style(False)
+    print_ng_item_more_a_style(False)
+    print_ng_item_pub_style(False)
+    print_ng_item_pub_a_style(False)
+
+  print_ng_divider_style(False)
+  print_ng_footer_style(False)
+  print_ng_footer_a_style(False)
+  prn(el.psp.NoJS_EscapeMarker, "';\n");
+
+  prn("el_by_id('ir_placeholder').innerHTML = '")
+else:
+  prn(R'''{ var ng_tm = 10;
+  var ng_fn = function() 
+  { 
+    var id = "_dsnnginf_634080201465X579_";
+    var e = document.getElementById(id);
+
+    if(e != null)
+    {
+      e.parentNode.removeChild(e);
+      return;
+    }
+
+    var ec = document.getElementsByTagName("div");
+
+    for(var i = 0; i < ec.length; ++i)
+    {
+      e = ec[i];
+
+      if(e.getAttribute('name') == id)
+      { 
+        e.parentNode.removeChild(e);
+        return;
+      }
+    }
+
+    if(ng_tm < 60000)
+    {
+      ng_tm *= 2;
+      window.setTimeout(ng_fn, ng_tm);
+    }
+  }
+  window.setTimeout(ng_fn, 0);
+}
+''')
+
+  prn("document.write('")
+
+if search_result.total_matched_messages == 0:
+  prn(ir.informer_create_mode and "';\n" or "');")
+  ir.exit(0)
+
+prn(el.psp.JS_EscapeMarker)
+  
+prn('<table cellspacing="0"') 
+print_ng_class('informer')
+print_ng_informer_style(True)
+prn('><tr><td><div')
+print_ng_class('item_column')
+print_ng_item_column_style(True)
+prn('>')
+
+if ir.catchword_pos == 1: print_ng_footer()
+
+if ir.message_date != 0:
+
+  templ_id = ir.message_date == 1 and "PUBLISHED" or "FETCHED"
+  if ir.source_length == 0: templ_id += "_NOSRC"
+
+  msg_published = ir.get_template(templ_id)
+else:
+  msg_published = None
+
+image_against_title_and_msg = ir.image_pos > 1
+
+msg_count = len(search_result.messages)
+msg_index = 0
+
+if ir.catchword_pos == 1: print_ng_divider()
+
+for msg in search_result.messages:
+
+  msg_url = ir.version >= 3 and \
+            el.string.manip.xml_encode(\
+              ir.message_url(msg, ad_tag = ir.ad_tag)) or \
+            ir.message_click_url(msg)
+
+  prn('<div') 
+  print_ng_class('item')
+  print_ng_item_style(True)
+  prn('>')
+
+  if image_against_title_and_msg:
+    prn_msg_image_thumb(msg)
+
+  if len(msg.title) > 0:
+
+    prn('<div')
+    print_ng_class('item_title')
+    print_ng_item_title_style(True)
+    prn('>')
+
+    if ir.desc_length == 0 and ir.title_length and \
+       image_against_title_and_msg == False:
+      prn_msg_image_thumb(msg)
+
+    prn('<a href="', msg_url, '" target="_blank"')
+    print_ng_item_title_a_style(True)
+    prn('>', msg.title, '</a>')
+    prn('</div>')
+
+  if (ir.desc_length or ir.title_length == 0) and \
+     (len(msg.description) > 0 or len(msg.images) > 0):
+
+    prn('<div')
+    print_ng_class('item_annot')
+    print_ng_item_annot_style(True)
+    prn('>')
+
+    if image_against_title_and_msg == False:
+      prn_msg_image_thumb(msg)
+
+    prn(msg.description, '</div>')
+
+  if ir.metainfo_columns: prn_msg_meta_info(msg, msg_url, msg_published)
+
+  prn('</div>')
+
+  msg_index += 1
+  if ir.catchword_pos == 2 or msg_index < msg_count: print_ng_divider()
+
+if ir.catchword_pos == 2: print_ng_footer()
+
+prn(ir.page_impression_image(), '</div></td></tr></table>',
+    el.psp.NoJS_EscapeMarker)
+
+if ir.informer_create_mode:
+  prn("';\n")
+
+  if len(ir.anchor_refs) > 0:
+
+    prn("\npost_refs2 = new Array();")
+    index = 0
+
+    for ref in ir.anchor_refs:
+      prn("\npost_refs2.push('", el.string.manip.js_escape(ref), "');")
+      index += 1
+    
+else:
+  prn("');")
+
+# Break circular references ...
+ir.exit()

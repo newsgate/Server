@@ -1,0 +1,42 @@
+SITE_CONF        Сайт
+INTERFACE_LANG   Язык
+SITE_VER         Версия
+SITE_VER_DESKTOP Настольная
+SITE_VER_TAB     Планшетная
+SITE_VER_MOBILE  Мобильная
+
+SEARCH_CONF      Поиск
+LANGUAGE         Язык
+COUNTRY          Страна
+
+TRANSLATE_CONF   Перевод
+TRANSLATE_SRV    Сервис
+TRANSLATE_LANG   Язык
+
+SAVE_SETTINGS    Сохранить
+DEFAULT_SETTINGS Вернуть
+CLOSE_SETTINGS   Отменить
+CLOSE_PAGING     Закрыть
+CLOSE_SEARCH     Закрыть
+
+LANG_ENG Английский
+LANG_RUS Русский
+
+LOADING        Загрузка ...
+READING        Чтение ...
+SERVER_ERROR   Ошибка взаимодействия с сервером. Код :
+COOKIE_WARNING Внимание: настройки не будут сохранены, если cookies отключены в вашем браузере.
+PAGE           Страница:
+SEARCH         Поиск:
+
+IT_undefined  Неопределенные
+IT_news       Новостные
+IT_talk       Обсуждения
+IT_ad         Объявления
+IT_blog       Блоги
+IT_article    Статьи
+IT_photo      Фото-ленты
+IT_video      Видео-ленты
+IT_audio      Аудио-ленты
+IT_printed    Печатные
+DEFAULT_SPACES Включить&nbsp;все

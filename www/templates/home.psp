@@ -1,0 +1,571 @@
+import sys
+import math
+import search_intr
+import search_util
+
+no_break_cat_len = 19
+
+class HomePageRender(search_util.SearchPageContext):
+
+  home_page_render_base = search_util.SearchPageContext
+
+  def __init__(this, context, search_engine):
+    
+    this.home_page_render_base.__init__(this,
+                                        context,
+                                        search_engine,
+                                        "h",
+                                        True)
+
+    try:
+      tmp = this.static.subcategory_count
+    except:
+      conf = this.context.config.get
+      this.static.category_columns = int(conf("category_columns"))
+      this.static.subcategory_count = int(conf("subcategory_count"))
+
+    this.start_from = 0
+    this.query = ""
+
+    this.modifier = search_util.Modifier()
+    this.modifier.all = True
+
+    fl = this.filter
+
+    this.filter = search_util.Filter()
+    this.filter.lang = fl.lang
+    this.filter.country = fl.country
+
+    this.category_columns = this.static.category_columns
+    this.subcategory_count = this.static.subcategory_count
+
+    if this.site_version == search_util.SearchPageContext.SV_MOB:
+      this.category_columns = min(this.category_columns, 2)
+      this.subcategory_count = 0
+
+    if this.translator:
+
+      this.need_translation = this.translator.to_lang != this.locale.lang or \
+       this.locale.lang.l3_code() not in this.static.main_languages
+
+    elif this.default_translator:
+
+      this.can_translate = \
+        this.default_translator.to_lang != this.locale.lang
+
+    if this.interceptor: this.block = this.interceptor.bastion("home")
+
+  def prn_css(this):
+
+    if this.static.development:
+      
+      this.home_page_render_base.prn_css(this)
+    
+      this.prn(\
+        '\n<link rel="stylesheet" type="text/css" href="',
+        this.resource_url('/fixed/css/home.css'),
+        '" media="all"/>')
+
+      if this.site_version == search_util.SearchPageContext.SV_MOB:
+        this.prn(\
+          '\n<link rel="stylesheet" type="text/css" href="',
+          this.resource_url('/fixed/css/home-mob.css'),
+          '" media="all"/>')
+
+    else:
+
+      if this.site_version == search_util.SearchPageContext.SV_MOB:
+        this.prn(\
+          '\n<link rel="stylesheet" type="text/css" href="',
+          this.compound_resource_url('css/home-mob.css'),
+          '" media="all"/>')
+        
+      else:
+        this.prn(\
+          '\n<link rel="stylesheet" type="text/css" href="',
+          this.compound_resource_url('css/home.css'),
+          '" media="all"/>')
+
+  def prn_script(this):
+
+    this.home_page_render_base.prn_script(this, this.site + '/p/s/h')
+
+    this.prn(R'''
+<script src="''', this.resource_url('/tsp/js/' + \
+                                    this.language_l3_code + '/spm.js'),
+             R'''" type="text/javascript"></script>
+<script type="text/javascript">
+var no_break_cat_len = ''', no_break_cat_len, R''';
+var auto_size = ''',
+render.subcategory_count < 0 and category != None and \
+this.crawler == None and 'true' or 'false', R''';
+</script>''')
+
+  def prn_cell(this,
+               cat_name,
+               localized_name,
+               msg_count,
+               parent_path,
+               classname):
+
+    cat_path = parent_path + (parent_path != "/" and "/" or "") + cat_name
+
+    mod = search_util.Modifier()
+    mod.category = cat_path
+
+    fl = search_util.Filter()
+    fl.lang = render.filter.lang
+    fl.country = render.filter.country
+
+    cat_url = \
+      el.string.manip.xml_encode(this.search_link(modifier = mod,
+                                                  filter = fl,
+                                                  path = '/p/s/h'))
+
+    if classname == "subcat":
+      this.prn('<table class="', classname, 
+               '" cellspacing="0"><tr><td valign="top" class="subcat_bullet">&#xB7;</td><td>')
+    elif classname == "more_cat":
+      this.prn('<div class="', classname, '">')
+    else:
+      this.prn('<table class="', classname, '" cellspacing="0"><tr><td>')
+        
+    if classname == "more_cat":
+      this.prn('<a href="', cat_url, '">', lm, "MORE_CAT", '</a>')
+    else:
+
+      localized_name_len = len(localized_name.decode('utf-8'))
+
+      localized_name = \
+        el.string.manip.xml_encode(localized_name)
+
+      no_break = localized_name_len < no_break_cat_len
+      
+      this.prn('<div class="cat_name', no_break and ' no_break' or '', 
+               '"><a href="', cat_url, '">', localized_name, '</a>')
+
+      if render.crawler == None:
+#        this.prn('&#xA0;<span class="cat_msg_count" name="', msg_count, 
+#                 '">(', msg_count, ')</span>')
+        this.prn('&#xA0;<span class="cat_msg_count">(', msg_count, ')</span>')
+
+      this.prn('</div>')
+
+    if classname == "more_cat": this.prn('</div>')
+    else: this.prn('</td></tr></table>')
+
+  def search_context(this):
+    context = this.home_page_render_base.search_context(this)
+
+    context.start_from = 0
+    context.results_count = 0
+    context.record_stat = False
+
+    return context
+
+request = context.request
+prn = request.output.stream.prn
+lm = el.psp.LocalizationMarker
+
+render = HomePageRender(context, search_engine)
+
+# Remove if want to allow adsense bot to see ad sections
+render.google_ad_section = True
+
+# 1 - for non crawlers, 2 - for crawlers, 3 - for all
+render.trace_uri = 0
+
+if render.crawler and render.raw_param("msg"): render.exit(410) # gone
+
+render.save_prefs()
+
+canonical_location = render.search_link()
+
+if render.prefs_updated and request.args() != render.search_query():
+  render.redirect_to_canonical(canonical_location)
+
+if render.crawler and render.static.main_languages and \
+   render.filter.lang != el.Lang.null:
+  render.set_language(render.filter.lang.l3_code())
+
+search_context = render.search_context()
+
+search_context.sr_flags |= newsgate.search.SearchContext.RF_CATEGORY_STAT
+
+search_result = render.search(search_context)
+
+category = search_result.category_stat.find("/")
+
+render.prn_html_open()
+render.prn_head_open()
+
+render.prn('\n<meta name="description" content="',
+           lm, "NEWS_DESCRIPTION", '">')
+
+render.prn_title()
+#render.prn_description()
+
+prn('\n<link rel="canonical" href="', 
+    el.string.manip.xml_encode(canonical_location), '">')
+
+if render.filter.country == el.Country.null:
+
+  fl = render.filter.sticky()
+
+  for l in render.static.main_languages:
+
+    if l not in render.lang_counter: continue            
+
+    lang = el.Lang(l)
+    l2_code = lang.l2_code()
+
+    if l2_code:
+
+      fl.lang = lang
+
+      location = render.search_link(filter = fl)
+
+      prn('\n<link rel="alternate" hreflang="', l2_code, '" href="', 
+          el.string.manip.xml_encode(location), '">')
+
+render.prn_css()
+render.prn_script()
+
+if render.need_translation: render.prn(render.translator.headers())
+
+render.prn_head_close()
+
+render.prn_body_open('on_load()')
+
+if render.need_translation: render.prn(render.translator.body())
+
+if render.site_version == search_util.SearchPageContext.SV_MOB:
+
+  tagline = render.tagline(modifier = search_util.Modifier())
+
+  if tagline:
+
+    sources = '&#xA0;<span class="sources">\
+(<a class="watered_link" \
+href="javascript:show_paging_dialog(\'feed\', \'\')" title="'+ \
+              render.loc("SOURCES_TITLE") + '">' + \
+              render.loc("SOURCES") + '</a>)</span>'
+
+    render.prn(R'''
+<script type="text/javascript">
+page.search_bar = { tagline:"''', el.psp.JS_EscapeMarker,
+               '<div class="page_title">',
+               tagline, sources, 
+               '</div>', el.psp.NoJS_EscapeMarker, '"};\n</script>');
+
+else:
+
+  tagline = render.tagline(modifier = search_util.Modifier(), 
+                           lang_switchers = True)
+  if tagline: tagline = ", " + tagline
+
+prn('\n<table id="top_bar"')
+render.prn_notranslate_class()
+
+prn(R''' cellspacing="0">
+  <tr>
+  <td id="tagline">''', lm, "TAGLINE", 
+    render.site_version != search_util.SearchPageContext.SV_MOB and tagline or\
+    '', R'''</td>
+  <td id="menu">''')
+
+first = True
+menu_pos = 0
+
+if not render.crawler and (render.need_translation or render.can_translate):
+
+  if render.interceptor:
+
+    first = \
+      render.prn_menu(\
+        render.interceptor.top_bar_menu(\
+          menu_pos, 
+          render.can_translate and "translate" or "original"), 
+                      first)
+    menu_pos += 1
+
+  link = render.search_link(translator = \
+    not render.need_translation and render.default_translator or False)
+
+  text = '<a href="' + el.string.manip.xml_encode(\
+          render.make_ref(link, False)) + '">'
+        
+  if render.site_version == search_util.SearchPageContext.SV_MOB:
+    text += '<img src="' + \
+      render.resource_url(\
+        '/fixed/img/' + (render.can_translate and "translate" or "original")+\
+        '32.png') + '" width="32" height="32" class="mob_menu_img"/>'
+    separator = ""
+  else:
+    text += render.loc(render.translator and "ORIGINAL" or "TRANSLATE")
+    separator = " | "
+
+  text += '</a>'
+        
+  first = render.prn_menu(text, first, separator)
+
+
+if render.static.informer_enable and \
+   render.site_version != search_util.SearchPageContext.SV_MOB:
+
+  if render.interceptor:
+
+    first = \
+      render.prn_menu(render.interceptor.top_bar_menu(menu_pos, "informer"), 
+                      first)
+
+    menu_pos += 1
+
+  first = \
+    render.prn_menu('<a href="' + \
+      el.string.manip.xml_encode(\
+        render.make_ref(render.search_link(path = '/p/s/i', filter = False), 
+                        False)) + \
+      '">' + render.loc("INFORMER") + '</a>', 
+                  first)
+
+if render.crawler == None:
+
+  if render.site_version == search_util.SearchPageContext.SV_MOB:
+          
+    if tagline:
+      if render.interceptor:
+
+        first = \
+          render.prn_menu(render.interceptor.top_bar_menu(menu_pos, "search"),
+                          first)
+        menu_pos += 1
+
+      text = '\
+<a href="javascript:show_search_dialog(\'\')"><img src="' + \
+             render.resource_url('/fixed/img/search32.png') + \
+             '" width="32" height="32" class="mob_menu_img"/></a>'
+
+      first = render.prn_menu(text, first, "")
+
+    if render.interceptor:
+
+      first = \
+        render.prn_menu(render.interceptor.top_bar_menu(menu_pos, "sources"),
+                        first)
+      menu_pos += 1
+
+    text = '\
+<a href="javascript:show_paging_dialog(\'feed\', \'\')"><img src="' + \
+           render.resource_url('/fixed/img/sources32.png') + \
+           '" width="32" height="32" class="mob_menu_img"/></a>'
+
+    first = render.prn_menu(text, first, "")
+
+    if render.interceptor:
+
+      first = \
+        render.prn_menu(render.interceptor.top_bar_menu(menu_pos,
+                                                        "categories"),
+                        first)
+      menu_pos += 1
+
+    text = '\
+<a href="javascript:show_categories_dialog(\
+page.extra_params ? page.extra_params() : \'\')"><img src="' + \
+           render.resource_url('/fixed/img/categories32.png') + \
+           '" width="32" height="32" class="mob_menu_img"/></a>'
+
+    first = render.prn_menu(text, first, "")        
+
+  if render.interceptor:
+
+    first = \
+      render.prn_menu(render.interceptor.top_bar_menu(menu_pos, "settings"), 
+                      first)
+
+    menu_pos += 1
+
+  if render.site_version == search_util.SearchPageContext.SV_MOB:
+    text = '<img src="' + \
+      render.resource_url('/fixed/img/settings32.png') + \
+      '" width="32" height="32" class="mob_menu_img"/>'
+    separator = ""
+  else:
+    text = render.loc("SETTINGS")
+    separator = " | "
+
+  first = \
+    render.prn_menu(\
+      '<a href="javascript:show_settings_dialog(\'\', on_window_resize)">' +
+        text + '</a>', 
+      first,
+      separator)
+
+if render.interceptor:
+
+  first = \
+    render.prn_menu(render.interceptor.top_bar_menu(menu_pos, "end"),
+                    first)
+
+  page_marker = render.interceptor.page_marker()
+  if page_marker: render.prn(page_marker)
+
+prn(R'''
+  </td>
+  </tr>
+</table>''')
+
+prn(R'''
+<table id="mid_area" cellspacing="0">
+  <tr>
+  <td valign="top" align="center" id="categories">''')
+
+if category != None:
+
+  rows = \
+    math.ceil(float(len(category.categories)) / render.category_columns)
+
+  display_subcats = render.subcategory_count < 0 and sys.maxint or \
+                    render.subcategory_count
+
+  i = 0
+  for cat in category.categories:
+
+    if cat.matched_message_count == 0: continue
+
+    localized_name = cat.localized_name.encode("utf-8")
+    if localized_name == "": continue
+        
+    if i % render.category_columns == 0:
+          
+      if i: prn("\n      </tr>")
+      else: prn('\n    <table id="categories_table" cellspacing="0">')
+
+      prn("\n      <tr>")
+
+    prn('\n      <td valign="top" class="cat_cell">')
+
+    cat_name = cat.name.encode("utf-8")    
+
+    render.prn_cell(cat_name, localized_name, cat.matched_message_count, 
+                    "/", "cat")
+
+    path = "/" + cat_name
+    
+    message_count = {}
+
+    for subcat in cat.categories:
+
+      count = subcat.matched_message_count
+      if count == 0: continue
+
+      if message_count.has_key(count):
+        message_count[count] += 1
+      else:
+        message_count[count] = 1
+
+    msg_counts = message_count.keys()
+    msg_counts.sort(lambda x, y: x > y and -1 or x < y and 1 or 0)
+
+    msg_count_threshold = 0
+    msg_count_subcats = 0
+
+    for count in msg_counts:
+      msg_count_threshold = count
+      msg_count_subcats += message_count[count]
+      
+      if msg_count_subcats >= display_subcats: break
+
+    j = 0
+    category_skipped = False
+    
+    for subcat in cat.categories:
+      
+      if subcat.matched_message_count == 0: continue
+
+      if subcat.matched_message_count < msg_count_threshold:
+        category_skipped = True
+        continue
+
+      subcat_localized_name = subcat.localized_name.encode("utf-8")
+      if subcat_localized_name == "": continue
+
+      if j < display_subcats:
+        render.prn_cell(subcat.name.encode("utf-8"), 
+                        subcat_localized_name,
+                        subcat.matched_message_count, 
+                        path,
+                        "subcat")
+      else:
+        break
+
+      j += 1
+
+    if render.crawler == None and (category_skipped and display_subcats or \
+       render.subcategory_count < 0): 
+      render.prn_cell(cat_name, "", 0, "/", "more_cat")
+
+    prn('\n      </td>')
+    i += 1
+
+  if i: prn('\n      </tr>\n    </table>')
+
+prn(R'''
+  </td>
+  </tr>
+  <tr id="fr"''')
+
+render.prn_notranslate_class()
+
+prn(R'''>
+  <td valign="top" align="center">
+    <table id="search_box">
+      <tr>
+      <td colspan="2">
+        <form onsubmit="search(); return false;"><input ''')
+
+if render.site_version == search_util.SearchPageContext.SV_MOB:
+ prn('type="search" autocorrect="off" autocomplete="off"')
+else:
+ prn('type="text"')
+
+prn(R''' id="q" class="search_edit" name="q"
+               onkeypress="return on_key_press(event)"
+               value=""/></form>
+      </td>
+      <td id="search_button" align="left">
+        <input type="button" value="''', lm, "BUTTON_VALUE", 
+    R'''" onclick="search()"/>
+      </td>
+      <td id="qmark"><a href="/p/h/s" target="_blank" title="''', lm, 
+  "SEARCH_HELP", R'''">?</a>
+      </td>
+      </tr>''')
+
+if render.site_version != search_util.SearchPageContext.SV_MOB and \
+   render.crawler == None:
+
+  prn(R'''
+      <tr>
+      <td></td>
+      <td id="sources">
+      <a href="javascript:show_paging_dialog('feed', '', on_window_resize)">''',
+      lm, "SOURCES", R'''</a>
+      </td>
+      <td></td>
+      </tr>''')
+
+prn(R'''
+    </table>
+  </td>
+  </tr>
+</table>''')
+
+render.prn_copyright()
+render.prn_counters()
+render.prn_body_close()
+render.prn_html_close()
+
+# Break circular references ...
+render.exit()

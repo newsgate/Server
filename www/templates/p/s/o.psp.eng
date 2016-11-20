@@ -1,0 +1,11 @@
+#include ../../py/search_util.eng
+#include ../../py/informer_util.eng
+
+STORY_COMMENT // story:null if story contains just 1 news
+IMAGE_COMMENT // image:null if news doesn't contain an image
+
+SCALED_COMMENT // scaled_width, scaled_height - correspond to chosen image size
+
+CODE_INTRO Below is an object definition which corresponds to the current \
+configuration parameters. You can write your own JavaScript code \
+visualizing this information on a WEB page.

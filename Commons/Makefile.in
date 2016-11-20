@@ -1,0 +1,14 @@
+# @file   Makefile.in
+# @author Karen Aroutiounov
+# $Id: $
+
+include Common.pre.rules
+
+target_directory_list := Feed Message Search Event Python Ad
+
+Feed Message Ad : Python
+Message : Feed
+Search : Feed Message
+Event : Message
+
+include $(osbe_builddir)/config/Direntry.post.rules

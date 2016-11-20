@@ -1,0 +1,310 @@
+<html>
+
+<head>
+
+	<title>Rich Calendar 1.0, Cross-browser calendar script</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+
+	<link rel="STYLESHEET" type="text/css" href="rich_calendar/rich_calendar.css">
+	<script language="JavaScript" type="text/javascript" src="rich_calendar/rich_calendar.js"></script>
+
+	<script language="JavaScript" type="text/javascript" src="rich_calendar/rc_lang_en.js"></script>
+	<script language="JavaScript" type="text/javascript" src="rich_calendar/rc_lang_ru.js"></script>
+
+	<script language="javascript" src="domready/domready.js"></script>
+
+</head>
+
+<body>
+
+<h1>Rich Calendar</h1>
+
+<div>
+Cross-browser, 100% JavaScript calendar script implementing the appropriate
+functionality with many advanced options widely extending fields of its
+applications.
+</div>
+
+<h2>Features</h2>
+
+<div>
+<ul>
+<li><strong>No pop-up windows</strong> (some browsers and software installed on
+user's side do not allow such windows to open)</li>
+<li><strong>Skinnable</strong> (all you need is just one line of code to change
+calendar layout completely). Skins are fully CSS-based</li>
+<li><strong>Multilingual</strong> (one line of code again to make calendar
+speaking another language)</li>
+<li><strong>Language dependent date formats</strong></li>
+<li><strong>Multiple calendar instances on one page</strong></li>
+<li><strong>Relative or absolute positioning</strong> (allows to embed calendar
+objects in html document or position them absolutely using flexible horizontal
+and vertical alignment options). Alignment options supported: left, right,
+center, top, bottom, adj_right, adj_bottom</li>
+<li><strong>User-defined behaviour</strong> (you can intercept calendar events
+and handle them according to logic of your application)</li>
+<li><strong>Could be associated with an element</strong> (eg text field) to
+read/write date from/to (in many cases this allows to minimize amount of code
+and time necessary to make the calendar working)</li>
+<li><strong>Pop-up mode</strong> (calendar closes on mouse click outside it)</li>
+<li><strong>Any week days as weekend days</strong></li>
+<li><strong>Option to choose any week day to start week with</strong></li>
+<li><strong>Integrated with <em><a href="http://www.richarea.com/demo/smart_grid/" title="Ajax-based table editing tool">Smart Grid</a></em></strong> <em>(Ajax-based table editing tool)</em></li>
+</ul>
+</div>
+
+
+<h2>Requirements</h2>
+
+<div>
+Rich Calendar works in IE, Mozilla-based browsers such as Firefox, Opera 9+,
+and Safari 3.0.
+</div>
+
+
+<h2>License</h2>
+
+<div>
+Free for non-commercial using. Copyright information must stay intact.
+Please contact author for permission to use it in commercial projects.
+</div>
+
+
+<h2>Examples</h2>
+
+<h4>1. Absolute positioned calendar. No alignment settings. Pop-up mode off</h4>
+
+<div id="cal1_div"></div>
+
+<br><br><br><br><br><br><br><br><br><br><br><br>
+
+<strong>Code:</strong><br>
+<pre>
+var div_cal1 = document.getElementById("cal1_div");
+var div_cal1_pos = RichCalendar.get_obj_pos(div_cal1);
+
+var cal_obj = new RichCalendar();
+	cal_obj.auto_close = false;
+	cal_obj.user_onchange_handler = cal_on_change_dummy;
+	cal_obj.show(div_cal1_pos[0]+20, div_cal1_pos[1]);
+
+
+// user defined onchange handler
+function cal_on_change_dummy(cal, object_code) {
+	if (object_code == 'day') {
+		alert('Date selected: ' + cal.get_formatted_date());
+		cal.show_date();
+	}
+}
+</pre>
+
+<h4>2. Absolute positioned calendar. Position is calculated based on position of
+the text field below. Alignment settings - &quot;adj_right-top&quot; (such
+settings are also possible: &quot;-top&quot; and &quot;adj_right-&quot;!). User
+defined handlers. Russian language. Skin 'alt'. User defined date format.
+Week starts with Tuesday. Time is shown</h4>
+
+<div style="margin-left:100px">
+<input type="text" id="text_field" value="" /><input type="button" onclick="show_cal(this);" value="..." /><br>
+</div>
+
+<br>
+
+<strong>Code:</strong><br>
+<pre>
+var cal_obj2 = null;
+
+var format = '%j %M %Y %H:%i';
+
+// show calendar
+function show_cal(el) {
+
+	if (cal_obj2) return;
+
+var text_field = document.getElementById("text_field");
+
+	cal_obj2 = new RichCalendar();
+	cal_obj2.start_week_day = 2;
+	cal_obj2.show_time = true;
+	cal_obj2.language = 'ru';
+	cal_obj2.user_onchange_handler = cal2_on_change;
+	cal_obj2.user_onclose_handler = cal2_on_close;
+	cal_obj2.user_onautoclose_handler = cal2_on_autoclose;
+
+	cal_obj2.parse_date(text_field.value, format);
+
+	cal_obj2.show_at_element(text_field, "adj_right-top");
+	cal_obj2.change_skin('alt');
+
+}
+
+// user defined onchange handler
+function cal2_on_change(cal, object_code) {
+	if (object_code == 'day') {
+		document.getElementById("text_field").value = cal.get_formatted_date(format);
+		cal.hide();
+		cal_obj2 = null;
+	}
+}
+
+// user defined onclose handler (used in pop-up mode - when auto_close is true)
+function cal2_on_close(cal) {
+	if (window.confirm('Are you sure to close the calendar?')) {
+		cal.hide();
+		cal_obj2 = null;
+	}
+}
+
+// user defined onautoclose handler
+function cal2_on_autoclose(cal) {
+	cal_obj2 = null;
+}
+</pre>
+
+<h4>3. Relative positioned calendar. Added as a child to a table cell below.
+Alignment settings - &quot;child&quot;. User defined handlers (do not allow to
+close calendar)</h4>
+
+<table border="1" cellpadding="0" cellspacing="0" style="border: 1px solid #00f; border-collapse:collapse;">
+<tr>
+	<td style="font-size:11px;" align="center">Calendar in the table cell below</td>
+</tr>
+<tr>
+	<td id="cal3_td"></td>
+</tr>
+</table>
+
+<br>
+
+<strong>Code:</strong><br>
+<pre>
+var cal3_td = document.getElementById('cal3_td');
+
+var cal_obj3 = new RichCalendar();
+	cal_obj3.auto_close = false;
+	cal_obj3.user_onchange_handler = cal_on_change_dummy;
+	cal_obj3.user_onclose_handler = cal3_on_close;
+	cal_obj3.show_at_element(cal3_td, "child");
+
+// user defined onclose handler
+function cal3_on_close(cal) {
+}
+</pre>
+
+
+<script language="JavaScript">
+
+// user defined onchange handler
+function cal_on_change_dummy(cal, object_code) {
+	if (object_code == 'day') {
+		alert('Date selected: ' + cal.get_formatted_date());
+		cal.show_date();
+	}
+}
+
+
+var cal_obj2 = null;
+
+var format = '%j %M %Y %H:%i';
+
+// show calendar
+function show_cal(el) {
+
+	if (cal_obj2) return;
+
+var text_field = document.getElementById("text_field");
+
+	cal_obj2 = new RichCalendar();
+	cal_obj2.start_week_day = 2;
+	cal_obj2.show_time = true;
+	cal_obj2.language = 'ru';
+	cal_obj2.user_onchange_handler = cal2_on_change;
+	cal_obj2.user_onclose_handler = cal2_on_close;
+	cal_obj2.user_onautoclose_handler = cal2_on_autoclose;
+
+	cal_obj2.parse_date(text_field.value, format);
+
+	cal_obj2.show_at_element(text_field, "adj_right-top");
+	cal_obj2.change_skin('alt');
+
+}
+
+// user defined onchange handler
+function cal2_on_change(cal, object_code) {
+	if (object_code == 'day') {
+		document.getElementById("text_field").value = cal.get_formatted_date(format);
+		cal.hide();
+		cal_obj2 = null;
+	}
+}
+
+// user defined onclose handler
+function cal2_on_close(cal) {
+	if (window.confirm('Are you sure to close the calendar?')) {
+		cal.hide();
+		cal_obj2 = null;
+	}
+}
+
+// user defined onclose handler (used in pop-up mode - when auto_close is true)
+function cal2_on_autoclose(cal) {
+	cal_obj2 = null;
+}
+
+
+// user defined onclose handler
+function cal3_on_close(cal) {
+}
+
+
+// embed calendars in page when page is loaded as otherwise IE could fail
+// loading the page
+function rc_body_onload() {
+
+var div_cal1 = document.getElementById("cal1_div");
+var div_cal1_pos = RichCalendar.get_obj_pos(div_cal1);
+
+var cal_obj = new RichCalendar();
+	cal_obj.auto_close = false;
+	cal_obj.user_onchange_handler = cal_on_change_dummy;
+	cal_obj.show(div_cal1_pos[0]+20, div_cal1_pos[1]);
+
+
+var cal3_td = document.getElementById('cal3_td');
+
+var cal_obj3 = new RichCalendar();
+	cal_obj3.auto_close = false;
+	cal_obj3.user_onchange_handler = cal_on_change_dummy;
+	cal_obj3.user_onclose_handler = cal3_on_close;
+	cal_obj3.show_at_element(cal3_td, "child");
+
+}
+
+//window.onload = rc_body_onload;
+DOMReady.onDOMReadyHandler = rc_body_onload;
+DOMReady.listenDOMReady();
+
+</script>
+
+
+<h2>Download</h2>
+
+<div>
+You can find the newest version here: <a href="http://www.richarea.com/page_img/rich-calendar.zip">www.richarea.com/page_img/rich-calendar.zip</a>.
+</div>
+
+
+<h2>Feedback</h2>
+
+<div>
+Please email to <strong>re /at/ richarea.com</strong>.
+</div>
+
+
+<div style="font-size:11px;font-family:Verdana;margin-top:20px;text-align:center;">
+Copyright (c) 2007 Vyacheslav Smolin, <a href="http://www.richarea.com">www.richarea.com</a>
+</div>
+
+</body>
+
+</html>

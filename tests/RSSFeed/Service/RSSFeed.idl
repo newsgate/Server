@@ -1,0 +1,57 @@
+/*
+ * product   : NewsGate - news search WEB server
+ * copyright : Copyright (c) 2005-2016 Karen Arutyunov
+ * licenses  : CC BY-NC-SA 3.0; see accompanying LICENSE file
+ *             Commercial; contact karen.arutyunov@gmail.com
+ */
+
+/**
+ * @file NewsGate/Server/tests/RSSFeed/Service/RSSFeed.idl
+ * @author Karen Arutyunov
+ * $Id:$
+ */
+
+#ifndef _NEWSGATE_SERVER_TESTS_RSSFEED_SERVICE_RSSFEED_IDL_
+#define _NEWSGATE_SERVER_TESTS_RSSFEED_SERVICE_RSSFEED_IDL_
+
+module NewsGate
+{ 
+  module RSS
+  {
+    interface FeedService
+    {
+      exception ImplementationException
+      {
+        string description;
+      };
+
+      exception UnknownFeed
+      {
+      };
+
+      struct Request
+      {
+        string feed_name;
+        string if_modified_since;
+        string if_none_match;
+      };
+      
+      struct Response
+      {
+        boolean content_length;
+        unsigned long chunked;
+        string last_modified;
+        string etag;
+        string body;
+        unsigned long status_code;
+      };
+      
+      void get(in Request req, out Response res)
+        raises(UnknownFeed, ImplementationException);
+    };
+
+  };
+  
+};
+
+#endif // _NEWSGATE_SERVER_TESTS_RSSFEED_SERVICE_RSSFEED_IDL_

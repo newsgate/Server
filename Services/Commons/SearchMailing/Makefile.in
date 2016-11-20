@@ -1,0 +1,32 @@
+# @file   Makefile.in
+# @author Karen Aroutiounov
+# $Id:$
+
+include Common.pre.rules
+include $(osbe_builddir)/config/CXX/CXX.pre.rules
+include $(osbe_builddir)/config/CXX/Corba.pre.rules
+
+include $(osbe_builddir)/config/CXX/External/Python.pre.rules
+include $(osbe_builddir)/config/CXX/External/ACE.pre.rules
+include $(osbe_builddir)/config/CXX/External/MD5.pre.rules
+
+include $(osbe_builddir)/config/CXX/External/ElBasic.pre.rules
+include $(osbe_builddir)/config/CXX/External/ElNet.pre.rules
+include $(osbe_builddir)/config/CXX/External/ElCorba.pre.rules
+
+include $(top_builddir)/config/Commons/Search/SearchCommons.so.pre.rules
+include $(top_builddir)/config/Services/Commons/FraudPrevention/FraudPreventionServiceCommons.so.pre.rules
+include $(top_builddir)/config/Services/Commons/Message/MessageServiceCommons.so.pre.rules
+
+sources :=  SearchMailing.cpp TransportImpl.cpp
+includes := .
+
+corba_stub_idls := SearchMailingServices.idl
+corba_skeleton_idls := SearchMailingServices.idl
+corba_includes := .
+corba_idl_includes := .
+
+target := SearchMailingServiceCommons
+
+include $(osbe_builddir)/config/CXX/Corba.post.rules
+include $(osbe_builddir)/config/CXX/So.post.rules

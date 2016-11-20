@@ -1,0 +1,73 @@
+from moderation_func import *
+
+request, conf = context.request, context.config.get
+message = context.forward_params
+prn, param = request.output.stream.prn, request.input.parameters().find
+
+moderator = connect_moderator(request, moderator_connector)
+
+ad_manager = \
+  moderator.has_privilege(newsgate.moderation.moderator.PV_AD_MANAGER)
+
+if ad_manager == False:
+  el.exit(403) # Forbidden
+
+if param("u"):
+
+  adv = param("advertiser")
+
+  if adv:
+    aid = long(adv.split("_")[1])
+    moderator = moderator.moderator_manager.set_advertiser(moderator.id, aid)
+
+moderators = moderator.moderator_manager.get_advertisers()
+
+prn(
+R'''<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>Management: Advertiser Selection</title>
+<link rel="stylesheet" type="text/css" href="/fixed/css/common.css" media="all" />
+<link rel="stylesheet" type="text/css" href="/fixed/css/ad/advertiser.css" media="all" />
+</head>
+
+<body>
+<table id="skeleton" cellspacing="0">
+''')
+
+menus = []
+create_topbar_main_menus(context, moderator, "Ad", menus)
+
+prn(create_topbar(create_ad_menus(moderator, "Advertiser"),menus[0],menus[1]))
+
+prn(R'''
+  <tr><td id="main_area" valign="top" align="center">
+    <form id="form" method="post" action="advertiser">
+    <table id="advertiser">''')
+
+if not moderator.has_privilege(newsgate.moderation.moderator.PV_ADVERTISER):
+
+  prn('\n    <tr class="option_row"><td class="radio_cell">\
+<input value="a_0" type="radio" name="advertiser"',
+      moderator.advertiser_id == 0 and ' checked="checked"' or '', 
+      '></td><td>- NONE -</td></tr>')
+
+for m in moderators:
+
+  prn('\n    <tr class="option_row"><td class="radio_cell"><input value="a_', 
+      m.id, '" type="radio" name="advertiser"',
+      m.id == moderator.advertiser_id and ' checked="checked"' or '', 
+      '></td><td>', el.string.manip.xml_encode(m.name), '</td></tr>')
+
+prn(R'''
+    <tr><td colspan="2">
+      <input type="submit" name="u" value="Update"/>
+    </td></tr>
+    </table>
+  </form>
+  </td></tr>
+''', create_copyright(context), R'''
+</table>
+</body>
+</html>
+''')

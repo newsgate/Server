@@ -1,0 +1,9 @@
+# @file   Dir.mk.in
+# @author Karen Arutyunov
+# $Id: $
+
+include Common.pre.rules
+
+target_directory_list := DataFeed TestRSSFeed
+
+include $(osbe_builddir)/config/Direntry.post.rules

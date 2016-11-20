@@ -1,0 +1,155 @@
+import search_util
+
+class Event:
+
+  def __init__(this):
+    this.type = ""
+    this.proto = ""
+    this.uid = ""
+    this.request_id = ""
+    this.messages = ""
+    this.events = ""
+
+  def log(this):
+    user_id = this.uid != "" and this.uid or cookie_uid
+
+    try:
+      if this.type == "p":
+        if this.proto == "h" or this.proto == "j" or this.proto == "x":
+          stat_logger.page_impression(this.request_id,
+                                      this.proto, 
+                                      header("referer"),
+                                      header("host"))
+      elif this.type == "i":
+        if this.proto == "h" or this.proto == "x":
+          stat_logger.message_impression(this.request_id,
+                                         this.proto,
+                                         user_id, 
+                                         this.messages)
+      elif this.type == "c":
+        if this.proto == "h" or this.proto == "x":
+          stat_logger.message_click(this.request_id, 
+                                    this.proto,
+                                    user_id, 
+                                    this.messages,
+                                    request.remote_ip())
+      elif this.type == "v":
+        if this.proto == "h" or this.proto == "j" or this.proto == "x":
+          stat_logger.message_visit(this.request_id, 
+                                    this.proto,
+                                    user_id, 
+                                    this.messages,
+                                    this.events)
+    except:
+      pass
+
+class Static:
+
+  def __init__(this, context):
+    
+    conf = context.config.get
+
+    this.uid_cookie = int(conf("stat.uid_cookie")) != 0
+    
+    this.xsearch_client_ips = {}
+
+    for ip in conf("stat.xsearch.client_ips").split():
+
+      if ip == "*":
+        this.xsearch_client_ips = {}
+        this.xsearch_client_ips[ip] = 1
+        break
+      else:
+        this.xsearch_client_ips[ip] = 1
+
+class StatRequestContext(search_util.RequestContext):
+
+  stat_request_context_base = search_util.RequestContext
+  
+  def __init__(this, context):
+
+    this.stat_request_context_base.__init__(this, context)
+
+    try:
+      this.static = context.cache["render_static_info"]
+    except:
+      this.static = Static(context)
+      context.cache["render_static_info"] = this.static
+
+trace_uri = False
+#trace_uri = True
+
+request = context.request
+header, conf = request.input.headers().find, context.config.get
+prn = request.output.stream.prn
+
+req_context = StatRequestContext(context)
+
+if trace_uri:
+
+  if context.run_number == 0:
+    context.define_static("logger",
+                          el.psp.Logger(int(conf("log_level")),
+                                        conf("log_aspects")))
+
+  logger.trace(el.logging.HIGH, "Stat", "IP=", request.remote_ip(), 
+               ", URI='", request.unparsed_uri(), "'")
+
+valid_xsearch_client = \
+  request.remote_ip() in req_context.static.xsearch_client_ips or \
+  '*' in req_context.static.xsearch_client_ips
+
+is_crawler = not valid_xsearch_client and \
+  el.psp.crawler(header("user-agent")) != ""
+
+cookie_uid = req_context.static.uid_cookie and is_crawler == False and \
+  request.input.cookies().most_specific("u") or ""
+
+response = ""
+event = None
+
+for p in request.input.parameters():
+  
+  name = p.name
+  value = p.value
+
+  if name == "s": response = value
+  elif is_crawler == False:
+
+    if name == "e":
+      new_event = Event()
+      new_event.type = value
+
+      if event != None:
+        event.log()
+        new_event.proto = event.proto
+        new_event.uid = event.uid
+        new_event.request_id = event.request_id
+
+      event = new_event
+
+    elif event != None:
+
+      if name == "t": event.proto = value
+      elif name == "u": event.uid = value
+      elif name == "r": event.request_id = value
+      elif name == "m": event.messages += " " + value
+      elif name == "v": event.events += " " + value
+  
+if event != None: event.log()
+if req_context.static.uid_cookie and not is_crawler: req_context.set_uid()
+
+if response != "":
+  response_type = response[0]
+
+  if response_type == "U":
+    request.output.send_location(response[1:])
+    el.exit(302)
+  elif response_type == "N":
+    el.exit(204)
+
+if is_crawler: el.exit(204)
+
+# Smallest black GIF
+request.output.content_type("image/gif")
+request.output.stream.prn("\x47\x49\x46\x38\x37\x61\x01\x00\x01\x00\x80\x00\x00\xff\xff\xff\x00\x00\x00\x2c\x00\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02\x4c\x01\x00\x3b")

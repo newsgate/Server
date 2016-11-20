@@ -1,0 +1,11 @@
+#include ../../py/search_util.rus
+#include ../../py/informer_util.rus
+
+STORY_COMMENT  // story:null, если в сюжете только 1 новость
+IMAGE_COMMENT  // image:null, если новость не содержит изображения
+
+SCALED_COMMENT // scaled_width, scaled_height - соответствуют выбранному размеру картинки
+
+CODE_INTRO Ниже приведено определение объекта для текущих конфигурационных параметров. \
+Вы можете написать собственный JavaScript код, визуализирующий \
+эту информацию на Веб-странице.

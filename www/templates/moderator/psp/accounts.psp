@@ -1,0 +1,63 @@
+from moderation_func import *
+
+request = context.request
+prn = request.output.stream.prn
+conf = context.config.get
+message = context.forward_params
+
+moderator = connect_moderator(request, moderator_connector)
+
+is_moderator_manager = \
+  moderator.has_privilege(newsgate.moderation.moderator.PV_ACCOUNT_MANAGER)
+
+is_account_manager = \
+  moderator.has_privilege(newsgate.moderation.moderator.PV_CUSTOMER_MANAGER) \
+  and conf("moderation.customer_moderating") == "1"
+
+if is_moderator_manager == False and is_account_manager == False:
+  el.exit(403) # Forbidden
+
+prn(
+R'''
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>Management: Accounts</title>
+<link rel="stylesheet" type="text/css" href="/fixed/css/common.css" media="all" />
+</head>
+
+<body>
+<table id="skeleton" cellspacing="0">
+''')
+
+menus = []
+create_topbar_main_menus(context, moderator, "Accounts", menus)
+
+left_menu = [ ("View", "/psp/account/view") ]
+
+if is_moderator_manager: left_menu.append(("New", "/psp/account/create"))
+
+#if moderator.id == 1 and conf("moderation.customer_moderating") == "1":
+#  left_menu.append(("Accounting (" + moderator.name + ")", 
+#                    "/psp/account/accounting?i=1"))
+
+prn(create_topbar(left_menu,
+                  menus[0],
+                  menus[1]))
+
+prn(
+R'''
+  <tr><td id="main_area" valign="top">
+''')
+
+if message != None:
+  prn('<div id="op_error">', el.string.manip.xml_encode(message), '</div>')
+
+prn(
+R'''
+  </td></tr>
+''', create_copyright(context), R'''
+</table>
+</body>
+</html>
+''')

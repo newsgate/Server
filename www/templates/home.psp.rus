@@ -1,0 +1,14 @@
+#include py/search_util.rus
+#include py/search_page_util.rus
+
+NEWS_DESCRIPTION Актуальные новости
+QUERY_TITLE_ALL  Новости
+TAGLINE          Новости
+INFORMER         Информер
+TRANSLATE        Перевод
+ORIGINAL         Оригинал
+SETTINGS         Настройки
+BUTTON_VALUE     Найти
+SEARCH_HELP      Помощь в поиске
+SOURCES          Источники
+MORE_CAT         другие ...

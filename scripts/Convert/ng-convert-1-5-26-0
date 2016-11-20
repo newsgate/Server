@@ -1,0 +1,139 @@
+#!/bin/sh
+
+# product   : NewsGate - news search WEB server
+# copyright : Copyright (c) 2005-2016 Karen Arutyunov
+# licenses  : CC BY-NC-SA 3.0; see accompanying LICENSE file
+#             Commercial; contact karen.arutyunov@gmail.com
+
+echo "Cleaning Event table ..."
+
+echo "truncate Event;" | ng-mysql --user root NewsGate
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+echo "Cleaning EventMessage table ..."
+
+echo "truncate EventMessage;" | ng-mysql --user root NewsGate
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+echo "Resetting Message.categories ..."
+
+echo "update Message set categories='';" | ng-mysql --user root NewsGate
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+echo "Altering Message table time fileds ..."
+
+echo "alter table Message change published published BIGINT UNSIGNED NOT NULL, \
+change updated updated BIGINT UNSIGNED NOT NULL, \
+change fetched fetched BIGINT UNSIGNED NOT NULL;" | ng-mysql --user root NewsGate
+
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+echo "Altering MessageBuff table time fileds ..."
+
+echo "alter table MessageBuff change published published BIGINT UNSIGNED NOT NULL, \
+change updated updated BIGINT UNSIGNED NOT NULL, \
+change fetched fetched BIGINT UNSIGNED NOT NULL;" | ng-mysql --user root NewsGate
+
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+echo "Altering Event table time fileds ..."
+
+echo "alter table Event change updated updated BIGINT UNSIGNED NOT NULL;" | ng-mysql --user root NewsGate
+
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+echo "Altering EventBuff table time fileds ..."
+
+echo "alter table EventBuff change updated_ updated_ BIGINT UNSIGNED NOT NULL;" | ng-mysql --user root NewsGate
+
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+echo "Altering EventMessage table time fileds ..."
+
+echo "alter table EventMessage change updated updated BIGINT UNSIGNED NOT NULL;" | ng-mysql --user root NewsGate
+
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+echo "Altering EventMessageBuff table time fileds ..."
+
+echo "alter table EventMessageBuff change updated_ updated_ BIGINT UNSIGNED NOT NULL;" | ng-mysql --user root NewsGate
+
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+echo "Altering RSSFeedMessageCodes table time fileds ..."
+
+echo "alter table RSSFeedMessageCodes change published published BIGINT UNSIGNED NOT NULL, \
+change updated updated BIGINT UNSIGNED NOT NULL;" | ng-mysql --user root NewsGate
+
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+echo "Altering RSSFeedMessageCodesBuff table time fileds ..."
+
+echo "alter table RSSFeedMessageCodesBuff change published_ published_ BIGINT UNSIGNED NOT NULL, \
+change updated_ updated_ BIGINT UNSIGNED NOT NULL;" | ng-mysql --user root NewsGate
+
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+echo "Altering RSSFeedStat table time fileds ..."
+
+echo "alter table RSSFeedStat change requests_duration requests_duration BIGINT UNSIGNED NOT NULL, \
+change messages_delay messages_delay BIGINT UNSIGNED NOT NULL, \
+change max_message_delay max_message_delay BIGINT UNSIGNED NOT NULL, \
+change mistiming mistiming BIGINT NOT NULL;" | ng-mysql --user root NewsGate
+
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+echo "Altering RSSFeedStatBuff table time fileds ..."
+
+echo "alter table RSSFeedStatBuff change requests_duration_ requests_duration_ BIGINT UNSIGNED NOT NULL, \
+change messages_delay_ messages_delay_ BIGINT UNSIGNED NOT NULL, \
+change max_message_delay_ max_message_delay_ BIGINT UNSIGNED NOT NULL, \
+change mistiming_ mistiming_ BIGINT NOT NULL;" | ng-mysql --user root NewsGate
+
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+echo "Altering FeedUpdateNum table stamp filed ..."
+echo "alter table FeedUpdateNum change update_num update_num BIGINT UNSIGNED NOT NULL DEFAULT 0;" | ng-mysql --user root NewsGate
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+echo "Altering Feed table stamp filed ..."
+echo "alter table Feed change update_num update_num BIGINT UNSIGNED NOT NULL;" | ng-mysql --user root NewsGate
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+echo "Altering FeedBuff table stamp filed ..."
+echo "alter table FeedBuff change update_num update_num BIGINT UNSIGNED NOT NULL;" | ng-mysql --user root NewsGate
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+echo "Altering FeedUpdateBuff table stamp filed ..."
+echo "alter table FeedUpdateBuff change update_num_ update_num_ BIGINT UNSIGNED NOT NULL;" | ng-mysql --user root NewsGate
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+echo "Altering MessageFilterUpdateNum table stamp filed ..."
+echo "alter table MessageFilterUpdateNum change update_num update_num BIGINT UNSIGNED NOT NULL DEFAULT 0;" | ng-mysql --user root NewsGate
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+echo "Altering CategoryUpdateNum table stamp filed ..."
+echo "alter table CategoryUpdateNum change update_num update_num BIGINT UNSIGNED NOT NULL DEFAULT 0;" | ng-mysql --user root NewsGate
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+echo "Cleaning EventBank service cache ..."
+
+rm -r -f $3/Event/*
+
+if test $? -eq 0; then
+  echo "Done"
+else
+  echo "Failed"
+  exit 1
+fi
+
+echo "Cleaning MessageBank service cache ..."
+
+rm -r -f $3/Message/*
+
+if test $? -eq 0; then
+  echo "Done"
+else
+  echo "Failed"
+  exit 1
+fi

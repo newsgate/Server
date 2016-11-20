@@ -1,0 +1,12 @@
+# @file   dir.ac
+# @author Karen Aroutiounov
+# $Id:$
+
+OSBE_CONFIG_FILE([Makefile])
+
+OSBE_CONFIG_SUBDIR([SearchEngine])
+OSBE_CONFIG_SUBDIR([Moderation])
+OSBE_CONFIG_SUBDIR([WordEngine])
+OSBE_CONFIG_SUBDIR([Thumbnail])
+OSBE_CONFIG_SUBDIR([StatLogger])
+OSBE_CONFIG_SUBDIR([AdModule])

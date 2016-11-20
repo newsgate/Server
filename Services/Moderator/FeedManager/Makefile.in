@@ -1,0 +1,48 @@
+# @file   Makefile.in
+# @author Karen Aroutiounov
+# $Id:$
+
+include Common.pre.rules
+include $(osbe_builddir)/config/CXX/CXX.pre.rules
+include $(osbe_builddir)/config/CXX/Corba.pre.rules
+
+include $(osbe_builddir)/config/CXX/External/Python.pre.rules
+include $(osbe_builddir)/config/CXX/External/ACE.pre.rules
+include $(osbe_builddir)/config/CXX/External/Xerces.pre.rules
+include $(osbe_builddir)/config/CXX/External/MD5.pre.rules
+include $(osbe_builddir)/config/CXX/External/LibXML.pre.rules
+include $(osbe_builddir)/config/CXX/External/UUID.pre.rules
+include $(osbe_builddir)/config/CXX/External/GeoIP.pre.rules
+
+include $(osbe_builddir)/config/CXX/External/ElBasic.pre.rules
+include $(osbe_builddir)/config/CXX/External/ElPython.pre.rules
+include $(osbe_builddir)/config/CXX/External/ElPythonInterceptor.pre.rules
+include $(osbe_builddir)/config/CXX/External/ElPythonSandboxService.pre.rules
+include $(osbe_builddir)/config/CXX/External/ElNet.pre.rules
+include $(osbe_builddir)/config/CXX/External/ElMySQL.pre.rules
+include $(osbe_builddir)/config/CXX/External/ElCorba.pre.rules
+include $(osbe_builddir)/config/CXX/External/ElXML.pre.rules
+include $(osbe_builddir)/config/CXX/External/ElLibXML.pre.rules
+include $(osbe_builddir)/config/CXX/External/ElHTML.pre.rules
+include $(osbe_builddir)/config/CXX/External/ElGeography.pre.rules
+
+include $(top_builddir)/config/xsd/Config.so.pre.rules
+include $(top_builddir)/config/xsd/DataFeed/RSS/FeedParsing.so.pre.rules
+
+include $(top_builddir)/config/Commons/Feed/FeedCommons.so.pre.rules
+include $(top_builddir)/config/Services/Commons/Statistics/StatisticsServiceCommons.so.pre.rules
+include $(top_builddir)/config/Services/Moderator/Commons/ModeratorServicesCommons.so.pre.rules
+
+sources  := FeedManagerMain.cpp \
+            FeedManagerImpl.cpp \
+            FeedCrawler.cpp \
+            MessageFilter.cpp \
+            MessageAdjustment.cpp \
+            FeedManagement.cpp \
+            FeedStatSinkImpl.cpp \
+            LinkGrabber.cpp
+
+target   := FeedManager
+
+include $(osbe_builddir)/config/CXX/Corba.post.rules
+include $(osbe_builddir)/config/CXX/Ex.post.rules

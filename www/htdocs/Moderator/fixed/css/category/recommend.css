@@ -1,0 +1,39 @@
+.breadcrumb
+{
+  text-align: left;
+  margin: 0 0 1em 0;
+}
+
+#mid_area
+{
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  border-collapse: collapse;
+}
+
+.full_width
+{
+  width: 100%;
+}
+
+#phrases
+{
+  font-size: 80%;
+}
+
+#header td 
+{
+  border-bottom: 1px solid rgb(0, 0, 80);
+  padding: 0 0.3em 0.3em;
+}
+
+.notusefull0
+{
+  color: #BBBBBB;
+}
+
+.notusefull1
+{
+  color: #888888;
+}

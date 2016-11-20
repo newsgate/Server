@@ -1,0 +1,73 @@
+echo "Creating table CustomerTransactions ..."
+echo "create table if not exists CustomerTransactions ( \
+      id BIGINT UNSIGNED NOT NULL PRIMARY KEY, \
+      customer_id BIGINT UNSIGNED NOT NULL REFERENCES Customer ( id ), \
+      updated TIMESTAMP NOT NULL, \
+      created TIMESTAMP NOT NULL, \
+      type ENUM ('C', 'D') NOT NULL, \
+      value DOUBLE NOT NULL DEFAULT 0, \
+      originator_type ENUM ('M', 'C') NOT NULL, \
+      originator VARCHAR(512) NOT NULL, \
+      comment VARCHAR(1024) NOT NULL \
+) engine=InnoDB;" | ng-mysql --user=root $DB_NAME
+
+if test $? -ne 0; then
+  echo "failed"
+  exit $?
+fi
+
+echo "Creating table ClientService ..."
+echo "create table if not exists ClientService ( \
+      id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY, \
+      name CHAR(128) character set ascii NOT NULL UNIQUE, \
+      req_price DOUBLE NOT NULL DEFAULT 0, \
+      byte_price DOUBLE NOT NULL DEFAULT 0 \
+) engine=InnoDB;" | ng-mysql --user=root $DB_NAME
+
+if test $? -ne 0; then
+  echo "failed"
+  exit $?
+fi
+
+echo "Filling ClientService ..."
+
+echo "insert ignore into ClientService (name) values ('XSearch');" \
+| ng-mysql --user=root $DB_NAME
+
+if test $? -ne 0; then
+  echo "failed"
+  exit $?
+fi
+
+echo "Creating table Client ..."
+echo "create table if not exists Client ( \
+      id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY, \
+      name CHAR(32) character set ascii NOT NULL UNIQUE, \
+      status ENUM ('E', 'D') NOT NULL, \
+      account_id BIGINT UNSIGNED NOT NULL, \
+      service_id INT UNSIGNED NOT NULL, \
+      ip_ranges VARCHAR(1024) character set ascii NOT NULL, \
+      frequency INT UNSIGNED NOT NULL, \
+      req_price DOUBLE NOT NULL, \
+      byte_price DOUBLE NOT NULL \
+) engine=InnoDB;" | ng-mysql --user=root $DB_NAME
+
+if test $? -ne 0; then
+  echo "failed"
+  exit $?
+fi
+
+echo "Creating table ClientStat ..."
+echo "create table if not exists ClientStat ( \
+      date DATETIME NOT NULL, \
+      client_id BIGINT UNSIGNED NOT NULL REFERENCES Client ( id ), \
+      requests BIGINT UNSIGNED NOT NULL, \
+      input_bytes BIGINT UNSIGNED NOT NULL, \
+      output_bytes BIGINT UNSIGNED NOT NULL, \
+      cost DOUBLE NOT NULL \
+) engine=InnoDB;" | ng-mysql --user=root $DB_NAME
+
+if test $? -ne 0; then
+  echo "failed"
+  exit $?
+fi

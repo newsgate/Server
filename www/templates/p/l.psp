@@ -1,0 +1,53 @@
+def cmp_langs(l1, l2):
+  n1 = l1[1]
+  n2 = l2[1]
+  if n1 < n2: return -1
+  if n1 > n2: return 1
+  return 0
+
+try:
+  lang_map = context.cache["lang_map"]
+except:
+  lang_map = {}
+  context.cache["lang_map"] = lang_map
+
+request = context.request
+
+lang = request.input.parameters().find("l")
+if not lang: el.exit(400) #bad request
+
+lang = el.Lang(lang)
+
+try:
+
+  result = lang_map[lang.l3_code()]
+
+except:
+
+  loc = el.loc.localizer()
+
+  languages = []
+
+  for l in el.Lang.all:
+
+    try:
+      name = loc.language(l, lang)
+      languages.append((l.l3_code(), name))    
+    except: pass
+
+  languages.sort(cmp_langs)
+
+  result = ""
+
+  for l in languages:
+
+    if result: result += ","
+    else: result = "[ "
+
+    result += '{c:"' + l[0] + '",n:"' + l[1] + '"}'
+
+  if result: result += " ]"
+  lang_map[lang.l3_code()] = result
+
+request.output.content_type("application/x-javascript;charset=UTF-8")
+request.output.stream.prn(result)

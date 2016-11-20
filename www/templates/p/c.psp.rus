@@ -1,0 +1,16 @@
+#include ../py/search_util.rus
+
+TITLE      Обратная связь
+TAGLINE    Обратная связь
+NEW_SEARCH В&#xA0;начало
+
+EMAIL_INFO Пожалуйста, присылайте комментарии и вопросы на \
+<a href="mailto:{{EMAIL}}" style="font-size: 110%;">{{EMAIL}}</a>.
+
+FEED_BACK Вы можете послать отзыв, используя онлайн-форму. \
+Мы будем рады узнать ваше мнение.<br>Ожидая ответ, не забудьте указать свой \
+email.
+
+FEED_BACK_RECEIVED Отзыв получен. Большое спасибо.
+
+BUTTON_TEXT Отправить отзыв

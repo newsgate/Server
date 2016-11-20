@@ -1,0 +1,47 @@
+#!/bin/sh
+
+# product   : NewsGate - news search WEB server
+# copyright : Copyright (c) 2005-2016 Karen Arutyunov
+# licenses  : CC BY-NC-SA 3.0; see accompanying LICENSE file
+#             Commercial; contact karen.arutyunov@gmail.com
+
+source "$1/lib.sh"
+
+echo_date "Cleaning AdServer cache ..."
+rm $3/Ad/* 2>/dev/null
+
+echo_date "Adding cap_min_time to AdGroup table ..."
+
+echo "alter table AdGroup \
+add cap_min_time BIGINT UNSIGNED NOT NULL DEFAULT 0 after auction_factor;" | \
+ng-mysql --user root NewsGate
+
+if test $? -eq 0; then echo_date "Done"; else echo_date "Failed"; exit 1; fi
+
+echo_date "Creating table AdCounter ..."
+
+echo "create table AdCounter ( \
+      id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY, \
+      advertiser BIGINT UNSIGNED NOT NULL REFERENCES Advertiser ( id ), \
+      name VARCHAR(128) NOT NULL, \
+      status ENUM ('E', 'D', 'L') NOT NULL, \
+      text VARCHAR(10240) NOT NULL, \
+      INDEX advertiser (advertiser), UNIQUE (advertiser, name) \
+) engine=InnoDB;" | ng-mysql --user=root NewsGate
+
+if test $? -eq 0; then echo_date "Done"; else echo_date "Failed"; exit 1; fi
+
+echo_date "Creating table AdCounterPlacement ..."
+
+echo "create table AdCounterPlacement ( \
+      id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY, \
+      advertiser BIGINT UNSIGNED NOT NULL REFERENCES Advertiser ( id ), \
+      group_id BIGINT UNSIGNED NOT NULL REFERENCES AdGroup ( id ), \
+      name VARCHAR(128) NOT NULL, \
+      status ENUM ('E', 'D', 'L') NOT NULL, \
+      page BIGINT UNSIGNED NOT NULL REFERENCES AdPage ( id ), \
+      counter BIGINT UNSIGNED NOT NULL REFERENCES AdCounter ( id ), \
+      INDEX group_id (group_id), UNIQUE (group_id, name) \
+) engine=InnoDB;" | ng-mysql --user=root NewsGate
+
+if test $? -eq 0; then echo_date "Done"; else echo_date "Failed"; exit 1; fi

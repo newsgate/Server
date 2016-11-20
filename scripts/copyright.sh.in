@@ -1,0 +1,30 @@
+#! /bin/sh
+
+project_path=@abs_top_srcdir@
+tmp="/tmp/elcop~.tmp"
+
+rm -f "$tmp"
+
+cpp_files=\
+`find "$project_path" \( -name '*.cpp' -o  -name '*.hpp' -o -name '*.idl' \)`
+
+for f in $cpp_files; do
+  cat "$f" | ElCopyrighter update copyright=$project_path/doc/copyright.cpp > \
+  "$tmp"
+
+  mv "$tmp" "$f"
+done
+
+shell_files=`find "$project_path" \( -name '*.sh' -o -name 'ng-*' -o \
+-name 'ng-mysql*' \) -not -name 'copyright.sh'`
+
+for f in $shell_files; do
+  cat "$f" | ElCopyrighter update skiplines=2 copyright=$project_path/doc/copyright.sh > \
+  "$tmp"
+
+  mv "$tmp" "$f"
+  chmod 755 "$f"
+
+done
+
+rm -f "$tmp"

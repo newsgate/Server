@@ -1,0 +1,23 @@
+# @file   Makefile.in
+# @author Karen Aroutiounov
+# $Id:$
+
+include Common.pre.rules
+include $(osbe_builddir)/config/CXX/CXX.pre.rules
+include $(osbe_builddir)/config/CXX/Corba.pre.rules
+
+include $(top_builddir)/config/Commons/Event/EventCommons.so.pre.rules
+include $(top_builddir)/config/Commons/Message/MessageCommons.so.pre.rules
+
+sources := BankSessionImpl.cpp BankClientSessionImpl.cpp
+includes := .
+
+corba_stub_idls := EventServices.idl
+corba_skeleton_idls := EventServices.idl
+corba_includes := .
+corba_idl_includes := .
+
+target := EventServiceCommons
+
+include $(osbe_builddir)/config/CXX/Corba.post.rules
+include $(osbe_builddir)/config/CXX/So.post.rules

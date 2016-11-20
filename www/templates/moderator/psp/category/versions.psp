@@ -1,0 +1,37 @@
+from moderation_func import *
+
+request, conf = context.request, context.config.get
+prn, param = request.output.stream.prn, request.input.parameters().find
+
+try:
+  moderator = connect_moderator(request, moderator_connector, False, False)
+except:
+  el.exit(403) # Forbidden
+
+cat_manager = \
+  moderator.has_privilege(newsgate.moderation.moderator.PV_CATEGORY_MANAGER)
+
+wl_editor = cat_manager == False and \
+  moderator.has_privilege(\
+    newsgate.moderation.moderator.PV_CATEGORY_EDITOR)
+
+if cat_manager == False and wl_editor == False:
+  el.exit(403) # Forbidden
+
+cat_id = long(param("c", "0"))
+if cat_id <= 1: el.exit(400) # Bad request
+
+try:
+  category = moderator.category_manager.get_category_version(cat_id)
+except newsgate.moderation.category.CategoryNotFound:
+  category = None
+
+prn('<?xml version="1.0" encoding="UTF-8"?>\n<c v="',
+    category and category.version or 0, '">')
+
+if category != None:
+  for wl in category.word_lists:
+    prn('\n<l n="', el.string.manip.xml_encode(wl.name),
+        '" v="', wl.version, '"/>')
+
+prn("\n</c>")

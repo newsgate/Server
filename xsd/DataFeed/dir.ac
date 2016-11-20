@@ -1,0 +1,7 @@
+# @file   Makefile.in
+# @author Karen Arutyunov
+# $Id: $
+
+OSBE_CONFIG_FILE([Makefile])
+
+OSBE_CONFIG_SUBDIR([RSS])

@@ -1,0 +1,16 @@
+#include ../py/search_util.eng
+
+TITLE      Contact Us
+TAGLINE    Contact Us
+NEW_SEARCH Home
+
+EMAIL_INFO Please email any comments or queries regarding the site to \
+<a href="{{EMAIL}}" style="font-size: 110%;">{{EMAIL}}</a>.
+
+FEED_BACK You can use the online form to send us your feedback. \
+We always happy to hear from you.<br>Don't forget to provide your email if \
+you expect an answer.
+
+FEED_BACK_RECEIVED Feedback received. Thank you very much.
+
+BUTTON_TEXT Send Feedback

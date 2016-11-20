@@ -1,0 +1,97 @@
+#!/bin/sh
+
+# product   : NewsGate - news search WEB server
+# copyright : Copyright (c) 2005-2016 Karen Arutyunov
+# licenses  : CC BY-NC-SA 3.0; see accompanying LICENSE file
+#             Commercial; contact karen.arutyunov@gmail.com
+
+ARGV="$@"
+DB_NAME="NewsGateModeration"
+
+if test "$ARGV" = "--recreate"; then
+  echo "Droping $DB_NAME database ..."
+  echo "drop database $DB_NAME;" | ng-mysql --user=root
+  
+  if test $? -ne 0; then
+    echo "failed"
+    exit $?
+  fi
+fi
+
+echo "Creating database $DB_NAME ..."
+echo "create database if not exists $DB_NAME character set 'utf8';"\
+ | ng-mysql --user=root
+
+if test $? -ne 0; then
+  echo "failed"
+  exit $?
+fi
+
+# Statuses are: E(nabled), D(isabled), L(deleted)
+
+echo "Creating table Moderator ..."
+echo "create table if not exists Moderator ( \
+      id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY, \
+      name VARCHAR(100) NOT NULL UNIQUE KEY, \
+      password_digest VARCHAR(24) NOT NULL, \
+      email VARCHAR(100) NOT NULL, \
+      updated TIMESTAMP NOT NULL, \
+      created TIMESTAMP NOT NULL, \
+      creator BIGINT UNSIGNED NOT NULL REFERENCES Moderator ( id ), \
+      superior BIGINT UNSIGNED NOT NULL REFERENCES Moderator ( id ), \
+      status ENUM ('E', 'D', 'L') NOT NULL DEFAULT 'E', \
+      show_deleted ENUM ('Y', 'N') NOT NULL DEFAULT 'N', \
+      comment TEXT \
+) engine=InnoDB;" | ng-mysql --user=root $DB_NAME
+
+if test $? -ne 0; then
+  echo "failed"
+  exit $?
+fi
+
+echo "Creating table ModeratorPrivileges ..."
+echo "create table if not exists ModeratorPrivileges ( \
+      moderator BIGINT UNSIGNED NOT NULL REFERENCES Moderator ( id ), \
+      privilege BIGINT UNSIGNED NOT NULL, \
+      granted_by BIGINT UNSIGNED NOT NULL REFERENCES Moderator ( id ), \
+      grant_date TIMESTAMP NOT NULL, \
+      args TEXT, \
+      PRIMARY KEY (moderator, privilege) \
+) engine=InnoDB;" | ng-mysql --user=root $DB_NAME
+
+res=`echo "select * from Moderator" | ng-mysql --skip-column-names --user root $DB_NAME`
+
+if test -z "$res"; then
+
+  echo "Creating Admin Moderator ..."
+
+  echo "insert ignore into Moderator \
+(name, password_digest, email, created, creator, superior) values \
+('admin', 'ISMvKXpXpadDiUoOSoAfww==', 'admin@nowhere.com', NOW(), 0, 0);" \
+| ng-mysql --user=root $DB_NAME
+
+  if test $? -ne 0; then
+    echo "failed"
+    exit $?
+  fi
+fi
+
+res=`echo "select * from ModeratorPrivileges" | ng-mysql --skip-column-names --user root $DB_NAME`
+
+if test -z "$res"; then
+
+  echo "Granting Admin Moderator priveleges ..."
+
+  echo "insert ignore into ModeratorPrivileges \
+(moderator, privilege, granted_by) values \
+(1, 1, 0), (1, 2, 0), (1, 3, 0), (1, 4, 0), (1, 5, 0), (1, 6, 0), (1, 7, 0), \
+(1, 8, 0), (1, 9, 0), (1, 10, 0);" \
+| ng-mysql --user=root $DB_NAME
+
+  if test $? -ne 0; then
+    echo "failed"
+    exit $?
+  fi
+fi
+
+echo "done"

@@ -1,0 +1,324 @@
+.settings_dialog_option_group
+{
+  font-size:100%;
+  font-weight:900;
+}
+
+.settings_dialog_option_table
+{
+  font-size:100%;
+  margin:0.4em 0 0.7em;
+  width:20em;
+}
+
+.settings_dialog_option_table label
+{
+  white-space:nowrap; 
+  margin-right:0.4em;
+}
+
+.settings_dialog_option_table td
+{
+  padding-top:0.3em;
+}
+
+.settings_select_cell
+{
+  width:100%;
+  white-space:nowrap;
+}
+
+.settings_select
+{
+  width:100%;
+}
+
+.settings_checkbox
+{
+  margin-left:0;
+  padding-left:0;
+}
+
+.settings_edit 
+{
+  -webkit-box-sizing:border-box;
+  -moz-box-sizing:border-box;
+  box-sizing:border-box;
+  width:100%;
+}
+
+#settings_dialog_warn
+{
+  font-size:85%;
+  color:#3C3C3C;
+  padding:0 0 1em 0;
+  white-space:normal;
+  width:25em;
+}
+
+#paging_dialog_area
+{
+  margin:0.5em 0 0 0;
+  width:100%;
+}
+
+.paging_dialog_counter_cell
+{
+  vertical-align:top;
+  text-align:right;
+  width:1px;
+  padding:0.15em 0.3em;
+}
+
+.paging_dialog_cell
+{
+  vertical-align:top;
+  width:30em;
+  padding:0.2em 0.3em 0;
+}
+
+.paging_dialog_pages
+{
+  font-size:110%;
+  padding:0.2em 0 0;
+}
+
+.paging_dialog_pages a
+{
+  font-size:90%;
+}
+
+.paging_dialog_id
+{
+  font-size:85%;
+
+  -ms-word-break:break-all;
+  word-break:break-all;
+  -webkit-hyphens:auto;
+  -moz-hyphens:auto;
+  hyphens:auto;
+
+  white-space:pre-wrap;
+  word-wrap:break-word;
+  white-space:-moz-pre-wrap !important;
+  white-space:-pre-wrap;
+  white-space:-o-pre-wrap;
+}
+
+.paging_dialog_value
+{
+}
+
+#paging_dialog_header
+{
+  white-space:nowrap;
+}
+
+#paging_dialog_stat
+{
+  padding:0 0 0 0.5em;
+}
+
+.paging_dialog_row
+{
+  background:#FAFAFA;
+}
+
+.paging_dialog_selected_row
+{
+  background-color:#D2D2FF;
+}
+
+.option_select_table
+{
+  font-size:100%;
+  margin:0.3em 0;
+  width:100%;
+  border-collapse:separate;
+}
+
+.found_core_word
+{
+  background-color:#FFFFAA;
+}
+
+.found_word
+{
+  background-color:#FFFFDC;
+}
+
+.right_bar
+{
+  vertical-align:top;
+  font-size:85%;
+  padding:0 0.6em 1em 0.5em;
+}
+
+.right_bar_cat_current
+{
+  font-size:105%;  
+}
+
+.right_block_title
+{
+  font-size:93%;
+  padding:0.2em 0 0.2em 0.25em;
+  width:100%;
+}
+
+.right_block
+{
+  padding:0.3em 0;
+  border-top:1px solid #969696;
+  font-size:88%;
+  width:100%;
+}
+
+.ad_right_1st_block
+{
+  padding:0 0 0.5em;
+  width:100%;
+  vertical-align:top;
+  text-align:center;
+}
+
+.ad_right_block
+{
+  padding:0.2em 0 0.5em;
+  border-top:1px solid #969696;
+  width:100%;
+  vertical-align:top;
+  text-align:center;
+}
+
+.ad_frame
+{
+  border-style:none;
+}
+
+.right_block_source_bullet
+{
+  padding:0 6px 0 6px;
+  text-align:center;
+}
+
+.right_block_source
+{
+  padding:0.1em 0 0 0;
+}
+
+.right_block_sources
+{  
+  font-size:100%;
+  padding:0;
+}
+
+.right_block_cat
+{
+  white-space:nowrap;
+  padding:0.4em 0 0 0.3em;
+}
+
+.right_block_subcat
+{
+  white-space:nowrap;
+  padding:0.2em 0 0 1em;
+}
+
+.right_block_cpad
+{
+  padding:0 16px 0 0;
+}
+
+.right_block_img
+{
+  position:relative;
+  top:1px;
+  margin:0 5px 0 0;
+  border-style:none;
+  z-index:5;
+}
+
+#copyright
+{
+  font-size:60%;
+  text-align:center;
+  padding:1em 0 0.5em;
+}
+
+#tr_ref
+{
+  font-size:60%;
+  text-align:center;
+  padding:0 0 0em;
+}
+
+#counters
+{
+  padding:0 0 0.5em;
+  text-align: center;
+  width: 100%;
+  vertical-align: top;
+}
+
+.page_title
+{
+  vertical-align: top;
+  text-align: left;
+  padding: 0.3em 0 0 1em;
+}
+
+.del_search_component
+{
+  padding:0 0.4em 0 0.3em;
+}
+
+.search_component a img
+{
+  border-style:none;
+  vertical-align:middle;
+}
+
+.search_component h1
+{
+  font-size:100%;
+  font-weight:500;
+  padding:0;
+  margin:0;
+  display:inline;
+}
+
+.sources
+{
+  color:#808084;
+  font-size:85%;
+}
+
+.languages
+{
+  color:#808084;
+  font-size:85%;
+}
+
+.countries
+{
+  color:#808084;
+  font-size:85%;
+}
+
+.watered_link, .watered_link:visited
+{
+  color:#5A5AEE;
+}
+
+.watered_link:hover
+{
+  color:#0000EE;
+  text-decoration: underline;
+}
+
+.watered_link:active, .watered_link:focus
+{
+  color:red;
+  text-decoration:underline;
+}

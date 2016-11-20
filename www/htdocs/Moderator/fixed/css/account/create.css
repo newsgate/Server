@@ -1,0 +1,19 @@
+#edit_form
+{
+  width: 16em;
+  font-size: 100%;
+  padding: 2em 0 0 0;
+  margin: 0;
+}
+
+.edit
+{
+  width: 15em;
+  margin: 0 0 0 0.4em;
+}
+
+textarea
+{
+  font-family: Verdana, Tahoma, Geneva, Helvetica, Arial, Sans-serif;
+  font-size: 87%;
+}

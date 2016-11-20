@@ -1,0 +1,50 @@
+from moderation_func import *
+
+request = context.request
+prn, param = request.output.stream.prn, request.input.parameters().find
+
+try:
+  moderator = moderator_connector.connect(request, False)
+except: 
+  el.exit(403) # Forbidden
+  
+search_in_cats = \
+  moderator.has_privilege(\
+    newsgate.moderation.moderator.PV_CATEGORY_MANAGER) or \
+  moderator.has_privilege(\
+    newsgate.moderation.moderator.PV_CATEGORY_EDITOR)
+
+text = param("q")
+
+request.output.send_header("Cache-Control", "no-cache, must-revalidate")
+
+prn('<?xml version="1.0" encoding="UTF-8"?>\n<result>\n  <categories>')
+
+if search_in_cats:
+  
+  try:
+    items = moderator.category_manager.find_text(text)
+
+    for item in items:
+
+      prn('\n    <cat id="', item.id, '" path="', 
+          el.string.manip.xml_encode(item.path), '">')
+
+      for wl in item.word_lists:
+
+        prn('\n      <wl name="', el.string.manip.xml_encode(wl.name), '">')
+
+        for w in wl.words:
+          prn('\n        <w f="', w.f, '" t="', w.t, '" s="', w.s, 
+              '" e="', w.e, '">', el.string.manip.xml_encode(w.text), '</w>')
+
+        prn('\n      </wl>')
+
+      prn('\n    </cat>')
+
+  except:
+    pass
+
+prn("\n  </categories>")
+
+prn("\n</result>")

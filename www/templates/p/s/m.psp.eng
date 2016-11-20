@@ -1,0 +1,16 @@
+#include ../../py/search_util.eng
+
+TAGLINE
+NEW_SEARCH     Home
+SETTINGS       Settings
+SEARCH         Search
+INFORMER       Widget
+TRANSLATE      Translation
+ORIGINAL       Original
+
+LEFTMOST   First
+PREV       Previous
+SLIDESHOW  Slideshow
+PAUSE      Pause
+NEXT       Next
+RIGHTMOST  Last

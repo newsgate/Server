@@ -1,0 +1,82 @@
+#include ../../py/parse_error.eng
+#include ../../py/search_util.eng
+#include ../../py/search_page_util.eng
+#include ../../py/informer_util.eng
+
+IR_LOADING              Loading ...
+IR_INFORMER             Widget
+IR_INFORMER_TITLE       Widget
+IR_NEWS_INFORMER_TITLE  News Widget
+IR_INFORMER_DESCRIPTION Create news widget selecting category, news source, search phrase or a combination of the above.
+IR_KEYWORDS             news widget, JSON, free widget, news block site, internet widget, widget directory, new widget, online widget, create widget
+
+IR_SCRIPT_INTRO    Create news widget selecting category, news source, search phrase or a combination of the above. Instead of search phrase it is possible to specify a more complex <a href="/p/h/s" target="_blank">search expression</a>.
+IR_FORM_INTRO      The form contains basic configuration parameters of a news block. Colors, fonts, sizes are specified in terms of CSS. You can edit previously created widgets by pasting them into the code field above - the form options will take on the new values automatically.
+IR_STYLE_INTRO     Use the code below as a base, edit and insert it into  &lt;style>&lt;/style> element of your page header or linked CSS file.
+IR_STYLE_EXTENSION If the form capabilities are insufficient then fine-tuning can be performed by switching the Style/Placement option to 'External CSS' value and using the suggested CSS code as a base. You can also switch the Widget/Type option to the Object value to obtain news information in the <a href='http://en.wikipedia.org/wiki/JSON' target='_blank'>JSON format</a>. 
+IR_FEEDBACK_NOTICE Please email questions or suggestions to <a href="{{EMAIL}}">{{EMAIL}}</a>. Your requests and suggestions will be considered with attention and gratitude.
+
+IR_ON           On
+IR_OFF          Off
+IR_XML_ENCODING String&nbsp;XML-encoding
+IR_TYPE         Type
+IR_TYPE_VISUAL  Visual
+IR_TYPE_OBJECT  Object
+IR_TITLE        Title
+IR_ANNOTATION   Annotation
+IR_IMAGE        Image
+IR_METAINFO     Metainformation
+IR_CATCHWORD    Footer
+IR_TOP          Top
+IR_BOTTOM       Bottom
+IR_FULL         Full
+IR_LENGTH       Length
+IR_ITEMS        Length
+IR_SORT         Sorting
+IR_SORT_RELEVANCE Relevance
+IR_SORT_DATE      Publication Date
+IR_WIDTH        Width
+IR_LINK_COLOR Link&nbsp;Color
+IR_BORDER_COLOR Border&nbsp;Color
+IR_BACKGROUND_COLOR Background&nbsp;Color
+IR_DIVIDER_COLOR Divider&nbsp;Color
+IR_VAR_NAME Variable&nbsp;Name
+IR_FONT Font
+IR_SIZE Size
+IR_COLOR Text&nbsp;Color
+IR_ALIGNMENT Alignment
+IR_ALIGN_BOTH_SIDES Double-sided
+IR_ALIGN_LEFT  Left
+IR_ALIGN_RIGHT Right
+IR_UNDERLINE_COLOR Underline&nbsp;Color
+IR_POSITION Position
+IR_HIDE Hide
+IR_LEFT_ANNOT Left&nbsp;of&nbsp;Annotation
+IR_RIGHT_ANNOT Right&nbsp;of&nbsp;Annotation
+IR_LEFT_TITLE Left&nbsp;of&nbsp;Title&nbsp;&amp;&nbsp;Annotation
+IR_RIGHT_TITLE Right&nbsp;of&nbsp;Title&nbsp;&amp;&nbsp;Annotation
+IR_CROPPED crop
+IR_SOURCE_LENGTH Source&nbsp;Length
+IR_METAINFO_COLUMNS Position
+IR_METAINFO_COLUMN_LEFT  Column to the Left
+IR_METAINFO_COLUMN_RIGHT Column to the Right
+IR_METAINFO_COLUMN_2     2 Columns
+IR_DATE Date
+IR_PUBLICATION Publication
+IR_FETCH Fetch
+IR_COUNTRY Country
+IR_SHOW Show
+IR_CATEGORIES Categories
+IR_MORE Link&nbsp;'More'
+IR_SIMILAR_MESSAGES Link&nbsp;'Whole&nbsp;story'
+IR_SOURCE Source
+IR_STYLE Style
+IR_STYLE_PLACEMENT Placement
+IR_STYLE_EXTERNAL External CSS
+IR_STYLE_INTERNAL Widget
+IR_CLASS_PREFIX Class&nbsp;Prefix
+IR_CATCHWORD_LINK_TEXT Link&nbsp;Text
+IR_LOADING Loading ...
+IR_ON_TOPIC on topic at
+IR_ON_SITE  at
+IR_BIG_IMAGE Enlarge the image

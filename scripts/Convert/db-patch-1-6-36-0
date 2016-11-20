@@ -1,0 +1,97 @@
+#!/bin/sh
+
+# product   : NewsGate - news search WEB server
+# copyright : Copyright (c) 2005-2016 Karen Arutyunov
+# licenses  : CC BY-NC-SA 3.0; see accompanying LICENSE file
+#             Commercial; contact karen.arutyunov@gmail.com
+
+USAGE="Usage: db-patch-1-6-36-0 (pre-install|post-install)"
+#workspace=~/projects/NewsGate/Workspace
+workspace="/opt/NewsGate"
+
+tmp_dir=$workspace/var/tmp/1-6-36-0
+host=`hostname`
+
+source "$workspace/etc/NewsGate/environment.sh"
+source "$workspace/etc/NewsGate/lib.sh"
+
+if test "$1" = "pre-install"; then
+
+  echo_date "Stopping DB service ..."
+  $workspace/etc/newsgate.sh stop $host:DB
+
+  if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+  echo_date "Cleaning $tmp_dir ..."
+  rm -r -f $tmp_dir/*
+  mkdir -p $tmp_dir
+
+  echo_date "Starting DB service ..."
+  $workspace/etc/newsgate.sh start $host:DB
+
+  if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+  echo_date "Dumping NewsGate database to $tmp_dir ..."
+
+  mysqldump --single-transaction --port=$MYSQL_PORT \
+            --socket="$MYSQL_WORKSPACE_ROOT/mysql.socket" --user root \
+            --databases NewsGate | gzip > "$tmp_dir/NewsGate.sql.gz"
+
+  if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+  echo_date "Dumping NewsGateModeration database to $tmp_dir ..."
+
+  mysqldump --single-transaction --port=$MYSQL_PORT \
+            --socket="$MYSQL_WORKSPACE_ROOT/mysql.socket" --user root \
+            --databases NewsGateModeration | \
+            gzip > "$tmp_dir/NewsGateModeration.sql.gz"
+
+  if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+  echo_date "Stopping DB service ..."
+  $workspace/etc/newsgate.sh stop $host:DB
+
+  if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+elif test "$1" = "post-install"; then
+
+  if test -f "$tmp_dir/NewsGate.sql.gz" -a \
+          -f "$tmp_dir/NewsGateModeration.sql.gz"; then
+
+    echo_date "Stopping DB service ..."
+    $workspace/etc/newsgate.sh stop $host:DB
+
+    if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+    echo_date "Deleting DB files ..."
+    rm -r -f $workspace/var/lib/MySQL
+
+    echo_date "Starting DB service ..."
+    $workspace/etc/newsgate.sh start $host:DB
+
+    if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+    
+    echo_date "Recreating NewsGate database ..."
+    gunzip -c "$tmp_dir/NewsGate.sql.gz" | ng-mysql --user root
+
+    if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+    
+    echo_date "Recreating NewsGateModeration database ..."
+    gunzip -c "$tmp_dir/NewsGateModeration.sql.gz" | ng-mysql --user root
+    
+    if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+    echo_date "Stopping DB service ..."
+    $workspace/etc/newsgate.sh stop $host:DB
+
+    if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+  else
+    echo "No DB dumps found in $tmp_dir"
+    exit 1
+  fi
+
+else
+  echo "$USAGE"
+  exit 1
+fi

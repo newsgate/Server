@@ -1,0 +1,41 @@
+# @file   Makefile.in
+# @author Karen Aroutiounov
+# $Id:$
+
+include Common.pre.rules
+include $(osbe_builddir)/config/CXX/CXX.pre.rules
+include $(osbe_builddir)/config/CXX/Corba.pre.rules
+
+include $(osbe_builddir)/config/CXX/External/ACE.pre.rules
+include $(osbe_builddir)/config/CXX/External/Xerces.pre.rules
+include $(osbe_builddir)/config/CXX/External/Google.pre.rules
+include $(osbe_builddir)/config/CXX/External/MD5.pre.rules
+include $(osbe_builddir)/config/CXX/External/UUID.pre.rules
+
+include $(osbe_builddir)/config/CXX/External/ElBasic.pre.rules
+include $(osbe_builddir)/config/CXX/External/ElMySQL.pre.rules
+include $(osbe_builddir)/config/CXX/External/ElCorba.pre.rules
+include $(osbe_builddir)/config/CXX/External/ElTokyoCabinet.pre.rules
+
+include $(top_builddir)/config/xsd/Config.so.pre.rules
+
+include $(top_builddir)/config/Services/Commons/Message/MessageServiceCommons.so.pre.rules
+include $(top_builddir)/config/Services/Commons/Event/EventServiceCommons.so.pre.rules
+include $(top_builddir)/config/Services/Dictionary/Commons/DictionaryCommons.so.pre.rules
+include $(top_builddir)/config/Services/Segmentation/Commons/SegmentationServiceCommons.so.pre.rules
+
+sources  := MessageCategorizer.cpp \
+            MessageManager.cpp \
+            MessageLoader.cpp \
+            ManagingMessages.cpp \
+            BankImpl.cpp \
+            BankMain.cpp \
+            SessionSupport.cpp \
+            SubService.cpp \
+            ContentCache.cpp \
+            WordPairManager.cpp
+
+target   := MessageBank
+
+include $(osbe_builddir)/config/CXX/Corba.post.rules
+include $(osbe_builddir)/config/CXX/Ex.post.rules

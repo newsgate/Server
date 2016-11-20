@@ -1,0 +1,227 @@
+include <El/Python/Types.pid>
+include <El/Net/Types.pid>
+
+include <Commons/Feed/Types.pid>
+include <Commons/Message/Types.pid>
+
+module newsgate
+{
+  type HF_Context
+  {
+    // Message sequence; to be filled by script with message.Message objects
+    el.Sequence messages;
+
+    // HTTP requests options (timeout, user-agent, ...)
+    const el.net.http.RequestParams request_params;
+
+    // Restictions which will be automatically applied to messages
+    const message.MessageRestrictions message_restrictions;
+
+    // HTML page url
+    string feed_url;
+
+    // Default message space; any of newsgate.feed.SP_* values
+    unsigned long space;
+    
+    el.Lang lang;         // Default message language
+    el.Country country;   // Default message country
+    el.Sequence keywords; // Default message keywords
+
+    // Downloads article referenced by url, parses and returns XML dom document.
+    // Returns from cache if requested multiple times for same url.
+    el.libxml.Document
+    html_doc(Object url= (None) {None|string},  // If url=None, then
+                                                // feed_url is used
+             string encoding= (""));
+
+    (message.Message|None)
+    new_message(Object url= (None) {None,string}, // Message url; when not null
+                                                  // other message properties
+                                                  // will be automatically
+                                                  // filled if not provided
+                                                  // explicitly
+
+                Object title=(None) {None,string,       // If None then
+                                     el.libxml.DocText, // detected
+                                     sequence},         // automatically,
+                                                        // if el.libxml.DocText
+                                                        // or sequence, then
+                                                        // text produced as 
+                                                        // described for
+                                                        // el.libxml.Document.text
+
+                Object description=(None) {None,string, // If None then
+                                     el.libxml.DocText, // detected
+                                     sequence},         // automatically,
+                                                        // if el.libxml.DocText
+                                                        // or sequence, then
+                                                        // text procuced as 
+                                                        // described for
+                                                        // el.libxml.Document.text
+
+               Object images=(None) {None,sequence}, // If None then
+                                                     // detected
+                                                     // automatically, 
+                                                     // otherwise sequence of
+                                                     // message.Image objects
+
+               Object source=(None) {None,message.Source}, // If None then
+                                                           // detected
+                                                           // automatically
+
+               Object space=(None) {None,unsigned long}, // If None, then taken
+                                                         // from this.space
+
+               Object lang=(None) {None,el.Lang}, // If None, then taken
+                                                  // from this.lang
+
+               Object country=(None) {None,el.Country}, // If None, then taken
+                                                        // from this.country
+
+               Object keywords=(None) {None,sequence}, // If None, then taken
+                                                       // from this.keywords
+
+               boolean feed_domain_only= (True), // If True and url is from
+                                                 // domain other than that of
+                                                 // feed url, then no message
+                                                 // created, None object 
+                                                 // returned
+
+               boolean unique_message_url= (True), // If True and message
+                                                   // with such url have 
+                                                   // already been met,
+                                                   // then no message
+                                                   // created, None object 
+                                                   // returned
+
+               boolean unique_message_doc= (True), // If True and message
+                                                   // with such doc CRC have 
+                                                   // already been met,
+                                                   // then no message
+                                                   // created, None object 
+                                                   // returned
+
+               boolean unique_message_title= (False), // If True and message
+                                                      // with such title have 
+                                                      // already been met,
+                                                      // then no message
+                                                      // created, None object 
+                                                      // returned
+
+               boolean title_required= (True), // If True and message have
+                                               // got no title,
+                                               // then message dropped,
+                                               // None object returned
+
+               boolean description_required= (True), // If True and message 
+                                                     // have got no description,
+                                                     // then message dropped,
+                                                     // None object returned
+
+               unsigned long max_image_count= (1), // Max number of images
+                                                   // allowed for the message
+
+               boolean drop_url_anchor= (True), // If True then anchor will 
+                                                // be removed from urls before 
+                                                // proceeding with them
+
+               boolean save= (True),  // If True, then created message will be
+                                      // added to this.messages automatically
+               string encoding= (""));
+  };
+
+  string text_from_doc(Object xpath=
+                         { string,            // If string, then considered to
+                           el.libxml.DocText, // be xpath member for DocText
+                           sequence},         // struct. text produced as 
+                                              // described for
+                                              // el.libxml.Document.text
+
+                       Object doc= (None)      // If None feed document assumed,
+                         { None,               // if string, then treated as
+                           string,             // document url. If fail to
+                           el.libxml.Document},// obtain document, then 
+                                               // returns empty string.
+                       string encoding= "");
+
+  el.Sequence
+  images_from_doc(
+      Object images= (None) {None,el.Sequence},    // Image sequence
+                                                   // to be updated
+
+      Object doc= (None)                           // If None feed document
+                  {None,string,el.libxml.Document},// assumed, if string,
+                                                   // then treated as document
+                                                   // url.
+      unsigned long op= (newsgate.message.OP_ADD_END),
+      string img_xpath= ('//img'),                 // If ancestor_xpath 
+                                                   // is None search 
+                                                   // occures relative 
+                                                   // to the document root
+
+      Object read_size= (False) {False,True,None}, // If None will read if
+                                                   // width or height 
+                                                   // undefined
+
+      Object check_ext= (None) {False,True,None},  // If to check extension
+                                                   // against whitelist;
+                                                   // If None will 
+                                                   // check for nodes 
+                                                   // other than <img>
+
+      Object ancestor_xpath= (None) {None,string}, // If not None is a
+                                                   // common ancestor 
+                                                   // from which search
+                                                   // for img_xpath and
+                                                   // alt_xpath performed
+
+      Object alt_xpath= (None) {None, string, False},// If string then img
+                                                     // alt text searched
+                                                     // from ancestor 
+                                                     // specified; 
+                                                     // if False img alt
+                                                     // cleared; if None
+                                                     // left unchanged
+
+      Object min_width= (None) {None,long},          // If not None img
+                                                     // width is checked
+
+      Object min_height= (None) {None,long},         // If not None img
+                                                     // height is checked
+
+      Object max_width= (None) {None,long},          // If not None img
+                                                     // width is checked
+
+      Object min_height= (None) {None,long},         // If not None img
+                                                     // height is checked
+
+      Object max_count= (None) {None,long},          // If not none max number
+                                                     // of valid images 
+                                                     // enforced
+      string encoding= (""));
+
+    el.Sequence
+    void keywords_from_doc(
+      Object keywords= (None) {None,el.Sequence},  // Keywords sequence
+                                                   // to be updated
+
+      Object doc= (None)                           // If None feed document
+                  {None,string,el.libxml.Document},// assumed, if string,
+                                                   // then treated as document
+                                                   // url.string xpath=,
+
+      string xpath= ('/html/head/meta[translate(@name, "KEYWORDS", \
+"keywords")="keywords"]/@content'),
+      unsigned long op= (newsgate.message.OP_ADD_BEGIN),// One of OP_*
+                                                        // values
+
+      string separators= (','),                         // Separators used to
+                                                        // split node text 
+                                                        // values
+
+      Object keyword_override= (None|Sequence));// If arg is sequence 
+                                                // and nodes found then
+                                                // add these keywords
+                                                // instead ones from
+                                                // nodes
+}

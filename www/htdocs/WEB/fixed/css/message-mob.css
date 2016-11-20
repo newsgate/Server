@@ -1,0 +1,65 @@
+body
+{
+  -webkit-text-size-adjust: none;
+}
+
+#top_bar
+{
+  padding: 0 0.1em 0.1em 0.1em;
+}
+
+.custom_sharing_bar
+{
+  padding: 0.2em 0 0.2em 0.077em;
+}
+
+#menu
+{
+  padding: 0.2em 0em 0.2em 0.3em;
+}
+
+.mob_menu_img
+{
+  border-style: none;
+  margin: 0 2px;
+  vertical-align:bottom;
+}
+
+#msg_wrapper
+{
+  border-style:none;
+  margin: 0;
+  padding: 0.2em 0.25em 0.5em;
+  border-bottom: 1px solid rgb(80, 80, 80);
+}
+
+.msg_pub
+{
+  text-align: left;
+}
+
+.msg_metainfo
+{
+  margin: 0.3em 0 0.1em 0;
+  line-height: 150%;
+}
+
+.event_msgs
+{
+  padding: 0;
+}
+
+.event_msg
+{
+  padding: 0.5em 0 0;
+}
+
+.event_msg_pub
+{
+  padding: 0.3em 0 0 0;
+}
+
+.event_msg_more
+{
+  padding: 0.5em 0;
+}

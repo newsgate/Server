@@ -1,0 +1,141 @@
+from moderation_func import *
+
+request, conf = context.request, context.config.get
+prn, param = request.output.stream.prn, request.input.parameters().find
+
+moderator = connect_moderator(request, moderator_connector)
+
+cat_manager = \
+  moderator.has_privilege(newsgate.moderation.moderator.PV_CATEGORY_MANAGER)
+
+cat_editor = cat_manager == False and \
+  moderator.has_privilege(\
+    newsgate.moderation.moderator.PV_CATEGORY_EDITOR)
+
+if cat_manager == False and cat_editor == False:
+  el.exit(403) # Forbidden
+
+cat_id = long(param("c", "1"))
+
+try: category = moderator.category_manager.get_category(cat_id)
+except newsgate.moderation.category.CategoryNotFound:
+  el.exit(el.psp.Forward("/psp/categories.psp", 
+                         "Category " + str(cat_id) + " Not Found."))
+
+prn(
+R'''<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>Management: Subcategories of ''', category.paths[0].path, 
+R'''</title>
+<link rel="stylesheet" type="text/css" href="/fixed/css/common.css" media="all" />
+<link rel="stylesheet" type="text/css" href="/fixed/css/category/view.css" media="all" />
+<script src="/fixed/js/category/view.js" type="text/javascript"></script>
+</head>
+
+<body>
+<table id="skeleton" cellspacing="0">
+''')
+
+menus = []
+create_topbar_main_menus(context, moderator, "Categories", menus)
+
+left_menu = [ ("View", ""),
+              ("Search", 
+               category_search_link(cat_manager, category.paths[0].path)
+              )
+            ]
+
+if cat_id > 1:
+
+  lang = el.Lang.null
+
+  try:
+    lang = el.Lang(\
+      el.NameValueMap(\
+        request.input.cookies().most_specific("pf"), ':', '-')["n"])
+  except:
+    pass
+
+  rec_menu = "Recommend"
+  if lang != el.Lang.null: rec_menu += " (" + lang.l3_code() + ")"
+
+  left_menu.insert(1, (rec_menu, "recommend?c=" + str(cat_id)))
+
+if cat_manager:
+  left_menu.insert(1, ("New", "/psp/category/update?p=" + str(cat_id)))
+
+if cat_id > 1:
+  left_menu.insert(1, 
+                   ("Edit", 
+                    "/psp/category/update?c=" + str(cat_id) + "&p=" + 
+                    str(category.parents[0].id)))
+
+prn(create_topbar(left_menu,
+                  menus[0], 
+                  menus[1]))
+
+prn('<tr><td  id="main_area" align="center" valign="top">')
+
+for path in category.paths:
+  prn('\n  <div class="breadcrumb">')
+
+  elem_count = len(path.elems)
+  par_id = 1
+  
+#  prn("&#x2327;")
+  for elem in path.elems:
+    elem_count -= 1
+
+    if elem_count:
+      prn('<a href="view?c=', elem.id, '">', elem.name, "/</a> ")
+      par_id = elem.id
+    else:
+      prn(elem.name, "/")
+
+  prn('</div>')
+
+prn(R'''  <table id="child_categories">
+    <tr id="header" align="center"><td>Children</td><td>Status</td><td>Searcheable</td><td>Operations</td>
+    </tr>''')
+    
+categories = {}
+i = 0
+
+for cat in category.children:
+  categories[unicode(cat.name, "utf8")] = i
+  i += 1
+
+names = categories.keys()
+names.sort()
+
+for name in names:
+  cat = category.children[categories[name]]
+
+  prn('\n    <tr class="option_row" id="cat_', cat.id, 
+      '"><td><a href="view?c=', 
+      cat.id, '" title="', cat.paths[0].path, '" id="crf_', cat.id, '">', 
+      cat.name, '</a>', '</td><td>', 
+      cat.status == newsgate.moderation.category.CS_ENABLED and "enabled" or \
+      "disabled", '</td><td>', 
+      cat.searcheable == newsgate.moderation.category.CR_YES and "yes" or \
+      "no",
+      '</td><td id="ops_', cat.id, '"><a href="',
+      category_search_link(cat_manager, cat.paths[0].path),
+      '" target="_blank">search</a>&#xA0;|&#xA0;<a href="update?c=', 
+      cat.id, '&amp;p=', category.id,
+      '">edit</a>')
+  
+  if cat_editor == False:
+    prn('&#xA0;|&#xA0;<a href="javascript:unlink_category(',
+        cat.id, ');">delete</a></td>\n    </tr>')
+
+prn(R'''
+  </table>
+</td></tr>''')
+
+prn(create_copyright(context), R'''
+</table>
+</body>
+</html>
+''')

@@ -1,0 +1,130 @@
+proto_ver = "1.0"
+
+def xml_smart_encode(text):
+  if text.find("]]>") < 0:
+    return "<![CDATA[" + text + "]]>"
+  else:
+    return el.string.manip.xml_encode(text, 
+                                      el.string.manip.XE_TEXT_ENCODING | \
+                                      el.string.manip.XE_PRESERVE_UTF8)
+
+request, conf = context.request, context.config.get
+param, prn = request.input.parameters().find, request.output.stream.prn
+
+if context.run_number == 0:
+  context.define_static("server_version", conf("server_version"))
+
+try:
+  words = param("q").split()
+  lang = param("n")
+  guess_strategy = int(param("g", "0"))
+
+  if lang == "": lang = el.Lang.null
+  else: lang = el.Lang(lang)
+except:
+  el.exit(400) #bad request
+
+cleaned_words = []
+word_framing = []
+quoting=""
+
+for w in words:
+  frame = ["", ""]
+
+  if quoting == "":
+
+    if w[0] == "'" or w[0] == "\"":
+      quoting = w[0]
+      frame[0] = quoting
+      w = w[1:]
+
+  if quoting != "" and w != "":
+
+    if w[-1] == quoting:
+      frame[1] = quoting
+      quoting = ""
+      w = w[0:-1]
+
+  if len(w) > 0:  
+    word_framing.append(frame)
+    cleaned_words.append(w)
+
+if len(words) == 0:
+  el.exit(400) #bad request
+
+try:
+  lemmas = word_engine.get_lemmas(cleaned_words, lang, guess_strategy)
+except newsgate.word.NotReady:
+  request.output.send_header("Retry-After", "60")
+  el.exit(503) #service unavailable 
+
+request.output.content_type("text/xml")
+
+prn(
+R'''<?xml version="1.0" encoding="utf-8" ?>
+<result xmlns="http://www.newsgate.com/XWord''', proto_ver, 
+'" version="', proto_ver, '" server="', server_version, R'''">
+  <items>''')
+
+xml_encode_flags = el.string.manip.XE_TEXT_ENCODING | \
+                   el.string.manip.XE_ATTRIBUTE_ENCODING | \
+                   el.string.manip.XE_PRESERVE_UTF8
+
+lang_l2 = param("l", "3") == "2"
+
+i = 0
+for word_lemmas in lemmas:
+
+  word = el.string.manip.xml_encode(
+    word_framing[i][0] + cleaned_words[i] + word_framing[i][1], 
+    xml_encode_flags);    
+
+  first_lemma = word_lemmas[0]
+
+  if first_lemma.known:
+    prn('\n    <known w="', word, '" >')
+
+    for l in word_lemmas:
+      prn('\n      <l i="', l.norm_form.id, '" w="', 
+          el.string.manip.xml_encode(l.norm_form.text, xml_encode_flags), 
+          '" n="', lang_l2 and l.lang.l2_code() or l.lang.l3_code(), '">')
+
+      for w in l.word_forms:
+        prn('\n        <f i="', w.id, '">', xml_smart_encode(w.text), '</f>')
+
+      prn('\n      </l>')
+
+    prn('\n    </known>')
+  
+  elif len(first_lemma.word_forms) > 0: 
+
+    prn('\n    <guessed w="', word, '">') 
+
+    for l in word_lemmas:
+      prn('\n      <l i="', l.norm_form.id, '" w="', 
+          el.string.manip.xml_encode(l.norm_form.text, xml_encode_flags), 
+          '" n="', lang_l2 and l.lang.l2_code() or l.lang.l3_code(), '">')
+
+      for w in l.word_forms:
+        prn('\n        <f i="', w.id, '">', xml_smart_encode(w.text), '</f>')
+
+      prn('\n      </l>')
+
+    prn('\n    </guessed>') 
+    
+  else:
+
+    prn('\n    <unknown w="', word, '" i="', first_lemma.norm_form.id, '"') 
+
+    if first_lemma.lang != el.Lang.null:
+      prn(' n="', 
+          lang_l2 and first_lemma.lang.l2_code() or first_lemma.lang.l3_code(), 
+          '"')
+
+    prn('/>')
+
+  i += 1
+
+prn(R'''
+  </items>
+</result>''')

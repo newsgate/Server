@@ -1,0 +1,68 @@
+#!/bin/sh
+
+# product   : NewsGate - news search WEB server
+# copyright : Copyright (c) 2005-2016 Karen Arutyunov
+# licenses  : CC BY-NC-SA 3.0; see accompanying LICENSE file
+#             Commercial; contact karen.arutyunov@gmail.com
+
+source "$1/lib.sh"
+
+echo_date "Cleaning EventBank service cache ..."
+
+for f in `find $3/Event -name '*.msg.*'`; do rm $f; done
+
+echo_date "Copying table Message ..."
+
+echo "create table Message2 ( \
+      id BIGINT UNSIGNED NOT NULL PRIMARY KEY, \
+      flags TINYINT UNSIGNED NOT NULL, \
+      signature BIGINT UNSIGNED NOT NULL, \
+      url_signature BIGINT UNSIGNED NOT NULL, \
+      source_id BIGINT UNSIGNED NOT NULL, \
+      published BIGINT UNSIGNED NOT NULL, \
+      fetched BIGINT UNSIGNED NOT NULL, \
+      space SMALLINT UNSIGNED NOT NULL, \
+      complements BLOB(40960) NOT NULL, \
+      url VARCHAR(2048) character set utf8, \
+      lang SMALLINT UNSIGNED NOT NULL, \
+      country SMALLINT UNSIGNED NOT NULL, \
+      source_title VARCHAR(1024), \
+      source_html_link VARCHAR(2048) character set utf8, \
+      broken_down BLOB(20480) NOT NULL \
+) engine=InnoDB \
+select id, flags, signature, url_signature, source_id, published, fetched, \
+space, complements, url, lang, country, source_title, \
+source_html_link, broken_down from Message;" | \
+ng-mysql --user=root NewsGate
+
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+echo_date "Creating table MessageDict ..."
+
+echo "create table MessageDict ( \
+      id BIGINT UNSIGNED NOT NULL PRIMARY KEY, \
+      hash INTEGER UNSIGNED NOT NULL \
+) engine=InnoDB \
+select id, dict_hash as hash from Message;" | \
+ng-mysql --user=root NewsGate
+
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+echo_date "Dropping Message table ..."
+
+echo "drop table Message;" | ng-mysql --user=root NewsGate
+
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+echo_date "Renaming Message2 table to Message ..."
+
+echo "rename table Message2 to Message;" | ng-mysql --user=root NewsGate
+
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+echo_date "Altering MessageBuff table ..."
+
+echo "alter table MessageBuff \
+drop dict_hash;" | ng-mysql --user root NewsGate
+
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi

@@ -1,0 +1,153 @@
+body
+{
+  -webkit-text-size-adjust: none;
+}
+
+#top_bar
+{
+  padding: 0 0.1em 0.1em 0.1em;
+  margin: 0;
+}
+
+#bottom_bar
+{
+  padding: 0 0.1em 0.1em 0.1em;
+  margin: 0;
+}
+
+.page_navigation_bar
+{
+  padding: 0.2em 0em 0.4em 0.15em;
+  vertical-align: middle;
+}
+
+.msg_title
+{
+  padding: 0 0 0.3em 0;
+}
+
+.msg_desc
+{
+  padding: 0.3em 0 0 0;
+}
+
+.msg_title_a
+{
+  font-size: 100%;
+}
+
+.msg_title h2
+{
+  font-size: 100%;
+}
+
+.page_prev
+{
+  font-size: 170%;
+  font-weight: 800;
+}
+
+.page_next
+{
+  font-size: 170%;
+  font-weight: 800;
+}
+
+.page_current_number
+{
+  background-color: white;
+  font-size: 140%;
+  padding: 0.15em 0.3em 0.2em;
+  border: 1px solid rgb(150,150,150);
+}
+
+.page_sharing_bar
+{
+  padding: 0.2em 0.12em 0.2em 2em;
+}
+
+.custom_sharing_bar
+{
+  padding: 0.2em 0 0.2em 0.077em;
+}
+
+.page_menu
+{
+  padding: 0.2em 0em 0.2em 0.3em;
+}
+
+.mob_menu_img
+{
+  border-style: none;
+  margin: 0 2px;
+  vertical-align:bottom;
+}
+
+.column
+{
+  background-color: white;
+}
+
+.msg
+{
+  padding: 0.2em 0.3em;
+  border-style: none;
+  margin:0;
+}
+
+.msg_front_img
+{
+  margin: 0.2em 0 0.2em 0.5em;
+}
+
+.msg_pub
+{
+  text-align: left;
+}
+
+.msg_metainfo
+{
+  margin: 0.3em 0 0.1em 0;
+  line-height: 150%;
+}
+
+.subcategory_bar
+{
+  margin: 0.5em 0 0;
+  padding: 0;
+  font-size: 88%;
+  line-height: 160%;
+}
+
+.page_title_search_table
+{
+  margin: 0.5em 0 0;
+}
+
+#se
+{
+  width: 15em;
+}
+
+form 
+{
+  margin: 0;
+  padding: 0;
+}
+
+.nline
+{
+  padding:0;
+  margin:0;
+  border-style:none;
+}
+
+.nline_msg
+{
+  padding: 0.2em 0.3em;
+}
+
+#message_area
+{
+  padding:0;
+}

@@ -1,0 +1,21 @@
+from moderation_func import *
+request = context.request
+
+try:
+  moderator = moderator_connector.connect(request, False)
+except: 
+  el.exit(403) # Forbidden
+  
+if moderator.has_privilege(newsgate.moderation.moderator.PV_CATEGORY_MANAGER) \
+   == False:
+  el.exit(403) # Forbidden
+
+ids = []
+
+for p in request.input.parameters():
+  if p.name == "c": ids.append(long(p.value))
+
+category = moderator.category_manager.delete_categories(ids, 
+                                                        moderator.id, 
+                                                        moderator.name,
+                                                        request.remote_ip())

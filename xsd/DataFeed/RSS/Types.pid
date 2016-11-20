@@ -1,0 +1,158 @@
+include <El/Python/Types.pid>
+include <El/Net/Types.pid>
+
+include <Commons/Feed/Types.pid>
+include <Commons/Message/Types.pid>
+
+module newsgate
+{
+  type MA_Context
+  {
+    static unsigned long OP_ADD_BEGIN;
+    static unsigned long OP_ADD_END;
+    static unsigned long OP_ADD_TO_EMPTY;
+    static unsigned long OP_REPLACE;
+
+    const feed.Item item; // Source feed item
+    message.Message message; // Message parsed from feed item
+
+    // HTTP requests options (timeout, user-agent, ...)
+    const el.net.http.RequestParams request_params;
+
+    // Restictions which will be automatically applied to the message
+    const message.MessageRestrictions message_restrictions;
+
+    // Helper functions
+
+    // Read message keywords from article nodes or add specific ones if 
+    // nodes present
+    void set_keywords(string xpath=,
+                      unsigned long op= (OP_ADD_BEGIN), // One of OP_*
+                                                        // values
+                      string separators= (","),         // Separators used to
+                                                        // split node text 
+                                                        // values
+                      Object keywords= (None|Sequence), // If arg is sequence 
+                                                        // and nodes found then
+                                                        // add these keywords
+                                                        // instead ones from
+                                                        // nodes
+,
+                      string encoding= (""));
+
+    // Searches in item article document; return empty sequence if
+    // document not exist                                        
+    el.Sequence find_in_article(string xpath=,
+                                string encoding= (""));
+      
+    // Takes item.description plain text, trim by sides using
+    // lists of corresponding string markers and assign to
+    // message.description member
+    void set_description(Object right_markers= (None) { None,sequence},
+                         Object left_markers= (None) { None,sequence},
+                         Object max_len= (None) { None,unsigned long });
+
+    // Searches for article non-empty elements using xpath,
+    // concatenates their texts or takes that of the first one
+    // and assign to message.description member if resulted text
+    // non empty; otherwise sets to default value if it is not None
+    void set_description_from_article(
+      string xpath=,
+      boolean concatenate= (False),
+      Object default= (None) { None,string },
+      Object max_len= (None) { None,unsigned long },
+      string encoding= (""));
+
+    // Add message images taken from article nodes found using xpath
+    void set_images(
+      unsigned long op= (OP_ADD_END),
+      string img_xpath= ("//img"),                 // If ancestor_xpath 
+                                                   // is None search 
+                                                   // occures relative 
+                                                   // to the document root
+
+      Object read_size= (False) {False,True,None},  // If None will read if
+                                                   // width or height 
+                                                   // undefined
+
+      Object check_ext= (None) {False,True,None},  // If to check extension
+                                                   // against whitelist;
+                                                   // If None will 
+                                                   // check for nodes 
+                                                   // other than <img>
+
+      Object ancestor_xpath= (None) {None,string}, // If not None is a
+                                                   // common ancestor 
+                                                   // from which search
+                                                   // for img_xpath and
+                                                   // alt_xpath performed
+
+      Object alt_xpath= (None) {None, string, False},// If string then img
+                                                     // alt text searched
+                                                     // from ancestor 
+                                                     // specified; 
+                                                     // if False img alt
+                                                     // cleared; if None
+                                                     // left unchanged
+
+      Object min_width= (None) {None,long},          // If not None img
+                                                     // width is checked
+
+      Object min_height= (None) {None,long},         // If not None img
+                                                     // height is checked
+
+      Object max_width= (None) {None,long},          // If not None img
+                                                     // width is checked
+
+      Object min_height= (None) {None,long},         // If not None img
+                                                     // height is checked
+
+      Object max_count= (None) {None,long},          // If not none max number
+                                                     // of valid images 
+                                                     // enforced
+      string encoding= (""));
+
+    // For specified origin (None - for all) sets message image status 
+    // to newsgate.message.Image.IS_SKIP
+    void skip_image(
+      Object origin= (None) {None, newsgate.message.Image.IO_*}, 
+      boolean others= (False),
+      Object min_width= (None) {None,True,long}, // If True img width checked 
+                                                 // for equality to min of all
+                                                 // images width,
+                                                 // otherwise if not None img
+                                                 // width is checked if >= arg
+
+      Object min_height= (None) {None,True,long}, // If True img height checked
+                                                  // for equality to min of all
+                                                  // images height,
+                                                  // otherwise if not None img
+                                                  // height is checked if >= arg
+
+      Object max_width= (None) {None,True,long}, // If True img width checked 
+                                                 // for equality to max of all
+                                                 // images width,
+                                                 // otherwise if not None img
+                                                 // width is checked if <= arg
+
+      Object max_height= (None) {None,True,long}, // If True img height checked
+                                                  // for equality to max of 
+                                                  // all images height,
+                                                  // otherwise if not None img
+                                                  // height is checked
+                                                  // if <= arg
+
+      boolean reverse= (False));                  // If True skip opposite 
+                                                  // images - those which 
+                                                  // DO NOT match condition
+                                                  // defined by previous params
+
+    // For specified origin (None - for all) clear alternate text
+    void reset_image_alt(Object origin= (None) {None, newsgate.message.Image.IO_*}, 
+                         boolean others= (False));
+
+    // Safe implementation of newsgate.message.Image.read_size
+    void read_image_size(newsgate.message.Image image=,
+                         boolean check_ext= (False));
+  };
+}

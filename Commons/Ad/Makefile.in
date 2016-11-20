@@ -1,0 +1,18 @@
+# @file   Makefile.in
+# @author Karen Aroutiounov
+# $Id:$
+
+include Common.pre.rules
+include $(osbe_builddir)/config/CXX/CXX.pre.rules
+include $(osbe_builddir)/config/CXX/External/Python.pre.rules
+include $(osbe_builddir)/config/CXX/External/ACE.pre.rules
+
+include $(osbe_builddir)/config/CXX/External/ElBasic.pre.rules
+include $(top_builddir)/config/Commons/Python/PythonCommons.so.pre.rules
+include $(osbe_builddir)/config/CXX/External/ElNet.pre.rules
+
+includes := .
+sources  := Ad.cpp Python/Ad.cpp
+target   := AdCommons
+
+include $(osbe_builddir)/config/CXX/So.post.rules

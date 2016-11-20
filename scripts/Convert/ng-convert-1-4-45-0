@@ -1,0 +1,22 @@
+#!/bin/sh
+
+# product   : NewsGate - news search WEB server
+# copyright : Copyright (c) 2005-2016 Karen Arutyunov
+# licenses  : CC BY-NC-SA 3.0; see accompanying LICENSE file
+#             Commercial; contact karen.arutyunov@gmail.com
+
+echo "Dropping EventBuff table ..."
+
+echo "drop table EventBuff;" | ng-mysql --user root NewsGate
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+echo "Re-Creating EventBuff table ..."
+
+echo "create table EventBuff ( \
+      event_id BIGINT UNSIGNED NOT NULL, \
+      updated_ INTEGER UNSIGNED NOT NULL, \
+      data_ MEDIUMBLOB NOT NULL, \
+      PRIMARY KEY (event_id) ) \
+      engine=InnoDB;" | ng-mysql --user root NewsGate
+
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi

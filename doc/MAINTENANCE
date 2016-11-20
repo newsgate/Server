@@ -1,0 +1,87 @@
+Building
+========
+
+Elements library
+----------------
+
+ Execute:
+ cd ~/projects/Elements && osbe && mkdir -p build && cd ./build && \
+ ../configure && make -j 2
+
+ Optionally  --enable-no-questions parameter can be used for configure script
+ if default.config file is present in build directory.
+
+NewsGate Server Binaries
+------------------------
+
+ Execute:
+ cd ~/projects/NewsGate/Server && osbe && mkdir -p build && cd ./build && \
+ ../configure && make -j 2
+
+ Optionally  --enable-no-questions parameter can be used for configure script
+ if default.config file is present in build directory.
+
+Installation
+============
+
+Elements library
+----------------
+
+ Execute:
+ cd ~/projects/Elements/build && make install prefix=/opt/NewsGate/Elements
+
+NewsGate Server
+---------------
+
+ Execute:
+ cd ~/projects/NewsGate/Server/build && \
+ make install prefix=/opt/NewsGate/Server
+
+NewsGate Server Configuration
+-----------------------------
+
+ Execute:
+
+ cp -r ~/projects/NewsGate/SiteConfig /opt/NewsGate && \
+ cd /opt/NewsGate/SiteConfig && osbe && mkdir -p build && cd ./build && \
+ ../configure
+
+ Optionally  --enable-no-questions parameter can be used for configure script
+ if default.config file is present in build directory.
+
+ As a result 
+ SiteConfig directory will be configured;
+ Data, Workspace directories will be created; 
+ DB schemas creates and DB instance started.
+
+Running & Stopping
+==================
+
+NewsGate DB
+-----------
+
+Before running any DB maintaining script execute:
+source /opt/NewsGate/SiteConfig/build/environment.sh
+
+DB scripts are located in /opt/NewsGate/Server/bin/DB:
+
+ng-db-install    - installs DB files
+ng-db-prepare    - (re)creates NewsGate DB schema
+ng-moddb-prepare - (re)creates NewsGate Moderator DB schema
+ng-mysqld        - starts DB server
+ng-mysql         - starts DB client
+ng-db-admin      - manages feeds
+
+NewsGate Server
+---------------
+
+Starting: /home/karen/projects/NewsGate/Workspace/newsgate.sh start
+Stopping: /home/karen/projects/NewsGate/Workspace/newsgate.sh stop
+Status  : /home/karen/projects/NewsGate/Workspace/newsgate.sh status
+
+NewsGate Moderator
+------------------
+
+Starting: /home/karen/projects/NewsGate/Workspace/moderator.sh start
+Stopping: /home/karen/projects/NewsGate/Workspace/moderator.sh stop
+Status  : /home/karen/projects/NewsGate/Workspace/moderator.sh status

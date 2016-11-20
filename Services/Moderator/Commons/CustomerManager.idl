@@ -1,0 +1,66 @@
+/*
+ * product   : NewsGate - news search WEB server
+ * copyright : Copyright (c) 2005-2016 Karen Arutyunov
+ * licenses  : CC BY-NC-SA 3.0; see accompanying LICENSE file
+ *             Commercial; contact karen.arutyunov@gmail.com
+ */
+
+/**
+ * @file NewsGate/Server/Services/Moderator/Commons/CustomerManager.idl
+ * @author Karen Arutyunov
+ * $Id:$
+ */
+
+#ifndef _NEWSGATE_SERVER_SERVICES_MODERATOR_COMMONS_CUSTOMERMANAGER_IDL_
+#define _NEWSGATE_SERVER_SERVICES_MODERATOR_COMMONS_CUSTOMERMANAGER_IDL_
+
+#include <Services/Moderator/Commons/ModerationCommons.idl>
+
+module NewsGate
+{ 
+  module Moderation
+  {
+    typedef unsigned long long CustomerId;
+
+    enum CustomerStatus
+    {
+      CS_ENABLED,
+      CS_DISABLED,
+      CS_COUNT
+    };
+
+    struct CustomerInfo
+    {
+      CustomerId id;
+      CustomerStatus status;
+      double balance;
+      string dummy; // keep untill first string; otherwise update_customer
+                    // strangelly return by value not by pointer
+    };
+    
+    struct CustomerUpdateInfo
+    {
+      CustomerId id;
+      CustomerStatus status;
+      double balance_change;
+    };
+
+    interface CustomerManager
+    {
+      CustomerInfo get_customer(in CustomerId id)
+        raises(PermissionDenied,
+               AccountNotExist,
+               NotReady,
+               ImplementationException);
+      
+      CustomerInfo update_customer(in CustomerUpdateInfo customer_info)
+        raises(PermissionDenied,
+               AccountNotExist,
+               NotReady,
+               ImplementationException);
+    };
+  };
+  
+};
+
+#endif // _NEWSGATE_SERVER_SERVICES_MODERATOR_COMMONS_CUSTOMERMANAGER_IDL_

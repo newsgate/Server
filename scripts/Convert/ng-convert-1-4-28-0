@@ -1,0 +1,43 @@
+#!/bin/sh
+
+# product   : NewsGate - news search WEB server
+# copyright : Copyright (c) 2005-2016 Karen Arutyunov
+# licenses  : CC BY-NC-SA 3.0; see accompanying LICENSE file
+#             Commercial; contact karen.arutyunov@gmail.com
+
+echo "Creating MessageFilterUpdateNum table ..."
+
+echo "create table MessageFilterUpdateNum ( \
+      update_num INTEGER UNSIGNED NOT NULL DEFAULT 0 ) \
+      engine=InnoDB;" | \
+ng-mysql --user root NewsGate
+
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+echo "Filling table MessageFilterUpdateNum ..."
+
+echo "insert ignore into MessageFilterUpdateNum set update_num=0;" \
+| ng-mysql --user=root NewsGate
+
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+echo "Creating MessageFetchFilter table ..."
+
+echo "create table MessageFetchFilter ( \
+      expression TEXT(40960), \
+      description TEXT(1024) ) \
+      engine=InnoDB;" | \
+ng-mysql --user root NewsGate
+
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+echo "Creating table MessageFilter ..."
+
+echo "create table MessageFilter ( \
+      id BIGINT UNSIGNED NOT NULL PRIMARY KEY, \
+      updated TIMESTAMP NOT NULL, \
+      INDEX updated_index (updated) \
+      ) engine=InnoDB;" | \
+ng-mysql --user root NewsGate
+
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi

@@ -1,0 +1,20 @@
+# @file   Makefile.in
+# @author Karen Aroutiounov
+# $Id:$
+
+include Common.pre.rules
+include $(osbe_builddir)/config/CXX/CXX.pre.rules
+
+include $(osbe_builddir)/config/CXX/External/Python.pre.rules
+include $(osbe_builddir)/config/CXX/External/ACE.pre.rules
+
+include $(osbe_builddir)/config/CXX/External/ElBasic.pre.rules
+include $(osbe_builddir)/config/CXX/External/ElPython.pre.rules
+
+include $(top_builddir)/config/Commons/Ad/AdCommons.so.pre.rules
+include $(top_builddir)/config/tests/Commons/TestCommons.so.pre.rules
+
+sources  := AdSelectionMain.cpp
+target   := AdSelectionTest
+
+include $(osbe_builddir)/config/CXX/Ex.post.rules

@@ -1,0 +1,50 @@
+from moderation_func import *
+
+request, conf = context.request, context.config.get
+message = context.forward_params
+prn = request.output.stream.prn
+
+moderator = connect_moderator(request, moderator_connector)
+
+ad_manager = \
+  moderator.has_privilege(newsgate.moderation.moderator.PV_AD_MANAGER)
+
+advertiser = ad_manager == False and moderator.has_privilege(\
+  newsgate.moderation.moderator.PV_ADVERTISER)
+
+if ad_manager == False and advertiser == False:
+  el.exit(403) # Forbidden
+
+prn(
+R'''<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>Management: Ad</title>
+<link rel="stylesheet" type="text/css" href="/fixed/css/common.css" media="all" />
+</head>
+
+<body>
+<table id="skeleton" cellspacing="0">
+''')
+
+menus = []
+create_topbar_main_menus(context, moderator, "Ad", menus)
+
+prn(create_topbar(create_ad_menus(moderator, ""), menus[0], menus[1]))
+
+prn(
+R'''
+  <tr><td id="main_area" valign="top">
+''')
+
+if message != None:
+  prn('<div id="op_error">', el.string.manip.xml_encode(message), '</div>')
+
+prn(
+R'''
+  </td></tr>
+''', create_copyright(context), R'''
+</table>
+</body>
+</html>
+''')

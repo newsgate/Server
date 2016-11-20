@@ -1,0 +1,44 @@
+.page_title
+{
+  vertical-align: top;
+  text-align: left;
+  padding: 0;
+  line-height: 150%;
+}
+
+.right_block_title
+{
+  font-weight:600;
+  padding: 0 0 0.2em
+}
+
+.right_block
+{
+  border-style: none;
+  padding: 0 0 0.3em;
+}
+
+.right_block_cat
+{
+  padding: 0.7em 0 0 0.3em;
+}
+
+.right_block_subcat
+{
+  padding: 0.5em 0 0 1em;
+}
+
+.paging_dialog_pages
+{
+  font-size: 130%;
+}
+
+.paging_dialog_pages a
+{
+  padding: 0 0.2em;
+}
+
+.settings_dialog_option_table label
+{
+  margin-right:0.2em;
+}

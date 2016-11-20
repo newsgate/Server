@@ -1,0 +1,1354 @@
+CHAP_NEWSGATE_TITLE NewsGate
+
+CHAP_NEWSGATE_INTRO NewsGate is a news aggregator engine capable of pulling \
+articles from RSS, Atom, RDF and HTML sources. The system performs \
+automatic story detection, provide means for article categorization, \
+implements <a href="{{SEARCH_HELP_LINK}}" target="_blank">search query \
+language</a>.
+
+CHAP_USERS_TITLE Users
+
+CHAP_USERS_INTRO \
+Each user is represented in the NewsGate management system by an account \
+grouping his personal info such as name, password, email and specifying \
+a role user plays in the system. A role is made up from \
+<span class="term">privileges</span>. \
+Each privilege define which kind of activities can be performed by a user \
+and which tools will be available for him. \
+The system menu is automatically adjusted according to user privilege \
+set.
+
+CHAP_USERS_TOPIC_USERPRIV_TITLE User Privileges
+
+CHAP_USERS_TOPIC_USERPRIV_INTRO \
+There are 5 privileges that can be arbitrary combined: \
+<span class="term">Account Manager</span>, \
+<span class="term">Feed Creator</span>, \
+<span class="term">Feed Manager</span>, \
+<span class="term">Category Manager</span>, \
+<span class="term">Category Editor</span>.
+
+CHAP_USERS_TOPIC_USERPRIV_PARAGR_MODMAN \
+<span class="topic-paragraph-title">Account Manager</span> can register \
+accounts for other users which become his \
+<span class="term">subordinates</span>. Subordinate \
+relation is recursive, so if B is subordinate for A and C is subordinate \
+for B then C is subordinate for A. Account manager can manipulate \
+options of all subordinate accounts. He can manipulate privileges of \
+subordinates but only those which has himself.
+
+CHAP_USERS_TOPIC_USERPRIV_PARAGR_FEEDCR \
+<span class="topic-paragraph-title">Feed Creator</span> can register \
+feeds in the system creating and managing \
+<span class="term">crawling tasks</span>. Each such task \
+get initiated with a list of URLs and a policy how \
+proceed with them. Policies can vary from "check each URL as a feed" \
+to "crawl company domain searching for valid XML feeds". \
+Feed creator can also manipulate crawling tasks created by his \
+subordinates.
+
+CHAP_USERS_TOPIC_USERPRIV_PARAGR_FEEDMOD \
+<span class="topic-paragraph-title">Feed Manager</span> can manipulate all \
+previously registered feeds options such as language, country, status, \
+keywords, adjustment script.
+
+CHAP_USERS_TOPIC_USERPRIV_PARAGR_CATMAN \
+<span class="topic-paragraph-title">Category Manager</span> can manipulate \
+article categories in all possible ways. He can change any existing category \
+and create new ones.
+
+CHAP_USERS_TOPIC_USERPRIV_PARAGR_CATWLE \
+<span class="topic-paragraph-title">Category Editor</span> can \
+edit <a href="#CategoryWordList">category word lists</a> and manually \
+add/remove articles to categories \
+he have got access to. <span class="term">Account manager</span> \
+who have created corresponding category editor \
+account is the one who sets such access details. \
+<span class="term">Category editor</span> can also \
+view all properties of all categories registered in the system.
+
+CHAP_INTERFACE_TITLE Management Interface
+
+CHAP_INTERFACE_INTRO \
+NewsGate management interface consist of the \
+<span class="term">menu bar</span> at the top of each \
+page and the <span class="term">main area</span> below. \
+The menu bar contains 3 group of links called <span class="term">menus</span>. \
+The one on the right is the <span class="term">user menu</span> intended for \
+setting user account properties, session logout and navigating to a proper \
+help page. The middle one is a <span class="term">main menu</span> providing \
+user an access to group of tools available for him according to his role \
+in the system. The optional left one is \
+a <span class="term">context menu</span> giving access to specific \
+tool and get swapped when user presses link in the \
+<span class="term">main menu</span>.
+
+CHAP_INTERFACE_PARAGR_SUPPORT \
+While management interface should work with wide range of browsers the \
+recommended ones are latest Chrome and Firefox. These are the browsers \
+the interface is tested in the first place and for which any misbehaviour \
+considered seriously.
+
+CHAP_CATEGORIES_TITLE Categories
+
+CHAP_CATEGORIES_INTRO Category is a label being assigned to an article \
+designates it belongs to a particular subject area. A fact that an article \
+is labeled with some category can be rephrased that article belongs to that \
+category or category contains an article.
+
+CHAP_CATEGORIES_TOPIC_HIERARCHY_TITLE Hierarchy
+
+CHAP_CATEGORIES_TOPIC_HIERARCHY_INTRO Categories are organized into tree hierarchy \
+where each deeper level details the previous one narrowing the subject \
+area. Here is an example of such hierarchy:\
+<pre class="code">\
+Science\
+  Archaeology\
+  Biology\
+    Botany\
+    Microbiology\
+    Zoology\
+  Chemistry\
+Sport\
+  Technical\
+    Archery\
+    Biathlon\
+    Motor Racing\
+  Combat\
+    Aikido\
+    Boxing\
+    Dogfight\
+</pre>
+
+CHAP_CATEGORIES_TOPIC_HIERARCHY_PARAGR_DEFINITIONS \
+Category located one level down relative to the other called \
+<span class="term">subcategory</span> or \
+<span class="term">child category</span>. Category located one level up is \
+called <span class="term">parent</span>. \
+So in above example Archaeology is a <span class="term">child category</span> \
+of Science which is \
+in turn a <span class="term">parent</span> of Archaeology. Science and \
+Sport have no parent-child \
+relationship. Child categories with all their children recursively are \
+called <span class="term">descendants</span>. So Archaeology, Biology, \
+Botany, Microbiology, Zoology, Chemistry are all \
+<span class="term">descendants</span> of Science. \
+Parent categories with all their parents recursively are called \
+<span class="term">ascendants</span>. So Biology and Science are both \
+<span class="term">ascendants</span> of Botany. While somebody can treat \
+parent, child, ascendants, \
+descendants usage in such context strange these terms are very common in \
+tree structures descriptions. Every article belonging \
+to some category is considered to belong to all its \
+<span class="term">ascendants</span> as well. \
+So if article is labeled with Botany we understand that this is also about \
+Biology and Science. Slash separated list of category names leading to \
+category from the root of hierarchy fully identifies category, called \
+<span class="term">category path</span> or \
+<span class="term">category full name</span> and used in \
+<a href="{{SEARCH_HELP_CAT_LINK}}" target="_blank">CATEGORY search \
+operation</a>. So full name for Boxing is /Sport/Combat/Boxing. \
+To search for articles \
+about boxing you can use the following search expression: \
+CATEGORY /Sport/Combat/Boxing. Category can have not only several \
+<span class="term">children</span> \
+but also several <span class="term">parent categories</span> \
+which mean it can appear in several \
+places of a hierarchy and can have several paths. In the example below \
+category <a name="ARMAMENTS_EXAMPLE">Armaments</a> quite naturally appear \
+in 2 places of the hierarchy:\
+<pre class="code">\
+Society\
+  Warfare\
+    Armaments\
+    Wars\
+Business\
+  Industry\
+    Military\
+      Armaments
+</pre>\
+CHAP_CATEGORIES_TOPIC_HIERARCHY_PARAGR_SEARCH \
+Categories give an ability to narrow down a search. So instead of searching \
+just <span class="term">wolf</span> you can search \
+<span class="term">wolf AND CATEGORY /Science</span> to avoid unexpected \
+articles about some popular fan club. So the search result will contain \
+articles belonging to /Science/Biology/Zoology but not a \
+/Sport/Combat/Dogfight. NewsGate search interface allows to avoid writing \
+search expressions for simple cases giving ability just to select required \
+category and then perform a search inside it.
+
+CHAP_CATEGORIES_TOPIC_CATEGORIZATION_TITLE Categorization
+
+CHAP_CATEGORIES_TOPIC_CATEGORIZATION_INTRO \
+Each category is represented in the system as a set of options defining \
+its place in the hierarchy and specifying which articles get labeled with \
+that category name. Will refer them as \
+<span class="term">category definitions</span> to distinguish \
+from article category labels. <span class="term">Category definitions</span> \
+created and managed by \
+users having Category Manager privilege. They can update any category \
+definition, manually add article to a category or remove from it. Users with \
+just Category Editor privilege can manage just a subset of categories \
+assigned for them, being able to affect categorization only but not a \
+hierarchy. They can only add articles to categories they have access to, \
+remove articles from them and also adjust so called \
+<a href="#CategoryWordList">category word lists</a> which \
+will be described later.
+
+CHAP_CATEGORIES_TOPIC_CATEGORIZATION_PARAGR_EXPRESSION \
+In addition to manual categorization there is a way to setup a rule for \
+automatic categorization. Each category can have a search expression \
+attached to it. Expression created and managed by category managers and \
+get adjusted by category editors who can affect it adjusting \
+<a href="#CategoryWordList">category word lists</a>.
+
+CHAP_CATEGORIES_TOPIC_CATEGORIZATION_PARAGR_PROCESS \
+A simplified description of a categorization process is that NewsGate just \
+goes over categories, perform a search using expressions specified and label \
+all found articles with a full category names. While search expression can be \
+an arbitrary one written in Search Expression Language some of them can have \
+a few sense. For example category with search expression EVERY DATE 2H will \
+be full of articles older than 2 hours as categorization performed \
+firstly when article just arrives into the system and secondly at \
+arbitrary times \
+when NewsGate decide to re-categorize articles due to some category property \
+change. It would seem that using \
+<a href="{{SEARCH_HELP_CAT_LINK}}" target="_blank">CATEGORY operation</a> \
+in category expression is \
+also senseless as a question about chicken and egg. Meanwhile it has a sense \
+as expressions execution and labeling performed in the order considering \
+category expression dependency. If expression of category A refers category \
+B then it will be executed after category B expression executed and resulted \
+articles labeled with category B path. In case of cyclic dependencies when \
+say A depends on B, B depends on C and C depends on A the order of execution \
+will be undefined and result can not reflect category manager expectation. \
+This why usage of \
+<a href="{{SEARCH_HELP_CAT_LINK}}" target="_blank">CATEGORY operation</a> \
+in category expression should be an \
+exceptional situation and used with care.
+
+CHAP_CATEGORIES_TOPIC_CATEGORIZATION_PARAGR_CHUNKS \
+<a name="CAT_BY_CHUNKS"></a>\
+Categorization is performed by chunks on small sets of articles with short \
+time intervals between them to minimize effect of categorization resources \
+consumption on the overall \
+system performance. This why significant time can pass before all articles \
+be properly labeled according to the latest category definition state.
+
+CHAP_INTERFACE_TOPIC_CATEGORY_TITLE Category Management
+
+CHAP_CATEGORIES_TOPIC_CATEGORY_INTRO \
+Main menu <span class="term">Category</span> link is available for category \
+managers and category editors gives access to group of pages \
+designated for handling \
+<span class="term">category definitions</span> as well as performing \
+articles manual categorization. \
+All page diagrams and descriptions below are given as seen by category \
+manager. Category editor can see pages with some elements being omitted \
+or being available for read-only access.
+
+CHAP_CATEGORIES_TOPIC_CATEGORYVIEW_TITLE Category View Page
+
+CHAP_CATEGORIES_TOPIC_CATEGORYVIEW_PARAGR_VIEW \
+Category View page gives an \
+ability to traverse hierarchy of categories, view their statuses, \
+search for articles belonging to them, delete categories \
+or open category editing page. The \
+diagram below explain the purpose of page elements.
+
+CHAP_CATEGORIES_TOPIC_CATEGORYVIEW_PARAGR_VIEWELEMS \
+The few things on the diagram which require additional clarification \
+are <span class="term">Status</span> and \
+<span class="term">Searcheable</span> options.<p>\
+<span class="term">Status</span> can be in one of the following \
+states: <span class="term">enabled</span> and \
+<span class="term">disabled</span>. \
+<span class="term">Enabled status</span> mean that category \
+participates in categorization process, its search expressions get \
+executed, corresponding articles get labeled with a category path. \
+<span class="term">Disabled status</span> mean that category is inactive and \
+doesn't participate in \
+categorization. Disabling of previously enabled category leads to not only \
+removal of corresponding article labels but also affects categories \
+directly or indirectly dependent from the disabled one so their set of \
+articles will change as well.<p>\
+<span class="term">Searcheable</span> flag being in one of 2 states \
+<span class="term">yes</span> or <span class="term">no</span> defines if \
+articles belonging to the category are labeled with its full name and if the  \
+category can be searched for by \
+<a href="{{SEARCH_HELP_CAT_LINK}}" target="_blank">CATEGORY operation</a>. \
+There reasonable question is: why do we need such an invisible category \
+so articles are not \
+labeled with its name and search by its path is not possible ? \
+The purpose of a non-searcheable category is just to fill its searcheable \
+ascendants with articles belonging to it. It can be useful to create some \
+technical category which only value - its expression and make it a child of \
+several parent categories which become an "owners" of articles found by \
+non-searcheable child category. So if to make Armaments from an \
+<a href="#ARMAMENTS_EXAMPLE">example above</a> non-searcheable, the end user \
+will see just the following hierarchy:\
+<pre class="code">\
+Society\
+  Warfare\
+    Wars\
+Business\
+  Industry\
+    Military\
+</pre>\
+Not being visible Armaments does not disappear completely but present \
+ascendants (Society, Warfare, Business, Industry, Military) with articles \
+found by its expression.
+
+CHAP_CATEGORIES_TOPIC_CATEGORYEDIT_TITLE Category Edit Page
+
+CHAP_CATEGORIES_TOPIC_CATEGORYEDIT_PARAGR_VIEW \
+Category Edit page allows to setup \
+all category definition properties: name, status, searcheable flag, \
+expression, parents, children, locales, description. Most properties have \
+already been introduced. <span class="term">Locale</span> is a group of \
+category properties which can be specific for different language / country \
+combinations. For now locale contain just a category name. There can be \
+several locales specified, so when article is displayed on the \
+<a href="{{SEARCH_LINK}}" target="_blank">search results page</a> \
+NewsGate selects the most appropriate category name representation to be \
+consistent with end user language and country settings.
+
+CHAP_CATEGORIES_TOPIC_CATEGORYEDIT_PARAGR_VIEWELEMS \
+Most of page element purpose should be quite obvious. But there a need to \
+explain what <a href="#CategoryWordList">word lists</a> finally are, \
+what are the (sub)expressions and \
+how they relate to category expression used in categorization process, and \
+also what are the exact, broadened and relevant searches.
+
+CHAP_CATEGORIES_TOPIC_CATEGORYEDIT_PARAGR_SUBEXP \
+While category Space on the diagram above has just 1 \
+<span class="topic-paragraph-title">subexpression</span> it is possible to \
+assign many of them. If there is just one subexpression it is a \
+<span class="term">category expression</span>. If there are several \
+subexpressions then <span class="term">category expression</span> is built \
+by uniting subexpressions by \
+<a href="{{SEARCH_HELP_OR_LINK}}" target="_blank">OR operations</a>. So if \
+there are 3 subexpressions specified A, B, C then \
+<span class="term">category expression</span> will be \
+( A ) <a href="{{SEARCH_HELP_OR_LINK}}" target="_blank">OR</a> ( B ) \
+<a href="{{SEARCH_HELP_OR_LINK}}" target="_blank">OR</a> ( C ). Lets imagine that Space category has the following \
+3 subexpressions:\
+<pre class="code">\
+<a href="{{SEARCH_HELP_SITE_LINK}}" target="_blank">SITE</a> astronomy.net.ua cosmos.ucoz.ru\
+</pre>\
+<pre class="code">\
+<a href="{{SEARCH_HELP_URL_LINK}}" target="_blank">URL</a> http://habble.ru/feed/ http://www.outspace.ru/feed\
+</pre>\
+<pre class="code">\
+<a href="{{SEARCH_HELP_ANY_LINK}}" target="_blank">ANY</a> cosmological exoplanet 'distant star'\
+</pre>\
+The resulted expression used in categorization process for Space category \
+will be:\
+<pre class="code">\
+<a href="{{SEARCH_HELP_SITE_LINK}}" target="_blank">SITE</a> astronomy.net.ua cosmos.ucoz.ru\
+OR <a href="{{SEARCH_HELP_URL_LINK}}" target="_blank">URL</a> http://habble.ru/feed/ http://www.outspace.ru/feed\
+OR <a href="{{SEARCH_HELP_ANY_LINK}}" target="_blank">ANY</a> cosmological exoplanet 'distant star'\
+</pre>\
+So any article belonging to astronomy.net.ua or cosmos.ucoz.ru sites, or \
+coming from http://habble.ru/feed/ or http://www.outspace.ru/feed RSS \
+channels, or containing in text any of \
+<span class="term">cosmological</span>, \
+<span class="term">exoplanet</span> words or \
+<span class="term">distant star</span> phrase will be labeled with \
+/Science/Space category path. The reason for providing ability for category \
+managers to create several subexpressions instead of just one categorization \
+expression is a need of expression complexity reduction. In real life \
+the example above could have tens of sites and URLs, \
+hundreds of words and phrases. A single expression \
+would be so bloated that just scrolling through it to find a \
+place to add a new term would become a problem.
+
+CHAP_CATEGORIES_TOPIC_CATEGORYEDIT_PARAGR_WORDLIST \
+<span class="topic-paragraph-title">Category Word Lists</span> is a second \
+approach to expression complexity reduction. \
+It is more flexible then the subexpressions-based one \
+as allows to combine pieces to final expression using not \
+just OR operation but in many other ways. Word List is just a named list of \
+strings which should be inserted into search expression at specified \
+position. Position inside expressions is set by a construct \
+<span class="term">{{LIST:name}}</span> \
+where <span class="term">name</span> should be a name of an existing \
+word list. Taking terms out of search expressions not only make \
+them readable but \
+also give another bonus: ability to delimit an access to expression \
+structures and lists of terms. So now one person (category manager) can be \
+responsible for designing expressions keeping in mind the whole picture \
+of category dependencies and implementing some common approach for each \
+new category ... and other person (category editor) can fill and maintain \
+lists of terms for some specific category, ensuring that category \
+expression is wide enough to cover most of relevant articles \
+while stays strict enough not to rake up stuff which sounds similar \
+but irrelevant. By similar but irrelevant stuff I mean for example pop stars \
+articles which could appear in Space category if inattentive category editor \
+decided to put word <span class="term">star</span> in a word list being inserted \
+inside ANY operation. Of cause category editor can have more than just 1 \
+category under his authority, as well as a category can be adjusted by \
+several category editors having access to it. \
+Implementing latest example with word list approach we will get \
+3 word lists and 1 (sub)expression.<p>\
+Word Lists:<p>\
+1) name: SITE, value:\
+<pre class="code">\
+astronomy.net.ua\
+cosmos.ucoz.ru\
+</pre>\
+2) name: URL, value:\
+<pre class="code">\
+http://habble.ru/feed/\
+http://www.outspace.ru/feed\
+</pre>\
+3) name: ANY, value:\
+<pre class="code">\
+cosmological\
+exoplanet\
+'distant star'\
+</pre>\
+Subexpression:\
+<pre class="code">\
+SITE {{LIST:SITE}} OR URL {{LIST:URL}} OR ANY {{LIST:ANY}}\
+</pre>\
+So resulted search expression for Space category will be the same as before:\
+<pre class="code">\
+SITE \
+  astronomy.net.ua \
+  cosmos.ucoz.ru \
+OR URL \
+  http://habble.ru/feed/ \
+  http://www.outspace.ru/feed \
+OR ANY \
+  cosmological \
+  exoplanet \
+  'distant star'\
+</pre>
+
+CHAP_CATEGORIES_TOPIC_CATEGORYEDIT_PARAGR_SPACESAMPL \
+The real life category definitions are bit more complex than examples above. \
+Here is a real /Science/Space category definition reflected \
+on the <a href="#IMG_CategoryEdit">previous diagram</a>. For the expression \
+<pre class="code">\
+URL {{LIST:URL}}\
+OR SITE {{LIST:SITE}}\
+\
+OR\
+\
+(\
+ANY CORE {{LIST:ANY}}\
+OR ANY 2 CORE {{LIST:ANY2}}\
+OR ANY 3 CORE {{LIST:ANY2}} {{LIST:ANY3}}\
+)\
+\
+EXCEPT CATEGORY\
+\
+/Culture/Cinema\
+/IT/Games/\
+/Obscure\
+/Society/Religion\
+/Sport\
+</pre>\
+there 5 word lists:<p>\
+1) name: ANY, value:\
+<pre class="code">\
+17P/Holmes\
+'accretion disc'\
+'accretion disk'\
+'Aerospace America'\
+AKARI\
+Alnilam\
+Alnitak\
+Amalthea\
+Antares\
+antigravity\
+...\
+another 750 words and phrases\
+</pre>\
+2) name: ANY2, value:\
+<pre class="code">\
+AG5\
+apogee\
+Apollo\
+Ares\
+'around Earth'\
+asteroid\
+astronaut\
+astronomy\
+'Atlas V'\
+'Big Bang'\
+...\
+another 280 words and phrases\
+</pre>\
+3) name: ANY3, value:\
+<pre class="code">\
+aerospace\
+Ariel\
+Atlantis\
+Chandra\
+docking\
+eclipse\
+galaxy\
+Mars\
+Miranda\
+Moon\
+...\
+another 40 words and phrases\
+</pre>\
+4) name: SITE, value:\
+<pre class="code">\
+astronomy.net.ua\
+</pre>\
+5) name: URL, value:\
+<pre class="code">\
+http://1-9-5-7.livejournal.com/data/rss\
+http://1sj.ru/cms/rss.php\
+http://astrocast.ru/category/podedition/feed/\
+http://astrogalactica.ru/feed/\
+http://astrografia.ru/?feed=rss2\
+http://blackhole.3dn.ru/news/rss/\
+http://blog.astrotop.ru/feed\
+http://chibis.cosmos.ru/index.php?id=1672&type=100\
+http://community.livejournal.com/astronomy_ru/data/rss\
+http://community.livejournal.com/ru_astrofizika/data/rss\
+...\
+another 90 URLs\
+</pre>
+
+CHAP_CATEGORIES_TOPIC_CATEGORYEDIT_PARAGR_COREWORDS \
+To explain what does the expression mean exactly there is a need to introduce \
+<span class="topic-paragraph-title">article core words</span>. When article \
+arrives into the system from an external source it get split into words, \
+number of algorithms get applied to it and finally an article is placed into \
+the search engine index.<p><a name="CORE_WORDS_ALGO"></a>\
+One of the algorithms determines which set of \
+article words reflect its sense most accurately. This heuristics \
+algorithm assigns a score for each word taking into \
+account different factors like the fact a word is a stop-word or not, \
+word repetition number in article and globally, \
+a distance from an article beginning, a fact it present in title or not, \
+if a word capitalized or not ... When all words get a score the algorithm \
+takes some number of highest scored words and consider them as \
+<span class="term">core words</span> of an article. They also can be referred \
+as <span class="term">important words</span> of an article. \
+<span class="term">Core words</span> are used to \
+unite articles into stories and also for an ability to search through \
+articles taking into account <span class="term">core words</span> only to \
+avoid irrelevant search results where found term is weakly connected \
+to the sense of an article. Such an ability is present in \
+<a href="{{SEARCH_HELP_ANY_LINK}}" target="_blank">ANY</a> and \
+<a href="{{SEARCH_HELP_ALL_LINK}}" target="_blank">ALL</a> search \
+operations and CORE modifier following an operation name switches on the \
+search mode described.
+
+CHAP_CATEGORIES_TOPIC_CATEGORYEDIT_PARAGR_ANYCOUNT \
+Another thing which worth clarification is a numeric \
+<span class="term">threshold</span> appearing in some of \
+<a href="{{SEARCH_HELP_ANY_LINK}}" target="_blank">ANY operations</a> \
+before CORE modifier. This number specifies how many \
+terms listed in operation should appear in an article to \
+be picked up by that operation and as a result be labeled with a category \
+path. So for example <span class="term">ANY 3 CORE AG5 apogee Apollo Ares ... \
+aerospace Ariel Atlantis Chandra ...</span> mean that not less \
+than 3 words from the listed ones (result of  ANY2 and ANY3 word lists join) \
+should appear among article \
+<span class="term">core words</span> to get an article into the Space \
+category. When <span class="term">threshold</span> is omitted then \
+it is assumed to be equal 1.
+
+CHAP_CATEGORIES_TOPIC_CATEGORYEDIT_PARAGR_HUMANEXPR \
+So now when all notions have been introduced we can try to formulate \
+expression in a human language to understand it sense.\
+<pre class="code">\
+An article will be labeled with /Science/Space if\
+it comes from source belonging to URL word list\
+OR comes from source which site is one of the listed in SITE word list\
+OR\
+(\
+  some of article core words appear in ANY word list \
+  OR 2 core words appear in ANY2 word list \
+  OR 3 core words appear in ANY2 and ANY3 word lists unification\
+)\
+BUT article belongs to none of\
+/Culture/Cinema, /IT/Games, /Obscure, /Society/Religion, /Sport categories\
+ </pre>
+
+CHAP_CATEGORIES_TOPIC_CATEGORYEDIT_PARAGR_EXACTSEARCH \
+<span class="topic-paragraph-title">Exact search</span> is a search \
+using category current expression. It differs from the one \
+performed when clicking on <span class="term">Search link</span> \
+of the context menu (<a href="#IMG_CategoryEdit">the top left one</a>) \
+in the following way. By \
+<span class="term">Search link</span> current category search using \
+<a href="{{SEARCH_HELP_CATEGORY_LINK}}" target="_blank">CATEGORY operation</a>\
+ is performed. When editing Space category you will get \
+search results for <span class="term">CATEGORY /Science/Space</span> \
+expression. So effectively you will search for articles of the Space category \
+to the extent NewsGate had time to apply latest definition \
+(as it were written before \
+<a href="#CAT_BY_CHUNKS">categorization is not immediate</a>). When using \
+<span class="term">exact search link</span> then current search expression \
+as it appears on <a href="#Categories_Edit">Category Edit Page</a> \
+will be used for search. This type of search is useful for checking \
+if category expression you are working on (and probably even \
+didn't save yet) reflects your expectations. NewsGate highlights \
+words and phrases matched by \
+<a href="{{SEARCH_HELP_ALL_LINK}}" target="_blank">ALL</a> and \
+<a href="{{SEARCH_HELP_ANY_LINK}}" target="_blank">ANY</a> operations. \
+As matched article core words will be highlighted in saturated yellow and \
+regular words will be highlighted in pale yellow in most of cases \
+you can easily guess why specific article have appeared in search result. \
+Observing some irrelevant for the category article and understanding the \
+reason of such irrelevance you can consider amending some \
+<a href="#CategoryWordList">word list</a> or \
+subexpression to fix this problem.
+
+CHAP_CATEGORIES_TOPIC_CATEGORYEDIT_PARAGR_BROADSEARCH \
+<span class="topic-paragraph-title">Broadened search</span> is similar \
+to the <span class="term">exact search</span> by the fact it uses the current \
+category expression as it appears on \
+<a href="#Categories_Edit">Category Edit Page</a>. \
+The difference is \
+in the <span class="term">broadening conversion</span> applied to an \
+expression prior execution. Conversion affects just \
+<a href="{{SEARCH_HELP_ANY_LINK}}" target="_blank">ANY</a> and \
+<a href="{{SEARCH_HELP_ALL_LINK}}" target="_blank">ALL</a> operations \
+present in an expression but only those which are not on the right of \
+<a href="{{SEARCH_HELP_EXCEPT_LINK}}" target="_blank">EXCEPT \
+operation</a>. For <a href="{{SEARCH_HELP_ANY_LINK}}" target="_blank">ANY \
+operations</a> it decreases \
+<span class="term">thresholds</span> which greater than 1. \
+For <a href="{{SEARCH_HELP_ALL_LINK}}" target="_blank">ALL \
+operations</a> and <a href="{{SEARCH_HELP_ANY_LINK}}" target="_blank">ANY \
+operations</a> having threshold equal 1 conversion \
+removes <span class="term">CORE modifier</span> if present. \
+Here is an example of <span class="term">broadening conversion</span> \
+being applied.<p>\
+Source expression:<p>\
+<pre class="code">\
+(\
+ANY CORE astrophysics cosmology \
+OR ANY 2 CORE solar coronal comet meteor rocket\
+OR ANY 3 CORE star moon planet earth solar coronal comet meteor rocket\
+)\
+\
+EXCEPT\
+\
+ANY CORE music pop rock sport showbiz\
+</pre>\
+Broadened expression:<p>\
+<pre class="code">\
+(\
+ANY astrophysics cosmology \
+OR ANY CORE solar coronal comet meteor rocket\
+OR ANY 2 CORE star moon planet earth solar coronal comet meteor rocket\
+)\
+\
+EXCEPT\
+\
+ANY CORE music pop rock sport showbiz\
+</pre>\
+The effect of \
+such conversion is that it relaxes search conditions extending the result \
+with articles which will be missed by current expression but which you could \
+consider for addition to the category which definition you are currently \
+editing. The only problem of this conversion is that it can be not easy to \
+distinguish missed articles from other ones. The \
+<span class="term">relevant search</span> does not have this drawback.
+
+CHAP_CATEGORIES_TOPIC_CATEGORYEDIT_PARAGR_RELEVANTSEARCH \
+<span class="topic-paragraph-title">Relevant search</span> is \
+built on top of <span class="term">exact</span> and \
+<span class="term">broadened</span> searches. \
+If <span class="term">E</span> is \
+<span class="term">exact search</span> expression and \
+<span class="term">B(E)</span> is a \
+<span class="term">broadened search</span> expression then \
+<span class="term">relevant search</span> is \
+<span class="term">( B(E) ) EXCEPT ( E )</span>. So \
+<span class="term">relevant search</span> result includes just those articles \
+of <span class="term">broadened search</span> result which do not belong to \
+<span class="term">exact search</span> result. That is articles covered \
+because of category expression condition relaxing. Some of them can be \
+relevant to \
+the category and be added manually or become a reason for category expression \
+revision in the direction of conditions weakening. For example you can move \
+some word or phrase from <span class="term">ANY 2 CORE ...</span> \
+operation to <span class="term">ANY CORE ...</span> one. Here is illustration \
+of a <span class="term">relevant search</span> search construction.<p>\
+Source expression:<p>\
+<pre class="code">\
+(\
+ANY CORE astrophysics cosmology \
+OR ANY 2 CORE solar  coronal comet meteor rocket\
+OR ANY 3 CORE star moon planet earth solar coronal comet meteor rocket\
+)\
+\
+EXCEPT\
+\
+ANY CORE music pop rock sport showbiz\
+</pre>\
+Relevant search expression:<p>\
+<pre class="code"><div style="background-color:#FFFFF0">(\
+  (\
+  ANY astrophysics cosmology \
+  OR ANY CORE solar coronal comet meteor rocket\
+  OR ANY 2 CORE star moon planet earth solar coronal comet meteor rocket\
+  )\
+  \
+  EXCEPT\
+  \
+  ANY CORE music pop rock sport showbiz\
+)</div>EXCEPT\
+<div style="background-color:#F0FFFF">(\
+  (\
+  ANY CORE astrophysics cosmology \
+  OR ANY 2 CORE solar coronal comet meteor rocket\
+  OR ANY 3 CORE star moon planet earth solar coronal comet meteor rocket\
+  )\
+  \
+  EXCEPT\
+  \
+  ANY CORE music pop rock sport showbiz\
+)</div></pre>\
+In <span class="term">relevant search</span> expression above the \
+<span class="term">broadened search</span> part is highlighted in yellow and \
+<span class="term">exact search</span> part in blue.
+
+
+CHAP_CATEGORIES_TOPIC_WORDLISTEDIT_TITLE Word List Editor
+
+CHAP_CATEGORIES_TOPIC_WORDLISTEDIT_PARAGR_OVERVIEW \
+Word List Editor gives an ability to create new and edit existing \
+word lists on <a href="#Categories_Edit">Category Edit Page</a>.
+
+CHAP_CATEGORIES_TOPIC_WORDLISTEDIT_PARAGR_MENU \
+While purpose of such editor elements as Name, Word List and \
+Description edit boxes is quite obvious there is a need to describe a \
+function of links present in Word List Editor window. These links simplify \
+word list maintenance and help to keep it clean and clear.
+
+CHAP_CATEGORIES_TOPIC_WORDLISTEDIT_PARAGR_SEARCH \
+Click <span class="topic-paragraph-title">search</span> link to perform a \
+search of selected words and phrases opening NewsGate search page. When \
+adding a new term it always good to check it ever appears in news articles.
+
+CHAP_CATEGORIES_TOPIC_WORDLISTEDIT_PARAGR_GOOGLE \
+Click <span class="topic-paragraph-title">google</span> link to perform a \
+search of selected words and phrases opening Google search page. Searching on \
+google for terms can help to find some other terms which are relevant to \
+category being edited. Sometimes you just need to understand a sense of some \
+word which appeared in an article you would like to categorize.
+
+CHAP_CATEGORIES_TOPIC_WORDLISTEDIT_PARAGR_TRANSLATE \
+Click <span class="topic-paragraph-title">translate</span> link to \
+translate selected words using Google translation service. Can be \
+useful if you decide to put some terms in native language \
+(like famous people or device names).
+
+CHAP_CATEGORIES_TOPIC_WORDLISTEDIT_PARAGR_FIND \
+Click <span class="topic-paragraph-title">find</span> link to \
+open <a href="#FindCatWordWnd">Word Find Window</a> and \
+search for selected strings inside all category \
+<a href="#CategoryWordList">word lists</a> stored in the \
+system.
+
+CHAP_CATEGORIES_TOPIC_WORDLISTEDIT_PARAGR_LOWER \
+Click <span class="topic-paragraph-title">lower</span> link to \
+convert selected text to lower case.
+
+CHAP_CATEGORIES_TOPIC_WORDLISTEDIT_PARAGR_UPPER \
+Click <span class="topic-paragraph-title">upper</span> link to \
+convert selected text to upper case.
+
+CHAP_CATEGORIES_TOPIC_WORDLISTEDIT_PARAGR_CAPITALIZE \
+Click <span class="topic-paragraph-title">capitalize</span> link to \
+convert first letter of each selected word to upper case.
+
+CHAP_CATEGORIES_TOPIC_WORDLISTEDIT_PARAGR_NORMALIZE \
+Click <span class="topic-paragraph-title">normalize</span> link to \
+open <a href="#WordNormalizationWnd">Word Normalization Window</a> \
+allowing to check for presence of selected \
+words in NewsGate morphological dictionary and to put them into a proper \
+word-forms. Even for newly added words and phrases already being in a proper \
+word-forms it is a good practice to check them with \
+<a href="#WordNormalizationWnd">Word Normalization Window</a> to ensure \
+they have no spelling mistakes.
+
+CHAP_CATEGORIES_TOPIC_WORDLISTEDIT_PARAGR_SORT \
+Click on <span class="topic-paragraph-title">sort</span> link to \
+sort selected lines in alphabetically ascending order.
+
+CHAP_CATEGORIES_TOPIC_WORDLISTEDIT_PARAGR_DEDUP \
+Click <span class="topic-paragraph-title">dedup</span> link to \
+remove duplicate (or de-duplicate) lines in selected space.
+
+CHAP_CATEGORIES_TOPIC_WORDLISTEDIT_PARAGR_OK \
+Click <span class="topic-paragraph-title">ok</span> link to save updated \
+word list and close Word List Editor. When saving words and phrases \
+get sorted, duplicates removed automatically. Note that changes will \
+not appear in NewsGate \
+DB at this point, they go into the \
+<a href="#Categories_Edit">Category Edit Page</a> internal state only. \
+All category changes will be actualized all together when Update button \
+pressed.
+
+CHAP_CATEGORIES_TOPIC_WORDLISTEDIT_PARAGR_APPLY \
+Click <span class="topic-paragraph-title">apply</span> link to \
+save changes as it done with <span class="term">ok</span> link but keep \
+Word List Editor opened. Doing this periodically can be a good idea \
+when spending a lot of time in that window to avoid unintentional close \
+(for example by ESC key) and loosing big amount of work.
+
+CHAP_CATEGORIES_TOPIC_WORDLISTEDIT_PARAGR_CANCEL \
+Click <span class="topic-paragraph-title">cancel</span> link to close \
+Word List Editor discarding changes made after last click on \
+<span class="topic-paragraph-title">apply</span> link.
+
+CHAP_CATEGORIES_TOPIC_FINDWORD_TITLE Word Find Window
+
+CHAP_CATEGORIES_TOPIC_FINDWORD_PARAGR_OVERVIEW \
+Word Find Window allow to search for occurrence of strings inside category \
+<a href="#CategoryWordList">word lists</a>. \
+Note that case-insensitive substring search is performed for each \
+line and no word morphology is taken into account. So search for \
+<span class="term">stars</span> will find just \
+<span class="term">'group of \
+<span style="background-color:#FFFFA0;">stars</span>'</span> and \
+<span class="term">'rotation of \
+<span style="background-color:#FFFFA0;">stars</span>'</span> phrases in \
+/Science/Space/ANY category word lists. But search for \
+<span class="term">star</span> will find much more in addition to mentioned \
+phrases: <span class="term">'distant \
+<span style="background-color:#FFFFA0;">star</span>'</span>, \
+<span class="term">'double \
+<span style="background-color:#FFFFA0;">star</span>'</span>, \
+<span class="term">Echo<span style="background-color:#FFFFA0;">star</span>-14</span>, \
+<span class="term">'<span style="background-color:#FFFFA0;">star</span> cluster'</span>, \
+<span class="term">'<span style="background-color:#FFFFA0;">star</span> formation'</span> ... in /Science/Space/ANY category \
+word list, <span class="term">'Navi<span style="background-color:#FFFFA0;">star</span> Defense'</span> in \
+/Business/Industry/Military/ANY, \
+http://www.red<span style="background-color:#FFFFA0;">star</span>.ru/index.php/news-menu/ino-military-menu?format=feed&limitstart= \
+in /Society/Warfare/URL and many other words and URLs in \
+other category word lists.
+
+CHAP_CATEGORIES_TOPIC_FINDWORD_PARAGR_USE \
+Click on found category or <a href="#CategoryWordList">word list</a> \
+name to open \
+them in a separate browser window. Click on word phrase or URL will also \
+select an item of interest.
+
+CHAP_CATEGORIES_TOPIC_WORDNORM_TITLE Word Normalization Window
+
+CHAP_CATEGORIES_TOPIC_WORDNORM_PARAGR_OVERVIEW \
+Normalization can be applied to words and phrases selected in Word List \
+Editor edit box. While it is possible to avoid usage of Word Normalization \
+Window and make required corrections manually it is a good \
+practice to use this window to minimize spelling mistake probability. Also \
+you can help NewsGate project sending a word missed in the dictionary \
+to karen_arutyunov@newsfiber.com email address.
+
+CHAP_CATEGORIES_TOPIC_WORDNORM_PARAGR_DESC \
+The main part of Word Normalization Window is a table where \
+each of selected words occupies 1 or more rows. Each row represents \
+a lemma which have been found in NewsGate dictionary and contains \
+corresponding word. If there is no appropriate lemma found NewsGate makes an \
+attempt to guess which lemmas it could be and which languages they could \
+belong. Such a <span class="term">guessed lemmas</span> can be \
+distinguished from a real ones by presence of a question mark on the \
+right of lemma language specification. For each word you can choose which \
+form it should appear in the selected space of a \
+<a href="#CategoryWordList">word list</a> you are \
+currently editing.
+
+CHAP_CATEGORIES_TOPIC_WORDNORM_PARAGR_1ST \
+The <span class="topic-paragraph-title">1st</span> column contains a radio \
+buttons which being selected indicate that the form typed in the 2nd column \
+edit box should be used for a word.
+
+CHAP_CATEGORIES_TOPIC_WORDNORM_PARAGR_2ND \
+An edit box in the <span class="topic-paragraph-title">2nd</span> column \
+can be used to specify a custom form - the one not present in the dictionary \
+nor being properly guessed by NewsGate.
+
+CHAP_CATEGORIES_TOPIC_WORDNORM_PARAGR_3RD \
+The <span class="topic-paragraph-title">3rd</span> column displays word \
+form choices for all lemmas found in the dictionary as well \
+as <span class="term">guessed lemmas</span> for words not present in \
+the dictionary.
+
+CHAP_CATEGORIES_TOPIC_WORDNORM_PARAGR_4TH \
+The <span class="topic-paragraph-title">4th</span> column contains lemma \
+language specifications as ISO 639-2 3-letter codes. For \
+<span class="term">guessed lemmas</span> \
+the language code is followed by a question mark. Click the code link \
+to translate lemma words with Google translation service.
+
+CHAP_CATEGORIES_TOPIC_WORDNORM_PARAGR_5TH \
+<a name="LEMMA_ID"></a>\
+The <span class="topic-paragraph-title">5th</span> column contains number \
+identifying a lemma in the dictionary. Actually each word in the dictionary \
+has a separate identifier. Lemma identifier is that one of a word being a \
+normal form of that lemma. Such identifiers are used by the system \
+internally, never used by a user but can be helpful for the system \
+developer. For <span class="term">guessed lemma</span> this is a pseudo \
+identifier calculated based on a word textual representation replacing a real \
+identifier in some internal data structures and algorithms. \
+Click on lemma identifier opens a \
+<a href="#LemmaWnd">Lemma Window</a> containing all \
+lemma words and links for their search and translation.
+
+CHAP_CATEGORIES_TOPIC_WORDNORM_PARAGR_6TH \
+Choosing <span class="term">drop</span> radio button in the \
+<span class="topic-paragraph-title">6th</span> column you indicate that the \
+word should be removed from the selected text.
+
+CHAP_CATEGORIES_TOPIC_WORDNORM_PARAGR_GUESSED \
+The <span class="topic-paragraph-title">guessed lemmas</span> link opens a \
+<a href="#LemmaWnd">Lemma Window</a> containing all words for all \
+<span class="term">guessed lemmas</span>. This link is mostly \
+useful for a person maintaining dictionaries which role is out of \
+NewsGate management system scope.
+
+CHAP_CATEGORIES_TOPIC_WORDNORM_PARAGR_OK \
+Click <span class="topic-paragraph-title">ok</span> link to close window \
+and replace selected words according to the radio buttons choice.
+
+CHAP_CATEGORIES_TOPIC_WORDNORM_PARAGR_CANCEL \
+Click <span class="topic-paragraph-title">cancel</span> link to close window \
+and keep word list unchanged. 
+
+CHAP_CATEGORIES_TOPIC_LEMMA_TITLE Lemma Window
+
+CHAP_CATEGORIES_TOPIC_LEMMA_PARAGR_OVERVIEW \
+Lemma Window is quite a trivial one just enlisting lemma(s) words and \
+providing links for searching selected ones with NewsGate and Google search \
+services, as well as translating them with Google translation service.
+
+CHAP_CATEGORIES_TOPIC_EXPREDIT_TITLE Expression Editor
+
+CHAP_CATEGORIES_TOPIC_EXPREDIT_PARAGR_OVERVIEW \
+Expression Editor gives an ability to create new and edit existing \
+subexpressions on <a href="#Categories_Edit">Category Edit Page</a>. \
+Expression Editor window is almost identical to \
+<a href="#IMG_WordListEditor">Word List Editor</a> with an exception it does \
+not have a <span class="term">Name</span> edit field. So all \
+<span class="term">Word List Editor</span> elements descriptions are \
+applicable for Expression Editor as well.
+
+CHAP_CATEGORIES_TOPIC_CATSEL_TITLE Category Selection Window
+
+CHAP_CATEGORIES_TOPIC_CATSEL_PARAGR_OVERVIEW \
+Category Selection Window is used for changing and adding category parents \
+and children on <a href="#Categories_Edit">Category Edit Page</a>. The window \
+allows to navigate through category hierarchy and make a choice of \
+appropriate categories. There 2 types of windows: single selection and \
+multiple selection.
+
+CHAP_CATEGORIES_TOPIC_CATSEL_PARAGR_SINGLE \
+<span class="topic-paragraph-title">Single Category Selection</span> window \
+intended for single category choice and used for parent and child category \
+change. You can navigate category hierarchy up and down, select a radio \
+button to the left of appropriate name and press <span class="term">ok</span> \
+link to confirm the choice.
+
+CHAP_CATEGORIES_TOPIC_CATSEL_PARAGR_MULT \
+<span class="topic-paragraph-title">Multiple Category Selection</span> window \
+intended for multiple category choice and used for parent and child category \
+addition. You can navigate category hierarchy up and down, select several \
+check boxes to the left of appropriate names and press \
+<span class="term">ok</span> link to confirm the choice.
+
+CHAP_CATEGORIES_TOPIC_LOCALEEDIT_TITLE Locale Editor
+
+CHAP_CATEGORIES_TOPIC_LOCALEEDIT_PARAGR_OVERVIEW \
+Locale Editor is used for creating new and editing existing category locales.
+
+CHAP_CATEGORIES_TOPIC_LOCALEEDIT_PARAGR_DESC \
+The diagram above displays locale which will be applied for browsers \
+having russian language preference independently from a country preference. \
+This in particular mean that for such browsers category Space will appear \
+on NewsGate Web pages under its russian <span class="term">Космос</span> name.
+
+CHAP_CATEGORIES_TOPIC_CATEGORYSEARCH_TITLE Category Search Page
+
+CHAP_CATEGORIES_TOPIC_CATEGORYSEARCH_PARAGR_VIEW \
+Category Search Page is an extension of a regular NewsGate search page. \
+Besides ordinal search page elements intended for search results \
+navigation and new search execution there is number of NewsGate management \
+elements appear on the page. These elements are:<p>\
+1) management interface \
+<a href="#IMG_Menu">menu bar</a> on top of the page;<br> \
+2) <a href="#EMI_LINK">Emi ON/OFF</a> link to the right of Settings link in \
+the right top corner of the page;<br>\
+3) <a href="#WordBoxPanel">Word Box Panel</a> at the left side of the page;<br>\
+4) <a href="#CATMAN_LINKS">group of category and source management links</a> \
+in the right bottom corner of each article;<br>\
+5) <a href="#EMI">Extended Message Info</a> at the bottom of each \
+article.
+
+CHAP_CATEGORIES_TOPIC_CATEGORYSEARCH_PARAGR_MENU \
+The <span class="topic-paragraph-title">Search</span> link in the \
+<span class="term">menu bar</span> just opens a copy of the current search \
+page in new window. It can be useful if you want to search for something new \
+not affecting the current search page.
+
+CHAP_CATEGORIES_TOPIC_CATEGORYSEARCH_PARAGR_EMIMENU \
+The <span class="topic-paragraph-title">Emi ON/OFF</span> link controls \
+display of <a href="#EMI">Extended Message Info</a>.
+
+CHAP_CATEGORIES_TOPIC_CATEGORYSEARCH_PARAGR_EMI \
+<span class="topic-paragraph-title">Extended Message Info</span> is a text \
+block appearing at the bottom of an article when the \
+<a href="#EMI_LINK">Emi ON</a> link is clicked \
+and containing article additional meta-information. \
+<span class="topic-paragraph-title">Id</span> is a \
+string uniquely identifying an article which can be searched using this \
+string by means of undocumented search operation MSG: \
+<span class="term">MSG 7F8FF3F018E07758 ...</span>. \
+<span class="topic-paragraph-title">Event</span> is a string uniquely \
+identifying a story an article belongs to. Using undocumented operation EVENT \
+you can search for articles belonging specific stories:\
+<span class="term">EVENT F22CBC8ACD4C4F72 ...</span>. \
+<span class="topic-paragraph-title">Capacity</span> is a number of articles \
+in the story the article belongs to. \
+<span class="topic-paragraph-title">Lang</span> denotes article \
+language ISO 639-2 3-letter code. \
+<span class="topic-paragraph-title">Country</span> displays article \
+source country ISO 3166 3-letter code. \
+<span class="topic-paragraph-title">Signature</span> is a hash sum of article \
+content including title, annotation and image information. It is possible \
+that 2 different articles (having different ids and full article links) \
+have the same signature. <span class="topic-paragraph-title">Published</span> \
+and <span class="topic-paragraph-title">Fetched</span> values are dates an \
+article was published by its source and fetched by NewsGate respectively. \
+<span class="topic-paragraph-title">Visited</span> is a latest date when \
+some user followed a link to full article page, article story page or \
+clicked the article image. It is <span class="term">0</span> if none of \
+mentioned events had ever happened. \
+<span class="topic-paragraph-title">Impressions</span> represent number of \
+times an article have been shown to a user. \
+<span class="topic-paragraph-title">Clicks</span> - number of times a user \
+followed a link to full article page. \
+<span class="topic-paragraph-title">CTR</span> (click through rate) is a \
+percentage of clicks to impressions: \
+<span class="term">ctr = clicks * 100 / impressions</span>. \
+<span class="topic-paragraph-title">RCTR</span> (respected click through rate) \
+is a percentage of clicks to maximum of impressions and number 100: \
+<span class="term">ctr = clicks * 100 / max(impressions, 100)</span>. RCTR \
+which is equal to CTR on impression number more or equal 100 is aimed to \
+replace CTR on small impression numbers to avoid statistically \
+unreliable values when say there are 2 impressions with 1 click which having \
+CTR = 50% could be interpreted as a high popularity of an article. RCTR \
+instead will be just 1% meaning that until impression count reach some \
+reasonable number (100) clicks value will be underestimated. \
+<span class="topic-paragraph-title">F-impressions</span>, \
+<span class="topic-paragraph-title">f-clicks</span>, \
+<span class="topic-paragraph-title">f-ctr</span> and \
+<span class="topic-paragraph-title">f-rctr</span> have the same semantics as \
+impressions, clicks, ctr and rctr but applied not to single article but to \
+an article source. So f-impressions is a sum of impressions of all articles \
+coming from article source. Clicks are summarized the same way to form \
+f-clicks value. <span class="topic-paragraph-title">Core words</span> are \
+the most <a href="#CORE_WORDS_ALGO">important words</a> of an article \
+representing its sense most closely. A number following each core word is \
+an <a href="#LEMMA_ID">identifier or pseudo identifier</a> \
+(the one starting with a <span class="term">$</span> sign).
+
+CHAP_CATEGORIES_TOPIC_CATEGORYSEARCH_PARAGR_REMOVECAT \
+<span class="topic-paragraph-title">[REMOVE]</span> link appearing on the \
+right of an article category path (at the bottom of an article display area) \
+removes corresponding category label from that article. In other words \
+an article is removed from \
+corresponding category. Please note that while category path disappears \
+immediately on <span class="term">[REMOVE]</span> link click it can reappear \
+if refresh the page after a short time interval. It can be so that NewsGate \
+had not enough time to update internal state yet. Anyway this change will be \
+reflected several seconds later and category label will finally \
+disappear. Another thing which need to remember is that removing some \
+category label can result in categorizing article differently so for example \
+instead of /Science/Space/Astronomy the category label /Science/Space can \
+appear being previously hidden by the removed child category label. It is \
+a good practice to recheck article categories some time later after \
+category removal. <span class="term">[REMOVE]</span> link appear only for \
+those categories which a user can edit. So for category manager it appears \
+for every article category, for category editor only for those categories \
+which he have got access to.<p>\
+<a name="REMOVE_PROPER_USE"></a>If you see improper category label \
+assigned to \
+an article you need to ask yourself: is it possible to adjust category \
+expression to avoid this mistake ? It always better to invest the time into \
+expression refinement than to just manual categorization. So use \
+<span class="term">[REMOVE]</span> as a last resort measure only when \
+expression adjustment avoiding this specific mistake and not decreasing \
+category expression quality seems impossible. Such cases happen with \
+articles written \
+using some terminology peculiar to another application domain, like talking \
+about politicians call them "aliens arrived from distant planet".
+
+CHAP_CATEGORIES_TOPIC_CATEGORYSEARCH_PARAGR_EDITCAT \
+<span class="topic-paragraph-title">[EDIT]</span> link appearing on the \
+right of an article <span class="term">[REMOVE]</span> category link just \
+brings you to <a href="#Categories_Edit">Category Edit Page</a> opened for \
+corresponding category. <span class="term">[EDIT]</span> link appear only for \
+those categories which a user can edit. So for category manager it appears \
+for every article category, for category editor only for those categories \
+which he have got access to.
+
+CHAP_CATEGORIES_TOPIC_CATEGORYSEARCH_PARAGR_ADDCATWND \
+<a name="ADD_CAT_LINK"></a>\
+<span class="topic-paragraph-title">[ADD CATEGORY]</span> link intended for \
+for adding an article to a category. On click the \
+<span class="term">Category Selection</span> window opens. 
+
+CHAP_CATEGORIES_TOPIC_CATEGORYSEARCH_PARAGR_ADDCAT \
+You can navigate category hierarchy up and down, \
+select a radio button to the left of \
+appropriate name and press <span class="term">ok</span> link to confirm the \
+choice. A radio button appear only for those categories which a user \
+can edit as for \
+<span class="term">[REMOVE]</span> and <span class="term">[EDIT]</span> links \
+described above. You should use \
+<span class="term">[ADD CATEGORY]</span> link with a same \
+<a href="#REMOVE_PROPER_USE">precautions</a> trying to adjust category \
+expression whenever is possible.
+
+CHAP_CATEGORIES_TOPIC_CATEGORYSEARCH_PARAGR_EDITSRC \
+<span class="topic-paragraph-title">[EDIT SOURCE]</span> link opening \
+<span class="term">Feed Edit Page</span> is available \
+for <span class="term">feed managers</span> only.
+
+CHAP_CATEGORIES_TOPIC_CATEGORYSEARCH_PARAGR_WORDBOXPAN_TITLE Word Box Panel
+
+CHAP_CATEGORIES_TOPIC_CATEGORYSEARCH_PARAGR_WORDBOXPAN \
+Word Box Panel located on the \
+left side of <span class="term">Category Search Page</span> consist from \
+1 to 10 numbered <a href="#WordBox">Word Boxes</a> and the \
+<a href="#WordConvMenu">Word Conversion Menu</a> above them. While reading \
+articles you can pick up new words and phrases you would like to \
+incorporate into some category expressions putting them into \
+different <span class="term">word boxes</span> and then placing the content \
+of each <span class="term">word box</span> to specific \
+<a href="#CategoryWordList">category word list</a>. The benefit appears from \
+the fact you need just 1 keyboard operation - pressing simultaneously \
+Ctrl key and <span class="term">digit</span> key \
+(Ctrl+<span class="term">digit</span>) - to add selected in an article \
+word to specific <span class="term">word box</span> and later move the \
+collected words to proper word list as a single operation using \
+<a href="#IMG_WordListSelWnd">Word List Selection</a> window. \
+An alternative \
+would be copying selected word into clipboard, switching to opened \
+<a href="#Categories_Edit">Category Edit Page</a> or opening a new one, \
+probably opening new <a href="#WordListEditor">Word List Editor</a> window, \
+pasting clipboard content. Also you would need to go through all \
+opened <a href="#Categories_Edit">Category Edit Pages</a> periodically \
+saving updated <a href="#CategoryWordList">word lists</a> and \
+categories. As you can see the alternative is more time consuming, fussy and \
+error prone. Using <a href="#WordBox">Word Boxes</a> makes enriching of \
+category expressions with new words much less burdensome than it could be. \
+You can page search results, make new searches but content of word boxes \
+will persist on a search page. So you don't need to move collected words to \
+<a href="#CategoryWordList">word lists</a> each time you completed search \
+results reading. You can move words rare but often enough not to \
+loose much work because of unintentional \
+browser window close or some other accident.
+
+CHAP_CATEGORIES_TOPIC_CATEGORYSEARCH_PARAGR_WORDBOX \
+<span class="topic-paragraph-title">Word Box</span> can be considered as a \
+buffer where you can temporary collect words and phrases intended for later \
+transfer to some <a href="#CategoryWordList">word list</a>. \
+There can be up to 10 \
+<span class="term">word boxes</span> created on a page so you can work on 10 \
+<a href="#CategoryWordList">word lists</a> simultaneously. To create new \
+<span class="term">word box</span> or to add selected phrase to an existing \
+one press Ctrl+<span class="term">digit</span> keys. Pressing Ctrl+3 will \
+create a <span class="term">word box</span> number 3 \
+placing selected text as a phrase into it. Instead of using \
+Ctrl+<span class="term">digit</span> key combination for adding new item \
+into existing <span class="term">word box</span> you can use \
+<span class="topic-paragraph-title">add</span> link on the right side of a \
+text edit field. \
+The <span class="topic-paragraph-title">move</span> link under the \
+<span class="term">add</span> link intended for moving collected words from \
+<span class="term">word box</span> to \
+<a href="#CategoryWordList">word list</a> of your choice made by means of \
+<a href="#IMG_WordListSelWnd">Word List Selection</a> window. 
+
+CHAP_CATEGORIES_TOPIC_CATEGORYSEARCH_PARAGR_WORDBOX2 \
+You can navigate category hierarchy up and down, \
+select a radio button to the left of \
+appropriate <a href="#CategoryWordList">word list</a> name and press \
+<span class="term">ok</span> link to confirm the choice. \
+While category manager \
+will see names of all existing <a href="#CategoryWordList">word lists</a> \
+category editor will see only those which he have got access to.
+
+CHAP_CATEGORIES_TOPIC_CATEGORYSEARCH_PARAGR_WORDBOX3 \
+When choice is made the required \
+<a href="#WordListEditor">Word List Editor</a> window popups \
+in the newly opened \
+<a href="#Categories_Edit">Category Edit Page</a> and corresponding \
+words are moved into that \
+<a href="#WordListEditor">Word List Editor</a> window.
+
+CHAP_CATEGORIES_TOPIC_CATEGORYSEARCH_PARAGR_WORDBOX4 \
+You can refine newly added words and phrases like normalizing them and \
+putting to proper letter case. When done just save \
+<a href="#CategoryWordList">word list</a> and category \
+definition pressing <span class="term">ok</span> link and \
+<span class="term">Update</span> button afterwards.
+
+CHAP_CATEGORIES_TOPIC_CATEGORYSEARCH_PARAGR_WORDBOX5 \
+The function of <span class="topic-paragraph-title">put</span> link \
+extends the described function of <span class="term">move</span> link \
+autosaving category <a href="#CategoryWordList">word list</a> at the end \
+of operation. So you will not be able to refine newly added \
+words and phrases in <a href="#WordListEditor">Word List Editor</a> window \
+and should do this BEFORE clicking \
+<span class="term">put</span> link using \
+<a href="#WordConvMenu">Word Conversion Menu</a>.
+
+CHAP_CATEGORIES_TOPIC_CATEGORYSEARCH_PARAGR_WORDBOX6 \
+When return to <a href="#Categories_Search">Category Search Page</a> from \
+a <a href="#Categories_Edit">Category Edit Page</a> opened by \
+<span class="term">move</span> or <span class="term">put</span> operation \
+you will see that \
+<span class="term">word box</span> text edit field is empty and the \
+title <span class="term">move, put to /Science/Space/Astronomy/ANY</span> \
+appeared. This title keeps the \
+<a href="#CategoryWordList">word list</a> path - the last choice of \
+<span class="term">move</span> or <span class="term">put</span> operations.
+
+CHAP_CATEGORIES_TOPIC_CATEGORYSEARCH_PARAGR_WORDBOX7 \
+If you continue to use this <span class="term">word box</span> to collect \
+words for <a href="#CategoryWordList">word list</a> specified in the title \
+you can use located in the title <span class="term">move</span> and \
+<span class="term">put</span> links as shortcuts transferring words to that \
+<a href="#CategoryWordList">word list</a> avoiding \
+<a href="#IMG_WordListSelWnd">Word List Selection</a> window.
+
+CHAP_CATEGORIES_TOPIC_CATEGORYSEARCH_PARAGR_WORDCONVMENU \
+<span class="topic-paragraph-title">Word Conversion Menu</span> is a set of \
+links located at the top of the <a href="#WordBoxPanel">Word Box Panel</a> \
+providing means for refinement of words and phrases collected in \
+<span class="term">word boxes</span> before transferring them to \
+<a href="#CategoryWordList">word lists</a>. Refinement can include \
+checking if a word does not already present in category expression you plan \
+to adjust, converting words to proper forms and letter cases. When using \
+<span class="term">move</span> link for word transfer it is possible to \
+conduct refinement right in the \
+<a href="#WordListEditor">Word List Editor</a> window. When using \
+<span class="term">put</span> link refinement should be done in a \
+<span class="term">word box</span> by means of \
+<span class="term">Word Conversion Menu</span> as at the moment of link click \
+the information will go straight to NewsGate Data Base.
+
+CHAP_CATEGORIES_TOPIC_CATEGORYSEARCH_PARAGR_SEARCH \
+Click <span class="topic-paragraph-title">search</span> link to perform a \
+search of selected on page words and phrases opening NewsGate search page. \
+Adding a new term it always good to check if it ever appears in \
+news articles.
+
+CHAP_CATEGORIES_TOPIC_CATEGORYSEARCH_PARAGR_GOOGLE \
+Click <span class="topic-paragraph-title">google</span> link to perform a \
+search of selected on page words and phrases opening Google search page. \
+Searching on google for terms can help to find some \
+other terms which are relevant to \
+category being edited. Sometimes you just need to understand a sense of some \
+word which appeared in an article you would like to categorize.
+
+CHAP_CATEGORIES_TOPIC_CATEGORYSEARCH_PARAGR_TRANSLATE \
+Click <span class="topic-paragraph-title">translate</span> link to \
+translate selected on a page words using Google translation service. Can be \
+useful if you decide to add some terms in native language \
+(like famous people or device names).
+
+CHAP_CATEGORIES_TOPIC_CATEGORYSEARCH_PARAGR_FIND \
+Click <span class="topic-paragraph-title">find</span> link to \
+open <a href="#FindCatWordWnd">Word Find Window</a> and \
+search for selected on a page string (or selected in \
+<span class="term">word box</span> edit field multiple lines) inside \
+all category <a href="#CategoryWordList">word lists</a> stored in the \
+system.
+
+CHAP_CATEGORIES_TOPIC_CATEGORYSEARCH_PARAGR_LOWER \
+Click <span class="topic-paragraph-title">lower</span> link to \
+convert selected in a <span class="term">word box</span> edit field text \
+to lower case.
+
+CHAP_CATEGORIES_TOPIC_CATEGORYSEARCH_PARAGR_UPPER \
+Click <span class="topic-paragraph-title">upper</span> link to \
+convert selected in a <span class="term">word box</span> edit field text \
+to upper case.
+
+CHAP_CATEGORIES_TOPIC_CATEGORYSEARCH_PARAGR_CAPITALIZE \
+Click <span class="topic-paragraph-title">capitalize</span> link to \
+convert first letter of each selected in a <span class="term">word box</span> \
+edit field word to upper case.
+
+CHAP_CATEGORIES_TOPIC_CATEGORYSEARCH_PARAGR_NORMALIZE \
+Click <span class="topic-paragraph-title">normalize</span> link to \
+open <a href="#WordNormalizationWnd">Word Normalization Window</a> \
+allowing to check for presence of selected \
+in a <span class="term">word box</span> edit field \
+words in NewsGate morphological dictionary and to put them into a proper \
+word-forms. Even for words and phrases already being in a proper \
+word-forms it is a good practice to check them with \
+<a href="#WordNormalizationWnd">Word Normalization Window</a> to ensure \
+they have no spelling mistakes.
+
+CHAP_CATEGORIES_TOPIC_CATEGORYSEARCH_PARAGR_SORT \
+Click on <span class="topic-paragraph-title">sort</span> link to \
+sort selected in a <span class="term">word box</span> edit field lines in \
+alphabetically ascending order.
+
+CHAP_CATEGORIES_TOPIC_CATEGORYSEARCH_PARAGR_DEDUP \
+Click <span class="topic-paragraph-title">dedup</span> link to \
+remove duplicate (or de-duplicate) lines in selected in a \
+<span class="term">word box</span> edit field space.
+
+CHAP_USAGE_TITLE Usage Scenarios
+
+CHAP_USAGE_INTRO \
+While NewsGate is flexible enough to support different \
+kinds of approaches for objects management there are some common system usage \
+scenarious which worth to become familiar with.
+
+CHAP_USAGE_SECTION_CATMAN_TITLE Category Management Scenarios
+
+CHAP_USAGE_SECTION_CATMAN_INTRO \
+3 main activities related to category management are: \
+category hierarchy elaboration, enhancing categories coverage and \
+categorization quality maintanance.
+
+CHAP_USAGE_SECTION_CATMAN_TOPIC_CATENHANCE_TITLE Category Enhancement
+
+CHAP_USAGE_SECTION_CATMAN_TOPIC_CATENHANCE_PARAGR_INTRO \
+<span class="term">Category enhancement</span> or in other words \
+<span class="term">increasing category coverage</span> can be achieved in 3 \
+ways. The first way is a \
+<span class="topic-paragraph-title">category expression modification</span>. \
+As a rule such modification relates to adding article source URLs to \
+<a href="{{SEARCH_HELP_URL_LINK}}" target="_blank">URL operation</a> or \
+adding words and phrases to \
+<a href="{{SEARCH_HELP_ANY_LINK}}" target="_blank">ANY operations</a> \
+contained in category expressions. For word list based category management \
+approach this end up with modification of corresponding \
+<a href="#CategoryWordList">word lists</a>. The second \
+way is a <span class="topic-paragraph-title">manual article addition</span>. \
+This can be done on <a href="#Categories_Search">Category Search Page</a> \
+using <a href="#ADD_CAT_LINK">[ADD CATEGORY]</a> link in the right bottom \
+corner of each article. This way of enhancement should be used as a last \
+resort when the first ways looks hard or impossible. Such cases happen with \
+articles written using some terminology peculiar to another application \
+domain or articles just not having enough text. The third one is \
+<span class="topic-paragraph-title">adding descendant category</span> \
+in which case all articles belonging to it become belonging to \
+<span class="term">ascendant categories</span> as well. \
+So creating category /Sport/Combat/Boxing you enhance both /Sport/Combat and \
+/Sport categories with articles belonging to /Sport/Combat/Boxing. This way \
+is available to category managers only and can be considered more as a \
+hierarchy elaboration than a way of increasing category coverage. \
+<p><span class="term">To be continued …</span>
+

@@ -1,0 +1,26 @@
+include <El/Python/Types.pid>
+include <El/LibXML/Types.pid>
+
+module newsgate.feed
+{
+  unsigned long SP_UNDEFINED;
+  unsigned long SP_NEWS;
+  unsigned long SP_TALK;
+  unsigned long SP_AD;
+  unsigned long SP_BLOG;
+  unsigned long SP_ARTICLE;
+  unsigned long SP_PHOTO;
+  unsigned long SP_VIDEO;
+  unsigned long SP_AUDIO;
+  unsigned long SP_PRINTED;
+
+  type Item
+  {
+    string title; // HTML
+    string description; // HTML
+    unsigned long feed_id;
+
+    el.libxml.Document article_doc(string encoding (""));
+    el.libxml.Document description_doc();
+  };
+}

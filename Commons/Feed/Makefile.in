@@ -1,0 +1,21 @@
+# @file   Makefile.in
+# @author Karen Aroutiounov
+# $Id:$
+
+include Common.pre.rules
+include $(osbe_builddir)/config/CXX/CXX.pre.rules
+include $(osbe_builddir)/config/CXX/External/Python.pre.rules
+include $(osbe_builddir)/config/CXX/External/LibXML.pre.rules
+
+include $(osbe_builddir)/config/CXX/External/ElBasic.pre.rules
+include $(osbe_builddir)/config/CXX/External/ElPython.pre.rules
+include $(osbe_builddir)/config/CXX/External/ElNet.pre.rules
+include $(osbe_builddir)/config/CXX/External/ElLibXML.pre.rules
+
+include $(top_builddir)/config/Commons/Python/PythonCommons.so.pre.rules
+
+includes := .
+sources  := Types.cpp Automation/Automation.cpp Automation/Article.cpp
+target   := FeedCommons
+
+include $(osbe_builddir)/config/CXX/So.post.rules

@@ -1,0 +1,83 @@
+from moderation_func import *
+
+request, conf = context.request, context.config.get
+message = context.forward_params
+prn, param = request.output.stream.prn, request.input.parameters().find
+
+moderator = connect_moderator(request, moderator_connector)
+advertiser_id = moderator.advertiser_id
+
+ad_manager = \
+  moderator.has_privilege(newsgate.moderation.moderator.PV_AD_MANAGER)
+
+if not advertiser_id:
+  el.exit(403) # Forbidden
+
+counters = moderator.ad_manager.get_counters(advertiser_id)
+
+prn(
+R'''<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>Management: Ad Counters</title>
+<link rel="stylesheet" type="text/css" href="/fixed/css/common.css" media="all" />
+<link rel="stylesheet" type="text/css" href="/fixed/css/ad/counters.css" media="all" />
+<script src="/fixed/js/elements.js" type="text/javascript"></script>
+<script src="/fixed/js/commons.js" type="text/javascript"></script>
+</head>
+
+<body onload="setTimeout('filter_tables()', 500)">
+<table id="skeleton" cellspacing="0">
+''')
+
+menus = []
+create_topbar_main_menus(context, moderator, "Ad", menus)
+
+prn(create_topbar(create_ad_menus(moderator, "Counters"), menus[0], menus[1]))
+
+prn(
+R'''
+  <tr><td id="main_area" valign="top" align="center">
+    <table id="counters">
+    <tr align="center" id="header"><td>Name</td><td>Status</td>
+                                   <td>Placements</td></tr>
+''')
+
+if counters:
+  prn('\n  <tr>', table_filter_edit('crn', '100%'),
+      table_filter_edit('cru', '6em'),
+      table_filter_edit('crp', '8em'), '</tr>')
+
+for cr in counters:
+
+  if not moderator.show_deleted and \
+     cr.status == newsgate.moderation.ad.US_DELETED:
+    continue
+
+  if cr.status == newsgate.moderation.ad.US_ENABLED: 
+    status = "Enabled"
+  elif cr.status == newsgate.moderation.ad.US_DISABLED:
+    status = "Disabled"
+  else: 
+    status = "Deleted"
+
+  active = 0;
+
+  for plc in cr.placements:
+    if not plc.display_status: active += 1
+
+  prn('\n    <tr class="option_row filter_row"><td class="filter_row_crn"><a href="/psp/ad/counter?id=', cr.id,
+      '">', el.string.manip.xml_encode(cr.name), 
+      '</a></td><td class="filter_row_cru">',
+      status, '</td><td class="number_option filter_row_crp">', active, '/',
+      len(cr.placements), '</td></tr>')
+
+prn(
+R'''
+    </table>
+  </td></tr>
+''', create_copyright(context), R'''
+</table>
+</body>
+</html>
+''')

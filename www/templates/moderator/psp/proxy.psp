@@ -1,0 +1,61 @@
+from httplib import *
+from moderation_func import *
+
+request, conf = context.request, context.config.get
+prn = request.output.stream.prn
+
+try:
+  moderator = moderator_connector.connect(request, False)
+except: 
+
+  request.output.content_type("text/xml")
+
+  prn(R'''<?xml version="1.0" encoding="utf-8" ?>
+<error>Access Denied. You are probably not logged in.</error>''')
+
+  el.exit(0)
+
+method = None
+path = None
+headers = { "User-Agent" : "NGModUI" }
+body = None
+
+for p in request.input.parameters():
+  if p.name == "m": method = p.value
+  elif p.name == "p": path = p.value
+  elif p.name == "b": body = p.value
+  elif p.name == "h": 
+    pair = p.value.split(":", 1)
+    headers[pair[0]] = pair[1]
+
+if method == None:
+  if body == None: method = "GET"
+  else: method = "POST"
+
+link = conf("newsgate_internal_link")
+
+pos = link.find('/')
+if pos >= 0: link = link[0:pos]
+
+endpoint = link.split(":", 1)
+
+host = endpoint[0]
+
+try: port = int(endpoint[1])
+except: port = 80
+
+conn = HTTPConnection(host, port)
+conn.request(method, path, body, headers)
+
+response = conn.getresponse()
+
+for h in response.getheaders():
+  hn = h[0].lower()
+  if hn == "content-type":
+    request.output.send_header(hn, h[1])
+
+refresh_session(request, moderator)
+
+prn(response.read())
+
+if response.status != 200: el.exit(response.status)
