@@ -1,0 +1,107 @@
+The  purpose of this document is to provide instructions for preparing a setup 
+that can be used to develop the NewsGate Server. 
+
+By now the development binary package (containing the reqired compile and 
+runtime  dependencies for Elements) is installed, Elements library is built.
+The directory tree structure is suposed to be the following:
+
+~/projects
+  Elements
+  NewsGate
+    Server
+    SiteConfig
+    Workspace
+
+If by some reason you decide to change the directories structure the following
+instructions and configuration files must be changed respectivelly.
+
+
+Compilation
+-----------
+
+Clone the Server and change the current directory to the project's one.
+
+$ cd ~/projects
+$ mkdir NewsGate
+$ cd NewsGate
+$ git clone git@github.com:newsgate/Server.git
+$ cd Server
+
+Run OpenSBE script which creates configure script.
+
+osbe
+
+Create the build output directory as well as default.config file with the 
+compilation options that should be used for the build. You can use cpp 
+preprocessor to generate such a configuration file from default.config.t 
+template passing some controlling macros to the preprocessor (read comments in
+default.config.t for details). You can also adjust specific compile options
+in the generated configuration file.
+
+$ mkdir build
+
+$ cpp -DDEBUG -DARC_x86_64 -DORB_TAO -DELEMENTS_SRC=$HOME/projects/Elements \
+  -DELEMENTS_BUILD=$HOME/projects/Elements/build default.config.t > \
+  ./build/default.config
+
+
+Now you can generate Makefiles corresponding to your compile options.
+
+cd build
+../configure --enable-no-questions=yes
+
+make -j8
+
+
+Configuration
+-------------
+
+Clone the Server configuration and change the current directory to the 
+project's one.
+
+$ cd ~/projects/NewsGate
+$ mkdir SiteConfig
+
+[ Template cloning instructions. ]
+
+$ cd Template
+
+Run OpenSBE script which creates configure script.
+
+osbe
+
+$ mkdir build
+$ cd build
+
+@@ For some reason configure script doesn't work properly in the interactive
+   (default) mode. Should be some osbe bug.
+
+@@ Create set of default.config files (from minimal to more advanced) which can 
+   be used as templates. Or maybe create default.config,t supporting some small
+   number of parameters which allows to create some basic configurations.
+
+Create default.config file and run configure.
+
+$ ../configure --enable-no-questions=yes
+
+$ make install destdir=~/projects/NewsGate proddir=/Workspace \
+  sysconfdir=/Workspace/etc
+
+$ cp ~/projects/NewsGate/Server/VERSION \
+  ~/projects/NewsGate/Workspace/etc/NewsGate
+
+
+Management
+----------
+
+$ cd ~/projects/NewsGate/Workspace/etc
+$ ./newsgate.sh start
+
+The first start is slower than the next ones as the management script creates
+the database on the first run.
+
+$ ./newsgate.sh status
+$ lynx localhost:7180 # End-user WEB interface.
+$ lynx localhost:7181 # Admin WEB interface (username admin, pass admin).
+
+$ ./newsgate.sh stop
