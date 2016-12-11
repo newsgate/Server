@@ -1,0 +1,117 @@
+Listen @service_frontend_search_port@
+
+#Timeout 300
+Timeout 60
+
+#KeepAlive Off
+KeepAlive On
+KeepAliveTimeout 3
+
+# worker MPM
+# StartServers: initial number of server processes to start
+# MaxClients: maximum number of simultaneous client connections
+# MinSpareThreads: minimum number of worker threads which are kept spare
+# MaxSpareThreads: maximum number of worker threads which are kept spare
+# ThreadsPerChild: constant number of worker threads in each server process
+# MaxRequestsPerChild: maximum number of requests a server process serves
+
+ThreadLimit        1000
+ServerLimit           2
+StartServers          1
+MaxClients         1000
+MinSpareThreads     100
+MaxSpareThreads     700
+ThreadsPerChild     500
+MaxRequestsPerChild   0
+ThreadStackSize  256000
+
+#ThreadLimit           1
+#ServerLimit           1
+#StartServers          1
+#MaxClients            1
+#MinSpareThreads       1
+#MaxSpareThreads       1
+#ThreadsPerChild       1
+#MaxRequestsPerChild   0
+#ThreadStackSize  128000
+
+#ServerLimit         20
+#StartServers         1
+#MaxClients        1000
+#MinSpareThreads     50
+#MaxSpareThreads   1000   
+#ThreadsPerChild     50
+#MaxRequestsPerChild  0
+
+<IfDefine ap_2_4>
+  LoadModule mpm_worker_module /usr/lib64/httpd/modules/mod_mpm_worker.so
+  LoadModule unixd_module /usr/lib64/httpd/modules/mod_unixd.so
+  LoadModule filter_module /usr/lib64/httpd/modules/mod_filter.so
+  LoadModule access_compat_module /usr/lib64/httpd/modules/mod_access_compat.so
+  LoadModule authn_core_module /usr/lib64/httpd/modules/mod_authn_core.so
+  LoadModule authz_core_module /usr/lib64/httpd/modules/mod_authz_core.so
+</IfDefine>
+
+User @service_frontend_username@
+Group @service_frontend_usergroup@
+
+@server_admin_directive@
+
+ServerName @service_frontend_search_hostname@
+
+LoadFile @elements_lib@/libElDeinitACE.so
+#LoadFile @elements_lib@/libElements.so
+#LoadFile @elements_lib@/libElPython.so
+
+LoadModule mime_module @apache_modules_path@/mod_mime.so
+LoadModule deflate_module @apache_modules_path@/mod_deflate.so
+LoadModule authz_host_module @apache_modules_path@/mod_authz_host.so
+#LoadModule headers_module @apache_modules_path@/mod_headers.so
+LoadModule expires_module @apache_modules_path@/mod_expires.so
+
+TypesConfig @site_config_root@/Frontend/WEB/conf/mime.types
+AddOutputFilterByType DEFLATE text/html text/css text/xml application/x-javascript
+
+Include @site_config_root@/Frontend/WEB/conf/psp.conf
+Include @site_config_root@/Frontend/Limited/conf/limited.conf
+Include @site_config_root@/Frontend/Limited/conf/stat.conf
+Include @site_config_root@/Frontend/Limited/conf/status.conf
+
+PidFile @run_root@/WebFe.pid
+DocumentRoot "@site_config_root@/www/htdocs/WEB"
+CoreDumpDirectory @run_root@
+
+#ErrorLog error_log
+ErrorLog "|/usr/sbin/rotatelogs @log_root@/WebFe/error_log.%Y%m%d 86400"
+
+LogLevel warn
+
+<Directory />
+  Options FollowSymLinks
+  AllowOverride None
+#  RequestHeader unset Range
+#  RequestHeader unset Request-Range
+</Directory>
+
+<LocationMatch .+\.txt$> 
+  ForceType text/plain;charset=UTF-8
+</LocationMatch>
+
+<LocationMatch .+\.js$>
+  ForceType application/x-javascript;charset=UTF-8
+</LocationMatch>
+
+<LocationMatch .+\.xml$>
+  ForceType text/xml;charset=UTF-8
+</LocationMatch>
+
+<LocationMatch .+\.css$>
+  ForceType text/css;charset=UTF-8
+</LocationMatch>
+
+#DefaultType text/html;charset=UTF-8
+
+<LocationMatch ^/comp/.+|.*\.png$>
+  ExpiresActive On
+  ExpiresDefault "access plus 1 days"
+</LocationMatch>

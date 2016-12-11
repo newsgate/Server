@@ -1,0 +1,2273 @@
+This document is provided by Mozilla for your information only. It may help you take certain steps to protect the privacy and security of your personal information on the Internet. This document does not, however, address all online privacy and security issues, nor does it represent a recommendation by Mozilla about what constitutes adequate privacy and security protection on the Internet.
+Using Mozilla Mail & Newsgroups
+
+Mozilla Mail & Newsgroups lets you conveniently manage all your
+Internet communications from one place. You can set up and maintain
+multiple business and personal mail accounts and Internet newsgroups,
+all from one window Mail & Newsgroups window.
+
+To start using Mozilla Mail & Newsgroups:
+
+    * Click the Mail & Newsgroups icon in the lower-left corner of the Mozilla Navigator window.
+
+  	Mail & Newsgroups icon
+In this section:
+
+    * Getting Started with Mozilla Mail & Newsgroups
+    * Reading Messages
+    * Sending Messages
+    * Creating HTML Mail Messages
+    * Using Attachments
+    * Deleting Messages
+    * Using Address Books
+    * Organizing Your Messages
+    * Controlling Junk Mail
+    * Importing Mail from Other Programs
+    * Getting Started with Newsgroups
+    * Working Offline
+    * Signing & Encrypting Messages
+    * Mail & Newsgroups Account Settings
+    * Mail & Newsgroups Preferences
+
+Getting Started with Mozilla Mail & Newsgroups
+In this section:
+
+    * Using the Mail Account Setup Wizard
+    * Setting Up Additional Mail and News Accounts
+    * Changing the Settings for an Account
+
+Using the Mail Account Setup Wizard
+
+To set up a mail or newsgroup account, first open the Window menu and choose Mail & Newsgroups. If you haven't already set up an account, the Account Wizard appears automatically, enabling you to set up an account.
+
+The Account Wizard guides you through the process of creating a new account. If you don't know a setting, click Cancel and ask your Internet service provider (ISP) or help desk.
+
+If an account already exists, the Account Wizard doesn't appear automatically when the Mail window opens. Instead, after opening the Mail window, open the File menu and choose New, then Account. For more details, see Setting Up Additional Mail & News Accounts.
+
+ 
+Setting Up Mail Accounts with an ISP or Email Provider
+
+Before you set up a mail account, your ISP or email provider should give you the following information:
+
+    * your user name
+    * your email address
+    * the incoming and outgoing mail server names
+    * the incoming server type (IMAP or POP)
+
+Before you set up a newsgroup account, your ISP or email provider should give you the following information:
+
+    * your email address
+    * newsgroup server name
+    * account name
+
+To set up a new mail or newsgroup account, begin from the Mail window:
+
+   1. Open the Edit menu and choose Mail & Newsgroups Account Settings. You see the Mail & Newsgroups Account Settings dialog box.
+   2. Click Add Account to start the Account Wizard.
+
+      The information requested by the Account Wizard depends on the type of new account you specify in its first window. The boldface headings that follow correspond to the windows you'll see when you're setting up an ISP or email provider account.
+   3. New Account Setup: Choose the type of account you want to set up, then click Next.
+   4. Identity: Enter the name and email address appropriate for this account, then click Next.
+   5. Server Information: Indicate whether you want a POP account or an IMAP account. Not all service providers can support both options. For more information, see Mail & Newsgroups Account Settings - Server Settings.
+
+      You must also provide the name of your incoming mail server and your outgoing server (SMTP) here. This is the name of the mail server that sends your messages (also known as the SMTP host). Click Next to continue.
+
+      Note: You need to specify only one outgoing mail server (SMTP), even if you have several mail accounts. The name of your SMTP host may not have been explicitly listed in the account setup information provided to you. For example, your SMTP host may be the same as your POP or IMAP host. If in doubt, contact your ISP or system administrator.
+   6. User Name: Enter the user name provided by your ISP or email provider, then click Next.
+   7. Account Name: Enter whatever name you want to use to refer to this account, then click Next.
+   8. Congratulations! Verify that the information you entered is correct. If necessary, verify the information you entered with your ISP or system administrator. When you are sure that it's correct, click Finish to set up your account.
+   9. You see your new account listed in the left side of the Mail & Newsgroups Account Settings dialog box. Click OK to start using your new account.
+
+You are now ready to retrieve messages from your account. For detailed instructions, see Getting New Messages.
+
+[ Return to beginning of section ]
+Setting Up Additional Mail and News Accounts
+
+You use the Account Settings dialog box to add a new account or to change information for an existing account, including:
+
+    * mail and newsgroup server settings (for example, message deletion and download preferences)
+    * storage settings for message copies and folders
+    * your reply-to address, organization name, and signature
+
+To add a new account or change settings for an existing account, begin from the Mail window:
+
+   1. Open the Edit menu and choose Mail & Newsgroups Account Settings. You see the Mail & Newsgroups Account Settings dialog box. You can perform these tasks:
+          * Add Account: Click this button to set up a new mail or news account. Be sure to type the account information exactly as it is given to you. Click Next or Back to move through the screens, or click Cancel to stop account creation.
+          * Set as Default: Select an account, then click this button to make the selected account appear at the top of your list of accounts in the Mail Window. The change takes effect the next time you open Mail & Newsgroups.
+
+            The default account is the one that you want to log into and (for IMAP accounts only) automatically check for new messages when you first start Mail & Newsgroups. (For POP accounts, you must always click the Get Msg button to get new messages.)
+          * Remove Account: Select an account, then click this button to remove it completely from your Mail window.
+          * Outgoing Server (SMTP): Click this (at the bottom of the list of accounts) to modify information about the outgoing mail server. See Mail & Newsgroups Account Settings - Outgoing Server (SMTP) for more information.
+   2. Click headings under any account's name and modify the corresponding settings in the panel on the right.
+   3. Click OK to save your changes.
+
+[ Return to beginning of section ]
+Changing the Settings for an Account
+
+To view or change information for an existing mail or newsgroup account, begin from the Mail window:
+
+   1. Open the Edit menu and choose Mail & Newsgroups Account Settings. You see the Mail & Newsgroups Account Settings dialog box.
+   2. Click the account name in the left-hand side of the Account Settings dialog box. You see information about the account, such as your email address and signature file, in the right side of the dialog box.
+   3. Click any of these items beneath the name of an account to see the corresponding settings:
+   4.
+          * Server Settings: The settings available depend on the type of server (IMAP, POP, or newsgroup server). For more information, see Mail & Newsgroups Account Settings - Server Settings.
+
+            Important: If you need to change the server type (for example, from POP to IMAP) you must first remove the existing account. Next, you must exit Mozilla and restart it. You can then reopen the Mail & Newsgroups Account Settings dialog box and recreate an account with the new server type by clicking Add Account.
+          * Copies & Folders: These settings determine whether to send automatic messages (blind carbon copies) and where you want to store copies of outgoing messages, message drafts, and message templates. For more information, see Mail & Newsgroups Account Settings - Copies & Folders.
+          * Composition & Addressing: These settings allow you to choose your default format and quoting behavior when composing a message. You can also override the global directory server settings specified for all address books in the Preferences dialog box. For more information, see Mail & Newsgroups Account Settings - Composition & Addressing.
+          * Offline & Disk Space (IMAP and News accounts only): These settings apply when you are working offline (disconnected from the Internet) or need to save download time and conserve disk space. For more information, see Offline and Disk Space Settings (IMAP) or Offline and Disk Space Settings (News).
+          * Disk Space (POP accounts only): This setting determines the maximum size of messages that you are willing to download to your hard disk. For more information, see Disk Space Settings (POP).
+          * Security: These settings determine which certificates are used to digitally sign and encrypt mail messages that you send. Digital signatures allow you to identify yourself reliably to others in mail messages that you send. Encryption helps ensure that your messages remain private while they are in transit over the Internet. For more information, see Mail & Newsgroups Account Settings - Security.
+   5. Click OK to save your changes.
+
+[ Return to beginning of section ]
+Reading Messages
+In this section:
+
+    * Getting New Messages
+    * Choosing How You View the Mail Window
+    * Sorting and Threading Messages
+    * Saving and Printing Messages
+    * Controlling Images, Scripts, and Plug-ins
+
+Getting New Messages
+
+For an IMAP account, you can retrieve new messages automatically and display them in the Inbox by opening Mail & Newsgroups and selecting the Inbox for the IMAP account.
+
+For a POP account, you must select the Inbox and click Get Msgs to retrieve your messages. By default, messages from your POP account are deleted from the POP server when you retrieve them. You can change your POP server settings to store a copy of messages on the server in addition to downloading them to your computer.
+
+You can also set up Mail & Newsgroups to get new messages at startup and to check for new messages at timed intervals.
+  	Mail & Newsgroups icon
+
+The Mail & Newsgroups icon on the status bar displays a green arrow to notify you when new messages have arrived.
+  	New mail notification
+
+To set up a mail account to automatically check for new messages, begin from the Mail window:
+
+   1. Open the Edit menu and choose Mail & Newsgroups Account Settings. You see the Mail & Newsgroups Account Settings dialog box.
+   2. If you have multiple accounts, select an account and click the Server Settings category for that account.
+   3. Select one or both of the following options in the Server Settings section:
+   4.
+          * Check for new mail at startup: Select this checkbox if you want to check this account automatically for new messages whenever you start Mail & Newsgroups. For POP accounts, Mail & Newsgroups checks for new mail, but doesn't download new messages until you click Get Msgs or unless you choose "Automatically download any new messages".
+          * Check for new messages every ___ minutes: Select this checkbox if you want to specify the number of minutes between mail checks. You can also check for new messages at any time by clicking Get Msgs in the Mail window.
+   5. Click OK. Your settings take effect the next time you start Mozilla Mail & Newsgroups.
+
+To set up Mozilla Mail & Newsgroups to play a sound or display an alert when new mail arrives, see Mail & Newsgroups Preferences - Notifications.
+
+You can always retrieve messages manually at any time. To get new messages for the selected account or newsgroup, do one of the following:
+
+    * Click Get Msgs on the Mail toolbar.
+    * Open the File menu (in the Mail window) and choose Get New Messages.
+
+To get new messages for all your mail accounts, begin from the Mail window:
+
+   1. Click the triangle on the Get Msgs button in the Mail toolbar.
+   2. Choose Get All New Messages. Mozilla Mail & Newsgroups retrieves new messages for all your mail accounts.
+
+      If you are not currently logged into one of your mail accounts, Mail & Newsgroups first prompts you to enter your user name and password before retrieving new messages for that account. (If you have already stored your user name and password using the Password Manager, Mail & Newsgroups doesn't prompt you for this information.)
+
+Note: You can also open the File menu (in the Mail window) and choose "Get New Messages for".
+
+To get new messages for a specific mail account, begin from the Mail window:
+
+   1. Click the triangle on the Get Msgs button on the Mail toolbar.
+   2. Choose the account for which you want to retrieve mail.
+
+Note: Mail & Newsgroups prompts you for your password the first time you retrieve messages for an account. You can choose to have Mail & Newsgroups store your password in the Password Manager at that time.
+
+Password Manager can save all your user names and passwords on your own computer and enter them for you automatically. For more information, see Using the Password Manager.
+
+[ Return to beginning of section ]
+Choosing How You View the Mail Window
+
+You can customize the layout of the Mail window (the window you see when you choose Mail & Newsgroups from the Window menu):
+
+    * Open the View menu and choose Show/Hide to show or hide the Mail toolbar, search bar, or the status bar.
+    * Open the View menu, choose Show/Hide, and then choose Sidebar to uncheck (hide) Sidebar.
+    * Expand and collapse any pane to switch between a three-pane or two-pane view. Choose a default view in the Mail and Newsgroup Preferences panel. If you change the default view, you must exit Mail & Newsgroups and then restart Mozilla to have your change take effect.
+
+[ Return to beginning of section ]
+Sorting and Threading Messages
+
+To sort messages by categories such as subject, sender, date, or priority, begin from the Mail window:
+
+    * Click the appropriate column heading in the message list window. Or, open the View menu, choose Sort by, and then select the column you want to sort by.
+
+To reorder column headings, begin from the Mail window:
+
+    * Click and drag a column heading to the left or right to reposition the column.
+
+To group messages by threading (subject), so each message is grouped with all its responses:
+
+    * Click the thread button to the left of the Subject, Sender, and Date column headings. Or, open the View menu, choose Sort by, and then select Threaded.
+
+     
+  	Thread button
+
+Tip: The thread button automatically sorts the threads after the age of their parent messages. If you want to use another sort criterion for the threads, open the View menu and select the desired option from the Sort by submenu.
+
+Tip: To help you identify unread messages in a collapsed thread where you've read the parent message, Mozilla Mail & Newsgroups underlines the parent message.
+
+ 
+
+[ Return to beginning of section ]
+Saving and Printing Messages
+
+To save a mail message as a plain-text, HTML, or Outlook Express file:
+
+   1. In the Mail window, select the message.
+   2. Open the File menu and choose Save As, and then choose File.
+   3. For "Save as type", choose a file type (HTML, Text, or Mail file). Choose Mail file if you want to save the message so it can be opened by Microsoft Outlook or Outlook Express.
+   4. Change the filename's extension to end in .html, .txt, or .eml, depending on the file type you chose in step 3.
+   5. Choose a destination for the file and click Save.
+
+To print a selected message:
+
+    * Click Print.
+
+ 
+
+[ Return to beginning of section ]
+Controlling Images, Scripts, and Plug-ins
+
+By default, you can view remote images in the mail messages you receive. To avoid downloading images embedded in web pages sent as message attachments:
+
+   1. Open the Edit menu (Mozilla menu on Mac OS X) and choose Preferences.
+   2. Under the Privacy & Security category, click Images. (If no subcategories are visible, double-click Privacy & Security to expand the list.)
+   3. Check "Do not load remote images in Mail & Newsgroup messages".
+   4. Click OK to have your change take affect.
+
+By default, JavaScript is not enabled and plug-ins are enabled for mail messages you receive. To change these settings:
+
+   1. Open the Edit menu (Mozilla menu on Mac OS X) and choose Preferences.
+   2. Under the Advanced category, click Scripts & Plug-ins. (If no subcategories are visible, double-click Advanced to expand the list.)
+   3. Under "Enable JavaScript for", check "Mail & Newsgroups" to enable JavaScript for web pages viewed in mail messages.
+   4. Under "Enable Plug-ins for", uncheck "Mail & Newsgroups" to disable plug-ins.
+   5. Click OK to have your changes take affect.
+
+ 
+
+[ Return to beginning of section ]
+Sending Messages
+In this section:
+
+    * Composing Mail and Newsgroup Messages
+    * Using the Message Composition Window
+    * Addressing a Message
+    * Selecting Message Sending Options
+    * Replying to a Message
+    * Forwarding a Message
+    * Confirming That Your Message Was Opened
+    * Saving and Editing a Message Draft
+    * Creating and Using Templates
+
+Composing Mail and Newsgroup Messages
+
+You can address, compose, reply to, or send a new message by doing one of the following:
+
+    * In any Mozilla window, open the File menu and choose New, then Message.
+    * Click Compose on the Mail toolbar.
+    * While displaying a message, click Reply, Forward, or Reply All on the Mail toolbar.
+    * From the Address Book window, select an address and click Compose on the Address Book.
+
+Tip: Use the Mail & Newsgroups Account Settings - Composition & Addressing dialog box to specify the HTML text editor to use for composing messages sent from this account. (You can specify a different editor for each of your accounts.) See Changing the Settings for an Account for more information.
+
+Composing messages in HTML format allows you to use different fonts, text styles (such as bold or italic) and text colors, tables, numbered or bulleted lists, and pictures in your messages. However, some recipients may only be able to read messages composed in plain text format. If you want to use the plain-text editor occasionally, you can hold down the Shift key while clicking the Compose or the Reply button to use the plain-text editor on an as-needed basis.
+
+[ Return to beginning of section ]
+Using the Message Composition Window
+
+Use the Compose window to address, compose, and send mail and newsgroup messages. First specify whether you want to compose messages in plain text or HTML by default in the Composition & Addressing Preferences panel (open the Edit menu and choose Mail & Newsgroups Account Settings).
+
+To view the Compose window, click the Compose button on the Mail toolbar.
+
+The Compose window contains the following:
+
+    * Mail Toolbar
+    *
+
+      You can click the following buttons:
+          o Send: To send a completed message.
+          o Address: To search for names in your address books.
+          o Attach: To attach a file to a message. See Using Attachments for more information.
+          o Spell: To check the spelling of your message text.
+          o Security: To display information about whether your message will be sent encrypted or digitally signed (or both).
+          o Save: To save the message as a draft.
+    * Addressing area: Where you enter the email addresses of recipients.
+    * Attachments area: When you attach files to a message (by clicking in this area or by clicking the Attach button), the filenames will be listed in the Attachments area to the right of the Addressing area.
+    * Message body area: Where you type the contents of your message.
+
+If you've chosen to compose messages using the HTML editor, you see an additional toolbar with text formatting buttons similar to those in Mozilla Composer.
+
+For help using the HTML editor, see Formatting Your Web Pages.
+
+[ Return to beginning of section ]
+Addressing a Message
+
+To address a mail message:
+
+   1. Type the name in the addressing area.
+   2.
+
+      If you have address autocompletion enabled (it's enabled by default), type the first few letters of the recipient's name and wait for Mail & Newsgroups to complete the address. (Or you can type part of the name and immediately press Enter to have Mail & Newsgroups try to complete the address.)
+   3. If multiple addresses are displayed, select an address and press Enter.
+   4.
+
+      Note: Use a comma to separate multiple addresses on the same line. Do not use a comma to separate first or last names. For example, multiple entries might be:
+
+      user1@netscape.net,user2@netscape.net
+   5. If you want this message to be sent from a different account, click the "From" field to select the account you want. See Changing the Account From Which a Message is Sent for more information.
+   6. If necessary, click "To" to choose a different recipient type:
+   7.
+          * To: For primary recipients of your message.
+          * Cc: For secondary recipients (carbon copy).
+          * Bcc: For secondary recipients not identified to the other recipients, including those in the cc list (blind carbon copy).
+          * Reply-To: For recipients to reply to a different email address other than the one the message is sent from.
+          * Newsgroup: For posting to a newsgroup.
+          * Followup-To: For redirecting a newsgroup posting, so that subsequent replies go directly to the redirected newsgroup instead of the original newsgroup.
+
+Tip: You can quickly address a message by clicking the email address contained in a message you're reading, and then selecting Compose Mail To from the pop-up menu.
+
+Changing the Account From Which a Message is Sent
+
+If you have multiple mail accounts, the account listed in the From field is based on the account (or server) you selected when you choose to create a new message. However, Mozilla Mail & Newsgroups also allows you to change the account a message is sent from while you're composing a message. Click the From field to view a list of your accounts and then select the account you want. A copy of the message is saved in the Sent folder of the account where you sent the message from.
+
+About Address Autocompletion
+
+Address autocompletion allows you to address mail easily from the Compose window without having to search for names or type complete names. Mail & Newsgroups automatically checks your address books and an LDAP directory server (if available) and completes the name if it finds a unique match. It also prevents mistakes by showing all possible choices with additional information if it finds multiple matches. Address autocompletion is enabled by default.
+
+If you don't want to use an address that Mail & Newsgroups provides, press Backspace or Delete to remove characters and then enter an alternate address.
+
+To disable address autocompletion:
+
+   1. Open the Edit menu (Mozilla menu on Mac OS X) and choose Preferences.
+   2. Under the Mail & Newsgroups category, click Addressing. (If no subcategories are visible, double-click Mail & Newsgroups to expand the list).
+   3. In the Address Autocompletion section, deselect "Local Address Books" and "Directory Server."
+   4. Click OK.
+
+[ Return to beginning of section ]
+Selecting Message Sending Options
+
+While you're composing a message, you can select these additional message sending options from the Options menu:
+
+    * Select Addresses: The Select Addresses option lets you choose the recipient's email address from your Address Books or a remote directory. To look up an address in an address book or directory, enter the first few letters of the recipient's first or last name to start the search. Select an address and then click To:, Cc:, or Bcc: to address your message.
+    * Check Spelling: Checks the spelling of the message text before you send it. You can also click Spell.
+    * Rewrap: If you are composing a message using the plain-text editor, you can use the Rewrap command to rewrap long lines of quoted text to fit the Compose window. This command rewraps selected quoted text to the number of characters specified by the Composition preferences. This command is primarily useful when you are replying to a message where the original message is quoted in your reply, and the original message contains long lines.
+
+      You use the Mail & Newsgroups Account Settings command on the Edit menu to specify that you want to use the plain-text editor for composing messages. Select the Composition & Addressing panel of the account and uncheck "Compose messages in HTML format" to use the plain-text editor for all messages. If you only want to use the plain-text editor occasionally, you can hold down the Shift key while clicking the Compose or the Reply button to use the plain-text editor on an as-needed basis.
+    * Return Receipt: Choose this option to request a confirmation message when the recipient displays (opens) the message. Keep in mind that the recipient may choose not to send you a return receipt. This option lets you enable or disable return receipt requests on a per-message basis. To automatically request return receipts for all messages you send, use the return receipts preferences. See Mail & Newsgroups Preferences - Return Receipts for more information.
+    * Format: Send the message as plain text, or HTML (formatted), or both. If you choose "Auto-Detect," Mail & Newsgroups prompts you for the format to use if it's unknown whether the recipient's mail program can display an HTML message. The format you choose here overrides the send format you specified using the Preferences command on the Edit menu (Mozilla menu on Mac OS X).
+    * Priority: Choose a priority to indicate whether the message has lowest, low, normal, high, or highest priority.
+    * Send a Copy To: Choose this if you want to file an additional copy of the sent message in a different folder than your default Sent folder. Then select the folder you want.
+    * Security: Choose this to change the default security options for this message.
+
+[ Return to beginning of section ]
+Replying to a Message
+
+To reply to a mail message:
+
+    * Select the message.
+    * Click Reply to respond to the sender alone.
+    * Click Reply All to respond to all addressees in the message.
+
+To include the original message each time you reply to any message, and to specify how to place the original message in the reply:
+
+   1. Open the Edit menu and choose Mail & Newsgroups Account Settings. You see the Mail & Newsgroups Account Settings dialog box.
+   2. If you have multiple accounts, select an account and click the Composition & Addressing category for that account.
+   3. Select "Automatically quote the original message when replying".
+   4. Specify where in the message to place your reply. "Start my reply below the quote" is the default.
+   5. If you have decided to attach a signature to every outgoing message and selected to start your reply above the quote here, you can additionally configure where your signature is placed:
+          * Select "below the quote (recommended)" to place your signature at the very end of the message below the quoted text.
+          * Select "below my reply (above the quote)" to place your signature between your reply and the quoted text.
+   6. Click OK.
+
+[ Return to beginning of section ]
+Forwarding a Message
+
+When you forward a message, you can specify how to place new text relative to the original text: inline (in the body of the message; this is the default), or as an attachment.
+
+To forward a message:
+
+   1. Select the message and click Forward.
+   2. Type the name or email address of the recipient.
+   3. Click Send.
+
+To set the default for forwarding messages:
+
+   1. Open the Edit menu (Mozilla menu on Mac OS X) and choose Preferences.
+   2. Under the Mail & Newsgroups category, click Composition. (If no subcategories are visible, double-click Mail & Newsgroups to expand the list.)
+   3. For forwarding messages, choose Inline (in the message body) or As Attachment.
+   4. Click OK.
+
+Tip: To override the default for forwarding a message, select the message, open the Message menu, and choose Forward As, then choose Inline or Attachment.
+
+[ Return to beginning of section ]
+Confirming That Your Message Was Opened
+
+You can use return receipts to notify you when a recipient has displayed (opened) your message. The recipient must be using a mail program that supports the Message Disposition Notification (MDN) standard. Keep in mind that the recipient may choose not to send you a return receipt, even if you've requested one. Messages you send to a newsgroup address will not include a return receipt request, since news servers don't support this feature.
+
+To request return receipts for all messages you send, you can use the global Return Receipt preferences to specify how to manage requests you receive for return receipts. You can override these global preferences for individual accounts.
+
+To request a return receipt on a per-message basis:
+
+    * From a Mail Compose window, open the Options menu, and choose Return Receipt.
+
+To automatically request return receipts when sending messages from each of your mail accounts:
+
+   1. Open the Edit menu (Mozilla menu on Mac OS X) and choose Preferences.
+   2. Under the Mail & Newsgroups category, click Return Receipts. (If no subcategories are visible, double-click Mail & Newsgroups to expand the list.)
+   3. Select "When sending messages, always request a return receipt."
+   4. Click OK.
+
+For more information on setting return receipt preferences, see Mail & Newsgroups Preferences - Return Receipts.
+
+[ Return to beginning of section ]
+Saving and Editing a Message Draft
+
+To save a mail message as a draft so you can complete it later:
+
+    * In the Compose window, click Save, or open the File menu and choose Save as Draft. By default, the message is saved in the Drafts folder for the current account.
+
+      Note: Your mail message will stay open after you save it as a draft.
+
+To edit or send a message draft, begin from the Mail window:
+
+   1. Click the Drafts folder for the account where you created the message draft.
+   2. Click the message that you want to edit.
+   3. In the top-right corner of the message, click the Edit Draft button.
+   4. Edit the message as necessary.
+   5. Click Send to send the message or click Save to save the message so you can complete it later.
+   6.
+
+      Note: Sending the message removes it from the Drafts folder.
+
+Tip: You can also double-click the message to open it for editing. This is especially useful if the message pane is closed.
+
+To delete one or more unwanted message drafts, begin from the Mail window:
+
+   1. Click the Drafts folder for the account where you created the message drafts.
+   2. Select the message drafts that you want to delete.
+   3. Click Delete in the Mail toolbar.
+
+[ Return to beginning of section ]
+Creating and Using Templates
+
+Templates are useful for setting the default format for messages that you send regularly, such as weekly status reports. You can save a message as a template from any window in which it is displayed, including from within a Mail compose window.
+
+To save a message to use as a template:
+
+   1. In the Mail window, click Compose to create a new message and then set the default font, text size, text color, background color, and any other default formatting you want.
+   2.
+
+      Alternatively, open an existing message that already has the formatting you want.
+   3. While displaying the message, open the File menu, choose Save As, then choose Template. The message is stored as a template in the Templates folder for the current mail account.
+
+To compose a message using a template:
+
+   1. In the Mail window, select the Templates folder for the account where you created the message template.
+   2. Double-click the message template to open it.
+   3. Edit the message, then save it (to put it in the Drafts folder) or send it.
+   4.
+
+      Note: Sending the message does not remove the template from the Templates folder. The template is preserved for future use.
+
+To delete one or more unwanted message templates, begin from the Mail window:
+
+   1. Click the Templates folder for the account where you created the message templates.
+   2. Select the message templates that you want to delete.
+   3. Click Delete in the Mail toolbar.
+
+[ Return to beginning of section ]
+Creating HTML Mail Messages
+In this section:
+
+    * Using HTML in Your Messages
+    * Choosing HTML Message Sending Options
+    * Specifying Recipients for HTML Messages
+    * Viewing the Message Source for HTML Messages
+    * Using the HTML Mail Question Dialog Box
+
+Using HTML in Your Messages
+
+HTML messages can include formatted text, links, images, and tables just like a web page. However, some recipients may not be able to receive HTML messages. Mozilla Mail & Newsgroups allows you to compose mail and newsgroup messages using either the HTML (rich-text) formatting editor or the plain-text editor for each mail account you have. In addition, you can choose whether your addressees should receive HTML or plain-text messages by default, and how Mail & Newsgroups should handle messages when it's not known if an addressee can receive HTML-formatted mail.
+
+To specify whether to use the HTML editor as the default for composing messages, begin from the Mail window:
+
+   1. Open the Edit menu and choose Mail & Newsgroups Account Settings. You see the Mail & Newsgroups Account Settings dialog box.
+   2. Select the mail or newsgroup account you want to use.
+   3. Go to the Composition & Addressing panel and select "Compose messages in HTML format." You see the Formatting toolbar in the Compose window. Leave this box unchecked to use the plain-text editor for this account.
+
+[ Return to beginning of section ]
+
+ 
+Editing or Inserting HTML Elements
+
+If you understand how to work with HTML source code, you can edit or insert additional HTML tags, style attributes, and JavaScript in your mail message. If you are not sure how to work with HTML source code, it's best not to change it. To work with HTML code, use one of these methods:
+
+    * Place the insertion point where you want to insert the HTML code, then open the Insert menu and choose HTML. In the Insert HTML dialog box, enter HTML tags and text, and then click Insert to insert your changes.
+    * Select the HTML source code that you want to edit, then open the Insert menu and choose HTML. In the Insert HTML dialog box, edit HTML tags and text, and then click Insert to insert your changes.
+    * Select an element such as a table, named anchor, image, link, or horizontal line. Double-click the element to open the associated properties dialog box for that item. Click Advanced Edit to open the Advanced Property Editor. You can use the Advanced Property Editor to add HTML attributes and JavaScript to objects.
+
+For more information on editing HTML source code, see Using the Advanced Property Editor.
+
+[ Return to beginning of section ]
+Choosing HTML Mail Sending Options
+
+By default, Mail & Newsgroups prompts you before sending HTML messages when it's not known whether the recipient's mail program can display HTML-formatted messages.
+
+To choose sending-format options for mail messages, begin from the Mail window:
+
+   1. Open the Edit menu (Mozilla menu on Mac OS X) and choose Preferences.
+   2. Under the Mail & Newsgroups category, click Send Format. (If no subcategories are visible, double-click Mail & Newsgroups to expand the list).
+
+      Note: This preference applies only to mail messages, not to newsgroup messages.
+   3. Select the option you want and then click OK.
+
+If while composing a message you realize that one or more recipients may not be able to receive HTML-formatted mail, you can easily convert the message to a different format when you click Send:
+
+   1. In the Compose window, open the Options menu and choose Format.
+   2. Select the format you want to use for sending the message from the submenu:
+   3.
+          * Auto Detect: Mail & Newsgroups chooses the appropriate format for the message text. If it can't determine the format, it asks you to choose a format.
+          * Plain Text Only: The message may not display formatting such as bold text, but all mail programs will be able to display the message.
+          * Rich Text (HTML) Only: Some mail programs may have trouble displaying an HTML-formatted message. Choose this option only if you are sure the recipient's mail program can display HTML-formatted mail.
+          * Plain and Rich (HTML) Text: This uses more disk space, but may be the best choice if you are not sure whether the recipient's mail program can display HTML-formatted mail.
+   4. When you've finished composing the message, click Send.
+
+[ Return to beginning of section ]
+Specifying Recipients for HTML Messages
+
+You can save time by indicating whether individuals in your address books prefer to receive either HTML messages or plain text messages.
+
+   1. Open the Window menu and choose Address Book.
+   2. Select the address book on the left and then select the individual's card on the right.
+   3. Click Properties to display the "Card for" dialog box.
+   4. In the Name tab, use the "Prefers to receive messages formatted as" drop-down list to select HTML if you know this recipient can read HTML-formatted messages (such as messages that include links, images, or tables).
+   5.
+
+      If this recipient can only read messages sent as plain text (no formatting), then choose Plain Text. If you don't know or are not sure, choose Unknown.
+
+      If you choose Unknown, Mozilla Mail & Newsgroups determines the sending format based on the Send Format settings for Mail & Newsgroups in the Preferences dialog box. If Mail & Newsgroups still can't determine the correct format, it will prompt you to choose a sending format when you send the message.
+   6. Click OK.
+
+[ Return to beginning of section ]
+Viewing the Message Source for HTML Messages
+
+You can quickly view the HTML and other code that generates an HTML message you've received:
+
+   1. In the message list window, open the message.
+   2. Open the View menu and choose Message Source.
+
+[ Return to beginning of section ]
+Using the HTML Mail Question Dialog Box
+
+The HTML Mail Question dialog box appears when you try to send a message to someone whose mail program may not be able to display HTML messages or when Mail & Newsgroups cannot determine whether your recipient can display HTML messages. If you are in doubt, send the message in both HTML and plain-text formats.
+
+[ Return to beginning of section ]
+Using Attachments
+In this section:
+
+    * Attaching a File or Web Page
+    * Viewing and Opening Attachments
+    * Saving Attachments
+
+Attaching a File or Web Page
+
+To attach a file to an outgoing mail message:
+
+   1. In the Compose window, click Attach or open the File menu and choose Attach File. You see the "Enter file to attach" dialog box.
+
+      Tip: You can also click inside the Attachments area to attach a file.
+   2. Type the name of the file you want to attach, or select a file from your hard drive that you want to attach.
+   3. Click Open. The filename appears in the Attachments area.
+
+Tip: You can also drag and drop one or more files from your desktop into the Attachments area in the Compose window.
+
+To attach a web page to an outgoing mail message:
+
+   1. In the Compose window, open the File menu and choose Attach Web Page.
+   2. In the dialog box, enter the URL of the page and then click OK. The web page URL appears in the Attachments area.
+
+Tip: When you are viewing a page in the Navigator browser, you can send the page to someone by opening the File menu and choosing Send Page.
+
+[ Return to beginning of section ]
+Viewing and Opening Attachments
+
+If you receive a mail attachment that consists of a file type that Mozilla can display (such as graphic files and HTML files), you see the attachment displayed inline (in the body of the message). For other file types, Mail & Newsgroups lets you open the attachment using another application, or you can save the attachment on your hard disk.
+
+To open the attachment, make sure you have a program on your computer that can open files of the same type as the attachment's file format. For example, if you want to open a .DOC file, make sure you have a program on your computer that can open .DOC files.
+
+To open an attachment:
+
+   1. Double-click the attachment you want (if there is more than one).
+   2. In the Downloading dialog box, choose what you want Mozilla to do with the attachment:
+
+
+          * If Mozilla finds an application on your hard disk that can open the attachment, you can open the attachment using that application. Click "Choose" to use a different application to open the attachment.
+          * If Mozilla can't find an application on your hard disk that can open the attachment, you can save the attachment. You won't be able to open the attachment, but at least you can save it on your hard disk until you can install an application that can open it.
+          * Click "Advanced" to add a new file type to the list of helper applications. Mozilla uses helper applications to determine how different file types are opened by other applications from within Mozilla. For more information, see Managing Different File Types.
+   3. Click OK.
+
+Note: If you are viewing your mail using an IMAP mail server, all attachments remain on the server.
+
+[ Return to beginning of section ]
+Saving Attachments
+
+To save an attachment:
+
+   1. In the right side of the message envelope, under "Attachments," select the attachment that you want to save.
+   2. Right-click (Control-click on Mac OS) the attachment and choose Save As from the pop-up menu.
+   3. Choose a filename and location for the attachment on your hard disk and then click OK. Mail & Newsgroups downloads the attachment and saves it to the specified location.
+
+Tip: To save all attachments, right-click the first one in the attachment list, and choose Save All. You can then specify the location where you want all the attachments to be saved.
+
+[ Return to beginning of section ]
+Deleting Messages
+In this section:
+
+    * Deleting POP or IMAP Messages
+    * Moving Messages to and from the Trash
+
+Deleting POP or IMAP Messages
+
+How you delete messages depends on your mail server type: POP or IMAP. Deleted POP messages are automatically moved to the Trash folder. IMAP users can set different options for deleting messages.
+
+To delete messages from your Inbox or other folders, begin from the Mail window:
+
+   1. In the message list, select the messages and click Delete. By default, Mail & Newsgroups moves the selected messages to the Trash folder.
+   2. To delete messages permanently, open the File menu and choose Empty Trash.
+
+To delete messages without opening them, begin from the Mail window:
+
+   1. Open the View menu and choose Show/Hide, and then uncheck Message Pane.
+
+      Alternatively, click the Message Pane handle (the ridged area centered at the bottom of the message list) to close the message pane.
+   2. In the message list, select the messages and click Delete.
+
+To set deletion preferences for IMAP messages:
+
+   1. Open the Edit menu and choose Mail & Newsgroups Account Settings. You see the Mail & Newsgroups Account Settings dialog box.
+   2. Locate the IMAP account you want, and then click the Server Settings category under the account name.
+   3. Select the options you want for deleting messages and click OK.
+
+[ Return to beginning of section ]
+Moving Messages To and From the Trash
+
+If you use a POP server to deliver your mail, or if you set up IMAP to use the Trash folder, follow these steps to delete messages from your Inbox or other folders:
+
+   1. In the message list, select the messages you want to delete.
+   2. Click Delete. Mail & Newsgroups moves the messages to the Trash folder.
+
+To recover messages from the Trash:
+
+   1. Click the Trash folder.
+   2. Select the messages you want to recover and drag them to another folder.
+
+To delete messages permanently:
+
+    * Open the File menu and choose Empty Trash.
+
+[ Return to beginning of section ]
+Using Address Books
+In this section:
+
+    * About Address Books
+    * Adding Entries to Your Address Books
+    * Creating a New Address Book
+    * Creating a New Address Book Card
+    * Creating a Mailing List
+    * Editing a Mailing List
+    * Searching Address Books and Directories
+    * Importing Address Books
+    * Exporting Address Books
+    * Adding and Removing LDAP Directories
+
+About Address Books
+
+Address books store email addresses and contact information for people
+you typically send mail to, such as colleagues, friends, and
+family. Mozilla Mail & Newsgroups provides you with two address books:
+the Personal Address Book and the Collected Addresses Book and you can create additional address books as well. You can also import address books from other mail programs and previous versions of Mozilla. The contents of these address books are stored locally on your hard disk.
+
+Your address book may also list email addresses from an LDAP directory, which is located on an LDAP directory server. The directory server stores email addresses of people that are not included in your locally-stored address books. The Lightweight Directory Access Protocol (LDAP) is an industry-standard method for accessing Internet or intranet directory services such as corporate address books.
+Personal Address Book
+
+Use the Personal Address Book to add specific names of your choice. You can create mailing lists and edit individual address entries.
+Collected Addresses
+
+By default, the Collected Address Book automatically collects the email addresses contained in outgoing mail messages. Addresses from outgoing messages are stored in the Collected Address Book as soon as you click Send. The Collected Address Book can also save the sender's address in each incoming message. To enable this feature, you must change the preferences for email address collection. The preferences also let you choose which types of addresses you want to collect (only addresses from mail messages or addresses from both mail and newsgroup messages).
+LDAP Directory (if available)
+
+An LDAP directory (also known as an address lookup service) stores email addresses of recipients who are not in your locally-stored address books. LDAP directories offer you access to large, centrally maintained databases of email addresses, which is especially useful with address autocompletion.
+
+Automatic address collection is enabled by default. To change automatic address collection settings, begin in the Mail window:
+
+   1. Open the Edit menu (Mozilla menu on Mac OS X) and choose Preferences.
+   2. Under the Mail & Newsgroups category, click Addressing. (If no subcategories are visible, double-click Mail & Newsgroups to expand the list.)
+   3. Under Email Address Collection, choose whether you want to:
+
+
+          * Use this feature for incoming or outgoing messages, or both.
+          * Use this feature for newsgroup messages.
+          * Limit the size of the Collected Address book. The default size is 700 cards. If you add a new card that exceeds the limit, the oldest card is removed and the new card is added, keeping the total number of cards the same.
+   4. Click OK.
+
+
+Opening the Address Book Window
+
+To open the Address Book window:
+
+    * Open the Window menu and choose Address Book, or click the Address Book icon in the lower-left corner of any Mozilla window.
+    *
+        	Address Book icon
+
+
+Changing the Address Book Window Display
+
+To customize how the Address Book window and the cards are displayed:
+
+   1. Open the Window menu and choose Address Book. You see the Address Book window.
+   2. In the Address Book window, open the View menu and choose from the following display options:
+   3.
+          * Choose Show/Hide, and then select the item you wish to uncheck (hide) or check (show).
+          * Choose Show Name As, and then select how you want card names displayed (first/last, last/first, or Display Name).
+          * Choose Sort by, and then select a sort option.
+
+[ Return to beginning of section ]
+Adding Entries to Your Address Books
+
+You can use any of the following ways to add entries to your address books:
+
+    * Click a name in the From or recipient fields (for example, To or Cc) in a message you've received, and then select "Add to Address Book" from the drop-down list.
+    * In the Address Book window, click New Card to create a new address book card.
+    * Open a message, which automatically adds the sender's address to your Collected Addresses Book (if enabled).
+    * In the Address Book window, copy entries to another address book by selecting the entries and dragging them over the name of the address book you want to copy them to.
+
+[ Return to beginning of section ]
+Creating a New Address Book
+
+Mozilla Mail & Newsgroups provides a default personal address book, but you can create additional address books.
+
+To create a new address book:
+
+   1. Click the Address Book icon in the lower-left corner of any Mozilla window, or open the Window menu and choose Address Book. You see the Address Book window.
+      	Address Book icon
+   2. In the Address Book window, open the File menu, choose New, and choose Address Book. You see the New Address Book dialog box.
+   3. Type the name of the new address book, and click OK.
+
+[ Return to beginning of section ]
+Creating a New Address Book Card
+
+Address book cards can be used to store names, postal addresses, email addresses, phone numbers, and information such as whether the addressee prefers to receive plain-text or HTML-formatted messages.
+
+To create an address book card for an individual:
+
+   1. Click the Address Book icon on the status bar or open the Window menu and choose Address Book.
+   2. Click New Card. (If you have multiple address books, select the one to which you want to add a card.)
+   3. Each New Card dialog box has four tabs:
+   4.
+          * Name: Enter the following information:
+
+
+                o First and Last (first and last name of person as you want it to appear in the address book).
+                o Display name (the name that appears in the "To" field of the Compose window).
+                o Nickname (a shortcut or alias for the real name).
+                o Email address (primary and additional address).
+                o Prefers to receive messages formatted as: If you know this recipient can read HTML-formatted messages (such as messages that include links, images, or tables), choose HTML. If this recipient can only read messages sent as plain text (no formatting), then choose Plain Text. If you don't know or are not sure, choose Unknown. If you choose Unknown, Mozilla Mail & Newsgroups determines the sending format based on the Mail & Newsgroups Send Format settings in the Preferences dialog box. If Mail & Newsgroups still can't determine the correct format, Mail & Newsgroups will prompt you to choose a sending format when you send the message.
+                o Phones (enter phone numbers for this person)
+          * Address: Type additional information such as street address, phone number, and URL.
+
+            Tip: If you enter address information, Mozilla displays a Get Map button next to the address when you view this entry's address book card in your address book. Clicking the Get Map button displays a web page that contains a map to the address.
+
+            Store any additional information you want.
+
+Tip: To quickly add entries to your address book, click any email address in messages you receive and select Add to Address Book from the drop-down list. The New Card dialog box appears where you can complete the information.
+Viewing or Editing Card Properties
+
+To view or edit the properties for an individual card:
+
+   1. Select the card from the list of entries in the Address Book window.
+   2. Click Properties.
+
+[Return to beginning of section]
+Creating a Mailing List
+
+If you regularly send messages to a group of recipients, you can quickly address a message by using a mailing list that contains the names you want.
+
+To create a mailing list and add it to your address book:
+
+   1. In the Address Book window, click New List.
+   2. Enter the following information in the Mailing List dialog box:
+          * Click the drop-down list at "Add to" to choose an address book in which to store the list.
+          * List name: When you enter the list name in the "To" field of a message, everyone on the list receives your message.
+          * List nickname: Alias (or shortcut) for the list name.
+          * Description: Appears after the list name in the address line of the Compose window.
+   3. Type email addresses to add them to the mailing list.
+   4. Click OK.
+
+In the left side of the Address Book window, the mailing list appears underneath the address book you added it to.
+
+[ Return to beginning of section ]
+Editing a Mailing List
+
+Mailing lists are stored in the address book in which you created them.
+
+To remove a member from the list, begin from the Mail window:
+
+   1. Open Window menu and choose Address Book.
+   2. Expand the address book containing your mailing list by clicking the small triangle beside the address book title.
+   3. Highlight the mailing list by clicking its name. The list members appear to the right of the mailing list name.
+   4. Click the entry you wish to delete.
+   5. Click the Delete button.
+
+To add members to a mailing list:
+
+   1. Open Window menu and choose Address Book.
+   2. Expand the address book containing your mailing list by clicking the small triangle beside the address book title.
+   3. Highlight the mailing list by clicking its name.
+   4. Click Properties.
+   5. Add or remove entries as necessary.
+   6. Click OK when you are done.
+
+[ Return to beginning of section ]
+Searching Address Books and Directories
+
+Mozilla Mail & Newsgroups lets you quickly search an address book or directory by name or email address, or use a combination of criteria to perform a more specific search through an address book or directory.
+
+To quickly search an address book or directory for a name or email address, begin from the Address Book window:
+
+   1. In the Address Book window, in the list of address books, select the address book or directory that you want to search.
+   2. In the "Name or Email contains" field, type the name or email address that you want to find. You can type only part of the name or email address, or you can type the exact text that you want to find.
+
+      As soon as you stop typing, Mozilla Mail & Newsgroups displays only those entries where the name or email address contains the search text you entered.
+   3. Click Clear to erase the search text and show all entries.
+
+Searching for Specific Entries
+
+You can search address books or directories for specific entries. If you are not already viewing the Advanced Address Book Search dialog box, begin from the Address Book window:
+
+   1. Open the Tools menu and choose Search Addresses. You see the Advanced Address Book Search dialog box.
+   2. Next to "Search in", choose the address book or directory through which you want to search.
+   3. Select the matching option Mail & Newsgroups uses to search for entries either that match all or at least one of the conditions (criteria) that you choose.
+   4. Click More to add criteria and Fewer to remove them.
+   5. Click Search to begin, or click Clear to reset your entries. The search results appear in lower part of the dialog box.
+   6. To sort the entries in a different order, click the column that you want to sort by.
+   7. To view the card for an entry, select the entry and click Properties.
+   8. To compose a message to selected recipients, select one or more entries and click Compose.
+
+[ Return to beginning of section ]
+Importing Address Books
+
+If you have a Mozilla address book from another user profile or computer, or if you have an address book from a previous version of Netscape Communicator or another mail program, you can import its entries into the Address Book window as a new address book. Keep in mind that when you upgrade a user profile from an earlier version of Mozilla, your address books are automatically included, so there's no need to import them.
+
+You can import address books from Communicator, Netscape 6, Eudora, Outlook, Outlook Express, or text files (LDIF, tab-delimited (.tab), comma-separated (.csv), or text (.txt) formats). When you import an address book, Mail & Newsgroups creates a new address book with the imported entries.
+
+You can also import mail messages and settings from Communicator, Eudora, Outlook, and Outlook Express.
+
+To import an address book, begin from the Mail window:
+
+   1. Open the Tools menu, and choose Import. You see the Mail Import Wizard.
+   2. Follow the instructions to import address books.
+   3.
+
+      Tip: Communicator address book files (pab.na2) are stored in your user profile directory (for example, C:\Program Files\Mozilla\Users, where \Users contains the user profiles directories).
+
+[ Return to beginning of section ]
+Exporting Address Books
+
+You can export a Mozilla address book if you later want to import it into another user profile, move it to another computer, or use it with another program that can import address books. You can export an address book to one of these file formats: Mozilla (.ldif), tab-delimited (.tab), comma-separated (.csv), or text (.txt) formats.
+
+To export an address book, begin from the Address Book window:
+
+   1. Select the address book that you want to export.
+   2. Open the Tools menu, and choose Export.
+   3. In the Export Address Book dialog box, browse to the location where you want to save the address book file.
+   4. Choose the file format for the exported address book (.ldif, comma-separated, or tab-delimited).
+   5. Enter a name for the address book file. Be sure to include the appropriate file extension (.ldif, .csv, .tab, or .txt).
+   6. Click Save.
+
+[ Return to beginning of section ]
+Adding and Removing LDAP Directories
+
+Adding an LDAP directory to your address book allows you to search the directory for email addresses and other contact information. You can also use the directory for address autocompletion when addressing mail messages.
+
+You typically add or remove LDAP directories using instructions provided by your system administrator. Check with your system administrator for the information you will need in order to add a new directory to your address book.
+
+To add a new directory, begin from the Address Book window:
+
+   1. Open the File menu, and choose New, and then choose LDAP Directory. You see the Directory Server Properties dialog box.
+   2. Type the following information in the Directory Server Properties dialog box General tab:
+
+
+          * Name: Enter the name of the directory service (for example, InfoSpace Directory).
+          * Host Name: Enter the name of the host name server, such as ldap.infospace.com.
+          * Base DN: This setting is used to set the Base distinguished name. Enter codes to restrict searching to a specific country or organization. For example, c=JP restricts the search to Japan only. Base DN also specifies the organization to search on within the directory (for instance, o=Netscape Communications Corporation, c=US).
+          * Port Number: Enter the port number for the LDAP server. The default is 389.
+          * Bind DN: The distinguished name that is used to authenticate (log in) to the LDAP server. If left blank, the LDAP server binds anonymously.
+          * Use secure connection (SSL): Choose this setting if your LDAP server supports secure (encrypted) connections. If you are unsure, contact your system administrator.
+   3. Click the Advanced tab to configure LDAP directory server settings.
+   4. Type the following information:
+
+
+          * Don't return more than _ results: This setting lets you limit the number of autocompletion matches returned by the directory server. Enter the maximum number of email address matches to display for autocompletion.
+          * Scope: Defines the limits of the search. Choose one of the following:
+
+
+                o One Level: Retrieves matching entries by searching the base DN and one level below the base DN.
+                o Subtree: Retrieves matching entries by searching the base DN in addition to all levels below the base DN. This is the least restrictive search.
+          * Search filter: Enter the search filter to apply to matching results that are within the specified scope of the search.
+   5. Click OK to close the Directory Server Properties dialog box.
+   6. Click OK to close the LDAP Directory Servers dialog box.
+   7. Click OK to close the Preferences dialog box.
+
+The directory you added appears in the list of address books in the Address Book window.
+
+To delete a directory:
+
+   1. Open the Edit menu (Mozilla menu on Mac OS X) and choose Preferences. You see the Preferences dialog box.
+   2. Under the Mail & Newsgroups category, select Addressing. (If no subcategories are visible, double-click Mail & Newsgroups to expand the list.)
+   3. Under Address Autocompletion on the right side of the dialog box, click Edit Directories.
+   4. In the LDAP Directory Servers dialog box, select the directory that you want to delete and click Delete.
+   5. Click OK, then click OK again to close the Preferences dialog box.
+
+For information on downloading or synchronizing a directory for offline use so that you can search it or use it for address book autocompletion while working offline, see Downloading Directory Entries for Offline Use.
+Directory Server Settings
+
+If you are not already viewing the Directory Server Settings dialog box, begin from the Mail window:
+
+   1. Open the Window menu, and choose Address Book.
+   2. In the list of address books, select a directory.
+   3. Click Properties.
+
+General Tab
+
+    * Name: The name of the directory service (for example, InfoSpace Directory).
+    * Host Name: The name of the host name server, such as ldap.infospace.com.
+    * Base DN: The Base Distinguished Name. Codes entered here restrict searching to a specific country or organization. For example, c=JP restricts the search to Japan only. Base DN also specifies the organization to search on within the directory (for instance, o=Netscape Communications Corporation, c=US).
+    * Port Number: Enter the port number for the LDAP server. The default is 389.
+    * Bind DN: The distinguished name that is used to authenticate (log in) to the LDAP server. If left blank, the LDAP server binds anonymously.
+    * Use secure connection (SSL): Choose this setting if your LDAP server supports secure (encrypted) connections. If you are unsure, contact your system administrator.
+
+Advanced Tab
+
+    * Don't return more than _ results: This setting lets you limit the number of autocompletion matches returned by the directory server. Specify the maximum number of email address matches to display for autocompletion.
+    * Scope: Defines the limits of the search:
+    *
+          o One Level: Retrieves matching entries by searching the base DN and one level below the base DN.
+          o Subtree: Retrieves matching entries by searching the base DN in addition to all levels below the base DN. This is the least restrictive search.
+    * Search filter: Specifies the search filter to apply to matching results that are within the specified scope of the search.
+
+[ Return to beginning of section ]
+Organizing Your Messages
+
+    * Creating a Folder
+    * Renaming a Folder
+    * Moving or Copying a Folder
+    * Filing Messages in Folders
+    * Sharing Folders With Other Users (IMAP Only)
+    * Labeling Messages
+    * Marking or Flagging Messages
+    * Using Message Views
+    * Creating Message Filters
+    * Searching Through Messages
+
+Creating a Folder
+
+To create a message folder, begin from the Mail window:
+
+   1. Open the File menu, choose New, and then Folder. You see the New Folder dialog box.
+   2. Type the name of the folder.
+   3. Click the drop-down list and choose a folder location and click OK. Your new folder appears in your Mail Folders list.
+
+[ Return to beginning of section ]
+Renaming a Folder
+
+To rename an existing folder, begin from the Mail window:
+
+   1. Select the folder you want to rename.
+   2. Open the File menu and choose Rename Folder. You see the Rename Folder dialog box.
+   3. Type the new name and click OK.
+
+Note: If you rename a folder that you've been using to store filtered messages, the filter will automatically update to use the renamed folder.
+
+[ Return to beginning of section ]
+Moving or Copying a Folder
+
+You can copy a folder and its contents to another mail account, or move a folder within the same mail account.
+
+To move or copy a folder, begin from the Mail window:
+
+   1. Select the folder you want to move or copy.
+   2. Do one of the following:
+
+
+          * To move the folder under another folder within the same account, drag the folder over the name of the other folder. The folder you moved becomes a subfolder of the other folder.
+          * To copy the folder to another account, drag the folder over the name of another account.
+          * To copy the folder under another folder in another account, drag the folder over the name of another folder in another account. The folder you copied becomes a subfolder of the other folder.
+
+[ Return to beginning of section ]
+Filing Messages in Folders
+
+You can move messages from one folder to another by using either of these methods:
+
+    * Select the message, click the File button on the toolbar, and choose the destination folder.
+    * Drag and drop messages into the desired folder.
+    *
+
+      Note: If you drag and drop a message from an IMAP or POP mail server folder to a local folder on your hard drive, the message is moved to the local folder and removed from the server folder.
+
+To copy a message from one folder to another:
+
+   1. Select the message and right-click to display the pop-up menu.
+   2. Select "Copy To" and then select the destination account and folder from the drop-down list.
+
+Tip: Alternatively, you can copy a message between folders by holding down the Shift key while dragging the message from the message list over another folder.
+
+[ Return to beginning of section ]
+Sharing Folders With Other Users (IMAP Only)
+
+Users with IMAP mail accounts can share mail folders with other users on the same network. Sharing folders allows several users to see and work with the same messages, similar to a newsgroup. To use shared folders, your IMAP mail server must support Access Control List (ACL) management. Check with your system administrator or help desk if you are not sure that shared folders are supported by your IMAP mail server.
+
+To share a mail folder with other users on your network, or to view sharing information for a folder, begin from the Mail window:
+
+   1. Within an IMAP account, select a folder that you want to share, or select a folder whose sharing privileges you want to view.
+
+      Folders listed under Local Folders, or folders listed under a POP mail account cannot be shared.
+   2. Open the Edit menu, and choose Folder Properties.
+   3. Click the Sharing tab.
+   4. Click Privileges. You may be prompted to enter your network user name and password.
+
+      The Privileges button is only available if the IMAP mail server allows you to set folder sharing privileges. If this button is not available, you can view the folder sharing privileges for this folder but cannot change them.
+   5. Follow the instructions on the screen to add users and to set their folder access privileges.
+
+
+          * Read privileges: Users can read messages and copy their contents, but they cannot modify or delete messages, or copy messages into the folder. Users can flag messages as read or unread. See Marking or Flagging Messages for instructions on flagging messages.
+          * Read and Write privileges: In addition to Read privileges, users can modify and delete messages. Users can also copy or move messages into the folder.
+          * Manage privileges: In addition to Read and Write privileges, users can add and remove users and change their folder permissions.
+   6. Click OK to confirm your changes.
+   7. Click OK to close the Folder Properties dialog box.
+
+In the list of folders for your mail account, a shared folder displays a distinctive folder icon to indicate that it is shared.
+
+To send a message that tells others how they can subscribe to your shared folder, begin from the Mail window:
+
+   1. Select the shared folder.
+   2. Right-click to display a pop-up menu, and choose Copy Folder Location.
+   3. Click Compose to display a Mail compose window.
+   4. Click in the message body, open the Edit menu, and choose Paste.
+   5. Address the message, type a subject, and type the message text. Tell message recipients that they can subscribe to the shared folder by clicking the link you pasted into the message.
+
+      Only message recipients who share the same network will be able to subscribe to your shared folder.
+   6. Click Send.
+
+Subscribing to a Shared Folder
+
+Subscribing to a shared folder is similar to subscribing to a newsgroup. To subscribe to a shared folder, begin from the Mail window:
+
+   1. Open the File menu and choose Subscribe. You see the Subscribe dialog box.
+   2. If necessary, click the Account drop-down list to choose another IMAP mail account.
+   3. Select the folder that you want to subscribe to.
+   4. Click Subscribe or click in the Subscribe column next to the folder. You see a checkmark next to each folder to which you subscribe. Click Unsubscribe to cancel a selection.
+   5. Click OK. The list of your subscribed folders appears in the Mail window.
+
+[ Return to beginning of section ]
+Labeling Messages
+
+You can apply labels to messages to help you organize and prioritize them. You can apply a standard color and text label to messages, or you can customize the label colors or label text to suit your needs.
+
+One powerful way to use labels is to set up a message filter to automatically label incoming messages from a specific sender. For example, you can set up a message filter so that incoming messages from your boss are labeled "Important" and appear in red. See Creating Message Filters for more information.
+Applying a Label
+
+To apply a label to a message, begin from the Mail window:
+
+   1. Select the message you want to label.
+   2. Open the Message menu, and choose Label.
+   3. Choose the label you want to apply from the list.
+
+The message header changes to the label color you chose. To see the label text, you must display the Label column in the Mail window.
+
+Tip: To quickly label messages or remove a label, select one or more messages and press 1, 2, 3, 4, or 5 on your keyboard. Press 0 to remove a label.
+
+To display the Label column, begin from the Mail window:
+
+    * Click the Show/Hide Columns icon and select Label from the list.
+
+Note: Message labels apply on a per-account basis. For example, if you move or copy a labeled message to another mail account, the label is not preserved. Similarly, if you forward a labeled message to another recipient, the label is not preserved. For IMAP mail accounts, if your IMAP server supports user-defined keywords, message labels will persist when you log in to your mail account from a different location.
+
+[ Return to beginning of section ]
+Customizing Labels
+
+You can customize label colors or text to suit your needs.
+
+To customize labels, begin from the Mail window:
+
+   1. Open the Edit menu (Mozilla menu on Mac OS X) and choose Preferences. You see the Preferences dialog box.
+   2. Under the Mail & Newsgroups category, click Labels. (If no subcategories are visible, double-click Mail & Newsgroups to expand the list.)
+   3. Edit the label text, or replace it with your own label text. The label can be up to 32 characters long.
+   4. To change the label color, click the color block next to that label and select a new color.
+   5. Click OK.
+
+Your changes are immediately applied to all labeled messages in all your mail accounts.
+
+Tip: To restore the default label text and colors, follow the steps above to display the label settings, and click Restore Defaults.
+
+[ Return to beginning of section ]
+Sorting Messages by Label
+
+To sort messages by label, begin from the Mail window:
+
+   1. To display the Label column if it is hidden, click the Show/Hide Columns icon and select Label from the list.
+   2. Click the Label column to sort messages by label, and within each label type, to sort messages by date.
+
+[ Return to beginning of section ]
+Removing Labels
+
+To remove a message label, begin from the Mail window:
+
+   1. Select one or more labeled messages.
+   2. Open the Message menu, and choose Label.
+   3. Choose "None" for the message label.
+
+[ Return to beginning of section ]
+Marking or Flagging Messages
+
+You might want to mark a message you've read as unread if you later want to re-read the message or respond to it.
+
+To mark a message as unread, begin from the Mail window:
+
+   1. Select a Mail or Newsgroup folder to display its messages.
+   2. Click in the Read column of each message you want to mark as unread. Messages marked as unread display a symbol in the Read column. Messages marked as read display a symbol in the Read column. If the Read column is not visible, click the Show/Hide Columns icon and select Read from the list.
+
+	Read column
+
+You can flag messages that you later want to download for offline use.
+
+To flag messages, begin from the Mail window:
+
+   1. Select a Mail or Newsgroup folder to display its messages.
+   2. Click in the Flag column of each message you want to download. A flag appears where you clicked to indicate that the message has been flagged. If the Flag column is not visible, click the Show/Hide Columns icon and select Flag from the list.
+
+	Flag column
+
+[ Return to beginning of section ]
+Using Message Views
+
+You can apply preset or custom message views to help you manage messages by filtering displayed messages.
+
+To use a message view, open the View menu and choose Messages. Choose an option from the submenu.
+
+    * All: Choose this option to view all messages.
+    * Unread: Choose this option to view only unread messages.
+    * labels: Choose a label to view labelled messages.
+    * custom views: Choose a custom view. By default you have four preset views: People I Know, Recent Mail, Last 5 Days, and Not Junk.
+    * Customize...: Choose this option to view or modify settings for custom views.
+
+Tip: You can quickly change message view from the View box in the Search Bar. If you do not see the Search Bar, open the View menu, choose Show/Hide, and then choose Search Bar.
+
+Creating a Custom View
+
+You can create custom message views to only display messages matching certain critaria.
+
+To change or create a custom message view:
+
+   1. Open the View menu, choose Messages, and then choose Customize...
+   2. To create a new view, click New. To modify a view, select a view and click Edit.
+   3. Type a name for the message view.
+   4. Select the matching option you want Mail to use: all of the following conditions (criteria) you choose, or any of the following.
+   5. Use the drop-down lists to choose the search criteria (for example, Subject, Sender, contains, doesn't contain) and then type the text or phrase you want to match.
+
+      Tip: To search for messages that contain a header not listed in the first drop-down menu (for example, if you want to search for messages that include the header Resent-From), choose Customize and type the header you want to search for. Mozilla Mail & Newsgroups adds your custom header to the drop-down list, so you can then choose it to search for matching entries. Make sure you enter the custom header correctly, since Mail will only find entries that exactly match what you type.
+   6. Click More to add criteria and Fewer to remove them.
+   7. Click OK to confirm your settings.
+   8. Click OK in the Customize Message Views dialog box. The selected view setting applies automatically.
+
+[ Return to beginning of section ]
+Creating Message Filters
+
+Message filters allow you to manage and organize your messages. You can create message filters that Mozilla Mail & Newsgroups uses to automatically perform certain actions on incoming messages based on criteria you specify. For example, you can create a message filter that automatically moves incoming messages to a particular folder. Message filters operate on a per-account basis.
+
+If you are not already viewing the Message Filters dialog box, begin from the Mail window:
+
+   1. Open the Tools menu and choose Message Filters. You see the Message Filters dialog box.
+   2. If you have multiple mail accounts, choose the one to which you want to apply the filter.
+   3. Click New. You use the Filter Rules dialog box to specify the types of messages to act on, and the action you want the filter to perform.
+   4. Type a name for the filter.
+   5. Select the matching option you want Mail to use: all of the following conditions (criteria) you choose, or any of the following conditions.
+   6. Use the drop-down lists to choose the search criteria (for example, "Subject," "Sender," "contains," "doesn't contain") and then type the text or phrase you want to match.
+
+      Tip: To search for messages that contain a header not listed in the first drop-down menu (for example, if you want to search for messages that include the header Resent-From), choose Customize and type the header you want to search for. Mozilla Mail & Newsgroups adds your custom header to the drop-down list, so you can then choose it to search for matching entries. Make sure you enter the custom header correctly, since Mail will only find entries that exactly match what you type.
+   7. Click More to add criteria and Fewer to remove them.
+   8. Use the drop-down list to choose the action you want the filter to perform on the messages (for example, Move to Folder).
+
+      Tip: To automatically label incoming messages, choose "Label the message" from the drop-down list.
+   9. Choose a destination folder in which to store the messages, or create a new folder.
+  10. Click OK to confirm your settings.
+  11. Click OK in the Message Filters dialog box. The filter begins filtering incoming messages as soon as you click OK.
+
+To manage your filters, begin from the Mail window:
+
+   1. Open the Tools menu and choose Message Filters. You see the Message Filters dialog box.
+   2. If you have multiple mail accounts, choose the one to which you want to apply the filter.
+   3. Choose from the following:
+   4.
+          * To turn a filter on or off: Click the checkbox to the right of the filter name to enable it, or click it again to turn it off.
+          * To edit a filter: Select the filter name and click Edit (or double-click the filter name). Use the Filter Rules dialog box to make your changes.
+          * To delete a filter: Select the filter name and click Delete.
+          * To change the order in which filters are applied: In the filter list, click a filter's name, and click "Move Up" or "Move Down" to move it.
+          *
+
+            Note: Filters are applied to each incoming message in the order you choose, until a filter action results in the message being deleted or moved to the Inbox folder.
+   5. Click OK when you are done managing your filters. If you created a new filter, it begins filtering incoming messages as soon as you click OK.
+
+Note: If you delete a folder that you've been using to store filtered messages, the filter will no longer work. Incoming messages that match the filter criteria will appear in your Inbox. If you rename or move the folder, the filter will automatically update to use the renamed or moved folder.
+
+Tip: Filters don't apply to existing messages. If you have existing messages that you want to move to another folder, you can search for those messages and then file them into the other folder.
+
+[ Return to beginning of section ]
+Filtering Messages From a Specific Sender
+
+You can quickly create a filter for messages from a particular sender. For example, if you want to automatically move all incoming messages from your child's teacher into a folder called "School", you can quickly set up a filter to do this.
+
+To create a filter for messages from a specific sender, begin from the Mail window:
+
+   1. Select a message from a specific sender.
+   2. Open the Message menu, and choose Create Filter From Message. You see the Filter Rules dialog box. Using the sender's email address, Mozilla prefills the filter name, the filter matching criteria, and the filter action (Move to folder).
+   3. Choose a destination folder in which to store the incoming messages from the specified sender, or create a new folder.
+   4. Click OK to confirm your settings. You see the Message Filters dialog box, where you can create, delete, or edit message filters.
+   5. Click OK. The filter begins filtering incoming messages from the specified sender as soon as you click OK.
+
+[ Return to beginning of section ]
+Searching Through Messages
+
+Mozilla Mail & Newsgroups lets you quickly find text in a single message, search messages by subject or sender, or use a combination of criteria to perform a thorough search through all messages in a specific mail folder, newsgroup, or account.
+
+To locate text in a single message, begin from the Mail window:
+
+   1. Select the message, open the Edit menu, and choose Find in This Message.
+   2. Type the text that you want to locate in the dialog box.
+   3. Click Find to locate the first occurrence of the text.
+   4. Continue clicking Find to locate additional occurrences, or click Cancel when you are done.
+   5. Choose Find Again from the Edit menu to continue searching for the text throughout the rest of the message.
+
+To quickly search for messages in a selected folder by subject or sender, begin from the Mail window:
+
+   1. To the right of "Subject or Sender contains:", type the subject text or sender name that you want to find. You can type only part of the subject or sender, or you can type the exact word or name that you want to find.
+
+      As soon as you stop typing, Mozilla Mail & Newsgroups displays only those messages in the selected folder where the subject or sender contains the search text you entered.
+   2. Click Clear to erase the search text and show all messages in the selected folder.
+
+Searching for Specific Messages
+
+You can search mail folders or newsgroups for specific messages. If you are not already viewing the Search Messages dialog box, begin from the Mail window:
+
+   1. Open the Tools menu and choose Search Messages. You see the Search Messages dialog box.
+   2. Next to "Search for messages in", choose the account, newsgroup, or folder through which you want to search.
+   3. Select "Search subfolders" to include all subfolders in the search.
+   4. Select which matching option Mail & Newsgroups will use to search for messages that match all or at least one of the conditions (criteria) that you choose.
+   5. Use the drop-down lists to indicate the search criteria (for example, "Subject" and "contains") and then type the text or phrase that you want to match.
+
+      Tip: To search for messages that contain a header not listed in the first drop-down menu (for example, if you want to search for messages that include the header Resent-From), choose Customize and type the header you want to search for. Mozilla Mail & Newsgroups adds your custom header to the drop-down list, so you can then choose it to search for matching entries. Make sure you enter the custom header correctly, since Mail will only find entries that exactly match what you type.
+   6. Click More to add criteria and Fewer to remove them.
+   7. Click Search to begin, or click Clear to reset your entries. The search results appear in lower part of the Search Messages dialog box.
+   8.
+          * To open a message so you can read it, select the message and click Open, or double-click the message.
+          * To sort the messages in a different order, click the column that you want to sort by.
+          * To move or copy a message in the Results area to another folder, select the message and then choose the destination folder from the File drop-down list. If the destination folder is within the same account, the message is moved to that folder. If the destination folder is within a different account, the message is copied to that folder.
+          * To delete a message in the Results area, select the message and then click Delete.
+          * To open the folder where the message is stored, select the message and click Open Message Folder.
+
+[ Return to beginning of section ]
+Controlling Junk Mail
+
+This section describes how to use Mozilla's Junk Mail Controls to filter unwanted mail.
+In this section:
+
+    * Using Junk Mail Controls
+    * Junk Mail Controls Options
+    * Junk Mail Controls and Filters
+
+Using Junk Mail Controls
+
+Mozilla's Junk Mail Controls feature can evaluate your incoming messages and identify possible junk (or unsolicited) messages. The feature uses the Bayesian classification method. You first train Mozilla by showing it a bunch of mail that is junk, and a bunch of mail that is not. Then, you let it auto-classify new mail for you. If Mozilla makes any mistakes, you can correct them.
+
+To use Junk Mail Controls:
+
+   1. First, train Mozilla to recognize Junk messages and Non-Junk messages. There are three ways to toggle junk status of the selected message(s):
+          * Open the Tools menu, and choose Mark Selected Messages or Mark Selected Messages as Not Junk.
+          * Click on the Junk toolbar button.
+          *
+
+            Click to toggle the Junk Status column in the message list. (If you do not see it, click the right-most button () in the list header bar and select Junk Status from the pop-up menu.)
+
+      When you toggle junk status, a trash-can icon will appear or disappear in the Junk status column to indicate the junk status of the selected message.
+   2. Open the Tools menu and choose Junk Mail Controls.... Enable the feature for your mail account, and Mozilla will automatically classify incoming messages. (See Junk Mail Controls Options.)
+   3. If you have trained it on virus mail, consider disabling the white listing (many mail viruses send bulk messages to people in the address book of the infected computer).
+   4. Make sure to correct the Junk Mail Controls when it incorrectly labels messages either as junk or not junk.
+   5. To analyze existing messages, select messages, open the Tools menu and choose Run Junk Mail Controls.
+
+Note: Mozilla will only run Junk Mail Controls when the training database has information on non-Junk messages. If Junk Mail Controls does not work, select some messages and explicitly mark them as Not Junk.
+
+[ Return to beginning of section ]
+Junk Mail Controls Options
+
+To fine-tune how Junk Mail Controls works, open the Tools menu and choose Junk Mail Controls...:
+
+    * Account: Choose an mail account to change the Junk Mail Controls settings for that account. (Note: all accounts share the same Junk training database.)
+    * Junk Mail Log: Click the button to open a dialog showing you the history of Junk mail detections. You can disable Junk Mail Log from the dialog.
+    * Enable Junk Mail Controls: Toggle this option to activate or deactivate junk mail classification.
+    * Do not mark messages as junk mail if the sender is in my address book: Choose this option to prevent messages from people you know inadvertently classified as junk mail.
+    * Move incoming messages determined to be junk mail to: Check this option to automatically move messages flagged as Junk to a special folder.
+          o "Junk" folder on [account]: select this to use the default Junk folder.
+          o Other: [account]: select this to choose your own custom-named junk folder.
+          o Automatically delete junk messages older than __ days from this folder: If you are confident old messages classified as junk are indeed junk mail, check this option to automatically delete old junk messages after a grace period.
+    * When I manually mark messages as Junk: Choose this to set what you want Mozilla to do when you manually mark messages as Junk.
+          o Move them to the "Junk" folder: Choose this to move manually-marked Junk messages to the Junk folder.
+          o Delete them: Choose this to move manually-marked Junk messages to the trash folder.
+
+[ Return to beginning of section ]
+Junk Mail Controls and Filters
+
+Junk Mail Controls runs after mail mail filters and applies only to the Inbox folder and its sub-folders. Use this to your advantage, for example, you can filter mail you are sure not to be Junk to a special folder outside of Inbox so that the messages will not be classified as Junk (especially useful if you subscribe to newsletters or if you are on a moderated mailing list).
+
+[ Return to beginning of section ]
+Importing Mail from Other Programs
+
+This section describes how to import mail messages and settings from Netscape Communicator, Outlook, Outlook Express, and Eudora. To import address books from these programs, see Importing Address Books.
+In this section:
+
+    * Importing Mail Messages
+    * Importing Mail Settings
+
+Importing Mail Messages
+
+To import mail messages from Netscape Communicator, Outlook, Outlook Express, or Eudora, begin from the Mail window:
+
+   1. Open the Tools menu, and choose Import. You see the Import Wizard.
+   2. Follow the instructions to import mail messages.
+
+For Netscape Communicator, the wizard imports a copy of all Communicator mail folders included under Local Folders. Imported mail is added as a new folder under Local Folders in the Mail window. (The Communicator mail folders still remain in their original location).
+
+[ Return to beginning of section ]
+Importing Mail Settings
+
+To import mail settings from Outlook, Outlook Express, or Eudora, begin from the Mail window:
+
+   1. Open the Tools menu, and choose Import. You see the Import Wizard.
+   2. Follow the instructions to import mail settings.
+
+[ Return to beginning of section ]
+Getting Started With Newsgroups
+In this section:
+
+    * Subscribing to Newsgroups
+    * Reading Newsgroup Messages
+    * Posting Newsgroup Messages
+    * Contributing to Ongoing Discussions
+    * Monitoring Threads
+    * Removing a Newsgroup
+    * Adding a Newsgroup Server
+
+Subscribing to Newsgroups
+
+If you have set up an account on a newsgroup server, you can join (subscribe) to newsgroups (also called discussion groups).
+
+To subscribe to a newsgroup, begin from the Mail window:
+
+   1. Open the File menu and choose Subscribe. You see the Subscribe dialog box.
+   2. If necessary, click the Account drop-down list to choose another newsgroup account.
+   3. Select a newsgroup. To select more than one newsgroup, Ctrl+click (Windows, Linux or Unix) or Command+click (Mac OS) each additional newsgroup.
+   4. Click Subscribe or click in the Subscribe column next to the newsgroup. You see a checkmark next to each newsgroup to which you subscribe. Click Unsubscribe to cancel a selection.
+   5. Click OK. The list of your subscribed newsgroups appears in the Mail window.
+
+If you are an IMAP mail user, you can also subscribe to message folders located on an IMAP server. (Your Inbox is a type of message folder.) Follow the instructions above for subscribing, but select an account from the Account drop-down list. For more information on sharing folders and subscribing to folders, see Sharing Folders With Other Users (IMAP Only).
+
+[ Return to beginning of section ]
+Reading Newsgroup Messages
+
+When you open your newsgroup server, you see the list of newsgroups to which you subscribe. The server downloads the headers of new messages in each newsgroup.
+
+To read newsgroup messages, begin from the Mail window:
+
+   1. Double-click a newsgroup server icon to see its newsgroups. (If there are no newsgroups, you may need to subscribe to one.)
+   2. Click a newsgroup name to see its messages.
+   3. Click a message to read it. Click the thread button to display all the responses below the original message. You can click any header to display its message. You can start a new thread or post a message in response.
+
+[ Return to beginning of section ]
+Posting Newsgroup Messages
+
+To start new threads (discussions):
+
+   1. From the list of your subscribed newsgroups in the Mail window, select a newsgroup.
+   2. Click Compose.
+   3. Compose your message, and click Send to post it.
+   4. Click Get Msgs to see your posting on the newsgroup.
+
+[ Return to beginning of section ]
+Contributing to Ongoing Discussions
+
+To post a response to the newsgroup:
+
+   1. In the message list, select a message to reply to.
+   2. Click Reply.
+   3. Compose your message, and click Send to post it.
+
+To reply to an individual as well as post a response to the group:
+
+   1. In the message list, select a message to reply to.
+   2. Click Reply All.
+   3. Compose your message, and click Send to post it.
+
+To redirect a posting to another newsgroup:
+
+    * Click Reply and choose "Followup-To" from the "Newsgroup" drop-down list. Subsequent responses will be posted to the newsgroup you enter.
+
+[ Return to beginning of section ]
+Monitoring Threads
+
+To monitor unread messages in threads that are of interest to you:
+
+   1. Select a message in a thread.
+   2. Open the Message menu, and choose Watch Thread.
+   3. If you want to monitor additional threads, repeat steps 1 and 2 for messages in additional threads.
+   4. When you're ready to monitor messages in these threads, open the View menu, choose Messages, and then choose Watched Threads with Unread. Mozilla Mail & Newsgroups only displays the watched threads that contain unread messages.
+   5. Open the View menu, choose Messages, and then choose All to return to viewing all messages in the newsgroup.
+
+To ignore a message thread:
+
+   1. Select a message in the thread.
+   2. Open the Message menu, and choose Ignore Thread. Mozilla Mail & Newsgroups marks all messages in the thread as read, and new replies posted to the thread will appear as read.
+   3. To view ignored threads, open the View menu, choose Messages, and then choose Ignored Threads.
+
+[ Return to beginning of section ]
+Removing a Newsgroup
+
+To remove a newsgroup from your list:
+
+    * Select the newsgroup icon and press Delete.
+
+[ Return to beginning of section ]
+Adding a Newsgroup Server
+
+If the newsgroup you want to subscribe to is on a different server, you must first set up access to that server.
+
+To set up an additional newsgroup server, open the File menu in the Mail window and choose New, then Account.
+
+    * Using the Account Wizard, indicate that the new account you want to set up is a newsgroup account.
+
+Once you've set up access to the new server, you can subscribe to newsgroups on that server. In the Mail window, open the File menu, and choose Subscribe.
+
+[ Return to beginning of section ]
+Working Offline
+In this section:
+
+    * Setting Up Mozilla Mail & Newsgroups to Work Offline
+    * Downloading Your Inbox for Offline Use
+    * Downloading an Individual Folder for Offline Use
+    * Downloading Selected or Flagged Messages for Offline User
+    * Downloading Directory Entries for Offline Use
+    * Setting Up Your Accounts for Working Offline
+    * Selecting Items for Offline Viewing
+    * Downloading and Synchronizing Your Messages
+    * Working Offline and Reconnecting Later
+
+Setting Up Mozilla Mail & Newsgroups to Work Offline
+
+Mozilla Mail & Newsgroups' offline feature lets you download your mail and read it offline (while disconnected from the Internet). If you use a dial-up (modem) connection to access your mail and you want to reduce the time you are connected, or, if you need to temporarily disconnect from your company's network while traveling or switching locations, you can download your mail so that you can read it offline. The offline feature can automatically download incoming messages and then later send all your outgoing messages when you reconnect.
+
+If you occasionally want to work offline, Mozilla Mail & Newsgroups lets you easily:
+
+    * Download your Inbox for offline use.
+    * Download an individual folder for offline use.
+    * Download only selected or flagged messages for offline use.
+    * Download directory entries in your address book for offline use.
+
+If you frequently work offline, Mozilla Mail & Newsgroups also lets you:
+
+    * Set up one or more of your accounts for offline use.
+    * Set offline and disk space preferences for each account.
+    * Select the folders and newsgroups that you want to view offline.
+
+[ Return to beginning of section ]
+Downloading Your Inbox for Offline Use
+
+You can tell Mozilla Mail & Newsgroups to automatically download your Inbox messages for offline use. Later, when you go back online, Mozilla Mail & Newsgroups automatically synchronizes your Inbox messages with the server.
+
+To automatically download your Inbox for offline use, begin from the Mail window:
+
+   1. Open the Edit menu and choose Mail & Newsgroups Account Settings. You see the Mail & Newsgroups Account Settings dialog box.
+   2. In the left side of the dialog box, under the name of the account you want to use offline, select Offline & Disk Space. (This category is not available for POP accounts.)
+   3. Check the box labeled "Make the messages in my Inbox available when I am working offline."
+   4. Click OK.
+   5. In the folder pane, under the name of the account you want to use offline, click any folder other than the Inbox. For example, click the Sent or the Drafts folder. Then click the Inbox folder to start downloading its messages.
+   6. Once downloading is complete, click the Online/Offline indicator in the lower right corner of the Mail window (to the left of the Cookie icon) to go offline.
+
+Mozilla Mail & Newsgroups automatically downloads all messages in your Inbox so you can read and respond to them while working offline. After disconnecting, Mozilla Mail & Newsgroups remains open so you can continue to work with your messages.
+
+To reconnect to the Internet so you can work online:
+
+    * Click the Online/Offline indicator in the lower right corner of the Mail window (to the left of the Cookie icon) to go back online.
+
+When you go back online, Mozilla Mail & Newsgroups automatically synchronizes your Inbox messages with the server, by replicating any changes you made while working offline.
+
+Tip: Mozilla Mail & Newsgroups saves any messages that you send while working offline in the Unsent Messages folder under Local Folders. To have Mozilla Mail & Newsgroups automatically send your unsent messages when you reconnect, use the Preferences command on the Edit menu (Mozilla menu on Mac OS X) to change the offline preferences for all your accounts.
+
+[ Return to beginning of section ]
+Downloading an Individual Folder for Offline Use
+
+To download a specific folder for offline use, begin from the Mail window:
+
+   1. In the left side of the Mail window, select the folder that you want to download for offline use.
+   2. Open the Edit menu, and choose Folder Properties. You see the Properties dialog box.
+   3. Click the Offline tab.
+   4. Check "Select this folder for offline use".
+   5. Click Download Now if you want to immediately begin downloading the folder's messages. Alternatively, you can continue working, and when you are ready to go offline, proceed to the next step.
+   6. Click the Online/Offline indicator in the lower right corner of the Mail window to go offline.
+   7. In the Work Offline dialog box, click Download.
+
+Mozilla Mail & Newsgroups automatically downloads all messages in the selected folder so you can read and respond to them while working offline. After disconnecting, Mozilla Mail & Newsgroups remains open so you can continue to work with your messages.
+
+Note: Message headers that have been downloaded for reading offline display a darker gray envelope or newsgroup icon.
+
+To reconnect to the Internet so you can work online:
+
+    * Click the Online/Offline indicator in the lower right corner of the Mail window (to the left of the Cookie icon) to go back online.
+
+Mozilla Mail & Newsgroups automatically synchronizes the offline folders with the server, by replicating any changes you made while working offline.
+
+Tip: Mozilla Mail & Newsgroups saves any messages that you sent while working offline in the Unsent Messages folder under Local Folders. When you reconnect, choose Send Unsent Messages from the File menu to send all your saved messages at once. To have Mozilla Mail & Newsgroups automatically send your unsent messages when you reconnect, use the Preferences command on the Edit menu (Mozilla menu on Mac OS X) to change your offline preferences.
+
+[ Return to beginning of section ]
+Downloading Selected or Flagged Messages for Offline Use
+
+To download selected messages for offline use, begin from the Mail window:
+
+   1. Select a Mail or Newsgroup folder to display its messages.
+   2. Select the messages you want to download, as follows:
+
+
+          * To select a group of adjacent messages, click the first message, and then Shift-click to select the last message in the group.
+          * To select messages anywhere in the message list, hold down the Ctrl key (Windows, Linux or Unix) or the Command key (Mac OS) and click each message.
+   3. Open the File menu, choose Offline, and then choose Get Selected Messages from the submenu. Mozilla Mail & Newsgroups downloads the selected messages.
+   4. Once downloading is complete, click the Online/Offline indicator in the lower right corner of the Mail window (to the left of the Cookie icon) to go offline.
+
+To download flagged messages for offline use, begin from the Mail window:
+
+   1. Select a Mail or Newsgroup folder to display its messages.
+   2. Click in the flag column of each message you want to download. A flag appears where you clicked to indicate that the message has been marked. If the flag column is not visible, click the Show/Hide Columns icon and select Flag from the list.
+   3. Open the File menu, choose Offline, and then choose Get Flagged Messages. Mozilla Mail & Newsgroups downloads the flagged messages.
+   4. Once downloading is complete, click the Online/Offline icon in the lower right corner of the Mail window (to the left of the Cookie icon) to go offline.
+
+After you disconnect, Mozilla Mail & Newsgroups remains open so you can continue to work with your messages.
+
+Note: Message headers that have been downloaded for reading offline display a darker gray envelope or newsgroup icon.
+
+To reconnect to the Internet so you can work online:
+
+    * Click the Online/Offline indicator in the lower right corner of the Mail window to go online.
+
+Tip: Mozilla Mail & Newsgroups saves any messages that you sent while working offline in the Unsent Messages folder under Local Folders. When you reconnect, choose Send Unsent Messages from the File menu to send all your saved messages at once. To have Mozilla Mail & Newsgroups automatically send your unsent messages when you reconnect, use the Preferences command on the Edit menu (Mozilla menu on Mac OS X) to change your offline preferences.
+
+[ Return to beginning of section ]
+Downloading Directory Entries for Offline Use
+
+You can download (replicate) the entries in a directory server to your computer so that they are available when you work offline. Once you've downloaded directory entries, you can use the same procedure to update your local copy of the entries with the latest entries on the directory server.
+
+To download or update an address book LDAP directory for offline use:
+
+   1. Make sure you're online.
+   2. Open the Window menu, and choose Address Book.
+   3. In the Address Book window, select the directory that you want to download (replicate).
+   4. Click Properties in the Address Book toolbar. The Directory Server Properties dialog box appears.
+   5. Click the Offline tab.
+   6. Click Download Now to start copying the entries to your computer.
+   7. If prompted, enter your network user name and password, and click OK to start the download.
+   8.
+
+      Depending on the number of directory entries, the download process may take a while, so please be patient.
+
+After the download finishes, you can work offline and search the directory or use it for address autocompletion when composing messages. After you've been using your local copy of the directory for a while, you may wish to update it to get the latest entries from the directory server. To update your local copy, use the procedure described above.
+
+[ Return to beginning of section ]
+Setting Up Your Accounts for Working Offline
+
+To set up one or more accounts for working offline, you use the Offline and Disk Space preferences in the Mail & Newsgroups Account Settings dialog box. Once set, you don't need to change these preferences each time you want to work offline. The offline and disk space preferences you can set for an account depend on the type of account (IMAP, POP, or Newsgroup).
+
+Here's a summary of the steps you will follow to set up your accounts for offline use:
+
+   1. For each account that you want to work with while offline, use the Mail & Newsgroups Account Settings dialog box to set the Offline & Disk Space preferences for that account. You must select the items (folders and newsgroups) that you want to download for offline use. See Selecting Items for Offline Viewing for more information.
+
+      Once set, you don't need to change these settings. See the sections below for information on setting offline and disk space preferences for IMAP, POP, and Newsgroup accounts.
+
+      Tip: To set the Offline & Disk Space preferences for the current account, open the File menu, choose Offline, and then choose Offline Settings.
+   2. Open the File menu, choose Offline, and then choose Download/Sync Now from the submenu.
+   3. Select the type of messages (mail or newsgroup or both) that you want to download.
+
+      Important: You must select at least one category (mail messages or newsgroup messages) in order for the download to work.
+   4. Select "Work offline once download and/or sync is complete."
+   5. Click OK to download the selected items and then go offline. See Downloading and Synchronizing Your Messages for more information.
+
+For subsequent offline sessions, you can skip step 1.
+
+[ Return to beginning of section ]
+Selecting Items for Offline Viewing
+
+Before you can read mail and newsgroup messages while offline, you must first select them for downloading. You can set up an entire account for offline use. You can also choose which folders and newsgroups that you want to use offline.
+
+Note: Keep in mind that selecting more items may increase download time and disk space used.
+
+To select accounts, folders, and newsgroups for offline viewing, begin from the Mail window:
+
+   1. Open the Edit menu, choose Mail & Newsgroups Account Settings. You see the Mail & Newsgroups Account Settings dialog box.
+   2. Choose the Offline & Disk Space category for the account you want to change.
+   3. Click Select. You see your IMAP accounts, mail folders, and subscribed newsgroups.
+
+      Note: You see only the newsgroups and folders that you've already subscribed to. POP accounts and local mail folders don't appear in the list.
+   4. Select the items (folders, newsgroups) that you want to make available for offline use.
+   5. Click OK.
+
+Once set, you don't need to change these settings each time you want to go offline. However, if you do want to change them, you can easily do so before going offline, since the same Select button is available when using the Download and Sync command.
+
+[ Return to beginning of section ]
+Downloading and Synchronizing Your Messages
+
+If you have already selected mail folders and newsgroups for offline use, you are now ready to download and synchronize them. If you haven't yet selected items to download, you can choose them before you go offline.
+
+If you are not already viewing the Download/Sync Now dialog box, follow these steps:
+
+To download and synchronize your messages, begin from the Mail window:
+
+   1. Open the File menu, choose Offline, and then choose Download/Sync Now.
+   2. Select the categories (mail messages or newsgroup messages) that you want to download.
+
+      Important: You must select at least one category (Mail messages, Newsgroup messages) in order for the download to work. If the checkboxes are disabled, it means that you haven't yet selected items to download. Use the Select button to select items to download.
+   3. To send messages in your Unsent Messages folder before going offline, check "Send Unsent Messages".
+   4. To go offline immediately after Mozilla Mail & Newsgroups finishes downloading, select "Work offline once download and/or sync is complete".
+   5. To set or change the items to download, click Select. See Selecting Items for Offline Viewing for more information. You can skip this step if you've already selected items for download.
+   6. Click OK. Mozilla Mail & Newsgroups begins downloading the selected items.
+
+If you chose to work offline once the download completes, then Mozilla Mail & Newsgroups immediately switches to offline mode. Otherwise, when you are ready to go offline, click the Online/Offline indicator in the lower right corner of the Mail window to go offline.
+
+[ Return to beginning of section ]
+Working Offline and Reconnecting Later
+
+To work offline and reconnect later, begin from the Mail window.
+
+When you are ready to work offline:
+
+   1. Click the online/offline indicator in the lower-right corner of the Mail window. Mail & Newsgroups prompts you to download messages, if you want, before going offline.
+   2. Click Download to download messages before going offline. If you want to work offline without downloading messages, click Don't Download.
+
+Note: Message headers that have been downloaded for reading offline display a darker gray envelope or newsgroup icon.
+
+Tip: To set Mozilla Mail & Newsgroups' download behavior when going offline, open the Edit menu (Mozilla menu on Mac OS X), choose Preferences, and then click the Offline & Disk Space category. You can choose to have Mozilla Mail & Newsgroups prompt you to download messages when going offline, to automatically download messages, or to not download any messages.
+
+To reconnect and synchronize your messages:
+
+   1. Click the online/offline indicator in the lower-right corner of any Mozilla window.
+   2. Open the File menu, choose Offline, and then choose Download/Sync Now.
+
+Mozilla Mail & Newsgroups synchronizes your messages with the server by replicating any changes you made while working offline.
+
+Tip: To set Mozilla Mail & Newsgroups' behavior when going online, open the Edit menu (Mozilla menu on Mac OS X), choose Preferences, and then choose the Offline & Disk Space category. You can choose to have Mozilla Mail & Newsgroups prompt you to send unsent messages, to automatically send unsent messages, or to not send unsent messages.
+
+[ Return to beginning of section ]
+Mail & Newsgroups Account Settings
+
+This section describes the settings in the Mail & Newsgroups Account Settings dialog box. Unlike the Preferences dialog box, which applies settings to all accounts, the Mail & Newsgroups Account Settings dialog box lets you specify settings on a per-account basis.
+
+If you are not currently viewing the Mail & Newsgroups Account Settings dialog box, follow these steps:
+
+   1. Begin from the Mail window.
+   2. Open the Edit menu and choose Mail & Newsgroups Account Settings.
+   3. Select the name of the account whose settings you want to view or change.
+
+In this section:
+
+    * Account Settings
+    * Server Settings
+    * Copies & Folders
+    * Composition & Addressing
+    * Offline & Disk Space
+    * Return Receipts
+    * Security
+    * Local Folders
+    * Outgoing Server (SMTP)
+
+Mail & Newsgroups Account Settings - Account Settings
+
+This section describes how to view or change your Account Settings, such as your user name, reply-to address, and signature file. If you are not already viewing the Account Settings, begin from the Mail window:
+
+   1. Open the Edit menu and choose Mail & Newsgroups Account Settings. You see the Mail & Newsgroups Account Settings dialog box.
+   2. Select the name of the account to display the Account Settings panel.
+
+    * Account Name: The name for this account.
+    * Identity: Stores your name, email address, reply-to address (only if different from your email address), and organization (optional).
+    * Attach this signature: Lets you choose the signature file (in text or HTML format) you want to attach to your outgoing messages. Click Choose to locate the signature file (optional).
+    * Attach my vCard to messages: Lets you choose if your vCard should be attached to your outgoing messages. Click Edit Card to edit the card information (optional).
+
+[ Return to beginning of section ]
+Mail & Newsgroups Account Settings - Server Settings
+
+Mozilla Mail & Newsgroups can work with two types of mail servers: IMAP and POP. If you are not sure which server type your Internet service provider supports, ask your service provider. If your Internet service provider supports both, the following descriptions may help you choose which one to use.
+In this section:
+
+    * About Internet Message Access Protocol (IMAP)
+    * About Internet Post Office Protocol (POP)
+    * IMAP Server Settings
+    * Advanced IMAP Server Settings
+    * POP Server Settings
+    * News Server Settings
+
+[ Return to beginning of section ]
+About Internet Message Access Protocol (IMAP)
+
+Advantages: Your messages and any changes to them stay on your server, saving local disk space. Also, you always have access to an updated mailbox, and you can get your mail from multiple locations. Performance on a modem is faster, since you initially download message headers only.
+
+Disadvantages: Not all ISPs support IMAP.
+
+[ Return to beginning of section ]
+About Post Office Protocol (POP)
+
+Advantages: Your messages are downloaded to your local computer all at once, but you can also specify whether to keep copies of the messages on the server and delete messages on the server when they are deleted locally. Most ISPs currently support POP.
+
+Disadvantages: If you use more than one computer, messages might reside on one or the other, but not both. POP doesn't work as well as IMAP over a slow link connection. Also, you can't access all mail folders from multiple locations.
+
+[ Return to beginning of section ]
+IMAP Server Settings
+
+If you are not already viewing the IMAP server settings, begin from the Mail window:
+
+   1. Open the Edit menu and choose Mail & Newsgroups Account Settings. You see the Mail & Newsgroups Account Settings dialog box.
+   2. Select the account name and click the Server Settings category. (If you chose an IMAP server when you set up this account, you see your IMAP server settings.)
+
+    * Server Type: The server type (IMAP Mail Server) that you specified when you created this account. To change the server type associated with this account, you must delete the account and then re-create it.
+    * Server Name: The server name that you specified when you created this account. If you are having problems getting mail from this account, verify with your service provider or system administrator that the server name you entered is correct.
+    * User Name: The user name that you specified when you created this account.
+    * Port: Unless otherwise instructed to do so by your service provider or system administrator, leave this setting unchanged.
+    * Use secure connection (SSL): Choose this setting if your mail server is configured to send and receive encrypted messages. If you are unsure, contact your service provider or system administrator.
+    * Use secure authentication: Choose this setting if you want to use secure mechanisms for logging in like CRAM-MD5. If you are unsure if your service supports this, contact your service provider or system administrator.
+    * Check for new mail at startup: Choose this setting if you want Mail & Newsgroups to automatically check this account for new messages whenever you start Mail & Newsgroups.
+    * Check for new messages every ___ minutes: Choose this setting to automatically check for new messages, and then specify the number of minutes between mail checks. If you do not select this setting, you can check for new messages at any time by clicking Get Msgs in the Mail window.
+    * When I delete a message: Choose the behavior you want for deleted messages. "Move it to the Trash folder" is recommended unless you are instructed to use a different setting by your system administrator or service provider. Messages marked as deleted are removed only when you compact folders.
+    * Clean up (Expunge) Inbox on Exit: Removes deleted messages from the Inbox when you exit Mail & Newsgroups. Choose this if you chose to mark messages as deleted.
+    * Empty Trash on Exit: Empties the Trash folder whenever you quit Mail & Newsgroups.
+    * Advanced: Lets you choose a different outgoing server (SMTP) for outgoing messages from this account. You can also reach the Advanced IMAP Server Settings through this button.
+    * Local directory: The location on your hard disk where mail for this account is stored.
+
+Advanced IMAP Server Settings
+
+In most cases, advanced IMAP server settings are automatically supplied by the server. If you are unsure about the settings for this dialog box, contact your ISP or system administrator.
+
+If you are not already viewing the advanced IMAP server settings, begin from the Mail window.
+
+   1. Open the Edit menu and choose Mail & Newsgroups Account Settings. You see the Mail & Newsgroups Account Settings dialog box.
+   2. Select the account name and click the Server Settings category.
+   3. If the mail server type is an IMAP server, you can click Advanced to set additional IMAP options, such as:
+
+
+          * the IMAP server directory path
+          * showing only "subscribed folders"
+          * support for subfolders
+          * any personal and public (shared folder) namespaces for this directory
+
+For more information, see Adding and Removing LDAP Directories.
+
+[ Return to beginning of section ]
+POP Server Settings
+
+If you are not already viewing the POP server settings, begin from the Mail window:
+
+   1. Open the Edit menu and choose Mail & Newsgroups Account Settings. You see the Mail & Newsgroups Account Settings dialog box.
+   2. Select the account name and click the Server Settings category name. (If you chose a POP server when you set up this account, you see your POP server settings.)
+
+    * Server Type: The server type (POP Mail Server) that you specified when you created this account. To change the server type associated with this account, you must delete the account and then re-create it.
+    * Server Name: The server name that you specified when you created this account. If you are having problems getting mail from this account, verify with your service provider or system administrator that the server name you entered is correct.
+    * User Name: The user name that you specified when you created this account.
+    * Port: Unless otherwise instructed to do so by your service provider or system administrator, leave this setting unchanged.
+    * Use secure connection (SSL): Choose this setting if your mail server is configured to send and receive encrypted messages. If you are unsure, contact your service provider or system administrator.
+    * Use secure authentication: Choose this setting if you want to use secure mechanisms for logging in like CRAM-MD5 and APOP. If you are unsure if your server supports this, contact your service provider or system administrator.
+    * Check for new mail at startup: Choose this setting if you want Mail & Newsgroups to automatically check this account for new messages whenever you start Mail & Newsgroups. For POP accounts, Mail & Newsgroups doesn't download the new messages until you click Get Msgs on the Mail toolbar.
+    * Check for new messages every ___ minutes: Choose this setting to automatically check for new messages, and then specify the number of minutes between mail checks. If you do not select this setting, you can check for new messages at any time by clicking Get Msgs in the Mail window.
+    * Automatically download any new messages: Choose this setting if you want Mail & Newsgroups to retrieve messages immediately each time it checks the server.
+    * Leave messages on server: Choose this setting to store a copy of messages on the mail server in addition to downloading them to your computer.
+          o For at most ___ days: Choose this setting to remove messages from the server automatically after the number of days you enter here.
+          o Until I delete or move them from Inbox: Choose this setting to remove messages from the server once you delete them or move them from your Inbox into another folder.
+    * Empty Trash on Exit: Choose this setting to empty the Trash folder whenever you quit Mail & Newsgroups.
+    * Advanced: Lets you choose a different outgoing server (SMTP) for outgoing messages from this account.
+    * Local directory: The location on your hard disk where mail for this account is stored.
+
+[ Return to beginning of section ]
+News Server Settings
+
+This section describes how to change news server settings. If you are not already viewing news server settings, begin from the Mail window:
+
+   1. Open the Edit menu and choose Mail & Newsgroups Account Settings. You see the Mail & Newsgroups Account Settings dialog box.
+   2. Select the account name and click the Server Settings category. (If you chose a newsgroup server when you set up this account, you see your newsgroup server settings.)
+
+    * Server Type: The server type (NNTP) that you specified when you created this account.
+    * Server Name: The server name that you specified when you created this account. If you are having problems receiving messages from this account, verify with your service provider or system administrator that the server name you entered is correct.
+    * Port: Unless otherwise instructed to do so by your service provider or system administrator, leave this setting unchanged.
+    * Use secure connection (SSL): Choose this setting if your news server is configured to send and receive encrypted messages. If you are unsure, contact your service provider or system administrator.
+    * Check for new messages every ___ minutes: Choose this setting to automatically check for new messages, and then specify the number of minutes between mail checks. If you do not select this setting, you can check for new messages at any time by clicking Get Msgs in the Mail window.
+    * Ask me before downloading more than ___ messages: Choose this setting to conserve disk space and download time, by setting a limit for the number of messages you can retrieve at one time.
+    * Always request authentication when connecting to this server: Some servers allow you to talk to them without logging in, but will silently hide all the private groups/postings unless you are logged in. Choose this setting to force Mozilla to authenticate each time it connects to this server even when the server doesn't ask (also called "Pushed Authentication").
+    * Advanced: Lets you choose a different outgoing server (SMTP) for outgoing messages from this account.
+    * newsrc file: The path to the newsrc file is mostly displayed for your information. The newsrc file stores information about the newsgroups to which you are subscribed and the messages you have read in each newsgroup.
+    * Local directory: The location on your hard disk where mail for this account is stored.
+
+[ Return to beginning of section ]
+Mail & Newsgroups Account Settings - Copies & Folders
+
+This section describes the settings for sending automatic copies, and for storing copies of outgoing messages, message drafts, and message templates.
+
+By default, Mozilla Mail & Newsgroups stores copies of your outgoing messages in the Sent folder for the current account. Mozilla Mail & Newsgroups also stores message drafts in the Drafts folder and message templates in the Templates folder for the current account.
+
+If you are not already viewing the settings for Copies & Folders, begin from the Mail window:
+
+   1. Open the Edit menu and choose Mail & Newsgroups Account Settings. You see the Mail & Newsgroups Account Settings dialog box.
+   2. Select the account, and click Copies & Folders. You see the Copies & Folders panel.
+
+    * Place a copy in: Select where to store copies of your outgoing mail and newsgroup messages. If you don't want to use the default Sent folder for the current account, click Other and then choose an account and then choose the folder for storing copies.
+    * Bcc these email addresses: Select whether you want to always send a blind carbon copy (bcc) to another addressee, and enter the address. If you want to always send a blind carbon copy to yourself, just add your address to this list. Separate addresses with comma (,).
+    * Keep message drafts in: Select where to store message drafts. If you don't want to use the default Drafts folder for the current account, click Other and then choose another account and folder for storing drafts.
+    * Keep message templates in: Select where to store message templates. If you don't want to use the default Templates folder for the current account, click Other and then choose another account and folder for storing templates.
+    * Show confirmation dialog when messages are saved: Choose this option if you want Mail & Newsgroups to display a confirmation dialog box when you save a draft message or a template. If checked, a dialog box will appear when you save a draft or template to remind you where Mozilla Mail & Newsgroups is saving the draft or template.
+
+[ Return to beginning of section ]
+Mail & Newsgroups Account Settings - Composition & Addressing
+
+You use Composition settings to choose how to format text and to handle replies.
+
+    *
+
+      Compose messages in HTML format: Use the HTML editor as the default editor for writing mail and newsgroup messages. Leave this item unchecked to use the plain-text editor by default. HTML messages can include formatted text, links, images, and tables, just like a web page. However, some recipients may not be able to receive HTML messages.
+
+      Tip: If you only want to use an editor occasionally, you can hold down the Shift key while clicking the Compose or the Reply button to switch to the non-default on an as-needed basis.
+    * Automatically quote the original message when replying: Select this to include the original message text in your reply.
+      Use the drop-down list to select if the cursor should be positioned below or above the quoted text. You can also choose the quoting to be automatically selected.
+          o and place my signature: This drop-down list lets you choose where you want your signature to be placed. It's only selectable if you decided to attach a signature and to place the cursor above the quotet text.
+
+You use Addressing settings to override the global LDAP server settings specified for all address books in the Preferences dialog box. LDAP server settings affect the behavior of address autocompletion, and you can change these settings for each account if necessary.
+
+Address autocompletion uses your address books to find matching entries when you type email addresses in the addressing area of the Compose window.
+
+If you are not already viewing the Addressing settings, begin from the Mail window:
+
+   1. Open the Edit menu and choose Mail & Newsgroups Account Settings. You see the Mail & Newsgroups Account Settings dialog box.
+   2. Select the account and click the Addressing category.
+
+    * Use my global LDAP server preferences for this account: This is the default. Select this if you don't want to override the global LDAP server preferences for this account.
+    * Use a different LDAP server: Select this option and then choose another LDAP server from the list if you want to use a different LDAP directory server for address autocompletion with this account. If necessary, click Edit Directories to edit individual directory server settings, add a directory server, or delete a directory server. For more information, see Adding and Removing LDAP Directories.
+
+The directory you select will also be searched for matching certificates when you attempt to send an encrypted message to one or more recipients for whom you don't have certificates on file.
+
+[ Return to beginning of section ]
+Mail & Newsgroups Account Settings - Offline & Disk Space
+
+Offline & Disk Space settings let you conserve disk space or set up an account so that you can use it while offline (disconnected from the Internet). The settings available depend on the mail server type (IMAP, POP, or News) associated with the account.
+
+ 
+
+    * Offline and Disk Space Settings (IMAP)
+    * Disk Space Settings (POP)
+    * Offline and Disk Space Settings (News)
+
+[ Return to beginning of section ]
+Offline and Disk Space Settings (IMAP)
+
+If you are not already viewing the offline and disk space preferences for an IMAP account, begin from the Mail window:
+
+   1. Open the Edit menu and choose Mail & Newsgroups Account Settings. You see the Mail & Newsgroups Account Settings dialog box.
+   2. Choose the Offline & Disk Space category for an IMAP account.
+
+    * Make the messages in my Inbox available when I am working offline: Select this option so that messages in your Inbox will be available when you are working offline.
+    * When I create new folders, select them for offline use: Select this option so that new folders you create are automatically selected for offline use. If left unchecked, new folders won't be automatically selected for offline use. You can manually select folders for offline by choosing the Download/Sync Now command (available from the File menu, under Offline). Click the Select button in the Download/Sync Messages dialog box to select the folders.
+    * Select folders for offline use: Click to select the folders that you want to make available for offline use. See Selecting Items for Offline Viewing for more information.
+    * Messages larger than ___ KB: Select this option to conserve disk space by preventing large messages from being downloaded. Enter the maximum size for downloaded messages.
+
+ 
+
+[ Return to beginning of section ]
+
+ 
+Disk Space Settings (POP)
+
+Messages from POP accounts are always downloaded to your local machine. This section describes how you can save disk space for a POP account. If you are not already viewing the Disk Space preferences for a POP account, follow these steps:
+
+Begin from the Mail window.
+
+   1. Open the Edit menu, choose Mail & Newsgroups Account Settings. You see the Mail & Newsgroups Account Settings dialog box.
+   2. Click the Disk Space category for a POP account.
+
+    * Messages larger than ___ KB: Select this option to conserve disk space by preventing large messages from being downloaded. Enter the maximum size for downloaded messages.
+
+ 
+
+[ Return to beginning of section ]
+Offline and Disk Space Settings (News)
+
+If you are not already viewing the offline and disk space settings for a News account, begin from the Mail window:
+
+   1. Open the Edit menu, and choose Mail & Newsgroups Account Settings. You see the Mail & Newsgroups Account Settings dialog box.
+   2. Choose the Offline & Disk Space category for a News account.
+
+    * Select newsgroups for offline use: Click to select the newsgroups that you want to make available for offline use. See Selecting Items for Offline Viewing for more information.
+
+The following settings help to save disk space and download time. Specify which messages you don't want to download locally:
+
+    * Read messages: Select this option to only download message bodies from messages you haven't already read.
+    * Messages larger than ___ KB: Select this option to conserve disk space by preventing large messages from being downloaded. Enter the maximum size for downloaded messages.
+    * Messages more than ___ days old: Select this option to only download messages that are not older than the number of days you enter here.
+
+Mozilla can automatically delete newsgroup messages for you. You can configure this process with the options listed below Keep:
+
+    * All messages: Keep all messages. Never delete messages automatically.
+    * The newest ___ messages: Enter the number of messages to keep. With this setting only messages older than these messages are deleted.
+    * Messages which have arrived within the last ___ days: Keep all messages that arrived within the given number of days.
+
+With last two settings you can further constrain the three options to delete messages automatically. This is especially useful in combination with the option to keep all messages.
+
+    * Only unread messages: Select this option to deny Mozilla the deletion of unread messages.
+    * Only message bodies less than ___ days old: Select this option to deny Mozilla the deletion of messages that are newer than the number of days you specify here.
+
+[ Return to beginning of section ]
+Mail & Newsgroups Account Settings - Return Receipts
+
+This section describes how to use the Return Receipts account settings. If you are not currently viewing the Return Receipts settings, follow these steps:
+
+   1. Open the Edit menu, and choose Mail & Newsgroups Account Settings. You see the Mail & Newsgroups Account Settings dialog box.
+   2. Click the Return Receipts category for your mail account.
+
+You use the Return Receipts settings to define return receipt settings for outgoing messages from this mail account. You also use the Return Receipt settings to specify how to manage requests you receive for return receipts. These settings override global return receipt preferences you specified using Mail & Newsgroups Preferences - Return Receipts.
+
+    * Use my global return receipt preferences for this account: By default, this account uses the return receipt preferences specified by Mail & Newsgroups Preferences - Return Receipts.
+    * Customize return receipts for this account: Lets you change the return receipt preferences for this account.
+    *
+          o When sending messages, always request a return receipt: Enables automatic return receipt requests for all outgoing messages from this mail account.
+          o Leave it in my Inbox: Return receipt confirmation messages are delivered to the Inbox for this account.
+          o
+
+            Tip: Choose this option if you want to use a filter that automatically moves return receipt confirmation messages to a folder you specify. For information on creating and using filters, see Creating Message Filters.
+          o Move it to my Sent Mail folder: Incoming return receipt confirmation messages are moved to the Sent mail folder for this account.
+          o Never send a return receipt: Choose this option if you do not want to send a return receipt in response to requests for return receipts from others.
+          o Allow return receipts for some messages: Choose how you want to respond to requests you receive for return receipts.
+
+[ Return to beginning of section ]
+Mail & Newsgroups Account Settings - Security
+
+This section describes how to configure the Mail & Newsgroup Account Settings that control mail message security. Before you do so, however, you must obtain one or more mail certificates. For details, see Signing & Encrypting Messages.
+
+If you are not already viewing the Security settings for your mail account, begin from the Mail window:
+
+   1. Open the Edit menu and choose Mail & Newsgroups Account Settings.
+   2. Click Security under the name of the mail account whose security settings you want to configure.
+
+In this section:
+
+    * About Certificates
+    * Digital Signing
+    * Encryption
+
+About Certificates
+
+The main purpose of the Security panel in Mail & Newsgroup Account Settings is to select two certificates:
+
+    * The email certificate you want to use for signing mail messages you send to other people.
+    * The email certificate you want other people to use when they encrypt messages they send to you.
+
+Depending on the policies of the certificate authority (CA) that issues your certificate(s), you can use one certificate for both purposes or two different certificates. Even if you use just one, you must specify it twice, once for digital signing and once for encryption.
+
+The certificates you select here are included with every signed message you send. These certificates allow your recipients to verify your digital signature and to encrypt messages that they send to you.
+
+ 
+Digital Signing
+
+You use the Digital Signing area in the Security panel to specify how you want to sign your email messages:
+
+    * Digitally sign messages: Select this checkbox if you want to digitally sign all the messages you send. (A personal certificate must be specified below before you can select this checkbox.)
+    * Use this certificate to digitally sign messages you send: If this field is empty or if it displays the wrong certificate, click Select to choose from the certificates you have on file.
+
+Regardless of whether the "Digitally sign messages" checkbox is selected here, you can change your mind before you send an individual message.
+
+To change the digital signature setting for a message you are writing in the Compose window, click the arrow below the Security icon near the top of the window and select or deselect "Digital Sign This Message". For details, see Signing & Encrypting a New Message.
+Encryption
+
+You use the Encryption area in the Security panel to specify how you routinely want to use encryption when sending your messages:
+
+    * Never: Select this option if you never want to use encryption, or only occasionally.
+    * Required: Select this option if you always want to use encryption. If you don't have all the necessary certificates, the message won't be sent unless you explicitly turn off encryption for that message only.
+    * Use this certificate to encrypt & decrypt messages sent to you: If this field is empty or if it displays the wrong certificate, click Select to choose from the certificates you have on file.
+
+Regardless of which encryption option you select, you can change your mind before you send an individual message.
+
+To change the encryption setting for a message you are writing in the Compose window, click the arrow below the Security icon near the top of the window and choose the encryption setting you want. For details, see Signing & Encrypting a New Message.
+
+[ Return to beginning of section ]
+Mail & Newsgroups Account Settings - Local Folders
+
+Local Folders is the account where Mozilla Mail & Newsgroups saves any messages that you send while working offline. Messages you send while working offline are saved in the Unsent Messages folder under Local Folders. Any folders you create under the Local Folders account reside on your hard disk, so Local Folders is a good place to save messages that you want to keep.
+
+If you are not already viewing the Local Folders settings, begin from the Mail window:
+
+   1. Open the Edit menu and choose Mail & Newsgroups Account Settings. You see the Mail & Newsgroups Account Settings dialog box.
+   2. Select the Local Folders category.
+
+    * Account Name: The name associated with the Local Folders account.
+    * Local directory: The location on your hard disk where mail for this account is stored.
+
+ 
+
+[ Return to beginning of section ]
+Mail & Newsgroups Account Settings - Outgoing Server (SMTP)
+
+The outgoing server will transport your outgoing mail to the intended recipients.
+
+If you are not already viewing the Outgoing Server (SMTP) settings, begin from the Mail window:
+
+   1. Click on any Mail window.
+   2. From the Edit menu, choose Mail & Newsgroup Account Settings.
+   3. Select Outgoing Server (SMTP) and set up as follows (If you are not sure which option to choose, check with your ISP or system administrator):
+
+    * Server name: The SMTP server that will deliver your outgoing mail. To use a different SMTP server, change this field.
+    * Port: The port on which the SMTP server will be connected. By default it holds the standard port for the specified encryption. Change it if the mail server is listening for connections on a non-standard port.
+    * Use name and password: If your SMTP server requires authentication to send mail, select this option and enter your user name. The first time you send mail, you will be prompted for your password. At that time you can instruct Mozilla to save your password for future sessions.
+    * Use secure connection: If your outgoing server is configured to support an encrypted connection, choose one of the following (if you make a choice for which your server is not configured, you will get an error message when sending mail):
+          o No: If you don't want to use an encrypted link.
+          o TLS, if available: Mozilla will try to use a TLS encrypted connection. If the server doesn't support it, an unencrypted connection is used.
+          o TLS: Require a TLS encrypted connection. This mechanism will mostly run on the standard SMTP port 25.
+          o SSL: Require a SSL encrypted connection. The default port for this is 465.
+    * Advanced: Click this option to set up additional SMTP servers or to change the default SMTP server.
+
+ 
+
+[ Return to beginning of section ]
+Mail & Newsgroup Preferences
+
+The sections listed below describe the Mail & Newsgroups preferences that apply to all your mail and newsgroup accounts. To see these preferences:
+
+   1. Open the Edit menu (Mozilla menu on Mac OS X) and choose Preferences.
+   2. Double-click Mail & Newsgroups to expand the list.
+
+In this section:
+
+    * Mail & Newsgroups
+    * Windows
+    * Message Display
+    * Notifications
+    * Composition
+    * Send Format
+    * Addressing
+    * Labels
+    * Return Receipts
+    * Offline & Disk Space Preferences
+
+Mail & Newsgroups Preferences - Mail & Newsgroups
+
+This section describes the main Mail & Newsgroups preferences. If you are not already viewing the Mail & Newsgroups main preferences, follow these steps:
+
+   1. Open the Edit menu (Mozilla menu on Mac OS X) and choose Preferences. You see the Preferences dialog box.
+   2. Click the Mail & Newsgroups category.
+
+    * Confirm when moving folders to the Trash: Choose to allow Mail & Newsgroups to prompt you before deleting folders.
+    * Remember the last selected message: Choose this option if you want Mozilla to select the message you had selected last before leaving a folder when you reenter a folder.
+    * Use Mozilla Mail as the default mail application: Select Mozilla Mail & Newsgroups as the default mail application for Windows and from within other applications such as Microsoft Word.
+    *
+
+      Note: Setting Mozilla Mail & Newsgroups as the default mail application may disable another mail application. To restore the other mail application as the default, deselect this option.
+    *
+
+      Play a sound: Select this if you want Mozilla Mail & Newsgroups to play the default system sound when new messages arrive. If no Mozilla applications are running, Quick Launch must be enabled in order to play a sound when new messages arrive.
+
+      If any Mozilla application is running, then Quick Launch does not need to be enabled in order to play a sound when new messages arrive. For information on using Quick Launch, see Using Quick Launch.
+
+      Once Mozilla Mail has been started, the new messages sound will continue to work even after you close the Mail window (as long as another Mozilla application is running).
+    *
+
+      Show an alert: Select this if you want Mozilla Mail & Newsgroups to display a sliding alert above your system tray in the lower right corner of your screen when new messages arrive. The sliding alert only appears once when new messages arrive, and won't appear again until you bring the Mail & Newsgroups window to the front.
+        	Sliding new mail alert
+
+      When the alert appears, clicking the link displayed in the alert will take you to the first folder that has new mail. If no Mozilla applications are running, Quick Launch must be enabled in order to display the new message alert.
+
+      If any Mozilla application is running, then Quick Launch does not need to be enabled in order to display the new message alert. For information on using Quick Launch, see Using Quick Launch.
+
+      Once Mozilla Mail has been started, the new message alert will continue to work even after you close the Mail window (as long as another Mozilla application is running).
+    *
+
+      When Mail launches, show the Start Page in the message area: Select this to enable the Start Page. The Start Page appears in the message area when you first open Mozilla Mail & Newsgroups. This page is the default page, but you can enter a different web page or URL of your choice. To disable the Start Page, deselect this option. Click Restore Default to return to the original page provided by Mozilla.
+
+[ Return to beginning of section ]
+Mail & Newsgroups Preferences - Windows
+
+Windows preferences allow you to adjust the window layout and handling.
+
+   1. Open the Edit menu (Mozilla menu on Mac OS X) and choose Preferences.
+   2. Under the Mail & Newsgroups category, click Windows. (If no subcategories are visible, double-click Mail & Newsgroups to expand the list.)
+
+    * Select the window layout you prefer for Mail: Choose the type of three-pane layout to use for the Mail window. If you change this setting, you must exit and restart Mail & Newsgroups to have your changes take effect.
+    * When opening messages, display them in: Here you can choose if you want to reuse a message window for the next mail or if want to open a new one for each.
+
+[ Return to beginning of section ]
+Mail & Newsgroups Preferences - Message Display
+
+Message Display preferences allow you to choose how messages are displayed (for example, font style and color) in all accounts. If you are not already viewing the Message Display settings, follow these steps:
+
+   1. Open the Edit menu (Mozilla menu on Mac OS X) and choose Preferences. You see the Preferences dialog box.
+   2. Under the Mail & Newsgroups category, click Message Display. (If no subcategories are visible, double-click Mail & Newsgroups to expand the list.)
+
+    * Plain-Text Messages: Select the font you prefer for viewing plain-text messages: fixed width or variable width. Choosing a font style, size, and color for quoted plain-text messages can help you more easily distinguish quoted text (usually a message that's been forwarded to you or by you).
+    * Wrap text to fit window width: Select this so that incoming messages are word-wrapped to fit the width of your Mail window.
+    * Display emoticons as graphics: Select this so that when you receive messages that contain emoticons (also called smiley faces) Mail & Newsgroups can convert them to graphics, for example:
+
+
+      This: 	Converts to:
+      :-) 	
+      :) 	
+      :-( 	
+      :( 	
+      ;-) 	
+      ;-p 	
+    *
+
+      Character Encodings: Click the Character Encoding drop-down list to select the character encoding you want Mail & Newsgroups to use as the default for incoming mail and newsgroup messages. This is recommended if it's likely you might receive messages in which the character encoding (MIME charset) is not indicated, such as when reading messages in international newsgroups.
+    * Apply default to all messages: Select this to apply the default character encoding to all messages.
+
+      Tip: You can later view or change the character encoding for a specific folder. In the Mail window, select a folder from the list of Mail folders. Open the View menu, and choose Character Encoding.
+
+[ Return to beginning of section ]
+Mail & Newsgroups Preferences - Notifications
+
+Notification preferences allow you to select different methods for informing you on arrival of a new message. So you don't have to always look in the folders.
+
+   1. Open the Edit menu (Mozilla menu on Mac OS X) and choose Preferences.
+   2. Under the Mail & Newsgroups category, click Notifications. (If no subcategories are visible, double-click Mail & Newsgroups to expand the list.)
+
+    *
+
+      Show an alert: Select this if you want Mozilla Mail & Newsgroups to display a sliding alert above your system tray in the lower right corner of your screen when new messages arrive. The sliding alert only appears once when new messages arrive, and won't appear again until you bring the Mail & Newsgroups window to the front.
+        	Sliding new mail alert
+
+      When the alert appears, clicking the link displayed in the alert will take you to the first folder that has new mail.
+
+      Once Mozilla Mail has been started, the new message alert will continue to work even after you close the Mail window (as long as another Mozilla application is running).
+
+      Note: This feature is not available on Mac OS, Linux or Unix.
+    *
+
+      Play a sound: Select this if you want Mozilla Mail & Newsgroups to play a sound when new messages arrive.
+      You can choose between the default system sound and a custom sound in WAV format. If you choose the latter you have to enter the path to the sound file or use the Browse button to select in in the file locator. Click on Preview button to preview the choosen sound file.
+
+      Once Mozilla Mail has been started, the new messages sound will continue to work even after you close the Mail window (as long as another Mozilla application is running).
+
+[ Return to beginning of section ]
+Mail & Newsgroups Preferences - Composition
+
+Composition preferences affect how you create messages (for example, forwarding options and address autocompletion) in all accounts. If you are not already viewing the Composition settings, follow these steps:
+
+   1. Open the Edit menu (Mozilla menu on Mac OS X) and choose Preferences.
+   2. Under the Mail & Newsgroups category, click Composition. (If no subcategories are visible, double-click Mail & Newsgroups to expand the list.)
+
+    * Forward Messages: Use the Forward messages drop-down list to choose how you want forwarded message text to appear: as an attachment or inline (in the body of your message).
+    * Composing Messages: Select to have Mail & Newsgroups always check the spelling of your messages when you click Send. Choose to have Mail & Newsgroups use "quoted printable" MIME encoding when sending regular messages that use an 8-bit character encoding (for example, Latin ISO-8859-3).
+    * Confirm when using keyboard shortcut to send message: Check this option if want to be asked if you're sure to be ready to send the message when you're pressing Ctrl+Return in message editor. This may help you avoid accidentally sending the message if you enter the keyboard shortcut by mistake when composing a message.
+    * Wrap plain text messages at __ characters: Enter a number to set the right margin for text in the message area.
+    * Character Encoding: Select the character encoding you want Mail & Newsgroups to use as the default for outgoing mail and newsgroup messages. Note that this character encoding is not used when replying to a message. Instead, the character encoding of the message being replied to is used by default. Choose to use the default character encoding for outgoing messages even when replying.
+    * Defaults for HTML Messages: Here you can define what the defaults are for font, size, text and background color if you choose to send mails in HTML format.
+
+[ Return to beginning of section ]
+Mail & Newsgroups Preferences - Send Format
+
+Send Format preferences allow you to specify how you want to format your outgoing messages. If you are not already viewing the Send Format settings, follow these steps:
+
+   1. Open the Edit menu (Mozilla menu on Mac OS X) and choose Preferences. You see the Preferences dialog box.
+   2. Under the Mail & Newsgroups category, click Send Format. (If no subcategories are visible, double-click Mail & Newsgroups to expand the list.)
+
+    * Ask me what to do: This option requires Mail & Newsgroups to prompt you to choose a format before you send the message.
+    * Convert the message to plain text: This option may cause your message to lose formatting such as bold text.
+    * Send the message in HTML anyway: If you select this option, keep in mind that some mail programs may have trouble displaying the message.
+    * Send the message in both plain text and HTML: This option uses more disk space.
+    *
+
+      You can always override these preferences for an individual message by using the Options menu in the Mail Compose window.
+    * HTML and Plain Text Domains: Use the Add button to add the domain names that you typically send mail to, if you know which domains can display HTML-formatted mail messages, and which domains can only display plain text.
+
+For example, if you typically send mail to multiple recipients that have the same domain name (for example, your colleagues all have email addresses that end in "netscape.net"), and you know that this domain name is capable of displaying HTML messages, then you can add the netscape.net domain to the list of HTML Domains so that Mail & Newsgroups will automatically send messages in HTML format to these recipients.
+
+Similarly, if you typically send mail to recipients at a domain that you know can only receive Plain Text messages, you can add that domain name to the list of Plain Text domains, so that Mail & Newsgroups automatically sends messages to that domain in plain-text format.
+
+Note: If you regularly compose HTML (formatted) mail messages, keep in mind that sometimes not all recipients use mail programs that can display HTML formatting properly. Send Format preferences allow you to specify how you want to format messages that go to recipients who cannot display HTML-formatted mail. You can convert messages to plain text, format them only as HTML, or format them as both HTML and plain text. These preferences apply to all your mail accounts, but only to mail messages and not to newsgroup messages.
+
+Whenever you add a person or address card to your address book, you can specify whether that addressee can receive HTML-formatted messages. However, when this information is unknown, you can set Send Format preferences for how Mail & Newsgroups formats these messages.
+
+[ Return to beginning of section ]
+Mail & Newsgroups Preferences - Addressing
+
+Addressing preferences allow you to control the settings for Mozilla Mail & Newsgroups address books (for example, email address collection and address autocompletion). If you are not already viewing the Addressing settings, follow these steps:
+
+   1. Open the Edit menu (Mozilla menu on Mac OS X) and choose Preferences. You see the Preferences dialog box.
+   2. Under the Mail & Newsgroups category, select Addressing. (If no subcategories are visible, double-click Mail & Newsgroups to expand the list.)
+
+    * Email Address Collection: Select how Mail & Newsgroups will add senders' and recipients' addresses to your Collected Addresses book (from incoming, outgoing, or newsgroup messages).
+
+      Note: In addition to your Personal Address Book, Mozilla Mail & Newsgroups provides you with a Collected Addresses Book that can automatically store email addresses from your incoming or outgoing messages, or both. By default, email addresses contained in outgoing messages are stored as soon as you click Send. If you choose "Incoming Mail Messages," Mail & Newsgroups stores the sender's address in each message as soon as you open it. Any changes you make to these settings take effect the next time you start Mozilla.
+    * Address Autocompletion: Address autocompletion allows you to quickly address mail without having to search for names or type names completely. Select from which location Mail & Newsgroups will search for matching addresses: "Local Address Books" (Personal Address Book, Collected Addresses Book, or any other local address book) or "Directory Server" (an available LDAP directory server) or both.
+
+      Note: If while addressing mail, multiple email address matches are found, Mail & Newsgroups displays a list of all possible choices.
+
+      If you select Directory Server, choose a directory server from the list. A directory server lets you look up addresses that are not stored in one of your local address books. The directory you select will also be searched for matching certificates when you attempt to send an encrypted message to one or more recipients for whom you don't have certificates on file.
+
+      See Adding and Removing LDAP Directories for information on setting LDAP directory server settings.
+
+      Note: Directory server settings you enter from the Preferences dialog box apply to all your mail accounts. You can override these settings for individual accounts by specifying different LDAP directory servers or server settings using the Addressing settings for an account in the Mail & Newsgroups Account Settings dialog box. To set different addressing options for a specific account, open the Edit menu and choose Mail & Newsgroups Account Settings.
+
+[ Return to beginning of section ]
+Mail & Newsgroups Preferences - Labels
+
+This section describes how to use the Labels preferences panel .You use the Labels preferences to define the label text and colors for message labels. If you are not currently viewing the panel, follow these steps:
+
+   1. Open the Edit menu (Mozilla menu on Mac OS X) and choose Preferences.
+   2. Under the Mail & Newsgroups category, select Labels. (If no options are visible, double-click the Mail & Newsgroups category to expand the list.)
+
+    * Customize Labels: Specifies the label text and the color for each label. You can edit or replace the default label text with your own text (up to 32 characters). To change the label color, click the color chip next to that label and select a new color.
+    * Restore Defaults: Restores the default label text and colors.
+
+[ Return to beginning of section ]
+Mail & Newsgroups Preferences - Return Receipts
+
+This section describes how to use the Return Receipts preferences panel. If you are not currently viewing the Return Receipts panel, follow these steps:
+
+   1. Open the Edit menu (Mozilla menu on Mac OS X) and choose Preferences.
+   2. Under the Mail & Newsgroups category, select Return Receipts. (If no subcategories are visible, double-click Mail & Newsgroups to expand the list.)
+
+You use the Return Receipts preferences to define return receipt settings for outgoing messages from all your mail accounts. You also use the Return Receipt preferences to specify how to manage requests you receive for return receipts.
+
+    * When sending messages, always request a return receipt: Enables automatic return receipt requests for all outgoing messages in all your mail accounts.
+    * Leave it in my Inbox: Return receipt confirmation messages are delivered to your Inbox.
+    *
+
+      Tip: Choose this option if you want to use a filter that automatically moves return receipt confirmation messages to a folder you specify. For information on creating and using filters, see Creating Message Filters.
+    * Move it to my Sent Mail folder: Incoming return receipt confirmation messages are moved to your Sent mail folder.
+    * Never send a return receipt: Choose this option if you do not want to send a return receipt in response to requests for return receipts from others.
+    * Allow return receipts for some messages: Choose how you want to respond to requests you receive for return receipts.
+
+To override these global preferences for individual accounts, see Mail & Newsgroups Account Settings - Return Receipts.
+
+[ Return to beginning of section ]
+Mail & Newsgroups Preferences - Offline & Disk Space
+
+This section describes how to use the Offline & Disk Space preferences panel. If you are not currently viewing the panel, follow these steps:
+
+   1. Open the Edit menu (Mozilla menu on Mac OS X) and choose Preferences.
+   2. Under the Mail & Newsgroups category, select Offline & Disk Space. (If no subcategories are visible, double-click Mail & Newsgroups to expand the list.).
+
+The Offline & Disk Space preferences allow you to set preferences for working offline, going online, and disk space.
+
+    * Offline: Select how you want Mail & Newsgroups to handle messages when going online or offline.
+    * Disk Space: Select this to conserve disk space by automatically compacting message folders when it will save the amount of disk space you enter.
+
+See Working Offline for information on working offline.
+
+[ Return to beginning of section ]
+
+10 January 2004
+
+Copyright © 1998-2004 The Mozilla Foundation.

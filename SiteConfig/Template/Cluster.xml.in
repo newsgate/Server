@@ -1,0 +1,589 @@
+<cluster xmlns="http://www.elements.com/Start"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+         xsi:schemaLocation="http://www.elements.com/Start @elements_xsd@/Start.xsd">
+
+<parameters threads="10" 
+            service_probes="7"
+            service_probes_period="2"  
+            verbose="no"/>
+
+<var name="setenv">source @site_config_root@/environment.sh</var>
+<var name="config">@site_config_root@/Config.xml</var>
+<var name="mklog">mkdir -p @log_root@/</var>
+<var name="mkdata">mkdir -p @data_root@/</var>
+<var name="mkcache">mkdir -p @cache_root@/</var>
+<var name="mkrun">mkdir -p @run_root@/</var>
+<var name="mktmp">mkdir -p @tmp_root@/</var>
+
+<var name="VALGRIND">valgrind --error-limit=no --num-callers=35 </var>
+<var name="VALGRIND_LEAKS">valgrind --num-callers=40 --leak-check=full --error-limit=no --show-reachable=yes </var>
+
+<!-- __log-file=@run_root@/valgrind.out __trace-children=yes __show-reachable=yes -->
+
+<transport>ssh \HOST\ -x -i @ssh_key_file@ "export NO_DB_CHECK='\ENV:NO_DB_CHECK\'; export NO_BACKUP='\ENV:NO_BACKUP\'; \COMMAND\"</transport>
+
+<service name="DB">
+
+  <tag name="core"/>
+
+  <start>
+    \VAR:setenv\ &amp;&amp; \VAR:mkrun\ &amp;&amp; ng-db-start.sh > @run_root@/\NAME\.out 2>&amp;1
+  </start>
+
+  <stop>
+    \VAR:setenv\ &amp;&amp; \\
+    @server_scripts@/DB/ng-mysqld stop > @run_root@/\NAME\.out 2>&amp;1
+  </stop>
+
+  <status>
+    \VAR:setenv\ &amp;&amp; \\
+    @server_scripts@/DB/ng-mysqld status > /dev/null 2>&amp;1
+  </status>
+
+</service>
+
+<service name="Configurator">
+
+  <tag name="core"/>
+
+  <start>
+    @site_config_root@/configurator.sh > @run_root@/\NAME\.out 2>&amp;1
+  </start>
+
+  <after service="DB"/>
+</service>
+
+<service name="WordManager">
+
+  <tag name="core"/>
+
+  <start>
+    \VAR:setenv\ &amp;&amp; cd "@run_root@" &amp;&amp; \\
+    ulimit -H -S -s 1024 &amp;&amp; { \NAME\ \VAR:config\ \\
+    --corba-port @service_word_manager_port@ \\
+    --corba-thread-pool 20 > @run_root@/\NAME\.out 2>&amp;1 &amp; }
+  </start>
+
+  <stop>
+    \VAR:setenv\ &amp;&amp; ElCorbaAdmin stop @corbaloc_word_manager_proc_ctl@
+  </stop>
+
+  <status>
+    \VAR:setenv\ &amp;&amp; ElCorbaAdmin status @corbaloc_word_manager_proc_ctl@
+  </status>
+
+  <after service="Configurator"/>
+
+</service>
+
+<service name="Segmentor">
+
+  <tag name="core"/>
+
+  <start>
+    \VAR:setenv\ &amp;&amp; cd "@run_root@" &amp;&amp; \\
+    ulimit -H -S -s 1024 &amp;&amp; { \NAME\ \VAR:config\ \\
+    --corba-port @service_segmentor_port@ \\
+    --corba-thread-pool 20 > @run_root@/\NAME\.out 2>&amp;1 &amp; }
+  </start>
+
+  <stop>
+    \VAR:setenv\ &amp;&amp; ElCorbaAdmin stop @corbaloc_segmentor_proc_ctl@
+  </stop>
+
+  <status>
+    \VAR:setenv\ &amp;&amp; ElCorbaAdmin status @corbaloc_segmentor_proc_ctl@
+  </status>
+
+  <after service="Configurator"/>
+
+</service>
+
+<service name="LimitChecker" enabled="@limit_checker_enabled@">
+
+  <tag name="fraud"/>
+
+  <start>
+    \VAR:setenv\ &amp;&amp; cd "@run_root@" &amp;&amp; \\
+    ulimit -H -S -s 1024 &amp;&amp; { \NAME\ \VAR:config\ \\
+    --corba-port @service_limit_checker_port@ \\
+    --corba-thread-pool 20 > @run_root@/\NAME\.out 2>&amp;1 &amp; }
+  </start>
+
+  <stop>
+    \VAR:setenv\ &amp;&amp; ElCorbaAdmin stop @corbaloc_limit_checker_proc_ctl@
+  </stop>
+
+  <status>
+    \VAR:setenv\ &amp;&amp; ElCorbaAdmin status @corbaloc_limit_checker_proc_ctl@
+  </status>
+
+  <after service="Configurator"/>
+  <after service="FeedManager"/>
+
+</service>
+
+<service name="AdServer" enabled="@ad_server_enabled@">
+
+  <tag name="ad"/>
+
+  <start>
+    \VAR:setenv\ &amp;&amp; cd "@run_root@" &amp;&amp; \\
+    ulimit -H -S -s 1024 &amp;&amp; { \NAME\ \VAR:config\ \\
+    --corba-port @service_ad_server_port@ \\
+    --corba-thread-pool 20 > @run_root@/\NAME\.out 2>&amp;1 &amp; }
+  </start>
+
+  <stop>
+    \VAR:setenv\ &amp;&amp; ElCorbaAdmin stop @corbaloc_ad_server_proc_ctl@
+  </stop>
+
+  <status>
+    \VAR:setenv\ &amp;&amp; ElCorbaAdmin status @corbaloc_ad_server_proc_ctl@
+  </status>
+
+  <after service="Configurator"/>
+
+</service>
+
+<service name="StatProcessor" enabled="@stat_processing_enabled@">
+
+  <tag name="stat"/>
+
+  <start>
+    \VAR:setenv\ &amp;&amp; cd "@run_root@" &amp;&amp; \\
+    ulimit -H -S -s 1024 &amp;&amp; { \NAME\ \VAR:config\ \\
+    --corba-port @service_stat_processor_port@ \\
+    --corba-thread-pool 20 > @run_root@/\NAME\.out 2>&amp;1 &amp; }
+  </start>
+
+  <stop>
+    \VAR:setenv\ &amp;&amp; ElCorbaAdmin stop @corbaloc_stat_processor_proc_ctl@
+  </stop>
+
+  <status>
+    \VAR:setenv\ &amp;&amp; ElCorbaAdmin status @corbaloc_stat_processor_proc_ctl@
+  </status>
+
+  <after service="Configurator"/>
+  <after service="FeedManager"/>
+  <after service="LimitChecker"/>
+  <after service="AdServer"/>
+
+</service>
+
+<service name="SearchMailer" enabled="@search_mailing_enabled@">
+
+  <tag name="mail"/>
+
+  <start>
+    \VAR:setenv\ &amp;&amp; cd "@run_root@" &amp;&amp; \\
+    ulimit -H -S -s 1024 &amp;&amp; { \NAME\ \VAR:config\ \\
+    --corba-port @service_search_mailer_port@ \\
+    --corba-thread-pool 20 > @run_root@/\NAME\.out 2>&amp;1 &amp; }
+  </start>
+
+  <stop>
+    \VAR:setenv\ &amp;&amp; ElCorbaAdmin stop @corbaloc_search_mailer_proc_ctl@
+  </stop>
+
+  <status>
+    \VAR:setenv\ &amp;&amp; ElCorbaAdmin status @corbaloc_search_mailer_proc_ctl@
+  </status>
+
+  <after service="Configurator"/>
+  <after service="MessageBank"/>
+  <after service="WordManager"/>
+  <after service="Segmentor"/>
+
+</service>
+
+<service name="RSSPullerManager" enabled="@feed_pulling_enabled@">
+
+  <tag name="pulling"/>
+
+  <start>
+    \VAR:setenv\ &amp;&amp; cd "@run_root@" &amp;&amp; \\
+    ulimit -H -S -s 1024 &amp;&amp; { \NAME\ \VAR:config\ \\
+    --corba-port @service_rss_puller_manager_port@ \\
+    --corba-thread-pool 20 > @run_root@/\NAME\.out 2>&amp;1 &amp; }
+  </start>
+
+  <stop>
+    \VAR:setenv\ &amp;&amp; ElCorbaAdmin stop @corbaloc_rss_puller_manager_proc_ctl@
+  </stop>
+
+  <status>
+    \VAR:setenv\ &amp;&amp; ElCorbaAdmin status @corbaloc_rss_puller_manager_proc_ctl@
+  </status>
+
+  <after service="Configurator"/>
+  <after service="SearchFrontend"/>
+
+</service>
+
+<service name="RSSPuller" enabled="@feed_pulling_enabled@">
+
+  <tag name="pulling"/>
+
+  <start>
+    \VAR:setenv\ &amp;&amp; export MALLOC_ARENA_TEST=0 &amp;&amp; \\
+    export MALLOC_ARENA_MAX=4 &amp;&amp; \\
+    cd "@run_root@" &amp;&amp; \\
+    ulimit -H -S -s 1024 &amp;&amp; { \NAME\ \VAR:config\ \\
+    --corba-port @service_rss_puller_port@ \\
+    --corba-thread-pool 20 > @run_root@/\NAME\.out 2>&amp;1 &amp; }
+  </start>
+
+  <stop>
+    \VAR:setenv\ &amp;&amp; ElCorbaAdmin stop @corbaloc_rss_puller_proc_ctl@
+  </stop>
+  
+  <status>
+    \VAR:setenv\ &amp;&amp; ElCorbaAdmin status @corbaloc_rss_puller_proc_ctl@
+  </status>
+
+  <after service="Configurator"/>
+  <after service="RSSPullerManager"/>
+  <after service="MessageBankManager"/>
+  <after service="MessageBank"/>
+  <after service="SearchFrontend"/>
+</service>
+
+<service name="MessageBankManager">
+
+  <tag name="core"/>
+  <tag name="messaging"/>
+
+  <start>
+    \VAR:setenv\ &amp;&amp; cd "@run_root@" &amp;&amp; \\
+    ulimit -H -S -s 1024 &amp;&amp; { \NAME\ \VAR:config\ \\
+    --corba-port @service_message_bank_manager_port@ \\
+    --corba-thread-pool 20 > @run_root@/\NAME\.out \\
+    2>&amp;1 &amp; }
+  </start>
+
+  <stop>
+    \VAR:setenv\ &amp;&amp; ElCorbaAdmin stop @corbaloc_message_bank_manager_proc_ctl@
+  </stop>
+
+  <status>
+    \VAR:setenv\ &amp;&amp; ElCorbaAdmin status @corbaloc_message_bank_manager_proc_ctl@
+  </status>
+
+  <after service="Configurator"/>
+
+</service>
+
+<service name="EventBankManager" enabled="@event_detection_enabled@">
+
+  <tag name="core"/>
+  <tag name="eventing"/>
+
+  <start>
+    \VAR:setenv\ &amp;&amp; cd "@run_root@" &amp;&amp; \\
+    ulimit -H -S -s 1024 &amp;&amp; { \NAME\ \VAR:config\ \\
+    --corba-port @service_event_bank_manager_port@ \\
+    --corba-thread-pool 20 > @run_root@/\NAME\.out \\
+    2>&amp;1 &amp; }
+  </start>
+
+  <stop>
+    \VAR:setenv\ &amp;&amp; ElCorbaAdmin stop @corbaloc_event_bank_manager_proc_ctl@
+  </stop>
+
+  <status>
+    \VAR:setenv\ &amp;&amp; ElCorbaAdmin status @corbaloc_event_bank_manager_proc_ctl@
+  </status>
+
+  <after service="Configurator"/>
+
+</service>
+
+<service name="EventBank" enabled="@event_detection_enabled@">
+
+  <tag name="core"/>
+  <tag name="eventing"/>
+
+  <start>
+    \VAR:setenv\ &amp;&amp; cd "@run_root@" &amp;&amp; \\
+    ulimit -H -S -s 1024 &amp;&amp; { \NAME\ \VAR:config\ \\
+    --corba-port @service_event_bank_port@ \\
+    --corba-thread-pool 20 > @run_root@/\NAME\.out \\
+    2>&amp;1 &amp; }
+  </start>
+
+  <stop>
+    \VAR:setenv\ &amp;&amp; ElCorbaAdmin stop @corbaloc_event_bank_proc_ctl@
+  </stop>
+
+  <status>
+    \VAR:setenv\ &amp;&amp; ElCorbaAdmin status @corbaloc_event_bank_proc_ctl@
+  </status>
+
+  <after service="Configurator"/>
+  <after service="MessageBankManager"/>
+  <after service="MessageBank"/>
+  <after service="EventBankManager"/>
+  <after service="WordManager"/>
+  <after service="StatProcessor"/>
+
+</service>
+
+<service name="MessageBank">
+
+  <tag name="core"/>
+  <tag name="messaging"/>
+
+  <start>
+    \VAR:setenv\ &amp;&amp; cd "@run_root@" &amp;&amp; \\
+    ulimit -H -S -s 1024 &amp;&amp; { \NAME\ \VAR:config\ \\
+    --corba-port @service_message_bank_port@ \\
+    --corba-thread-pool @message_bank_threads@ > @run_root@/\NAME\.out \\
+    2>&amp;1 &amp; }
+  </start>
+
+  <stop>
+    \VAR:setenv\ &amp;&amp; ElCorbaAdmin stop @corbaloc_message_bank_proc_ctl@
+  </stop>
+
+  <status>
+    \VAR:setenv\ &amp;&amp; ElCorbaAdmin status @corbaloc_message_bank_proc_ctl@
+  </status>
+
+  <after service="Configurator"/>
+  <after service="MessageBankManager"/>
+  <after service="WordManager"/>
+  <after service="Segmentor"/>
+  <after service="EventBankManager"/>
+  <after service="StatProcessor"/>
+
+</service>
+
+<service name="LimitedFrontend" enabled="@limited_frontend_enabled@">
+
+  <tag name="core"/>
+
+<!-- 
+  <start>
+    \VAR:setenv\ &amp;&amp; ulimit -H -S -s 1024 &amp;&amp; \\
+    @site_config_root@/Frontend/Limited/apachectl start
+  </start>
+-->
+
+  <start>
+    \VAR:setenv\ &amp;&amp; ulimit -H -S -s 128 &amp;&amp; \\
+    @site_config_root@/Frontend/Limited/apachectl start
+  </start>
+
+  <stop>
+    \VAR:setenv\ &amp;&amp; @site_config_root@/Frontend/Limited/apachectl stop
+  </stop>
+  
+  <status>
+    \VAR:setenv\ &amp;&amp; ElProbeWEB.sh \\
+    "http://localhost:@service_frontend_limited_port@/sysmon" "system_monitor"
+  </status>
+
+  <after service="Configurator"/>
+  <after service="MessageBankManager"/>
+  <after service="MessageBank"/>
+  <after service="WordManager"/>
+  <after service="Segmentor"/>
+  <after service="EventBankManager"/>
+  <after service="EventBank"/>
+  <after service="StatProcessor"/>
+
+</service>
+
+<service name="SearchFrontend">
+
+  <tag name="core"/>
+
+<!-- 
+  <start>
+    \VAR:setenv\ &amp;&amp; ulimit -H -S -s 1024 &amp;&amp; \\
+    @site_config_root@/Frontend/WEB/apachectl start
+  </start>
+-->
+
+  <start>
+    \VAR:setenv\ &amp;&amp; ulimit -H -S -s 128 &amp;&amp; \\
+    @site_config_root@/Frontend/WEB/apachectl start
+  </start>
+
+  <stop>
+    \VAR:setenv\ &amp;&amp; @site_config_root@/Frontend/WEB/apachectl stop
+  </stop>
+  
+  <status>
+    \VAR:setenv\ &amp;&amp; ElProbeWEB.sh \\
+    "http://localhost:@service_frontend_search_port@/sysmon" "system_monitor"
+  </status>
+
+  <after service="Configurator"/>
+  <after service="MessageBankManager"/>
+  <after service="MessageBank"/>
+  <after service="WordManager"/>
+  <after service="Segmentor"/>
+  <after service="EventBankManager"/>
+  <after service="EventBank"/>
+  <after service="StatProcessor"/>
+  <after service="SearchMailer"/>
+  <after service="LimitedFrontend"/>
+</service>
+
+<service name="ModeratorManager" enabled="@feed_moderating_enabled@">
+
+  <tag name="moderating"/>
+
+  <start>
+    \VAR:setenv\ &amp;&amp; cd "@run_root@" &amp;&amp;
+    ulimit -H -S -s 1024 &amp;&amp; { \NAME\ \VAR:config\ \\
+    --corba-port @service_moderator_manager_port@ \\
+    --corba-thread-pool 20 > @run_root@/\NAME\.out 2>&amp;1 &amp; }
+  </start>
+
+  <stop>
+    \VAR:setenv\ &amp;&amp; ElCorbaAdmin stop @corbaloc_moderator_manager_proc_ctl@
+  </stop>
+  
+  <status>
+    \VAR:setenv\ &amp;&amp; ElCorbaAdmin status @corbaloc_moderator_manager_proc_ctl@
+  </status>
+
+  <after service="Configurator"/>
+</service>
+
+<service name="CustomerManager" enabled="@customer_moderating_enabled@">
+
+  <tag name="moderating"/>
+
+  <start>
+    \VAR:setenv\ &amp;&amp; cd "@run_root@" &amp;&amp;
+    ulimit -H -S -s 1024 &amp;&amp; { \NAME\ \VAR:config\ \\
+    --corba-port @service_customer_manager_port@ \\
+    --corba-thread-pool 20 > @run_root@/\NAME\.out 2>&amp;1 &amp; }
+  </start>
+
+  <stop>
+    \VAR:setenv\ &amp;&amp; ElCorbaAdmin stop @corbaloc_customer_manager_proc_ctl@
+  </stop>
+  
+  <status>
+    \VAR:setenv\ &amp;&amp; ElCorbaAdmin status @corbaloc_customer_manager_proc_ctl@
+  </status>
+
+  <after service="Configurator"/>
+</service>
+
+<service name="AdManager" enabled="@ad_management_enabled@">
+
+  <tag name="moderating"/>
+
+  <start>
+    \VAR:setenv\ &amp;&amp; cd "@run_root@" &amp;&amp;
+    ulimit -H -S -s 1024 &amp;&amp; { \NAME\ \VAR:config\ \\
+    --corba-port @service_ad_manager_port@ \\
+    --corba-thread-pool 20 > @run_root@/\NAME\.out 2>&amp;1 &amp; }
+  </start>
+
+  <stop>
+    \VAR:setenv\ &amp;&amp; ElCorbaAdmin stop @corbaloc_ad_manager_proc_ctl@
+  </stop>
+  
+  <status>
+    \VAR:setenv\ &amp;&amp; ElCorbaAdmin status @corbaloc_ad_manager_proc_ctl@
+  </status>
+
+  <after service="Configurator"/>
+</service>
+
+<service name="FeedManager" enabled="@feed_moderating_enabled@">
+
+  <tag name="moderating"/>
+
+<!-- valgrind ..error-limit=no ..num-callers=35  -->
+
+  <start>
+    \VAR:setenv\ &amp;&amp; export MALLOC_ARENA_TEST=0 &amp;&amp; \\
+    export MALLOC_ARENA_MAX=4 &amp;&amp; \\
+    cd "@run_root@" &amp;&amp; \\
+    ulimit -H -S -s 1024 &amp;&amp; { \NAME\ \VAR:config\ \\
+    --corba-port @service_feed_manager_port@ \\
+    --corba-thread-pool 20 > @run_root@/\NAME\.out 2>&amp;1 &amp; }
+  </start>
+
+  <stop>
+    \VAR:setenv\ &amp;&amp; ElCorbaAdmin stop @corbaloc_feed_manager_proc_ctl@
+  </stop>
+  
+  <status>
+    \VAR:setenv\ &amp;&amp; ElCorbaAdmin status @corbaloc_feed_manager_proc_ctl@
+  </status>
+
+  <after service="Configurator"/>
+</service>
+
+<service name="CategoryManager" enabled="@feed_moderating_enabled@">
+
+  <tag name="moderating"/>
+
+  <start>
+    \VAR:setenv\ &amp;&amp; cd "@run_root@" &amp;&amp; \\
+    ulimit -H -S -s 1024 &amp;&amp; { \NAME\ \VAR:config\ \\
+    --corba-port @service_category_manager_port@ \\
+    --corba-thread-pool 20 > @run_root@/\NAME\.out 2>&amp;1 &amp; }
+  </start>
+
+  <stop>
+    \VAR:setenv\ &amp;&amp; ElCorbaAdmin stop @corbaloc_category_manager_proc_ctl@
+  </stop>
+  
+  <status>
+    \VAR:setenv\ &amp;&amp; ElCorbaAdmin status @corbaloc_category_manager_proc_ctl@
+  </status>
+
+  <after service="Configurator"/>
+  <after service="MessageBank"/>
+  <after service="WordManager"/>
+  <after service="Segmentor"/>
+</service>
+
+<service name="ModeratorFrontend" enabled="@feed_moderating_enabled@">
+
+  <tag name="moderating"/>
+
+<!-- 
+  <start>
+    \VAR:setenv\ &amp;&amp; ulimit -H -S -s 1024 &amp;&amp; \\
+    @site_config_root@/Frontend/Moderator/apachectl start
+  </start>
+-->
+
+  <start>
+    \VAR:setenv\ &amp;&amp; ulimit -H -S -s 128 &amp;&amp; \\
+    @site_config_root@/Frontend/Moderator/apachectl start
+  </start>
+
+  <stop>
+    \VAR:setenv\ &amp;&amp; @site_config_root@/Frontend/Moderator/apachectl stop
+  </stop>
+  
+  <status>
+    \VAR:setenv\ &amp;&amp; ElProbeWEB.sh \\
+    "@service_frontend_moderator_schema@://localhost:@service_frontend_moderator_port@/sysmon" "system_monitor"
+  </status>
+
+  <after service="Configurator"/>
+  <after service="ModeratorManager"/>
+  <after service="FeedManager"/>
+  <after service="CategoryManager"/>
+  <after service="CustomerManager"/>
+  <after service="AdManager"/>
+  <after service="SearchFrontend"/>
+
+</service>
+
+@hosts_config@
+</cluster>

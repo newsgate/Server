@@ -1,0 +1,21 @@
+<LocationMatch ^/psp/stat$|^/p/s/s$>
+
+  SetHandler psp-script
+  PSP_LangCalc reset
+  PSP_DeflateLevel 0
+  
+  PSP_Object stat_logger newsgate.stat.create_logger newsgate.stat.cleanup_logger stat.
+
+  PSP_Config stat.xsearch.client_ips "@xsearch_client_ips@"
+
+  PSP_Config stat.processor_ref "@corbaloc_stat_processor_ref@"
+  PSP_Config stat.flush_period  5
+  PSP_Config stat.uid_cookie @stat_uid_cookie@
+
+  PSP_Config stat.limit_checker_ref "@corbaloc_limit_checker_ref@"
+  PSP_Config stat.fraud_prevention_click_user "@fraud_prevention_click_user@"
+  PSP_Config stat.fraud_prevention_click_user_msg "@fraud_prevention_click_user_msg@"
+  PSP_Config stat.fraud_prevention_click_ip "@fraud_prevention_click_ip@"
+  PSP_Config stat.fraud_prevention_click_ip_msg "@fraud_prevention_click_ip_msg@"
+
+</LocationMatch>

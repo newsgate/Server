@@ -1,0 +1,202 @@
+#!/bin/bash
+
+passwd="@db_passwd@"
+
+echo "Setting environment variables ..."
+source "@site_config_root@/environment.sh"
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+echo "Sourcing script lib ..."
+source "@site_config_root@/lib.sh"
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+server_version=`cat @site_config_root@/VERSION`
+compound_files_path="@data_root@/comp/$server_version"
+
+echo_date "Creating directories ..."
+
+mkdir -p "$compound_files_path/css/h" && \
+mkdir -p "@data_root@/Feedback/Spam" && \
+mkdir -p "@data_root@/Message/Bank/ImgThumb" && \
+mkdir -p "@data_root@/Message/Bank/Import" && \
+mkdir -p "@data_root@/Message/Bank/ImportLocal" && \
+mkdir -p "@data_root@/Frontends/Thumbnail/ImgThumb" && \
+mkdir -p "@data_root@/Statistics/StatProcessor" && \
+mkdir -p "@data_root@/archives" && \
+mkdir -p "@cache_root@/EntityResolver" && \
+mkdir -p "@cache_root@/RSSFeed/Image" && \
+mkdir -p "@cache_root@/Message/Bank" && \
+mkdir -p "@cache_root@/Event" && \
+mkdir -p "@cache_root@/Moderator" && \
+mkdir -p "@cache_root@/ModeratorFe" && \
+mkdir -p "@cache_root@/Statistics" && \
+mkdir -p "@cache_root@/Mailing/SearchMailer" && \
+mkdir -p "@cache_root@/FraudPrevention" && \
+mkdir -p "@cache_root@/Ad" && \
+mkdir -p "@log_root@/Message" && \
+mkdir -p "@log_root@/Dictionary" && \
+mkdir -p "@log_root@/Segmentation" && \
+mkdir -p "@log_root@/Event" && \
+mkdir -p "@log_root@/RSSFeed" && \
+mkdir -p "@log_root@/Message" && \
+mkdir -p "@log_root@/Statistics" && \
+mkdir -p "@log_root@/Mailing" && \
+mkdir -p "@log_root@/FraudPrevention" && \
+mkdir -p "@log_root@/Ad" && \
+mkdir -p "@log_root@/Moderator" && \
+mkdir -p "@log_root@/Backup" && \
+mkdir -p "@tmp_root@/"
+
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+echo_date "Creating compound files ..."
+
+doc_root="@www_root@/htdocs/WEB"
+
+cat "$doc_root/fixed/css/commons.css" "$doc_root/fixed/css/home.css" > \
+"$compound_files_path/css/home.css" && \
+cat "$doc_root/fixed/css/commons.css" "$doc_root/fixed/css/commons-mob.css" \
+"$doc_root/fixed/css/home.css" "$doc_root/fixed/css/home-mob.css" > \
+"$compound_files_path/css/home-mob.css" && \
+cat "$doc_root/fixed/css/commons.css" "$doc_root/fixed/css/search.css" > \
+"$compound_files_path/css/search.css" && \
+cat "$doc_root/fixed/css/commons.css" "$doc_root/fixed/css/commons-mob.css" \
+"$doc_root/fixed/css/search.css" "$doc_root/fixed/css/search-mob.css" > \
+"$compound_files_path/css/search-mob.css" && \
+cat "$doc_root/fixed/css/commons.css" "$doc_root/fixed/css/message.css" > \
+"$compound_files_path/css/message.css" && \
+cat "$doc_root/fixed/css/commons.css" "$doc_root/fixed/css/commons-mob.css" \
+"$doc_root/fixed/css/message.css" "$doc_root/fixed/css/message-mob.css" > \
+"$compound_files_path/css/message-mob.css" && \
+cat "$doc_root/fixed/css/commons.css" "$doc_root/fixed/css/search.css" \
+"$doc_root/fixed/css/informer.css" > \
+"$compound_files_path/css/informer.css" && \
+cat "$doc_root/fixed/css/commons.css" "$doc_root/fixed/css/commons-mob.css" \
+"$doc_root/fixed/css/search.css" "$doc_root/fixed/css/search-mob.css" \
+"$doc_root/fixed/css/informer.css" "$doc_root/fixed/css/informer-mob.css" > \
+"$compound_files_path/css/informer-mob.css" && \
+cat "$doc_root/fixed/css/commons.css" "$doc_root/fixed/css/c.css" > \
+"$compound_files_path/css/c.css" && \
+cat "$doc_root/fixed/css/commons.css" "$doc_root/fixed/css/commons-mob.css" \
+"$doc_root/fixed/css/c.css" "$doc_root/fixed/css/c-mob.css" > \
+"$compound_files_path/css/c-mob.css" && \
+cat "$doc_root/fixed/css/commons.css" "$doc_root/fixed/css/e.css" > \
+"$compound_files_path/css/e.css" && \
+cat "$doc_root/fixed/css/commons.css" "$doc_root/fixed/css/commons-mob.css" \
+"$doc_root/fixed/css/e.css" "$doc_root/fixed/css/e-mob.css" > \
+"$compound_files_path/css/e-mob.css" && \
+cat "$doc_root/fixed/css/commons.css" "$doc_root/fixed/css/h/s.css" > \
+"$compound_files_path/css/h/s.css" && \
+cat "$doc_root/fixed/css/commons.css" "$doc_root/fixed/css/commons-mob.css" \
+"$doc_root/fixed/css/h/s.css" "$doc_root/fixed/css/h/s-mob.css" > \
+"$compound_files_path/css/h/s-mob.css"
+
+if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+
+echo_date "Checking DBs ... "
+
+if test "$NO_DB_CHECK" = "1"; then
+  echo "Skipped"
+else
+  mysqlcheck -C --auto-repair --port=$MYSQL_PORT \
+             --socket="$MYSQL_WORKSPACE_ROOT/mysql.socket" \
+             --user root NewsGate && \
+  mysqlcheck -C --auto-repair --port=$MYSQL_PORT \
+             --socket="$MYSQL_WORKSPACE_ROOT/mysql.socket" \
+             --user root NewsGateModeration
+
+  if test $? -eq 0; then echo "Done"; else echo "Failed"; exit 1; fi
+fi
+
+echo_date "Converting data ..."
+
+if test "$NO_BACKUP" != "1"; then
+  host_name=`hostname`
+  files=`find '@data_root@/archives' -name "$host_name.*.full*" -mmin -1800`
+
+  if test -n "$files"; then
+    echo "Fresh full backup exist"
+    NO_BACKUP="1"
+  fi
+fi
+
+if test "$NO_BACKUP" = "1"; then
+  echo "No backup will be made"
+  preconvert=":"
+else
+  preconvert="ng-backup @maintanance_backup_full_args@ --po $$ convert --copy '"'@maintanance_backup_copy_cmd@'"'"
+fi
+
+ng-convert --pre-convert "$preconvert"
+if test $? -ne 0; then exit 1; fi
+
+pid_file="$RUN_ROOT/backup.pid"
+read pid type cmd 2>/dev/null < "$pid_file"
+
+if test -n "$pid"; then
+  if test $pid -eq $$; then
+    rm -f "$pid_file"
+  fi
+fi
+
+if test -n "$passwd"; then
+
+  echo_date "Removing redundant DB users..."
+
+  echo "delete from mysql.user where user='' or user='nguser' or user='zenoss';" \
+  | ng-mysql --user=root
+
+  if test $? -ne 0; then 
+    echo "failed";
+    exit 1
+  fi
+
+  echo_date "Setting access privileges for NewsGate DB ..."
+
+  echo "grant ALTER,DROP,DELETE,INSERT,SELECT,UPDATE,LOCK TABLES on NewsGate.* to nguser identified by '$passwd';"\
+  | ng-mysql --user=root
+
+  if test $? -ne 0; then 
+    echo "failed";
+    exit 1
+  fi
+
+  echo_date "Setting access privileges for NewsGateModeration DB ..."
+
+  echo "grant ALTER,DELETE,INSERT,SELECT,UPDATE,LOCK TABLES on NewsGateModeration.* to nguser identified by '$passwd';"\
+  | ng-mysql --user=root
+
+  if test $? -ne 0; then 
+    echo "failed";
+    exit 1
+  fi
+
+  echo_date "Setting access privileges for zenoss ..."
+
+  echo "grant SELECT on *.* to zenoss identified by 'zenoss';"\
+  | ng-mysql --user=root
+
+  if test $? -ne 0; then 
+    echo "failed";
+    exit 1
+  fi
+
+  echo_date "Setting access privileges for all DBs ..."
+
+  echo "grant FILE on *.* to nguser identified by '$passwd';"\
+  | ng-mysql --user=root
+
+  if test $? -ne 0; then 
+    echo "failed";
+    exit 1
+  fi
+
+  echo_date "Flushing privileges ..."
+  echo "flush privileges;" | ng-mysql --user=root
+
+  if test $? -ne 0; then 
+    echo "failed";
+    exit 1
+  fi
+
+fi

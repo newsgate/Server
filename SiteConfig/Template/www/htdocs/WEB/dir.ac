@@ -1,0 +1,6 @@
+# @file   dir.ac
+# @author Karen Arutyunov
+# $Id:$
+
+OSBE_CONFIG_FILE([robots.txt])
+

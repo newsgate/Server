@@ -1,0 +1,3 @@
+<? msg_title ?>
+http://<? endpoint ?>/p/s/m?msg=<? msg_encoded_id:mime-url ?>&at=es
+<? msg_src_title_line ?>

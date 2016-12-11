@@ -1,0 +1,18 @@
+<html>
+<body>
+<table cellspacing="0" style="font-size:100%; border-collapse:collapse;">
+<tr><td><table cellspacing="0" style="font-size:100%; text-align:left; vertical-align:top; background:white; -webkit-text-size-adjust:100%; -ms-text-size-adjust:100%; -moz-text-size-adjust:100%;">
+<? messages ?>
+</table></td></tr>
+<tr><td style="background:#F5F5F5; text-align:center; padding:0.5em">
+<?loc SUBS ?>:&nbsp;<a href="http://<? endpoint ?>/p/s/e?sm_o=t&sm_i=<? subs_id ?>&sm_e=<? subs_email:mime-url ?>" style="text-decoration:none; color:#0000EE;"><? loc EDIT ?></a>&nbsp;&#xB7;
+<a href="http://<? endpoint ?>/p/s/e?sm_o=d&sm_i=<? subs_id ?>&sm_e=<? subs_email:mime-url ?>" style="text-decoration:none; color:#0000EE;"><? loc SUSPEND ?></a>&nbsp;&#xB7;
+<a href="http://<? endpoint ?>/p/s/e?sm_o=e&sm_i=<? subs_id ?>&sm_e=<? subs_email:mime-url ?>" style="text-decoration:none; color:#0000EE;"><? loc RESUME ?></a>&nbsp;&#xB7;
+<a href="http://<? endpoint ?>/p/s/e?sm_o=l&sm_i=<? subs_id ?>&sm_e=<? subs_email:mime-url ?>" style="text-decoration:none; color:#0000EE;"><? loc DELETE ?></a>&nbsp;&#xB7;
+<a href="http://<? endpoint ?>/p/s/h?q=<? subs_query:mime-url ?><? subs_modifier ?><? subs_filter ?>" style="text-decoration:none; color:#0000EE;"><? loc NEW ?></a><br>
+<a href="http://<? endpoint ?>/p/s/e?sm_o=g&sm_e=<? subs_email:mime-url ?>" style="text-decoration:none; color:#0000EE;"><? loc MANAGE ?></a>&nbsp;&#xB7;
+<a href="http://<? endpoint ?>/p/c" style="text-decoration:none; color:#0000EE;"><? loc FEEDBACK ?></a>
+</td></tr>
+</table>
+</body>
+</html>

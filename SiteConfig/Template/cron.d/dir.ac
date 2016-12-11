@@ -1,0 +1,12 @@
+# @file   dir.ac
+# @author Karen Arutyunov
+# $Id:$
+
+OSBE_CONFIG_FILE([newsgate_log_cleaner])
+OSBE_CONFIG_FILE([newsgate_backup])
+
+OSBE_CONFIG_COMMANDS([
+chmod 640 newsgate_log_cleaner
+chmod 640 newsgate_backup
+], [
+])

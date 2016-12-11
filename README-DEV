@@ -40,8 +40,8 @@ in the generated configuration file.
 
 $ mkdir build
 
-$ cpp -DDEBUG -DARC_x86_64 -DORB_TAO -DELEMENTS_SRC=$HOME/projects/Elements \
-  -DELEMENTS_BUILD=$HOME/projects/Elements/build default.config.t > \
+$ cpp -DDEBUG -DARC_x86_64 -DORB_TAO -DELEMENTS_SRC=~/projects/Elements \
+  -DELEMENTS_BUILD=~/projects/Elements/build default.config.t > \
   ./build/default.config
 
 
@@ -59,30 +59,31 @@ Configuration
 Clone the Server configuration and change the current directory to the 
 project's one.
 
-$ cd ~/projects/NewsGate
-$ mkdir SiteConfig
-
-[ Template cloning instructions. ]
-
-$ cd Template
+$ cd ~/projects/NewsGate/SiteConfig/Template
 
 Run OpenSBE script which creates configure script.
 
 osbe
 
 $ mkdir build
+
+Create default.config file.
+
+$ cpp -DHOST=$HOSTNAME -DSSH_KEY=~/.ssh/adkey -DELEMENTS_SRC=~/projects/Elements \
+  -DELEMENTS_BUILD=~/projects/Elements/build \
+  -DNEWSGATE_SRC=~/projects/NewsGate/Server \
+  -DNEWSGATE_BUILD=~/projects/NewsGate/Server/build \
+  -DNEWSGATE_WORKSPACE=~/projects/NewsGate/Workspace default.config.t > \
+  ./build/default.config
+
+Run configure.
+
 $ cd build
+$ ../configure --enable-no-questions=yes
 
 @@ For some reason configure script doesn't work properly in the interactive
    (default) mode. Should be some osbe bug.
 
-@@ Create set of default.config files (from minimal to more advanced) which can 
-   be used as templates. Or maybe create default.config,t supporting some small
-   number of parameters which allows to create some basic configurations.
-
-Create default.config file and run configure.
-
-$ ../configure --enable-no-questions=yes
 
 $ make install destdir=~/projects/NewsGate proddir=/Workspace \
   sysconfdir=/Workspace/etc

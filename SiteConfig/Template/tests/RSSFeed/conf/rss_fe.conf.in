@@ -1,0 +1,5 @@
+LoadModule rss_frontend_module @server_lib@/libRSSFrontend.so
+
+RSS_URI /rss/*
+RSS_LogLevel 7
+RSS_FeedIOR corbaloc::localhost:@test_rss_feed_svc_port@/RSSFeed

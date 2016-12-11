@@ -1,0 +1,12 @@
+Please confirm suspension of your subscription to '{{TITLE}}' alerts
+Thank you for your request to suspend subscription to '{{TITLE}}' alerts.
+
+To confirm the suspension, please click once on the following link:
+
+http://@service_frontend_search_hostname@/p/s/e?sm_o=c&sm_p=d&sm_k={{TOKEN}}
+
+If you did not make this request, or it was made in error, please ignore this email.
+
+Many thanks,
+
+The {{SENDER}} team

@@ -1,0 +1,10 @@
+# @file   dir.ac
+# @author Karen Arutyunov
+# $Id:$
+
+OSBE_CONFIG_FILE([httpd.conf])
+OSBE_CONFIG_FILE([psp.conf])
+OSBE_CONFIG_FILE([stat.conf])
+OSBE_CONFIG_FILE([status.conf])
+OSBE_CONFIG_FILE([thumbnail.conf])
+OSBE_CONFIG_FILE([limited.conf])

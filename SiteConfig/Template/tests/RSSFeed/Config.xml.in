@@ -1,0 +1,84 @@
+<config xmlns="http://www.newsgate.com/Server/TestRSSFeed/Config"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+        xsi:schemaLocation="http://www.newsgate.com/Server/TestRSSFeed/Config @server_xsd@/TestRSSFeed/Config.xsd">
+
+  <logger
+    filename="@log_root@/tests/RSSFeed/RSSFeedService.log"
+    log_level="10">
+    <time_span_policy time="600"/>
+    <size_span_policy size="1000000"/>
+  </logger>
+
+  <rss_feeds>
+
+    <feed 
+      id="feed-B"
+      count="100" 
+      time_frame="300"
+      min_msg_freq="5"
+      max_msg_freq="5"
+      msg_sort="descending"
+      msg_retiming="50"
+      word_file="@site_config_root@/tests/RSSFeed/words.txt">
+
+<!-- service pathes are feed-B0, feed-B1,..., feed-B999 -->
+
+      <channel
+        title_len="10"
+        description_len="20"
+        last_build_date="GMT"
+        ttl="1"
+        lang="zun-zw"/>
+
+      <item
+        title_len="20"
+        description_len="400"
+        description_format="html"
+        category_len="20"
+        pub_date="GMT"
+        link_prefix="http://www.google.com"
+        guid_prefix="http://www.google.com"/>
+
+      <http_response
+        content_length="false"
+        chunked="100000"
+        etag="false"
+        last_modified="false"/>
+
+    </feed>
+<!--
+    <feed 
+      id="feed-A"
+      time_frame="600"
+      min_msg_freq="60"
+      max_msg_freq="60"
+      msg_sort="descending"
+      msg_retiming="0"
+      word_file="@site_config_root@/tests/RSSFeed/words.txt">
+
+      <channel
+        title_len="10"
+        description_len="20"
+        last_build_date="GMT"
+        ttl="1"/>
+
+      <item
+        title_len="10"
+        description_len="20"
+        description_format="html"
+        category_len="20"
+        pub_date="GMT"
+        link_prefix="http://www.google.com"
+        guid_prefix="http://www.google.com"/>
+
+      <http_response
+        content_length="false"
+        chunked="100000"
+        etag="true"
+        last_modified="false"/>
+
+    </feed>
+-->
+  </rss_feeds>
+
+</config>

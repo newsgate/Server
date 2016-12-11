@@ -1,0 +1,73 @@
+<cluster xmlns="http://www.elements.com/Start"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+         xsi:schemaLocation="http://www.elements.com/Start @elements_xsd@/Start.xsd">
+
+<parameters verbose="no"/>
+
+<var name="rel_srcdir">tests/RSSFeed</var>
+<var name="setenv">source @site_config_root@/environment.sh</var>
+<var name="config">@site_config_root@/\VAR:rel_srcdir\/Config.xml</var>
+
+<transport>ssh \HOST\ -x -i @ssh_key_file@ \COMMAND\</transport>
+
+<service name="Configurator">
+
+  <start>
+    \VAR:setenv\ &amp;&amp; mkdir -p @log_root@/tests/RSSFeed &amp;&amp; \\
+    mkdir -p @run_root@/tests/RSSFeed
+  </start>
+
+</service>
+
+<service name="RSSFeedService">
+
+  <start>
+    \VAR:setenv\ &amp;&amp; { \NAME\ \VAR:config\ \\
+    -IIOPport @test_rss_feed_svc_port@ \\
+    -OAthread_pool 5 > @run_root@/tests/RSSFeed/\NAME\.out \\
+    2>&amp;1 &amp; }
+  </start>
+
+  <stop>
+    \VAR:setenv\ &amp;&amp; ElCorbaAdmin stop \\
+    corbaloc:iiop:\HOST\:@test_rss_feed_svc_port@/ProcessControl
+  </stop>
+
+  <status>
+    \VAR:setenv\ &amp;&amp; ElCorbaAdmin status \\
+    corbaloc:iiop:\HOST\:@test_rss_feed_svc_port@/ProcessControl
+  </status>
+
+  <after service="Configurator"/>
+
+</service>
+
+<service name="RSSFeedFrontend">
+
+  <start>
+    \VAR:setenv\ &amp;&amp; ulimit -H -S -s 1024 &amp;&amp; \\
+    @site_config_root@/\VAR:rel_srcdir\/apachectl start
+  </start>
+
+  <stop>
+    \VAR:setenv\ &amp;&amp; @site_config_root@/\VAR:rel_srcdir\/apachectl stop
+  </stop>
+  
+  <status>
+    \VAR:setenv\ &amp;&amp; ElProbeWEB.sh \\
+    "http://localhost:@test_rss_feed_frontend_port@/sysmon" \\
+    "system_monitor"
+  </status>
+
+  <after service="Configurator"/>
+  <after service="RSSFeedService"/>
+
+</service>
+
+<host name="localhost">
+  <service name="Configurator"/>
+  <service name="RSSFeedService"/>
+  <service name="RSSFeedFrontend"/>
+</host>
+
+</cluster>

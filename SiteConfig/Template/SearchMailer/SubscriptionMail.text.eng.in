@@ -1,0 +1,8 @@
+SUBS_MENU ------- Subscription Control -------
+MANAGE   Manage Subscriptions:
+NEW      Create:
+EDIT     Edit:
+SUSPEND  Suspend:
+RESUME   Resume:
+DELETE   Delete:
+FEEDBACK Contact Us:

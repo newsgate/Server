@@ -1,0 +1,13 @@
+#!/bin/bash
+
+source @site_config_root@/environment.sh
+
+if test -z "$1"; then
+  echo "No command specified. Run 'rssfeed.sh help' for usage details"
+  exit 1
+else
+  ElStart "$@" "@site_config_root@/tests/RSSFeed/Cluster.xml" 2>&1 | \
+          sed -e "s/ElStart/rssfeed.sh/g" \
+          -e "s/<cluster description file>//g" \
+          -e "s%\./Cluster.xml%%g"
+fi

@@ -1,0 +1,12 @@
+Please confirm your subscription '{{TITLE}}' email update
+Thank you for your request to update your '{{TITLE}}' subscription email.
+
+To confirm the update, please click once on the following link:
+
+http://@service_frontend_search_hostname@/p/s/e?sm_o=c&sm_p=m&sm_k={{TOKEN}}
+
+If you did not make this request, or it was made in error, please ignore this email.
+
+Many thanks,
+
+The {{SENDER}} team

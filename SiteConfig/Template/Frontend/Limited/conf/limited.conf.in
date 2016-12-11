@@ -1,0 +1,5 @@
+<IfDefine frontend-limited>
+
+Include @site_config_root@/Frontend/Limited/conf/thumbnail.conf
+
+</IfDefine>

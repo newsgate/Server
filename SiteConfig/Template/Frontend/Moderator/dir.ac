@@ -1,0 +1,8 @@
+# @file   dir.ac
+# @author Karen Arutyunov
+# $Id:$
+
+OSBE_CONFIG_FILE([apachectl])
+OSBE_CONFIG_SUBDIR([conf])
+
+OSBE_CONFIG_COMMANDS([chmod 754 apachectl])

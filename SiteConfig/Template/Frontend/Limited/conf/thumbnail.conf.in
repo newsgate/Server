@@ -1,0 +1,12 @@
+LoadModule thumbnail_module @server_lib@/libThumbnailFe.so
+
+Thumbnail_MessageBankManagerRef @corbaloc_message_bank_manager_ref@
+Thumbnail_MessageBankClients 10
+Thumbnail_MessageBankClientSessionMaxThreads 1000
+Thumbnail_ProxyRequestTimeout 15
+
+Thumbnail_Path /thumb/*
+Thumbnail_ThumbPath @data_root@/Frontends/Thumbnail/ImgThumb
+Thumbnail_MimeTypesPath @site_config_root@/Frontend/WEB/conf/mime.types
+Thumbnail_CacheTimeout 60
+Thumbnail_MessageMaxAge @message_max_age@

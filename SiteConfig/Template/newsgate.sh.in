@@ -1,0 +1,35 @@
+#!/bin/bash
+
+source @site_config_root@/environment.sh
+
+if test -z "$1"; then
+  echo "No command specified. Run 'newsgate.sh help' for usage details"
+  exit 1
+else
+
+  export NO_DB_CHECK=""
+  export NO_BACKUP=""
+
+  REQ_USER="@maintanance_username@"
+  
+  if test "$USER" != "$REQ_USER"; then
+    sudo -H -u "$REQ_USER" $0 $@
+    exit
+  fi
+
+  for arg in "$@"; do
+
+    case $arg in
+      --no-db-check) export NO_DB_CHECK="1";;
+      --no-backup) export NO_BACKUP="1";;
+    esac
+
+  done
+
+  ElStart "$@" "@site_config_root@/Cluster.xml" 2>&1 | \
+          sed -e "s/ElStart/newsgate.sh/g" \
+          -e "s/<cluster description file>//g" \
+          -e "s%\./Cluster.xml%%g" \
+          -e "s/(--nodeps)?/(--nodeps)? (--no-db-check)? (--no-backup)?/g"
+
+fi

@@ -1,0 +1,9 @@
+#!/bin/bash
+
+source @site_config_root@/environment.sh
+
+if test "$1" = "start"; then
+  ng-db-start.sh "@db_passwd@" > @run_root@/DB.out 2>&1
+else
+  @server_scripts@/DB/ng-mysqld $@
+fi

@@ -1,0 +1,4 @@
+function echo_date()
+{
+  echo $@ "(`date -u '+%Y-%m-%d %H:%M:%S'`)"
+}

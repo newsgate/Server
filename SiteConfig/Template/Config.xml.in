@@ -1,0 +1,971 @@
+<config xmlns="http://www.newsgate.com/Server/Config"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+        xsi:schemaLocation="http://www.newsgate.com/Server/Config @server_xsd@/Config.xsd">
+
+<rss_feed>
+
+  <puller>
+    
+<!-- Aspects: Application, State, PullingFeeds, MessageManagement -->
+
+    <logger
+      filename="@log_root@/RSSFeed/Puller.log"
+      log_level="@service_rss_puller_log_level@"
+      aspects="@service_rss_puller_log_aspects@">
+
+      <size_span_policy size="100000000"/>
+<!--      <time_span_policy time="600"/> -->
+    </logger>
+
+    <feed_request
+      default_period="600"
+      min_period="@feed_request_min_period@"
+      max_period="@feed_request_max_period@"
+      approximate_msg_intervals="2"
+      message_period_factor="0.99"
+      xml_feed_timeout="180"
+      html_feed_timeout="60"
+      user_agent="@request_user_agent@"
+      redirects_to_follow="10"
+      threads="50"
+      stream_recv_buf_size="128"
+      socket_recv_buf_size="0"
+      cache_dir="@cache_root@/RSSFeed">
+
+      <thumb_gen timeout="60"
+                 processes="5"/>
+
+      <robots_checker
+        timeout="180"
+        redirects_to_follow="10"
+        entry_timeout="3600"
+        cleanup_period="600"/>
+
+      <entity_resolver>
+        <net_strategy connect_timeout="180"
+                      send_timeout="180"
+                      recv_timeout="180"
+                      redirects_to_follow="2"/>
+
+        <file_strategy cache_dir="@cache_root@/EntityResolver"
+                       cache_timeout="86400"
+                       cache_retry_period="600"
+                       max_file_size="10485760"
+                       cache_clean_period="600"
+                       cache_file_expire="259200"/>
+      </entity_resolver>
+
+      <limits
+        channel_title="1024"
+        channel_description="2048"
+        message_title="1024"
+        message_description="4096"
+        message_description_chars="@message_description_max_chars@"
+        image_alt_text="8192"
+        max_image_count="@message_image_max_count@"
+      />
+
+      <full_article max_size="1048576" obey_robots_txt="true"/>
+      <html_cache max_size="102400" timeout="864000"/>
+
+      <python>
+        <sandbox max_ticks="10000000"
+                 timeout="180"
+                 call_max_depth="300"
+                 max_memory="20971520"
+                 processes="10">
+<!--
+          <safe_modules></safe_modules>
+          <safe_builtins></safe_builtins>
+-->
+        </sandbox>
+      </python>
+
+      <image
+        min_width="40"
+        min_height="40"
+        referer="@image_referer@">
+
+        <thumbnail max_image_size="1048576"
+                   cache_dir="@cache_root@/RSSFeed/Image"
+                   mime_types_path="@site_config_root@/Frontend/WEB/conf/mime.types">
+        @message_image_thumbnail_sizes@
+        </thumbnail>
+
+        <prefix_blacklist>
+        @image_prefix_blacklist@
+        </prefix_blacklist>
+
+        <extension_whitelist>
+        @image_extension_whitelist@
+        </extension_whitelist>
+      </image>
+
+    </feed_request>
+
+    <saving_traffic 
+      last_build_based="2"> <!-- 0 - not use, 1 - use, 2 - use heuristically -->
+
+      <heuristics
+        content_length_based="true"
+        single_chunk_based="true"
+        ordering_based="true"
+        sequence_len="10"
+        calc_entropy_after="10"
+        apply_after="4"
+        force_down_entropy_after="86400"
+      />
+    </saving_traffic>
+
+    <saving_feed_state
+      packet_size="@saving_feed_state_packet@"
+      max_delay="@saving_feed_state_delay@"
+      state_messages_factor="5"
+      min_state_messages="30"
+      message_timeout="604800"
+      delay_feed_requests_on_failure="120"/>
+
+    <saving_feed_stat
+      packet_size="1000"
+      period="20"
+      retry_timeout="60"
+      flash_prev_day="00:30"
+      cache_file="@cache_root@/RSSFeed/PullerStat.cache"/>
+
+    <message_post message_max_age="@message_max_age@">
+      <bank_manager ref="@corbaloc_message_bank_manager_ref@"/>
+    </message_post>
+
+    <puller_management 
+      puller_manager_ref="@corbaloc_rss_puller_manager_ref@"
+      login_retry_period="5"
+      poll_period="15"/>
+
+  </puller>
+
+  <puller_manager>
+
+<!-- Aspects: Application, State, PullingFeeds, FeedManagement -->
+
+    <logger
+      filename="@log_root@/RSSFeed/PullerManager.log"
+      log_level="@service_rss_puller_manager_log_level@"
+      aspects="@service_rss_puller_manager_log_aspects@">
+
+<!--      <time_span_policy time="600"/> -->
+      <size_span_policy size="100000000"/>
+
+    </logger>
+
+    <puller_management
+      registration_timeout="30" 
+      presence_poll_timeout="1800"
+      reset_timeout="120"/>
+
+    <data_base 
+      unix_socket="@run_root@/MySQL/mysql.socket" 
+      user="nguser" 
+      passwd="@db_passwd@" 
+      dbname="NewsGate"/>
+
+    <fetching_feeds
+      check_feeds_period="3"
+      feeds_per_query="1000"/>
+
+    <saving_feed_state
+      packet_size="1000"
+      max_delay="30"
+      cache_file="@cache_root@/RSSFeed/FeedState.cache"/>
+
+    <saving_feed_stat
+      files_at_once="10"
+      period="30"
+      keep_days="183"
+      cache_file="@cache_root@/RSSFeed/FeedStat.cache"/>
+
+  </puller_manager>
+
+</rss_feed>
+
+<message_service>
+
+  <bank>
+
+<!-- Aspects: Application, State, MessageSharing, MessageManagement, 
+              MessageCategorization, DBPerformance -->
+
+    <logger
+      filename="@log_root@/Message/Bank.log"
+      log_level="@service_message_bank_log_level@"
+      aspects="@service_message_bank_log_aspects@">
+
+      <size_span_policy size="100000000"/>
+
+    </logger>
+
+    <data_base
+      unix_socket="@run_root@/MySQL/mysql.socket" 
+      user="nguser" 
+      passwd="@db_passwd@" 
+      dbname="NewsGate">
+      
+      <connection_pool 
+        min_connections="10" 
+        max_connections="30"/>
+
+    </data_base>
+
+    <word_management
+      word_manager_ref="@corbaloc_word_manager_ref@"
+      retry_period="20"/>
+
+    <segmentation_management
+      segmentor_ref="@corbaloc_segmentor_ref@"
+      retry_period="20"/>
+
+    <event_management
+      event_bank_manager_ref="@corbaloc_event_bank_manager_ref@"
+      message_delete_retry_period="60"
+      message_delete_pack_size="3000"/>
+
+    <bank_management 
+      bank_manager_ref="@corbaloc_message_bank_manager_ref@"
+      login_retry_period="3"
+      report_presence_period="30"/>
+
+    <message_manager
+      message_expiration_time="@message_max_age@"
+      store_duplicate_messages="@store_duplicate_messages@"
+      impression_respected_level="@impression_respected_level@"
+      pushed_message_pack_processing_queue_size="1"
+      shared_message_pack_processing_queue_size="10"
+      new_message_pack_processing_queue_size="20"
+      message_event_pack_processing_queue_size="50"
+      trace_search_duration="@trace_search_duration@"
+      cache_file_dir="@cache_root@/Message/Bank"
+      thumbnail_dir="@data_root@/Message/Bank/ImgThumb">
+
+      <message_import
+        check_period="15"
+        on_error_retry_period="60"
+        on_notready_retry_period="2"
+        pack_size="3000"
+        import_directory="@data_root@/Message/Bank/Import"
+        import_local_directory="@data_root@/Message/Bank/ImportLocal"/>
+
+      <message_cache
+        loaded_msg_insert_retry_delay="5"
+        changed_msg_insert_chunk_size="500"
+        timeout="600"
+        traverse_period="2"
+        traverse_records="3000"
+        delete_message_pack="@delete_message_pack@"
+        foreign_msg_db_query_max_count="100"
+        shared_msg_max_count="1000"
+        share_messages_period="600"
+        keep_recently_deleted="3600"
+        optimize_mem_period="86400"
+        max_flush_pack_size="50"
+        capacity="@message_bank_capacity@"
+        room="0.05"
+        use_cache_message_file="true"/>
+
+      <word_pair_counter
+        type="@word_pair_counter_type@"
+        filename="@word_pair_counter_filename@"
+        interval_groups="@word_pair_interval_groups@"
+        ammend_core_words="true"
+        main_languages="@content_main_languages@"
+        bucket_factor="@word_pair_counter_bucket_factor@"
+        cache_size="@word_pair_counter_cache_size@"/>
+
+      <message_loader
+        retry_period="10"
+        read_chunk_size="3000"
+        max_queue_size="10"/>
+
+      <message_categorizer
+        category_name_as_last_resort="@category_name_as_last_resort@"
+        set_retry_period="10"
+        set_retry_max_count="60"/>
+
+      <message_filter 
+        reapply_period="3600"
+        set_retry_period="10" 
+        set_retry_max_count="12"/>
+
+      <adapting_mutex
+        check_period="2000"
+        tries="20" 
+        wait_time="25000"/>
+
+      <core_words prc="@message_core_words_prc@" 
+                  max="@message_max_core_words@" />
+
+    </message_manager>
+
+  </bank>
+
+  <bank_manager>
+
+<!-- Aspects: Application, State, MessageSharing -->
+
+    <logger
+      filename="@log_root@/Message/BankManager.log"
+      log_level="@service_message_bank_manager_log_level@"
+      aspects="@service_message_bank_manager_log_aspects@">
+
+      <size_span_policy size="100000000"/>
+    </logger>
+
+    <data_base
+      unix_socket="@run_root@/MySQL/mysql.socket" 
+      user="nguser" 
+      passwd="@db_passwd@" 
+      dbname="NewsGate">
+      
+      <connection_pool 
+        min_connections="5" 
+        max_connections="5"/>
+
+    </data_base>
+
+    <message_management>
+
+      <data_base 
+        @message_managing_db_endpoint@ 
+        user="nguser" 
+        passwd="@db_passwd@" 
+        dbname="NewsGate"/>
+
+      <filter
+        check_period="2"
+        resend_period="120"
+        disabled_feeds_timeout="@message_max_age@"
+        deleted_messages_timeout="@message_max_age@"/>
+
+      <categories
+        check_period="2"
+        resend_period="600"/>
+
+    </message_management>
+
+    <bank_management 
+      registration_timeout="10" 
+      presence_poll_timeout="3600"
+      presence_check_period="60"
+      reset_timeout="30"/>
+
+    <bank_client_management
+      session_refresh_period="10"
+      bank_invalidate_timeout="60"
+      message_post_retries="1"
+      request_threads="@bank_client_session_threads@">
+@frontend_endpoints@
+    </bank_client_management>
+
+    <message_sharing 
+      registration_timeout="600"
+      registration_period="120"
+      mirror="@message_mirroring@"
+      proxy="@message_proxing@">
+@shared_messages_config@
+    </message_sharing>
+
+  </bank_manager>
+
+</message_service>
+
+<event_service>
+
+  <bank backets="@event_bank_backets@"
+        dump_state_period="300">
+
+<!-- Aspects: Application, EventManagement -->
+
+    <logger
+      filename="@log_root@/Event/Bank.log"
+      log_level="@service_event_bank_log_level@"
+      aspects="@service_event_bank_log_aspects@">
+
+      <size_span_policy size="100000000"/>
+
+    </logger>
+
+    <data_base
+      unix_socket="@run_root@/MySQL/mysql.socket" 
+      user="nguser" 
+      passwd="@db_passwd@" 
+      dbname="NewsGate">
+      
+      <connection_pool 
+        min_connections="10" 
+        max_connections="30"/>
+
+    </data_base>
+
+    <bank_management 
+      bank_manager_ref="@corbaloc_event_bank_manager_ref@"
+      login_retry_period="3"
+      report_presence_period="30"/>
+
+    <recreate_managers event_count_min="100000"
+                       event_count_rescale="2"
+                       check_period="60"/>
+
+    <event_manager
+      read_chunk_size="3000"
+      message_expiration_time="@message_max_age@"
+      message_update_chunk_size="10000"
+      message_update_chunk_min_period="1"
+      cache_file="@cache_root@/Event/EventBank"
+      message_bank_manager_ref="@corbaloc_message_bank_manager_ref@">
+
+      <event_cache traverse_period_min="1"
+                   traverse_period_max="60"
+                   traverse_period_maximization="dbl"
+                   traverse_records="2000"
+                   recompose_timeout="8640000"
+                   revise_events_period="0"
+                   load_messages="1000"
+                   cleanup_allowed_change_events_count="10000"
+                   merge_check_period="3"
+                   merge_blacklist_cleanup_period="600"
+                   push_out_prc_per_hour="50"
+                   event_load_retry_delay="10"
+                   msg_core_words_timeout="60"
+                   msg_core_words_preemt_period="10"
+                   find_best_overlap_timeout="3"/>
+
+      <event_remake traverse_period="1"
+                    traverse_records="30"
+                    traverse_pause="60"
+                    dry_run="false"
+                    min_improve="3"
+                    min_size_remake="10"
+                    min_size_revise="500"
+                    min_part="3"/>
+
+      <event max_size="@event_max_size@"
+             max_time_range="@event_max_time_range@"
+             max_core_words="23"
+             max_message_core_words="@message_max_core_words@"
+             merge_deny_size_factor="@event_merge_deny_size_factor@"
+             merge_deny_max_time="@event_merge_deny_max_time@"
+             merge_level_base="@event_merge_level_base@"
+             merge_level_min="@event_merge_level_min@"
+             merge_level_size_based_decrement_step="@merge_level_size_based_decrement_step@"
+             merge_max_time_diff="@event_merge_max_time_diff@"
+             merge_max_strain="@event_merge_strain@"
+             min_rift_time="@event_min_rift_time@"
+             merge_level_time_based_increment_step="@event_merge_level_time_based_increment_step@"
+             merge_level_range_based_increment_step="@event_merge_level_range_based_increment_step@"
+             merge_level_strain_based_increment_step="@event_merge_level_strain_based_increment_step@"/>
+
+    </event_manager>
+
+  </bank>
+
+  <bank_manager>
+
+<!-- Aspects: Application, State -->
+
+    <logger
+      filename="@log_root@/Event/BankManager.log"
+      log_level="@service_event_bank_manager_log_level@"
+      aspects="@service_event_bank_manager_log_aspects@">
+
+      <size_span_policy size="100000000"/>
+    </logger>
+
+    <bank_management 
+      registration_timeout="10" 
+      presence_poll_timeout="3000"
+      presence_check_period="30"
+      reset_timeout="30"/>
+
+    <bank_client_management
+      session_refresh_period="10"
+      bank_invalidate_timeout="60"
+      request_threads="10"/>
+
+  </bank_manager>
+
+</event_service>
+
+<dictionary>
+
+  <word_manager
+    default_lang_validation_level="10"
+    guessing_default_lang_validation_level="51"
+    lang_validation_level="51">
+
+<!-- Aspects: Application, State -->
+
+    <logger
+      filename="@log_root@/Dictionary/WordManager.log"
+      log_level="@service_word_manager_log_level@"
+      aspects="@service_word_manager_log_aspects@">
+
+      <size_span_policy size="100000000"/>
+    </logger>
+
+    <dictionaries>
+      <dict filename="@elements_dict@/rus"/>
+      <dict filename="@elements_dict@/ger"/>
+      <dict filename="@elements_dict@/eng"/>
+      <dict filename="@elements_dict@/jpn"/>
+      <dict filename="@elements_dict@/chi"/>
+      <dict filename="@elements_dict@/kor"/>
+      <dict filename="@elements_dict@/spa"/>
+      <dict filename="@elements_dict@/ita"/>
+      <dict filename="@elements_dict@/por"/>
+      <dict filename="@elements_dict@/rum"/>
+      <dict filename="@elements_dict@/slo"/>
+      <dict filename="@elements_dict@/tur"/>
+    </dictionaries>
+
+  </word_manager>
+
+</dictionary>
+
+<segmentation>
+
+  <segmentor>
+
+<!-- Aspects: Application, State -->
+
+    <logger
+      filename="@log_root@/Segmentation/Segmentor.log"
+      log_level="@service_segmentor_log_level@"
+      aspects="@service_segmentor_log_aspects@">
+
+      <size_span_policy size="100000000"/>
+    </logger>
+
+    <implementations>
+    @segmentation_implementations@
+    </implementations>
+
+  </segmentor>
+
+</segmentation>
+
+<statistics>
+
+  <stat_processor cache_file="@cache_root@/Statistics/StatProcessor.cache"
+                  raw_stat_keep_days="@service_stat_processor_raw_stat_keep_days@"
+                  save_records_at_once="1000"
+                  threads="4"
+                  bank_manager="@corbaloc_message_bank_manager_ref@">
+
+<!-- Aspects: Application -->
+
+    <logger
+      filename="@log_root@/Statistics/StatProcessor.log"
+      log_level="@service_stat_processor_log_level@"
+      aspects="@service_stat_processor_log_aspects@">
+
+      <size_span_policy size="100000000"/>
+    </logger>
+
+    <data_base
+      unix_socket="@run_root@/MySQL/mysql.socket" 
+      user="nguser"
+      passwd="@db_passwd@"
+      dbname="NewsGate">
+      
+      <connection_pool 
+        min_connections="5" 
+        max_connections="5"/>
+
+    </data_base>
+
+    <dbm dir="@data_root@/Statistics/StatProcessor"/>
+
+    <push_stat feed_stat_sink_ref="@corbaloc_feed_stat_sink_ref@"
+               period="10"/>
+
+  </stat_processor>
+
+</statistics>
+
+<mailing>
+
+  <search_mailer cache_file="@cache_root@/Mailing/SearchMailer/Mailer.cache"
+                 threads="10"
+                 search_workers="7"
+                 task_period="1"
+                 task_increased_period="60"
+                 cleanup_period="3600"
+                 update_timeout="604800"
+                 subscription_timeout="864000"
+                 trust_timeout="@service_search_mailer_trust_timeout@"
+                 frontend_hostname="@service_frontend_search_hostname@"
+                 email="@service_search_mailer_email@"
+                 debug_email="@service_search_mailer_debug_email@"
+                 sender_name="@server_instance_name@"
+                 config_dir="@site_config_root@/SearchMailer"
+                 message_bank_manager_ref="@corbaloc_message_bank_manager_ref@"
+                 reserve_message_bank_manager_ref="@service_search_mailer_reserve_message_bank_manager_ref@"
+                 word_manager_ref="@corbaloc_word_manager_ref@"
+                 segmentor_ref="@corbaloc_segmentor_ref@"
+                 localization_dir="@elements_loc@"
+                 mailer_id="@server_instance_name@-@server_host_search_mailer@">
+
+    <smtp host="localhost"
+          port="25"
+          timeout="10"/>
+
+    <recipient_blacklist>
+    @service_search_mailer_recipient_blacklist@
+    </recipient_blacklist>
+
+    <search search_results="100">
+      <sorting message_max_age="@message_max_age@"
+               max_core_words="@message_max_core_words@"
+               impression_respected_level="@impression_respected_level@"/>
+      <supress_cw min_count="4"
+                  intersection="75"
+                  containment_level="75"/>
+    </search>
+
+<!-- Aspects: Application -->
+
+    <logger
+      filename="@log_root@/Mailing/SearchMailer.log"
+      log_level="@service_search_mailer_log_level@"
+      aspects="@service_search_mailer_log_aspects@">
+
+      <size_span_policy size="100000000"/>
+    </logger>
+
+    <data_base
+      unix_socket="@run_root@/MySQL/mysql.socket" 
+      user="nguser"
+      passwd="@db_passwd@"
+      dbname="NewsGate">
+      
+      <connection_pool 
+        min_connections="5" 
+        max_connections="5"/>
+
+    </data_base>
+
+  </search_mailer>
+
+</mailing>
+
+<fraud_prevention>
+
+  <limit_checker
+    cache_file="@cache_root@/FraudPrevention/LimitChecker.cache"
+    traverse_period="5"
+    traverse_records="1000">
+
+<!-- Aspects: Application -->
+
+    <logger
+      filename="@log_root@/FraudPrevention/LimitChecker.log"
+      log_level="@service_limit_checker_log_level@"
+      aspects="@service_limit_checker_log_aspects@">
+
+      <size_span_policy size="100000000"/>
+    </logger>
+
+  </limit_checker>
+
+</fraud_prevention>
+
+<ad>
+
+  <ad_server cache_file="@cache_root@/Ad/AdServer.cache"
+              external_ref="@corbaloc_ad_server_ext_ref@"
+              check_period="3"
+              group_cap_max_count="200"
+              group_cap_timeout="31536000"
+              counter_cap_max_count="50"
+              counter_cap_timeout="2592000">
+
+<!-- Aspects: Application -->
+
+    <logger
+      filename="@log_root@/Ad/AdServer.log"
+      log_level="@service_ad_server_log_level@"
+      aspects="@service_ad_server_log_aspects@">
+
+      <size_span_policy size="100000000"/>
+    </logger>
+
+    <data_base
+      unix_socket="@run_root@/MySQL/mysql.socket" 
+      user="nguser"
+      passwd="@db_passwd@"
+      dbname="NewsGate">
+      
+      <connection_pool 
+        min_connections="5" 
+        max_connections="5"/>
+
+    </data_base>
+
+  </ad_server>
+
+</ad>
+
+<moderation>
+
+  <moderator_manager session_timeout="3600"
+                     timeout_sessions_period="10">
+
+<!-- Aspects: Application, State -->
+
+    <logger
+      filename="@log_root@/Moderator/ModeratorManager.log"
+      log_level="@service_moderator_manager_log_level@"
+      aspects="@service_moderator_manager_log_aspects@">
+
+      <size_span_policy size="100000000"/>
+    </logger>
+
+    <data_base
+      unix_socket="@run_root@/MySQL/mysql.socket" 
+      user="nguser" 
+      passwd="@db_passwd@" 
+      dbname="NewsGateModeration">
+      
+      <connection_pool 
+        min_connections="5" 
+        max_connections="10"/>
+
+    </data_base>
+
+    <client_management>
+
+      <data_base
+        unix_socket="@run_root@/MySQL/mysql.socket" 
+        user="nguser" 
+        passwd="@db_passwd@" 
+        dbname="NewsGate">
+      
+        <connection_pool 
+          min_connections="20" 
+          max_connections="20"/>
+
+      </data_base>
+
+    </client_management>
+
+  </moderator_manager>
+
+  <customer_manager>
+
+<!-- Aspects: Application, State -->
+
+    <logger
+      filename="@log_root@/Moderator/CustomerManager.log"
+      log_level="@service_customer_manager_log_level@"
+      aspects="@service_customer_manager_log_aspects@">
+
+      <size_span_policy size="100000000"/>
+    </logger>
+
+    <data_base
+      unix_socket="@run_root@/MySQL/mysql.socket" 
+      user="nguser" 
+      passwd="@db_passwd@" 
+      dbname="NewsGate">
+      
+      <connection_pool 
+        min_connections="5" 
+        max_connections="10"/>
+
+    </data_base>
+
+  </customer_manager>
+
+  <ad_manager>
+
+<!-- Aspects: Application, State -->
+
+    <logger
+      filename="@log_root@/Moderator/AdManager.log"
+      log_level="@service_ad_manager_log_level@"
+      aspects="@service_ad_manager_log_aspects@">
+
+      <size_span_policy size="100000000"/>
+    </logger>
+
+    <data_base
+      unix_socket="@run_root@/MySQL/mysql.socket" 
+      user="nguser" 
+      passwd="@db_passwd@" 
+      dbname="NewsGate">
+      
+      <connection_pool 
+        min_connections="5" 
+        max_connections="10"/>
+
+    </data_base>
+
+  </ad_manager>
+
+  <feed_manager threads="150"
+                url_fetch_period="10"
+                request_timeout="60" 
+                redirects_to_follow="10"
+                user_agent="@request_user_agent@"
+                temp_dir="@cache_root@/Moderator">
+
+<!-- Aspects: Application, State -->
+
+    <logger
+      filename="@log_root@/Moderator/FeedManager.log"
+      log_level="@service_feed_manager_log_level@"
+      aspects="@service_feed_manager_log_aspects@">
+      <size_span_policy size="100000000"/>
+    </logger>
+
+    <data_base
+      unix_socket="@run_root@/MySQL/mysql.socket" 
+      user="nguser" 
+      passwd="@db_passwd@" 
+      dbname="NewsGate">
+      
+      <connection_pool 
+        min_connections="20" 
+        max_connections="20"/>
+
+    </data_base>
+
+    <robots_checker
+      timeout="180"
+      redirects_to_follow="10"
+      entry_timeout="3600"
+      cleanup_period="600"/>
+
+    <save_stat period="60"
+               chunk_size="10000"
+               keep_days="183"/>
+
+    <full_article max_size="1048576" obey_robots_txt="true"/>
+    <html_cache max_size="102400" timeout="864000"/>
+
+    <xpath max_size="1048576"/>
+
+    <image min_width="40"
+           min_height="40"
+           referer="@image_referer@"
+           socket_recv_buf_size="0">
+
+      <prefix_blacklist>
+      @image_prefix_blacklist@
+      </prefix_blacklist>
+
+      <extension_whitelist>
+      @image_extension_whitelist@
+      </extension_whitelist>
+    </image>
+
+    <python>
+      <sandbox max_ticks="10000000"
+               timeout="180"
+               call_max_depth="300"
+               max_memory="20971520"
+               processes="10">
+<!--
+        <safe_modules></safe_modules>
+        <safe_builtins></safe_builtins>
+-->
+      </sandbox>
+    </python>
+
+    <parsing>
+
+      <limits
+        channel_title="1024"
+        channel_description="2048"
+        message_title="1024"
+        message_description="4096"
+        message_description_chars="@message_description_max_chars@"
+        image_alt_text="8192"
+        max_image_count="@message_image_max_count@"
+      />
+
+      <entity_resolver>
+
+        <net_strategy connect_timeout="180"
+                      send_timeout="180"
+                      recv_timeout="180"
+                      redirects_to_follow="2"/>
+
+        <file_strategy cache_dir="@cache_root@/EntityResolver"
+                       cache_timeout="86400"
+                       cache_retry_period="600"
+                       max_file_size="10485760"
+                       cache_clean_period="60"
+                       cache_file_expire="259200"/>
+
+      </entity_resolver>
+
+      <skip_extensions> 
+dtd wmv m4v ez hqx cpt doc bin dms lha lzh exe class so dll oda pdf ai eps ps smi 
+smil mif xls ppt wbxml wmlc wmlsc bcpio vcd pgn cpio csh dcr dir dxr dvi spl
+gtar hdf js skp skd skt skm latex nc cdf sh shar swf sit sv4cpio sv4crc tar
+tcl tex texinfo texi t tr roff man me ms ustar src zip au snd mid midi kar 
+mpga mp2 mp3 aif aiff aifc m3u ram rm rpm ra wav pdb xyz bmp gif ief jpeg jpg jpe
+png tiff tif djvu djv wbmp ras  pnm pbm pgm ppm rgb xbm xpm xwd igs iges msh 
+mesh silo wrl vrml css asc txt rtx rtf sgml sgm tsv wml wmls etx mpeg mpg mpe 
+qt mov mxu avi movie ice ico
+      </skip_extensions>
+    </parsing>
+
+  </feed_manager>
+
+  <category_manager
+    temp_file="@cache_root@/Moderator/CategoryManager.cache"
+    word_manager_ref="@corbaloc_word_manager_ref@"
+    segmentor_ref="@corbaloc_segmentor_ref@"
+    message_bank_manager_ref="@corbaloc_message_bank_manager_ref@">
+
+<!-- Aspects: Application, State -->
+
+    <logger
+      filename="@log_root@/Moderator/CategoryManager.log"
+      log_level="@service_category_manager_log_level@"
+      aspects="@service_category_manager_log_aspects@">
+
+      <size_span_policy size="100000000"/>
+    </logger>
+
+    <data_base
+      unix_socket="@run_root@/MySQL/mysql.socket" 
+      user="nguser" 
+      passwd="@db_passwd@" 
+      dbname="NewsGate">
+      
+      <connection_pool 
+        min_connections="5" 
+        max_connections="5"/>
+
+    </data_base>
+
+    <relevant_phrases
+      search_results="1000"
+      search_count="30"
+      message_per_event="1"
+      max_phrase_count="1000"
+      message_max_age="@message_max_age@"
+      message_phrases_timeout="36000">
+
+      <supress_cw min_count="4"
+                  intersection="75"
+                  containment_level="75"/>
+
+    </relevant_phrases>
+
+  </category_manager>
+
+</moderation>
+
+</config>

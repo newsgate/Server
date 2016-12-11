@@ -1,0 +1,7 @@
+# @file   dir.ac
+# @author Karen Arutyunov
+# $Id:$
+
+OSBE_CONFIG_SUBDIR([WEB])
+OSBE_CONFIG_SUBDIR([Moderator])
+OSBE_CONFIG_SUBDIR([Limited])
