@@ -24,7 +24,7 @@ Group:   System Environment/Daemons
 BuildRoot: %{_tmppath}/%{name}-buildroot
 Source0: %name-%version.tar.gz
 
-BuildRequires: OpenSBE-defs gcc-c++ ace-tao-devel >= 5.6.5.23 google-sparsehash python-devel xerces-c-devel >= 3.1.1-ssv5.el5   GeoIP httpd-devel xsd ImageMagick-c++-devel >= 6.6.2 tokyocabinet-devel libidn-devel e2fsprogs-devel libxml2-devel >= 2.7.8-7 GeoIP-devel >= 1.4.8 libuuid-devel
+BuildRequires: make OpenSBE-defs gcc-c++ ace-tao-devel >= 5.6.5.23 google-sparsehash python-devel xerces-c-devel >= 3.1.1-ssv5.el5   GeoIP httpd-devel xsd ImageMagick-c++-devel >= 6.6.2 tokyocabinet-devel libidn-devel e2fsprogs-devel libxml2-devel >= 2.7.8-7 GeoIP-devel >= 1.4.8 libuuid-devel
 Requires: httpd >= %{__apache_ver_req} mod_ssl nc xerces-c >= 3.1.1-ssv5.el5  ace-tao >= 5.6.5.23 libxml2 >= 2.7.8-7  GeoIP-City
 
 %if "%{?dist}" == ".el6"
