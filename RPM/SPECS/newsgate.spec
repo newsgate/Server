@@ -10,10 +10,8 @@
 %endif
 
 %define __product               NewsGate
-%define __ob_ver_req            4.3.2
 %define __inst_root             /opt/%{__product}
 %define __osbe_build_dir        .
-%define __apache_ver_req        2.2.21.4
 
 Name:    newsgate
 Version: 1.7.4.0
@@ -24,12 +22,12 @@ Group:   System Environment/Daemons
 BuildRoot: %{_tmppath}/%{name}-buildroot
 Source0: %name-%version.tar.gz
 
-BuildRequires: make OpenSBE-defs gcc-c++ ace-tao-devel >= 5.6.5.23 google-sparsehash python-devel xerces-c-devel >= 3.1.1-ssv5.el5   GeoIP httpd-devel xsd ImageMagick-c++-devel >= 6.6.2 tokyocabinet-devel libidn-devel e2fsprogs-devel libxml2-devel >= 2.7.8-7 GeoIP-devel >= 1.4.8 libuuid-devel
-Requires: httpd >= %{__apache_ver_req} mod_ssl nc xerces-c >= 3.1.1-ssv5.el5  ace-tao >= 5.6.5.23 libxml2 >= 2.7.8-7  GeoIP-City
+BuildRequires: make OpenSBE-defs gcc-c++ ace-tao-devel >= 5.6.5.23 google-sparsehash python-devel xerces-c-devel >= 3.1.1-ssv5.el5 GeoIP httpd-devel xsd ImageMagick-c++-devel >= 6.6.2 tokyocabinet-devel libidn-devel e2fsprogs-devel libxml2-devel >= 2.7.8-7 GeoIP-devel >= 1.4.8 libuuid-devel
+Requires: httpd mod_ssl nc xerces-c >= 3.1.1-ssv5.el6 ace-tao >= 5.6.5.23 libxml2 >= 2.7.8-7 GeoLite-City
 
 %if "%{?dist}" == ".el6"
 BuildRequires : mysql-devel >= 5.5.30
-Requires:  /usr/sbin/httpd.worker.%_archfix mysql-server >= 5.5.30
+Requires: mysql-server >= 5.5.30
 %endif
 
 %if "%{?dist}" == ".el7"
@@ -77,12 +75,12 @@ make install destdir=%buildroot prefix=/opt/%{__product}
 rm -rf %buildroot/opt/%{__product}/include/El
 
 %pre
-%_sbindir/groupadd -r -f -g 506 adgroup &>/dev/null ||:
-%_sbindir/useradd  -m -c 'ad products operation account' -u 506 -g adgroup aduser &>/dev/null ||:
+%_sbindir/groupadd -r -f -g 777 newsgate &>/dev/null ||:
+%_sbindir/useradd  -m -c 'newsgate operation account' -u 777 -g newsgate newsgate &>/dev/null ||:
 
 %files
 %defattr(-, root, root)
-%doc Server/COPYRIGHT Server/CHANGELOG
+%doc Server/COPYRIGHT Server/CHANGELOG Server/README.md Server/LICENSE
 %dir %__inst_root
 %dir %__inst_root/bin
 %__inst_root/bin/*
