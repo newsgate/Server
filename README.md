@@ -105,3 +105,9 @@ All services are written in C/C++ and Python, thoroughly tested and optimized.
 ## Supported OSes
 
 CentOS 6.x, 7.x
+
+## Attributions
+
+This product includes GeoLite data created by MaxMind, available from 
+
+[http://www.maxmind.com](http://www.maxmind.com)
