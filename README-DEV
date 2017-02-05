@@ -95,6 +95,13 @@ $ cp ~/projects/NewsGate/Server/VERSION \
 Management
 ----------
 
+Prior the first run you need to unpack dictionaries in the Elements library:
+
+$ cd ~/projects/Elements/dict
+$ for f in *.gz; do gunzip -c $f >${f%.*}; done
+
+Now you can start NewsGate:
+
 $ cd ~/projects/NewsGate/Workspace/etc
 $ ./newsgate.sh start
 
