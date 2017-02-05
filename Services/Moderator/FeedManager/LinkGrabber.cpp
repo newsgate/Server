@@ -45,7 +45,8 @@ namespace NewsGate
         const char* item = 0;
         while((item = list_parser.next_item()) != 0)
         {
-          if(strncasecmp(item, "http://", 7) == 0)
+          if(strncasecmp(item, "http://", 7) == 0 ||
+             strncasecmp(item, "https://", 8) == 0)
           {
             normalized_refs.insert(item);
           }

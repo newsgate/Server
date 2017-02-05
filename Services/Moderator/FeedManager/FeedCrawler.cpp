@@ -1436,11 +1436,13 @@ namespace NewsGate
           std::string embed_url;
           
           if(strncmp(val, "http://", 7) == 0 ||
+             strncmp(val, "https://", 8) == 0 ||
              strncmp(val, "feed://", 7) == 0)
           {
             embed_url = val;
           }
           else if(strncasecmp(val, "http%3a", 7) == 0 ||
+                  strncasecmp(val, "https%3a", 8) == 0 ||
                   strncasecmp(val, "feed%3a", 7) == 0)
           {
             try
@@ -1665,12 +1667,13 @@ namespace NewsGate
         
         if(redirect && !permanent_redirect)
         {
-          if(strncmp(session->url()->string(), "http://", 7))
+          if(strncmp(session->url()->string(), "http://", 7) &&
+             strncmp(session->url()->string(), "https://", 8))
           {
             std::ostringstream ostr;
             ostr << "can't perform temporary redirection to "
                  << session->url()->string()
-                 << ", http:// protocol expected";
+                 << ", http(s):// protocol expected";
 
             result.description = ostr.str().c_str();
             return;
@@ -1771,7 +1774,8 @@ namespace NewsGate
             result.description = ostr.str().c_str();
           }
             
-          if(strncmp(new_location.c_str(), "http://", 7) == 0)
+          if(strncmp(new_location.c_str(), "http://", 7) == 0 ||
+             strncmp(new_location.c_str(), "https://", 8) == 0)
           {
             add_url_for_processing(new_location.c_str(),
                                    url_desc.type,

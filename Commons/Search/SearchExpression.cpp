@@ -493,16 +493,6 @@ namespace NewsGate
         {
           El::Net::HTTP::URL http_url(urlpath.c_str());
 
-          if(http_url.secure())
-          {
-            std::ostringstream ostr;
-            ostr << "NewsGate::Search::ExpressionParser::read_url: "
-              "HTTPS is not allowed. Url " << urlpath;
-            
-            throw HTTPSNotAllowedForUrl(ostr.str().c_str(),
-                                        last_token_begins_);
-          }
-          
           url->urls.push_back(http_url.string());
 
           if(strcmp(http_url.string(), http_url.idn_string()))

@@ -85,10 +85,6 @@ namespace
       19,
       NewsGate::Search::ParseError::NO_PATH_FOR_URL
     },
-    { L"middle EXCEPT URL https://www.gnu.com",
-      19,
-      NewsGate::Search::ParseError::HTTPS_NOT_ALLOWED_FOR_URL
-    },
     { L"middle EXCEPT URL ftp://www.gnu.com",
       19,
       NewsGate::Search::ParseError::BAD_PATH_FOR_URL
