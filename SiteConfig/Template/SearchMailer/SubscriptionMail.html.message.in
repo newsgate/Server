@@ -1,6 +1,0 @@
-<tr><td style="font-family:Verdana, Tahoma, Geneva, Helvetica, Arial, Sans-serif; font-size:97%;">
-<a href="http://<? endpoint ?>/p/s/m?msg=<? msg_encoded_id:mime-url ?>&at=es" target="_blank" style="text-decoration:none; color:#3C3C3C;">
-<? msg_title:xml ?></a>
-</td></tr>
-<tr><td style="padding:0.35em 0 0.7em; font-family:Verdana, Tahoma, Geneva, Helvetica, Arial, Sans-serif; font-size:83%; color:#808084;">
-<? msg_src_title_line:xml ?></td></tr>

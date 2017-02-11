@@ -2,8 +2,8 @@ The  purpose of this document is to provide instructions for preparing a setup
 that can be used to develop the NewsGate Server. 
 
 By now the development binary package (containing the reqired compile and 
-runtime  dependencies for Elements) is installed, Elements library is built.
-The directory tree structure is suposed to be the following:
+runtime  dependencies for the NewsGate server) is installed, Elements library 
+is built. We suposed to result with the following directory tree structure:
 
 ~/projects
   Elements
@@ -12,7 +12,7 @@ The directory tree structure is suposed to be the following:
     SiteConfig
     Workspace
 
-If by some reason you decide to change the directories structure the following
+If by some reason you decide to change the directory structure the following
 instructions and configuration files must be changed respectivelly.
 
 
@@ -59,7 +59,9 @@ Configuration
 Clone the Server configuration and change the current directory to the 
 project's one.
 
-$ cd ~/projects/NewsGate/SiteConfig/Template
+$ cd ~/projects/NewsGate
+$ git clone git@github.com:newsgate/SiteConfig.git
+$ cd SiteConfig/Template
 
 Run OpenSBE script which creates configure script.
 
@@ -84,6 +86,9 @@ $ ../configure --enable-no-questions=yes
 @@ For some reason configure script doesn't work properly in the interactive
    (default) mode. Should be some osbe bug.
 
+# Remove old configuration if present.
+#
+$ rm -r -f ~/projects/NewsGate/Workspace/etc
 
 $ make install destdir=~/projects/NewsGate proddir=/Workspace \
   sysconfdir=/Workspace/etc

@@ -1,9 +1,0 @@
-User-agent: *
-Disallow: /psp/stat
-Disallow: /p/s/e
-Disallow: /p/s/x
-Disallow: /p/s/r
-Disallow: /p/s/s
-Disallow: /p/w
-Disallow: /p/a
-@service_frontend_search_robots_directives@

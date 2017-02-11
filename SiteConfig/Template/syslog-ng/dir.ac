@@ -1,5 +1,0 @@
-# @file   dir.ac
-# @author Karen Arutyunov
-# $Id:$
-
-OSBE_CONFIG_SUBDIR([conf.d])
