@@ -76,7 +76,7 @@ of words it contains. Such a capability is achieved by means of an extendable
 set of morphological dictionaries. At the moment, the following languages are
 supported: English, German, Italian, Portugal, Romanian, Russian, Spanish, 
 Turkey. Dictionaries for Chinese, Japanese and Korean languages are supported as 
-well, but their usage supposes embedding some third part plugin for news items 
+well, but their usage supposes embedding some third party plugin for news items 
 segmentation.
 
 The language allows to search not just by words but also by message metadata, 
