@@ -70,8 +70,8 @@ class SearchPageRender(search_util.SearchPageContext,
     this.moderation_options = ""
 
     if this.moderation_url:
-      this.endpoint = this.static.canonoical_endpoint
-      this.site = 'http://' + this.endpoint
+      this.endpoint = this.canonical_endpoint
+      this.site = this.schema + this.endpoint
       this.service = this.moderation_url
 
       this.moderation_options = "mod_url=" + \
@@ -1026,7 +1026,7 @@ page.extra_params ? page.extra_params() : \'\')"><img src="' + \
     id = el.string.manip.mime_url_encode(message.encoded_id)
     proto = this.block and "z" or this.static.protocol
     
-    return this.static.stat_url + '?s=U' + \
+    return this.stat_url + '?s=U' + \
            el.string.manip.mime_url_encode(message_url) + \
            (this.moderation_url == "" and \
             ('&e=c&t=' + proto + '&r=' + \

@@ -34,6 +34,10 @@ if method == None:
 
 link = conf("newsgate_internal_link")
 
+pos = link.find('://')
+schema = link[0:pos]
+link = link[pos + 3:]
+
 pos = link.find('/')
 if pos >= 0: link = link[0:pos]
 
@@ -44,7 +48,11 @@ host = endpoint[0]
 try: port = int(endpoint[1])
 except: port = 80
 
-conn = HTTPConnection(host, port)
+if schema == 'https':
+  conn = HTTPSConnection(host, port)
+else:
+  conn = HTTPConnection(host, port)
+
 conn.request(method, path, body, headers)
 
 response = conn.getresponse()

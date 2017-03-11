@@ -225,7 +225,7 @@ prn('</select></td></tr>')
 if plc.id:
 
   url = el.string.manip.xml_encode(\
-    'http://' + conf("newsgate_link") + '/p/a?p=' + str(plc.id))
+    conf("newsgate_link") + '/p/a?p=' + str(plc.id))
 
   prn(R'''
     <tr class="option_row"><td>Url</td><td>

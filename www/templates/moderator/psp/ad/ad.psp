@@ -148,7 +148,7 @@ prn(R'''</a></td></tr>
     <tr><td colspan="2">
       <input type="submit" name="u" value="''', id and "Update" or "Create", 
     R'''"/>
-      <button onclick='preview_ad("http://''', conf("newsgate_link"),
+      <button onclick='preview_ad("''', conf("newsgate_link"),
     R'''"); return false;'>Preview</button>
     </td></tr>
     </table>''')

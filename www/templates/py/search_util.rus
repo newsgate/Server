@@ -29,7 +29,7 @@ SOURCE        <a href='{{URL}}'{{ATTRIBUTES}}>{{MSG_SOURCE_TITLE}}</a>{{MSG_COUN
 READ_MORE     Подробнее&nbsp;...
 SIMILAR_POSTS Весь&nbsp;сюжет
 CATEGORIES    Категории:
-COPYRIGHT     Все права защищены.
+NEWSGATE      Основан на технологии <a href='https://github.com/newsgate/Server' target='_blank'>NewsGate</a>.
 CONTACT       Обратная связь
 
 ALL_MSG       новостей

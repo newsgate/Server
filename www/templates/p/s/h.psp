@@ -306,7 +306,7 @@ page.search_mail =
     script_opened = False
 
     if this.crawler == None and not this.moderation_url and \
-       this.static.stat_url != None and this.search_result != None:
+       this.stat_url != None and this.search_result != None:
 
       script_opened = True
 
@@ -314,7 +314,7 @@ page.search_mail =
 <script type="text/javascript">
 page.impression =
 { 
-  stat_url_prefix: "''', this.static.stat_url, '?e=i&t=', 
+  stat_url_prefix: "''', this.stat_url, '?e=i&t=', 
                this.block and "z" or "h", this.uid and \
                ('&u=' + el.string.manip.mime_url_encode(this.uid)) or "",
                '&r=', this.search_result.request_id, R'''",

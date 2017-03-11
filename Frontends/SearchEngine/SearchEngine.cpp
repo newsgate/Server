@@ -2330,8 +2330,16 @@ namespace NewsGate
       result_messages[i] = result_msg;
     }
 
-    std::string thumbnail_url = config_->string("image.thumbnail.url") + "/";
-    
+    El::PSP::Request* request =
+      El::PSP::Request::Type::down_cast(ctx.request.in());
+
+    El::Apache::Request* ap_request = request->request();
+
+    std::string thumbnail_url =
+      config_->string(ap_request->secure ()
+                      ? "image.thumbnail.ssl_url"
+                      : "image.thumbnail.url") + "/";
+
 // enewsgate crash research
 //    El::Python::AllowOtherThreads guard;
     i = 0;

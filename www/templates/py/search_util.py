@@ -306,7 +306,6 @@ class Static:
     file.close()
     
     this.address_info = el.geography.AddressInfo()
-    this.stat_url = conf("search.stat.url")
 
     this.crawlers = {}
     this.crawlers["googlebot"] = Crawler("googlebot", context)
@@ -334,7 +333,6 @@ class Static:
       
     this.protocol = protocol
     
-    this.canonoical_endpoint = conf("endpoint")
     this.canonize_event = int(conf("search.canonize_event", 0))
 
     this.not_crawler_ips = {}
@@ -501,13 +499,21 @@ class SearchRequestContext(RequestContext):
     this.loc = context.localization.get
     this.lm = el.psp.LocalizationMarker
     
+    conf = context.config.get
     st = this.static
     
-    this.endpoint = request.endpoint()
-    if this.endpoint == "": this.endpoint = st.canonoical_endpoint
+    this.canonical_endpoint = \
+      conf(request.secure() and "ssl_endpoint" or "endpoint")
 
-    this.site = 'http://' + this.endpoint
+    this.endpoint = request.endpoint()
+    if this.endpoint == "": this.endpoint = st.canonical_endpoint
+
+    this.schema = (request.secure() and "https://" or "http://")
+    this.site = this.schema + this.endpoint
     this.service = this.site + request.uri()
+
+    this.stat_url = \
+      conf(request.secure() and "search.stat.ssl_url" or "search.stat.url")
     
     this.suppression = newsgate.search.SearchContext.ST_COLLAPSE_EVENTS
     this.suppression_param = None
@@ -871,6 +877,7 @@ class SearchRequestContext(RequestContext):
         lang = this.filter.event.lang
       else:
         search_context = newsgate.search.SearchContext()
+        search_context.request = this.context.request
         search_context.query = this.resulted_query()
         search_context.results_count = 1
         search_context.title_format = 0
@@ -1337,6 +1344,7 @@ class SearchRequestContext(RequestContext):
     if not msg_event_param or this.block: return result
     
     search_context = newsgate.search.SearchContext()
+    search_context.request = this.context.request
 
     msg_event_pair = msg_event_param.split(" ")
 
@@ -1679,7 +1687,7 @@ class SearchRequestContext(RequestContext):
     id = el.string.manip.mime_url_encode(message.encoded_id)
     proto = this.block and "z" or this.static.protocol
     
-    return this.static.stat_url + '?s=U' + \
+    return this.stat_url + '?s=U' + \
            el.string.manip.mime_url_encode(message_url) + \
            '&e=c&t=' + proto + '&r=' + \
            (this.test_mode and "000" or this.search_result.request_id) + \
@@ -1911,7 +1919,7 @@ class SearchPageContext(SearchRequestContext):
     this.google_ad_section = True
     this.informer_create_mode = False
     this.anchor_refs = []  
-    this.msg_url = 'http://' + this.static.canonoical_endpoint + '/p/s/m'
+    this.msg_url = this.schema + this.canonical_endpoint + '/p/s/m'
     this.h1_tagline = False
     
     this.translator = None
@@ -2379,7 +2387,7 @@ class SearchPageContext(SearchRequestContext):
     proto = this.block and "z" or this.static.protocol
 
     return this.crawler == None and this.search_result != None and \
-           (this.static.stat_url + '?e=p&t=' + proto + '&r=' + \
+           (this.stat_url + '?e=p&t=' + proto + '&r=' + \
             this.search_result.request_id) or ''
 
   def page_impression_image(this, extra_params = ""):
@@ -3087,7 +3095,7 @@ var page =
 
     this.prn('\n<div id="copyright"')
     this.prn_notranslate_class()
-    this.prn('>', this.static.copyright_note, " ", this.lm, "COPYRIGHT")
+    this.prn('>', this.static.copyright_note, " ", this.lm, "NEWSGATE")
 
     bullet = False
     

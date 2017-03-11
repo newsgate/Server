@@ -176,7 +176,9 @@ function informer_changed(reload)
 
     if(visual_controls_visible)
     {
-      var hostname = page.search.path.split('/')[2];
+      var parts = page.search.path.split('/');
+      var schema = parts[0];
+      var hostname = parts[2];
 
       var div_style = "";
       var a_style = "";
@@ -229,7 +231,7 @@ function informer_changed(reload)
                        '</a> <? loc:xml-strict ON_SITE ?> ';
       }
 
-      script_code += '<a' + a_style + ' href="http://' + hostname +
+      script_code += '<a' + a_style + ' href="' + schema + '//' + hostname +
                      '/" target="_blank">' + hostname + '</a></div>';
     }
   }
@@ -370,7 +372,9 @@ function script_changed()
 
   if(b >= 0)
   {
-    var json = script.substr(0, 7) == "http://";
+    var json = script.substr(0, 7) == "http://" || 
+               script.substr(0, 8) == "https://";
+
     script = script.substring(b);
 
     var e = json ? script.length : script.indexOf("\">");

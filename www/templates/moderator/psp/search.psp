@@ -153,6 +153,10 @@ if mode_menu_param: body += "&" + mode_menu_param
 
 link = conf("newsgate_internal_link")
 
+pos = link.find('://')
+schema = link[0:pos]
+link = link[pos + 3:]
+
 pos = link.find('/')
 
 if pos >= 0:
@@ -177,7 +181,10 @@ for h in request.input.headers():
   if hn == "accept-encoding" or hn == "cookie" or hn == "host":
     headers[h.name] = h.value
 
-conn = HTTPConnection(host, port)
+if schema == 'https':
+  conn = HTTPSConnection(host, port)
+else:
+  conn = HTTPConnection(host, port)
 
 conn.request("POST", path, body, headers)
 response = conn.getresponse()

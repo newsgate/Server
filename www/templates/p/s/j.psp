@@ -416,10 +416,10 @@ def print_ng_footer():
         el.string.manip.xml_encode(ir.catchword_link_text),
         '</a> ', ir.lm, "IR_ON_SITE", ' ')
 
-  prn('<a href="http://', ir.static.canonoical_endpoint, '/" target="_blank"')
+  prn('<a href="', ir.schema, ir.canonical_endpoint, '/" target="_blank"')
   print_ng_footer_a_style(True)
 
-  prn('>', ir.static.canonoical_endpoint, '</a>')
+  prn('>', ir.canonical_endpoint, '</a>')
 
   prn('</div>')
 

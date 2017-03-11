@@ -24,7 +24,7 @@ lang = "eng"
 
 moderator = connect_moderator(request, moderator_connector, False, True, False)
 
-newsgate_link = "http://" + conf("newsgate_link")
+newsgate_link = conf("newsgate_link")
 search_link = newsgate_link + "/p/s/h"
 search_help_link = newsgate_link + "/p/h/s"
 search_help_cat_link = search_help_link + "#CATEGORY"
